@@ -1,4 +1,4 @@
-package org.data2semantics.mustard.kernels;
+package org.data2semantics.mustard.weisfeilerlehman;
 
 import java.util.ArrayList;
 import java.util.List;
