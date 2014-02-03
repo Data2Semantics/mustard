@@ -10,6 +10,10 @@ import org.nodes.UGraph;
 import org.nodes.UNode;
 
 public class WeisfeilerLehmanUGraphIterator extends WeisfeilerLehmanIterator<UGraph<StringLabel>> {
+	
+	public WeisfeilerLehmanUGraphIterator() {
+		super();
+	}
 
 	@Override
 	public void wlInitialize(List<UGraph<StringLabel>> graphs) {	
