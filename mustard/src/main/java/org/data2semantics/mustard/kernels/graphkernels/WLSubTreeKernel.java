@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.data2semantics.mustard.kernels.KernelUtils;
+import org.data2semantics.mustard.kernels.data.DTGraphs;
 import org.data2semantics.mustard.learners.SparseVector;
 import org.data2semantics.mustard.weisfeilerlehman.StringLabel;
 import org.data2semantics.mustard.weisfeilerlehman.WeisfeilerLehmanDTGraphIterator;
@@ -20,7 +21,7 @@ import org.nodes.MapDTGraph;
  * 
  * @author Gerben *
  */
-public class WLSubTreeKernel implements GraphKernel<DTGraph<String,String>>, FeatureVectorKernel<DTGraph<String,String>> {
+public class WLSubTreeKernel implements GraphKernel<DTGraphs>, FeatureVectorKernel<DTGraphs> {
 	private int iterations = 2;
 	protected String label;
 	protected boolean normalize;
@@ -63,8 +64,8 @@ public class WLSubTreeKernel implements GraphKernel<DTGraph<String,String>>, Fea
 		this.reverse = reverse;
 	}	
 
-	public SparseVector[] computeFeatureVectors(List<DTGraph<String,String>> trainGraphs) {
-		List<DTGraph<StringLabel,StringLabel>> graphs = copyGraphs(trainGraphs);
+	public SparseVector[] computeFeatureVectors(DTGraphs data) {
+		List<DTGraph<StringLabel,StringLabel>> graphs = copyGraphs(data.getGraphs());
 		SparseVector[] featureVectors = new SparseVector[graphs.size()];
 		for (int i = 0; i < featureVectors.length; i++) {
 			featureVectors[i] = new SparseVector();
@@ -87,9 +88,9 @@ public class WLSubTreeKernel implements GraphKernel<DTGraph<String,String>>, Fea
 		return featureVectors;
 	}
 
-	public double[][] compute(List<DTGraph<String,String>> trainGraphs) {
-		double[][] kernel = KernelUtils.initMatrix(trainGraphs.size(), trainGraphs.size());
-		computeKernelMatrix(computeFeatureVectors(trainGraphs), kernel);				
+	public double[][] compute(DTGraphs data) {
+		double[][] kernel = KernelUtils.initMatrix(data.getGraphs().size(), data.getGraphs().size());
+		computeKernelMatrix(computeFeatureVectors(data), kernel);				
 		return kernel;
 	}
 

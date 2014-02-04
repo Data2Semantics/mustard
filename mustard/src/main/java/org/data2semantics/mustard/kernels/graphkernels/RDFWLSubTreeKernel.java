@@ -1,8 +1,10 @@
-package org.data2semantics.mustard.kernels.rdfgraphkernels;
+package org.data2semantics.mustard.kernels.graphkernels;
 
 import java.util.List;
 import java.util.Set;
 
+import org.data2semantics.mustard.kernels.data.RDFData;
+import org.data2semantics.mustard.kernels.data.SingleDTGraph;
 import org.data2semantics.mustard.learners.SparseVector;
 import org.data2semantics.mustard.rdf.RDFDataSet;
 import org.data2semantics.mustard.rdf.RDFUtils;
@@ -10,7 +12,7 @@ import org.nodes.DTGraph;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 
-public class RDFWLSubTreeKernel implements RDFGraphKernel, RDFFeatureVectorKernel {
+public class RDFWLSubTreeKernel implements GraphKernel<RDFData>, FeatureVectorKernel<RDFData> {
 	private int depth;
 	private String label;
 	private boolean inference;
@@ -38,14 +40,14 @@ public class RDFWLSubTreeKernel implements RDFGraphKernel, RDFFeatureVectorKerne
 		kernel.setNormalize(normalize);
 	}
 
-	public SparseVector[] computeFeatureVectors(RDFDataSet dataset,	List<Resource> instances, List<Statement> blackList) {
-		init(dataset, instances, blackList);
-		return kernel.computeFeatureVectors(graph, RDFUtils.findInstances(graph, instances));
+	public SparseVector[] computeFeatureVectors(RDFData data) {
+		init(data.getDataset(), data.getInstances(), data.getBlackList());
+		return kernel.computeFeatureVectors(new SingleDTGraph(graph, RDFUtils.findInstances(graph, data.getInstances())));
 	}
 
-	public double[][] compute(RDFDataSet dataset, List<Resource> instances,	List<Statement> blackList) {
-		init(dataset, instances, blackList);
-		return kernel.compute(graph, RDFUtils.findInstances(graph, instances));
+	public double[][] compute(RDFData data) {
+		init(data.getDataset(), data.getInstances(), data.getBlackList());
+		return kernel.compute(new SingleDTGraph(graph, RDFUtils.findInstances(graph, data.getInstances())));
 	}
 
 	private void init(RDFDataSet dataset, List<Resource> instances, List<Statement> blackList) {

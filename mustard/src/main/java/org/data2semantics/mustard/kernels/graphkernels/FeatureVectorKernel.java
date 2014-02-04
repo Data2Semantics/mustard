@@ -1,8 +1,7 @@
 package org.data2semantics.mustard.kernels.graphkernels;
 
-import java.util.List;
-
 import org.data2semantics.mustard.kernels.Kernel;
+import org.data2semantics.mustard.kernels.data.GraphData;
 import org.data2semantics.mustard.learners.SparseVector;
 
 
@@ -14,7 +13,7 @@ import org.data2semantics.mustard.learners.SparseVector;
  * @author Gerben
  *
  */
-public interface FeatureVectorKernel<G> extends Kernel {
-	public SparseVector[] computeFeatureVectors(List<G> trainGraphs);
+public interface FeatureVectorKernel<G extends GraphData> extends Kernel {
+	public SparseVector[] computeFeatureVectors(G data);
 	//public SparseVector[] computeFeatureVectors(List<G> trainGraphs, List<G> testGraphs);
 }

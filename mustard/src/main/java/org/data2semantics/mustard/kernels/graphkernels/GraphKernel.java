@@ -1,8 +1,7 @@
 package org.data2semantics.mustard.kernels.graphkernels;
 
-import java.util.List;
-
 import org.data2semantics.mustard.kernels.Kernel;
+import org.data2semantics.mustard.kernels.data.GraphData;
 
 
 
@@ -13,9 +12,9 @@ import org.data2semantics.mustard.kernels.Kernel;
  * TODO add compute for train and test split
  * 
  */
-public interface GraphKernel<G> extends Kernel {
+public interface GraphKernel<G extends GraphData> extends Kernel {
 		
-	public double[][] compute(List<G> trainGraphs);
+	public double[][] compute(G data);
 	//public double[][] compute(List<G> trainGraphs, List<G> testGraphs);
 	
 }

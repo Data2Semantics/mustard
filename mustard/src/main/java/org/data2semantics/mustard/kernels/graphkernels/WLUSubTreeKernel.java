@@ -1,13 +1,12 @@
 package org.data2semantics.mustard.kernels.graphkernels;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.data2semantics.mustard.kernels.KernelUtils;
+import org.data2semantics.mustard.kernels.data.UGraphs;
 import org.data2semantics.mustard.learners.SparseVector;
-import org.data2semantics.mustard.weisfeilerlehman.Bucket;
+
 import org.data2semantics.mustard.weisfeilerlehman.StringLabel;
 import org.data2semantics.mustard.weisfeilerlehman.WeisfeilerLehmanIterator;
 import org.data2semantics.mustard.weisfeilerlehman.WeisfeilerLehmanUGraphIterator;
@@ -16,7 +15,7 @@ import org.nodes.MapUTGraph;
 import org.nodes.UGraph;
 import org.nodes.ULink;
 import org.nodes.UNode;
-import org.nodes.UTGraph;
+
 
 /**
  * Class implementing the Weisfeiler-Lehman graph kernel for general Undirected graphs.
@@ -29,7 +28,7 @@ import org.nodes.UTGraph;
  * @author Gerben
  *
  */
-public class WLUSubTreeKernel implements GraphKernel<UGraph<String>>, FeatureVectorKernel<UGraph<String>> {
+public class WLUSubTreeKernel implements GraphKernel<UGraphs>, FeatureVectorKernel<UGraphs> {
 	private int iterations = 2;
 	protected String label;
 	protected boolean normalize;
@@ -59,10 +58,10 @@ public class WLUSubTreeKernel implements GraphKernel<UGraph<String>>, FeatureVec
 		this.normalize = normalize;
 	}
 
-	public SparseVector[] computeFeatureVectors(List<UGraph<String>> trainGraphs) {
+	public SparseVector[] computeFeatureVectors(UGraphs data) {
 		// Have to use UGraph implementation for copying.
 		// List<UTGraph<StringLabel,?>> graphs = copyGraphs(trainGraphs);
-		List<UGraph<StringLabel>> graphs = copyGraphs(trainGraphs);
+		List<UGraph<StringLabel>> graphs = copyGraphs(data.getGraphs());
 
 		SparseVector[] featureVectors = new SparseVector[graphs.size()];
 		for (int i = 0; i < featureVectors.length; i++) {
@@ -87,9 +86,9 @@ public class WLUSubTreeKernel implements GraphKernel<UGraph<String>>, FeatureVec
 		return featureVectors;
 	}
 
-	public double[][] compute(List<UGraph<String>> trainGraphs) {
-		double[][] kernel = KernelUtils.initMatrix(trainGraphs.size(), trainGraphs.size());
-		computeKernelMatrix(computeFeatureVectors(trainGraphs), kernel);				
+	public double[][] compute(UGraphs data) {
+		double[][] kernel = KernelUtils.initMatrix(data.getGraphs().size(), data.getGraphs().size());
+		computeKernelMatrix(computeFeatureVectors(data), kernel);				
 		return kernel;
 	}
 

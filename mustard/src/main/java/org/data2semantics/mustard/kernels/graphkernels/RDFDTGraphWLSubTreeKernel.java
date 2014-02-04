@@ -1,4 +1,4 @@
-package org.data2semantics.mustard.kernels.rdfgraphkernels;
+package org.data2semantics.mustard.kernels.graphkernels;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.data2semantics.mustard.kernels.KernelUtils;
+import org.data2semantics.mustard.kernels.data.SingleDTGraph;
 import org.data2semantics.mustard.learners.SparseVector;
 import org.data2semantics.mustard.weisfeilerlehman.MapLabel;
 import org.data2semantics.mustard.weisfeilerlehman.WeisfeilerLehmanDTGraphMapLabelIterator;
@@ -25,7 +26,7 @@ import org.nodes.MapDTGraph;
  * @author Gerben
  *
  */
-public class RDFDTGraphWLSubTreeKernel implements RDFDTGraphGraphKernel, RDFDTGraphFeatureVectorKernel {
+public class RDFDTGraphWLSubTreeKernel implements GraphKernel<SingleDTGraph>, FeatureVectorKernel<SingleDTGraph> {
 
 	private Map<DTNode<MapLabel,MapLabel>, Map<DTNode<MapLabel,MapLabel>, Integer>> instanceVertexIndexMap;
 	private Map<DTNode<MapLabel,MapLabel>, Map<DTLink<MapLabel,MapLabel>, Integer>> instanceEdgeIndexMap;
@@ -75,13 +76,13 @@ public class RDFDTGraphWLSubTreeKernel implements RDFDTGraphGraphKernel, RDFDTGr
 		this.reverse = reverse;
 	}
 	
-	public SparseVector[] computeFeatureVectors(DTGraph<String, String> graph, List<DTNode<String, String>> instances) {
-		SparseVector[] featureVectors = new SparseVector[instances.size()];
+	public SparseVector[] computeFeatureVectors(SingleDTGraph data) {
+		SparseVector[] featureVectors = new SparseVector[data.getInstances().size()];
 		for (int i = 0; i < featureVectors.length; i++) {
 			featureVectors[i] = new SparseVector();
 		}	
 		
-		init(graph, instances);
+		init(data.getGraph(), data.getInstances());
 		WeisfeilerLehmanIterator<DTGraph<MapLabel,MapLabel>> wl = new WeisfeilerLehmanDTGraphMapLabelIterator(reverse);
 		
 		List<DTGraph<MapLabel,MapLabel>> gList = new ArrayList<DTGraph<MapLabel,MapLabel>>();
@@ -102,9 +103,9 @@ public class RDFDTGraphWLSubTreeKernel implements RDFDTGraphGraphKernel, RDFDTGr
 	}
 
 
-	public double[][] compute(DTGraph<String, String> graph, List<DTNode<String, String>> instances) {
-		SparseVector[] featureVectors = computeFeatureVectors(graph, instances);
-		double[][] kernel = KernelUtils.initMatrix(instances.size(), instances.size());
+	public double[][] compute(SingleDTGraph data) {
+		SparseVector[] featureVectors = computeFeatureVectors(data);
+		double[][] kernel = KernelUtils.initMatrix(data.getInstances().size(), data.getInstances().size());
 		computeKernelMatrix(featureVectors, kernel);
 		return kernel;
 	}
