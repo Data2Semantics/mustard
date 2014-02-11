@@ -5,9 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.openrdf.model.Resource;
-import org.openrdf.model.Value;
-
 public class EvaluationUtils {
 	
 	public static <T> List<Double> createTarget(List<T> labels) {

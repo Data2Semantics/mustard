@@ -12,17 +12,18 @@ public class Result implements Serializable {
 	private boolean higherIsBetter;
 	private double[] scores;
 	private String label;
+	private EvaluationFunction eval;
 
 	public Result() {
 		this.scores = null;
-		//this.scores = new double[1];
-		//this.scores[0] = 0;
 		this.label = "Empty Result";
 		this.higherIsBetter = true;
 
 	}
 	
 	public Result(EvaluationFunction eval) {
+		this();
+		this.eval = eval;
 		this.label = eval.getLabel();
 		this.higherIsBetter = eval.isHigherIsBetter();
 	}
@@ -66,6 +67,14 @@ public class Result implements Serializable {
 		this.label = label;
 	}
 	
+	public EvaluationFunction getEval() {
+		return eval;
+	}
+
+	public void setEval(EvaluationFunction eval) {
+		this.eval = eval;
+	}
+
 	public boolean isHigherIsBetter() {
 		return higherIsBetter;
 	}

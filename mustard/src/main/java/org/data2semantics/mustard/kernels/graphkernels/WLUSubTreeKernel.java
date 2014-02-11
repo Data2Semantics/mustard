@@ -4,13 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.data2semantics.mustard.kernels.KernelUtils;
-import org.data2semantics.mustard.kernels.data.UGraphs;
+import org.data2semantics.mustard.kernels.data.GraphList;
 import org.data2semantics.mustard.learners.SparseVector;
-
 import org.data2semantics.mustard.weisfeilerlehman.StringLabel;
 import org.data2semantics.mustard.weisfeilerlehman.WeisfeilerLehmanIterator;
 import org.data2semantics.mustard.weisfeilerlehman.WeisfeilerLehmanUGraphIterator;
-
 import org.nodes.MapUTGraph;
 import org.nodes.UGraph;
 import org.nodes.ULink;
@@ -28,7 +26,7 @@ import org.nodes.UNode;
  * @author Gerben
  *
  */
-public class WLUSubTreeKernel implements GraphKernel<UGraphs>, FeatureVectorKernel<UGraphs> {
+public class WLUSubTreeKernel implements GraphKernel<GraphList<UGraph<String>>>, FeatureVectorKernel<GraphList<UGraph<String>>> {
 	private int iterations = 2;
 	protected String label;
 	protected boolean normalize;
@@ -58,7 +56,7 @@ public class WLUSubTreeKernel implements GraphKernel<UGraphs>, FeatureVectorKern
 		this.normalize = normalize;
 	}
 
-	public SparseVector[] computeFeatureVectors(UGraphs data) {
+	public SparseVector[] computeFeatureVectors(GraphList<UGraph<String>> data) {
 		// Have to use UGraph implementation for copying.
 		// List<UTGraph<StringLabel,?>> graphs = copyGraphs(trainGraphs);
 		List<UGraph<StringLabel>> graphs = copyGraphs(data.getGraphs());
@@ -86,7 +84,7 @@ public class WLUSubTreeKernel implements GraphKernel<UGraphs>, FeatureVectorKern
 		return featureVectors;
 	}
 
-	public double[][] compute(UGraphs data) {
+	public double[][] compute(GraphList<UGraph<String>> data) {
 		double[][] kernel = KernelUtils.initMatrix(data.getGraphs().size(), data.getGraphs().size());
 		computeKernelMatrix(computeFeatureVectors(data), kernel);				
 		return kernel;

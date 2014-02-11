@@ -2,17 +2,14 @@ package org.data2semantics.mustard.learners.liblinear;
 
 
 import java.io.FileWriter;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.data2semantics.mustard.learners.Prediction;
 import org.data2semantics.mustard.learners.SparseVector;
-import org.data2semantics.mustard.learners.evaluation.EvaluationUtils;
-
+import org.data2semantics.mustard.learners.libsvm.LibSVM;
 
 import de.bwaldvogel.liblinear.Feature;
 import de.bwaldvogel.liblinear.FeatureNode;

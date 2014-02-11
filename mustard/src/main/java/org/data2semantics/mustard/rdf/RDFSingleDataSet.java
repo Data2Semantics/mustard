@@ -1,9 +1,7 @@
 package org.data2semantics.mustard.rdf;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.openrdf.model.Literal;
 import org.openrdf.model.Resource;
@@ -146,7 +144,9 @@ public class RDFSingleDataSet extends RDFDataSet
 				RepositoryResult<Statement> statements = repCon.getStatements(subject, predicate, object, allowInference);
 
 				try {
-					resGraph.addAll(statements.asList());
+					while (statements.hasNext()) {
+						resGraph.add(statements.next());
+					}
 				}
 				finally {
 					statements.close();
