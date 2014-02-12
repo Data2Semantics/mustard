@@ -14,6 +14,7 @@ import org.data2semantics.mustard.experiments.utils.SimpleGraphKernelExperiment;
 import org.data2semantics.mustard.kernels.data.GraphList;
 import org.data2semantics.mustard.kernels.data.RDFData;
 import org.data2semantics.mustard.kernels.graphkernels.RDFDTGraphWLSubTreeKernel;
+import org.data2semantics.mustard.kernels.graphkernels.RDFIntersectionTreeEdgeVertexPathKernel;
 import org.data2semantics.mustard.kernels.graphkernels.RDFWLSubTreeHubRemovalKernel;
 import org.data2semantics.mustard.kernels.graphkernels.RDFWLSubTreeKernel;
 import org.data2semantics.mustard.kernels.graphkernels.WLSubTreeKernel;
@@ -94,7 +95,7 @@ public class AffiliationPredictionTestExperiment {
 
 		int[] nrHubs = {30};
 
-		/*
+		///*
 		for (boolean inf : inferencing) {	
 			for (boolean rev : reversal) {	
 				for (int d : depths) {
@@ -200,8 +201,8 @@ public class AffiliationPredictionTestExperiment {
 		 */
 
 
-		
 
+		///*
 		for (boolean inf : inferencing) {
 			for (boolean rev : reversal) {
 				for (int d : depths) {
@@ -222,6 +223,26 @@ public class AffiliationPredictionTestExperiment {
 					}
 					System.out.println(resTable);
 				}
+			}
+		}
+		//*/
+
+		for (boolean inf : inferencing) {
+			for (int d : depths) {
+
+				List<RDFIntersectionTreeEdgeVertexPathKernel> kernels2 = new ArrayList<RDFIntersectionTreeEdgeVertexPathKernel>();
+				kernels2.add(new RDFIntersectionTreeEdgeVertexPathKernel(d, inf, true));
+				
+				resTable.newRow(kernels2.get(0).getLabel());
+				SimpleGraphKernelExperiment<RDFData> exp2 = new SimpleGraphKernelExperiment<RDFData>(kernels2, new RDFData(dataset, instances, blackList), target, svmParms, seeds, evalFuncs);
+
+				System.out.println(kernels2.get(0).getLabel());
+				exp2.run();
+
+				for (Result res : exp2.getResults()) {
+					resTable.addResult(res);
+				}
+				System.out.println(resTable);
 			}
 		}
 

@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.data2semantics.mustard.kernels.KernelUtils;
 import org.nodes.DTGraph;
 import org.nodes.DTLink;
 import org.nodes.DTNode;
@@ -62,7 +63,7 @@ public class RDFUtils {
 	
 	
 	public static DTGraph<String,String> simplifyInstanceNodeLabels(DTGraph<String,String> oldGraph, List<DTNode<String,String>> instanceNodes) {
-		String rootLabel = "root_" + Math.random();
+		String rootLabel = KernelUtils.ROOTID;
 		Map<DTNode<String,String>, Integer> ns = new HashMap<DTNode<String,String>,Integer>();
 		DTGraph<String,String> graph = new MapDTGraph<String,String>();
 		
