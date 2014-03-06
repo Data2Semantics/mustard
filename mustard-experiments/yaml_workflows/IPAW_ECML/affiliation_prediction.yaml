@@ -25,9 +25,7 @@ workflow:
       source: org.data2semantics.mustard.experiments.modules.utils.LibSVMParmsModule
       inputs:
          cs: [0.0001, 0.001, 0.01, 0.1, 1.0, 10.0, 100.0, 1000.0, 10000.0]
-         target:
-            reference: AffiliationDataSet.target
-            
+             
    - module: 
       name: RDFWLSubTreeKernel
       source: org.data2semantics.mustard.experiments.modules.kernels.RDFWLSubTreeKernelModule
@@ -45,7 +43,7 @@ workflow:
       name: RDFIntersectionSubTreeKernel
       source: org.data2semantics.mustard.experiments.modules.kernels.RDFIntersectionSubTreeKernelModule
       inputs:
-         discountFactor: 1
+         discountFactor: 1.0
          depth: [1, 2, 3]
          inference: [false, true]
          normalize: true
