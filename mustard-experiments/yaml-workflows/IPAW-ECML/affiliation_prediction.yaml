@@ -1,0 +1,80 @@
+workflow:
+   name: "Affiliation Prediction Experiment IPAW 2014"
+   modules:
+
+   - module:
+      name: RDFDataSet
+      source: org.data2semantics.mustard.experiments.modules.data.RDFDataSetModule
+      inputs:
+         filename: "C:\\Users\\Gerben\\git\\d2s-tools\\kernelexperiments\\datasets\\aifb-fixed_complete.n3"
+         mimetype: "text/n3"
+      
+   - module:
+      name: AffiliationDataSet
+      source: org.data2semantics.mustard.experiments.modules.datasets.AffiliationDataSetModule
+      inputs: 
+         dataset:
+            reference: RDFDataSet.dataset
+         minSize: 0
+         fraction: 1.0
+         seed: 11
+         property: "http://swrc.ontoware.org/ontology#affiliation"
+         
+   - module: 
+      name: LibSVMParms
+      source: org.data2semantics.mustard.experiments.modules.utils.LibSVMParmsModule
+      inputs:
+         cs: [0.0001, 0.001, 0.01, 0.1, 1.0, 10.0, 100.0, 1000.0, 10000.0]
+         target:
+            reference: AffiliationDataSet.target
+            
+   - module: 
+      name: RDFWLSubTreeKernel
+      source: org.data2semantics.mustard.experiments.modules.kernels.RDFWLSubTreeKernelModule
+      inputs:
+         iterations: [0, 2, 4, 6]
+         depth: [1, 2, 3]
+         inference: [false, true]
+         normalize: true
+         reverse: false
+         iterationWeighting: true
+         graphData:
+            reference: AffiliationDataSet.rdfData     
+            
+   - module: 
+      name: RDFIntersectionSubTreeKernel
+      source: org.data2semantics.mustard.experiments.modules.kernels.RDFIntersectionSubTreeKernelModule
+      inputs:
+         discountFactor: 1
+         depth: [1, 2, 3]
+         inference: [false, true]
+         normalize: true
+         graphData:
+            reference: AffiliationDataSet.rdfData  
+            
+   - module: 
+      name: RDFIntersectionPartialSubTreeKernel
+      source: org.data2semantics.mustard.experiments.modules.kernels.RDFIntersectionPartialSubTreeKernelModule
+      inputs:
+         discountFactor: 0.1
+         depth: [1, 2, 3]
+         inference: [false, true]
+         normalize: true
+         graphData:
+            reference: AffiliationDataSet.rdfData                     
+         
+   - module:
+      name: Experiment
+      source: org.data2semantics.mustard.experiments.modules.utils.SingleGraphKernelExperimentModule
+      inputs:
+         matrix:       
+              - reference: RDFWLSubTreeKernel.matrix
+              - reference: RDFIntersectionSubTreeKernel.matrix
+              - reference: RDFIntersectionPartialSubTreeKernel.matrix
+         target:
+            reference: AffiliationDataSet.target
+         parms:
+            reference: LibSVMParms.parameters
+         seed: [1,2,3,4,5,6,7,8,9,10]
+         folds: 10
+      
