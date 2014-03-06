@@ -6,8 +6,11 @@ workflow:
       name: RDFDataSet
       source: org.data2semantics.mustard.experiments.modules.data.RDFDataSetModule
       inputs:
-         filename: "C:\\Users\\Gerben\\git\\d2s-tools\\kernelexperiments\\datasets\\aifb-fixed_complete.n3"
+         filename: "http://files.figshare.com/1118822/aifb_fixed_complete.n3"
          mimetype: "text/n3"
+         isUrl: true
+      datasets:
+       - filename
       
    - module:
       name: AffiliationDataSet
@@ -76,3 +79,4 @@ workflow:
          seed: [1,2,3,4,5,6,7,8,9,10]
          folds: 10
       
+
