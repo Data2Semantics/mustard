@@ -1,0 +1,61 @@
+workflow:
+   name: "Affiliation Prediction Runtime Experiment IPAW 2014"
+   modules:
+
+   - module:
+      name: RDFDataSet
+      source: org.data2semantics.mustard.experiments.modules.data.RDFDataSetModule
+      inputs:
+         filename: "http://files.figshare.com/1118822/aifb_fixed_complete.n3"
+         mimetype: "text/n3"
+         isUrl: true
+      datasets:
+       - filename
+      
+   - module:
+      name: AffiliationDataSet
+      source: org.data2semantics.mustard.experiments.modules.datasets.AffiliationDataSetModule
+      inputs: 
+         dataset:
+            reference: RDFDataSet.dataset
+         minSize: 0
+         fraction: [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
+         seed: [1,2,3,4,5,6,7,8,9,10]
+         property: "http://swrc.ontoware.org/ontology#affiliation"
+         
+             
+   - module: 
+      name: RDFWLSubTreeKernel
+      source: org.data2semantics.mustard.experiments.modules.kernels.RDFWLSubTreeKernelModule
+      inputs:
+         iterations: 6
+         depth: 3
+         inference: true
+         normalize: true
+         reverse: false
+         iterationWeighting: true
+         graphData:
+            reference: AffiliationDataSet.rdfData     
+            
+   - module: 
+      name: RDFIntersectionSubTreeKernel
+      source: org.data2semantics.mustard.experiments.modules.kernels.RDFIntersectionSubTreeKernelModule
+      inputs:
+         discountFactor: 1.0
+         depth: 3
+         inference: true
+         normalize: true
+         graphData:
+            reference: AffiliationDataSet.rdfData  
+            
+   - module: 
+      name: RDFIntersectionPartialSubTreeKernel
+      source: org.data2semantics.mustard.experiments.modules.kernels.RDFIntersectionPartialSubTreeKernelModule
+      inputs:
+         discountFactor: 0.1
+         depth: 3
+         inference: true
+         normalize: true
+         graphData:
+            reference: AffiliationDataSet.rdfData                     
+      
