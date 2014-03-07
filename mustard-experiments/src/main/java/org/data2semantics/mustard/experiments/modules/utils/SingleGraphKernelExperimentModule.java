@@ -15,6 +15,7 @@ import org.data2semantics.platform.annotation.In;
 import org.data2semantics.platform.annotation.Main;
 import org.data2semantics.platform.annotation.Module;
 import org.data2semantics.platform.annotation.Out;
+import org.nodes.Global;
 
 
 @Module(name="Experiment")
@@ -57,6 +58,8 @@ public class SingleGraphKernelExperimentModule {
 		}
 
 		pred = LibSVM.crossValidate(kernel, targetA, parms, folds);
+		
+		Global.log().info("Ran Single Graph Kernel Experiment with seed: " + seed);
 		
 		List<Double> res = new ArrayList<Double>();
 		
