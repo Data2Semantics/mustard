@@ -11,7 +11,7 @@
   	</dependency>
   	<dependency>
   		<groupId>data2semantics</groupId>
-  		<artifactId>d2s-platform</artifactId>
+  		<artifactId>ducktape</artifactId>
   		<version>0.0.1-SNAPSHOT</version>
   	</dependency>
   </dependencies>
