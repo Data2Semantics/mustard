@@ -156,7 +156,7 @@ public class RDFDTGraphIntersectionSubTreeKernel implements GraphKernel<SingleDT
 				}			
 
 				for (VertexTracker vt2 : newSearchFrontPartial.keySet()) {
-					searchFront.get(vt).connect(newSearchFrontPartial.get(vt2), null);
+					searchFront.get(vt).connect(newSearchFrontPartial.get(vt2), "");
 				}
 				newSearchFront.putAll(newSearchFrontPartial);
 			}
