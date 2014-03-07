@@ -5,6 +5,7 @@ import org.data2semantics.mustard.kernels.data.RDFData;
 import org.data2semantics.mustard.kernels.graphkernels.GraphKernel;
 import org.data2semantics.mustard.kernels.graphkernels.RDFWLSubTreeKernel;
 import org.data2semantics.mustard.learners.SparseVector;
+import org.data2semantics.platform.Global;
 import org.data2semantics.platform.annotation.In;
 import org.data2semantics.platform.annotation.Main;
 import org.data2semantics.platform.annotation.Module;
@@ -38,7 +39,10 @@ public abstract class AbstractKernelModule<G extends GraphData> {
 		long tic = System.currentTimeMillis();
 		matrix = kernel.compute(graphData);
 		long toc = System.currentTimeMillis();
-		runtime = tic - toc;
+		runtime = toc - tic;
+		
+		Global.log().info("Computed kernel: " + kernel.getLabel() + ", in: " + runtime + " msecs.");
+		
 		return matrix;
 	}
 	
