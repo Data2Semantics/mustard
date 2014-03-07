@@ -95,7 +95,7 @@ public class RDFDTGraphIntersectionSubTreeKernel implements GraphKernel<SingleDT
 		for (DTNode<String,String> n : graph.nodes()) {
 			String lab = labelMap.get(n.label());
 			if (lab == null) {
-				lab = Integer.toString(labelMap.size());
+				lab = Integer.toString(labelMap.size()+1);
 				labelMap.put(n.label(), lab);		
 			}
 			DTNode<String,String> newN = newG.add(lab);
@@ -108,7 +108,7 @@ public class RDFDTGraphIntersectionSubTreeKernel implements GraphKernel<SingleDT
 		for (DTLink<String,String> l : graph.links()) {
 			String lab = labelMap.get(l.tag());
 			if (lab == null) {
-				lab = Integer.toString(labelMap.size());
+				lab = Integer.toString(labelMap.size()+1);
 				labelMap.put(l.tag(), lab);		
 			}
 			newG.nodes().get(l.from().index()).connect(newG.nodes().get(l.to().index()), lab);
@@ -131,7 +131,7 @@ public class RDFDTGraphIntersectionSubTreeKernel implements GraphKernel<SingleDT
 		List<DTNode<String,String>> commonChilds = getCommonChilds(graph, rootA, rootB);
 
 		VertexTracker newRoot = new VertexTracker(null, vtCount++); // null is the special root label :)
-		searchFront.put(newRoot, iTree.getGraph().add(null));
+		searchFront.put(newRoot, iTree.getGraph().add("0"));
 		iTree.setRoot(searchFront.get(newRoot));
 	
 		for (int i = 0; i < depth; i++) {
@@ -142,15 +142,15 @@ public class RDFDTGraphIntersectionSubTreeKernel implements GraphKernel<SingleDT
 
 				if (vt.getVertex() == null) { // root nodes
 					for (DTNode<String,String> v : commonChilds) {
-						newSearchFrontPartial.put(new VertexTracker(v, vtCount++), iTree.getGraph().add(v == null ? null : v.label().toString()));					 
+						newSearchFrontPartial.put(new VertexTracker(v, vtCount++), iTree.getGraph().add(v == null ? "0" : v.label()));					 
 					}
 
 				} else {
 					for (DTLink<String,String> edge : vt.getVertex().linksOut()) {
 						if (edge.to() == rootA || edge.to() == rootB) { // if we find a root node
-							newSearchFrontPartial.put(new VertexTracker(null, vtCount++), iTree.getGraph().add(null));
+							newSearchFrontPartial.put(new VertexTracker(null, vtCount++), iTree.getGraph().add("0"));
 						} else {
-							newSearchFrontPartial.put(new VertexTracker(edge.to(),vtCount++), iTree.getGraph().add(edge.to().label().toString()));
+							newSearchFrontPartial.put(new VertexTracker(edge.to(),vtCount++), iTree.getGraph().add(edge.to().label()));
 						}
 					}
 				}			
