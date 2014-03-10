@@ -12,9 +12,12 @@ import java.util.TreeSet;
 
 import org.data2semantics.mustard.kernels.KernelUtils;
 import org.data2semantics.mustard.kernels.data.SingleDTGraph;
+import org.nodes.DGraph;
+import org.nodes.DNode;
 import org.nodes.DTGraph;
 import org.nodes.DTLink;
 import org.nodes.DTNode;
+import org.nodes.LightDGraph;
 import org.nodes.MapDTGraph;
 import org.nodes.algorithms.SlashBurn;
 import org.nodes.util.Pair;
@@ -63,9 +66,8 @@ public class RDFDTGraphIntersectionSubTreeKernel implements GraphKernel<SingleDT
 		List<DTNode<String,String>> iNodes = data.getInstances();
 		double[][] kernel = KernelUtils.initMatrix(iNodes.size(), iNodes.size());
 		Tree tree;
-		
+			
 		DTGraph<String,String> newG = toIntGraph(data.getGraph(),iNodes);
-		
 			
 		for (int i = 0; i < iNodes.size(); i++) {
 			for (int j = i; j < iNodes.size(); j++) {
@@ -124,8 +126,8 @@ public class RDFDTGraphIntersectionSubTreeKernel implements GraphKernel<SingleDT
 
 		// Search front is a map, because we are making a graph expansion, i.e. the same node can occur multiple times in a tree, thus we cannot use
 		// the nodes directly, and we need to possibly store multiple references of the same node, hence the utility vertex tracker class.
-		Map<VertexTracker, DTNode<String,String>> searchFront = new HashMap<VertexTracker, DTNode<String,String>>();
-		Map<VertexTracker, DTNode<String,String>> newSearchFront, newSearchFrontPartial;
+		Map<VertexTracker, DNode<String>> searchFront = new HashMap<VertexTracker, DNode<String>>();
+		Map<VertexTracker, DNode<String>> newSearchFront, newSearchFrontPartial;
 		int vtCount = 1;
 
 		List<DTNode<String,String>> commonChilds = getCommonChilds(graph, rootA, rootB);
@@ -135,10 +137,10 @@ public class RDFDTGraphIntersectionSubTreeKernel implements GraphKernel<SingleDT
 		iTree.setRoot(searchFront.get(newRoot));
 	
 		for (int i = 0; i < depth; i++) {
-			newSearchFront = new HashMap<VertexTracker, DTNode<String,String>>();
+			newSearchFront = new HashMap<VertexTracker, DNode<String>>();
 
 			for (VertexTracker vt : searchFront.keySet()) {
-				newSearchFrontPartial = new HashMap<VertexTracker, DTNode<String,String>>();
+				newSearchFrontPartial = new HashMap<VertexTracker, DNode<String>>();
 
 				if (vt.getVertex() == null) { // root nodes
 					for (DTNode<String,String> v : commonChilds) {
@@ -156,7 +158,7 @@ public class RDFDTGraphIntersectionSubTreeKernel implements GraphKernel<SingleDT
 				}			
 
 				for (VertexTracker vt2 : newSearchFrontPartial.keySet()) {
-					searchFront.get(vt).connect(newSearchFrontPartial.get(vt2), "");
+					searchFront.get(vt).connect(newSearchFrontPartial.get(vt2));
 				}
 				newSearchFront.putAll(newSearchFrontPartial);
 			}
@@ -201,13 +203,13 @@ public class RDFDTGraphIntersectionSubTreeKernel implements GraphKernel<SingleDT
 		return commonChilds;
 	}
 
-	protected double subTreeScore(DTNode<String,String> currentVertex, double discountFactor) {
+	protected double subTreeScore(DNode<String> currentVertex, double discountFactor) {
 		// Base case of recursion
 		if (currentVertex.outDegree() == 0) {
 			return 1.0;
 		} else { // recursive case
 			double score = 0;
-			for (DTNode<String,String> leaf: currentVertex.out()) {
+			for (DNode<String> leaf: currentVertex.out()) {
 				score += subTreeScore(leaf, discountFactor);
 			}
 			return 1 + (discountFactor * score);
@@ -216,22 +218,22 @@ public class RDFDTGraphIntersectionSubTreeKernel implements GraphKernel<SingleDT
 	
 	
 	class Tree {
-		private DTGraph<String,String> graph;
-		private DTNode<String,String> root;
+		private DGraph<String> graph;
+		private DNode<String> root;
 		
 		public Tree() {
-			graph = new MapDTGraph<String,String>();
+			graph = new LightDGraph<String>();
 		}
 		
-		public DTGraph<String, String> getGraph() {
+		public DGraph<String> getGraph() {
 			return graph;
 		}
 		
-		public DTNode<String, String> getRoot() {
+		public DNode<String> getRoot() {
 			return root;
 		}
 
-		public void setRoot(DTNode<String, String> root) {
+		public void setRoot(DNode<String> root) {
 			this.root = root;
 		}
 	}

@@ -59,18 +59,18 @@ public class RDFUtils {
 		}
 		return subGraphs;
 	}
-	
-	
-	
+
+
+
 	public static DTGraph<String,String> simplifyInstanceNodeLabels(DTGraph<String,String> oldGraph, List<DTNode<String,String>> instanceNodes) {
 		String rootLabel = KernelUtils.ROOTID;
 		Map<DTNode<String,String>, Integer> ns = new HashMap<DTNode<String,String>,Integer>();
 		DTGraph<String,String> graph = new MapDTGraph<String,String>();
-		
+
 		for (int i = 0; i < instanceNodes.size(); i++) {
 			ns.put(instanceNodes.get(i), i);
 		}
-		
+
 		for (DTNode<String,String> n : oldGraph.nodes()) {
 			if (ns.containsKey(n)) {
 				instanceNodes.set(ns.get(n), graph.add(rootLabel));
@@ -83,11 +83,11 @@ public class RDFUtils {
 		}
 		return graph;
 	}
-	
-	
+
+
 	public static List<DTNode<String,String>> findSigDegreeHubs(Set<Statement> stmts, List<Resource> instances, int maxHubs) {
 		DTGraph<String,String> graph = RDFUtils.statements2Graph(stmts, RDFUtils.REGULAR_LITERALS);
-		
+
 		Comparator<DTNode<String,String>> compSigDeg = new SlashBurn.SignatureComparator<String,String>();
 		MaxObserver<DTNode<String,String>> obsSigDeg = new MaxObserver<DTNode<String,String>>(maxHubs + instances.size(), compSigDeg);				
 		obsSigDeg.observe(graph.nodes());
@@ -107,7 +107,7 @@ public class RDFUtils {
 		sigDegreeHubs.removeAll(rn);
 		return sigDegreeHubs;
 	}
-	
+
 	public static Map<String, Integer> createHubMap(List<DTNode<String,String>> hubs, int maxHubs) {
 		Map<String,Integer> hubMap = new HashMap<String,Integer>();		
 		for (int i = 0; i < hubs.size() && i < maxHubs; i++) {
@@ -121,7 +121,7 @@ public class RDFUtils {
 		}
 		return hubMap;
 	}
-	
+
 	public static DTGraph<String,String> removeHubs(DTGraph<String,String> oldGraph, List<DTNode<String,String>> instanceNodes, Map<String, Integer> hubMap) {
 		DTGraph<String,String> graph = new MapDTGraph<String,String>();
 		Set<DTLink<String,String>> toRemoveLinks = new HashSet<DTLink<String,String>>();
@@ -163,7 +163,7 @@ public class RDFUtils {
 				toRemoveLinks.add(remLink);
 			}
 		}
-		
+
 		for(DTLink<String,String> link : oldGraph.links()) {
 			int a = link.from().index();
 			int b = link.to().index();
@@ -174,8 +174,8 @@ public class RDFUtils {
 		}
 		return graph;
 	}
-	
-	
+
+
 	/**
 	 * find the instance nodes in a graph based on the list of instance Resource's
 	 * 
@@ -191,8 +191,70 @@ public class RDFUtils {
 		}
 		return iNodes;
 	}
-	
-	
+
+	/**
+	 * Convert a set of RDF statements into a DTGraph and set the list of instances to a identical label if boolean is set
+	 * The nodes for these instances are put in instanceNodes
+	 * 
+	 * @param stmts
+	 * @param literalOption
+	 * @param instances
+	 * @return
+	 */
+	public static DTGraph<String,String> statements2Graph(Set<Statement> stmts, int literalOption, List<Resource> instances, List<DTNode<String,String>> instanceNodes, boolean simplifyInstanceNodes) {
+		DTGraph<String,String> graph = new MapDTGraph<String,String>();	
+		Map<Resource, DTNode<String,String>> iMap = new HashMap<Resource, DTNode<String,String>>();
+
+		for (Resource instance : instances) {
+			if (simplifyInstanceNodes) {
+				iMap.put(instance, graph.add(KernelUtils.ROOTID));
+			} else {
+				iMap.put(instance, graph.add(instance.toString()));
+			}
+			instanceNodes.add(iMap.get(instance));
+		}	
+
+		for (Statement s : stmts) {
+			if (s.getObject() instanceof Literal && literalOption != NO_LITERALS) {
+				if (literalOption == REGULAR_LITERALS) {
+					addStatement(graph, s, false, iMap);
+				}
+				if (literalOption == REPEAT_LITERALS) {
+					addStatement(graph, s, true, iMap);
+				}
+			} else if (!(s.getObject() instanceof Literal)){
+				addStatement(graph, s, false, iMap);
+			}
+		}	
+		return graph;
+	}
+
+	private static void addStatement(DTGraph<String,String> graph, Statement stmt, boolean newObject, Map<Resource, DTNode<String,String>> iMap) {
+		
+		DTNode<String,String> n1 = iMap.get(stmt.getSubject());
+		if (n1 == null) {
+			n1 = graph.node(stmt.getSubject().toString());
+			if (n1 == null) {
+				n1 = graph.add(stmt.getSubject().toString());
+			}
+		}
+
+		DTNode<String, String> n2 = null;
+		if (stmt.getObject() instanceof Resource) {
+			n2 = iMap.get((Resource) stmt.getObject());
+		}
+		if (n2 == null || newObject) {
+			n2 = graph.node(stmt.getObject().toString());
+			if (n2 == null || newObject) {
+				n2 = graph.add(stmt.getObject().toString());
+			}			
+		}
+
+		// Statements are unique, since they are in a Set, thus we have never seem this particular edge before, we know that.
+		n1.connect(n2, stmt.getPredicate().toString());
+	}
+
+
 	/**
 	 * Convert a set of RDF statements into a DTGraph. 
 	 * There are three possible ways to treat literals, as regular nodes (REGULAR_LITERALS), as unique nodes (i.e. one for each literal even if they are equal) (REPEAT_LITERALS),

@@ -1,6 +1,7 @@
 package org.data2semantics.mustard.kernels.graphkernels;
 
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -46,8 +47,11 @@ public class RDFIntersectionPartialSubTreeKernel implements GraphKernel<RDFData>
 	private void init(RDFDataSet dataset, List<Resource> instances, List<Statement> blackList) {
 		Set<Statement> stmts = RDFUtils.getStatements4Depth(dataset, instances, depth, inference);
 		stmts.removeAll(blackList);
-		graph = RDFUtils.statements2Graph(stmts, RDFUtils.REGULAR_LITERALS);
-		instanceNodes = RDFUtils.findInstances(graph, instances);
-		graph = RDFUtils.simplifyInstanceNodeLabels(graph, instanceNodes);
+		instanceNodes = new ArrayList<DTNode<String,String>>();
+		graph = RDFUtils.statements2Graph(stmts, RDFUtils.REGULAR_LITERALS, instances, instanceNodes, false);
+		
+//		graph = RDFUtils.statements2Graph(stmts, RDFUtils.REGULAR_LITERALS);
+//		instanceNodes = RDFUtils.findInstances(graph, instances);
+		//graph = RDFUtils.simplifyInstanceNodeLabels(graph, instanceNodes);
 	}	
 }

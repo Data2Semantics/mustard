@@ -18,7 +18,7 @@ workflow:
       inputs: 
          dataset:
             reference: RDFDataSet.dataset
-         minSize: 0
+         minSize: 5
          fraction: 1.0
          seed: 11
          property: "http://swrc.ontoware.org/ontology#affiliation"
