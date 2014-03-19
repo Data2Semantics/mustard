@@ -36,7 +36,9 @@ workflow:
          reverse: false
          iterationWeighting: true
          graphData:
-            reference: AffiliationDataSet.rdfData     
+            reference: AffiliationDataSet.rdfData
+      results:
+        - runtime    
             
    - module: 
       name: RDFIntersectionSubTreeKernel
@@ -48,6 +50,8 @@ workflow:
          normalize: true
          graphData:
             reference: AffiliationDataSet.rdfData  
+      results:
+        - runtime
             
    - module: 
       name: RDFIntersectionPartialSubTreeKernel
@@ -58,5 +62,8 @@ workflow:
          inference: true
          normalize: true
          graphData:
-            reference: AffiliationDataSet.rdfData                     
+            reference: AffiliationDataSet.rdfData
+      results:
+        - runtime     
+                        
       
