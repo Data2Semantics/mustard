@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-
 import org.data2semantics.mustard.kernels.data.RDFData;
 import org.data2semantics.mustard.learners.evaluation.EvaluationUtils;
 import org.data2semantics.mustard.rdf.DataSetUtils;
@@ -74,7 +73,6 @@ public class AffiliationDataSetModule {
 		target = EvaluationUtils.createTarget(labels);
 		
 		rdfData = new RDFData(dataset, instances, blacklist);
-		
 		return rdfData;
 	}
 	
