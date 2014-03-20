@@ -46,7 +46,7 @@ public class SingleGraphKernelExperimentModule {
 	
 	@Main
 	public List<Double> runExperiment() {
-		KernelUtils.shuffle(kernel, seed);
+		kernel = KernelUtils.shuffle(kernel, seed);
 		
 		List<Double> targetL = new ArrayList<Double>();
 		targetL.addAll(target);
