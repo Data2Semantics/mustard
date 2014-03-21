@@ -33,8 +33,8 @@ workflow:
       name: RDFWLSubTreeKernel
       source: org.data2semantics.mustard.experiments.modules.kernels.RDFWLSubTreeKernelModule
       inputs:
-         iterations: [0, 2, 4]
-         depth: [1, 2]
+         iterations: [0, 2, 4, 6]
+         depth: [1, 2, 3]
          inference: [false, true]
          normalize: true
          reverse: false
@@ -47,7 +47,7 @@ workflow:
       source: org.data2semantics.mustard.experiments.modules.kernels.RDFIntersectionSubTreeKernelModule
       inputs:
          discountFactor: 1.0
-         depth: [1, 2]
+         depth: [1, 2, 3]
          inference: [false, true]
          normalize: true
          graphData:
@@ -58,7 +58,7 @@ workflow:
       source: org.data2semantics.mustard.experiments.modules.kernels.RDFIntersectionPartialSubTreeKernelModule
       inputs:
          discountFactor: 0.1
-         depth: [1, 2]
+         depth: [1, 2, 3]
          inference: [false, true]
          normalize: true
          graphData:
@@ -76,8 +76,8 @@ workflow:
             reference: AffiliationDataSet.target
          parms:
             reference: LibSVMParms.parameters
-         seed: [1,2,3,4,5]
-         folds: 5
+         seed: [1,2,3,4,5,6,7,8,9,10]
+         folds: 10
       results: 
         - accuracy
         - f1
