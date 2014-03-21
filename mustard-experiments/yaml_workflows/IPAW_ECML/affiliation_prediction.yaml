@@ -81,5 +81,7 @@ workflow:
       results: 
         - accuracy
         - f1
+      aggregators:
+        - seed
       
 
