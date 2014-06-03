@@ -24,7 +24,7 @@ public class RDFIntersectionPartialSubTreeKernel implements GraphKernel<RDFData>
 
 	public RDFIntersectionPartialSubTreeKernel(int depth, double discountFactor, boolean inference, boolean normalize) {
 		super();
-		this.label = "RDF_IST_Kernel_" + depth + "_" + discountFactor + "_" + inference + "_" + normalize;
+		this.label = "RDF_IPST_Kernel_" + depth + "_" + discountFactor + "_" + inference + "_" + normalize;
 		this.depth = depth;
 		this.inference = inference;
 
