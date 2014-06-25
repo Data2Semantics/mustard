@@ -1,4 +1,4 @@
-package org.data2semantics.mustard.experiments.datautils;
+package org.data2semantics.mustard.experiments.rescal;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.codehaus.plexus.util.FileUtils;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
@@ -59,8 +60,8 @@ public class RESCALConverter {
 			}
 		}
 	}
-	
-	public void save(String dir) {
+
+	public Map<Integer, Resource> save(String dir) {
 		Map<Integer, Resource> invEntityMap    = new TreeMap<Integer, Resource>();
 		Map<Integer, String>   invAttributeMap = new TreeMap<Integer, String>(); 
 		for (Resource e : entityMap.keySet()) {
@@ -69,55 +70,71 @@ public class RESCALConverter {
 		for (String s : attributeMap.keySet()) {
 			invAttributeMap.put(attributeMap.get(s), s);
 		}
-		
-		
+
+
 		try {
 			File saveDir = new File(dir);
 			saveDir.mkdirs();
-			FileWriter f = null;
 			
-			for (URI k : relationMap.keySet()) {
-				f = new FileWriter(saveDir.getAbsolutePath() +"/"+ relationMap.get(k) + "-rows");
-				for (Integer idx : rowMap.get(relationMap.get(k))) {
-					f.write(idx + " ");
-				}
-				f.close();
-				
-				f = new FileWriter(saveDir.getAbsolutePath() +"/"+ relationMap.get(k) + "-cols");
-				for (Integer idx : colMap.get(relationMap.get(k))) {
-					f.write(idx + " ");
-				}
-				f.close();		
+			for(File file: saveDir.listFiles()) {
+				file.delete();
 			}
+				
+			FileWriter f = null;
 
 			f = new FileWriter(saveDir.getAbsolutePath() +"/"+ "entity-ids");
 			for (Integer i : invEntityMap.keySet()) {
 				f.write(invEntityMap.get(i) + "\n");
 			}
 			f.close();
-			
-			f = new FileWriter(saveDir.getAbsolutePath() +"/"+ "ext-matrix-rows");
-			for (Integer idx : attributeRow) {
-				f.write(idx + " ");
+
+
+			for (URI k : relationMap.keySet()) {
+				if (!rowMap.get(relationMap.get(k)).isEmpty()) {
+					f = new FileWriter(saveDir.getAbsolutePath() +"/"+ relationMap.get(k) + "-rows");
+					for (Integer idx : rowMap.get(relationMap.get(k))) {
+						f.write(idx + " ");
+					}
+					f.close();
+				}
+
+				if (!colMap.get(relationMap.get(k)).isEmpty()) {
+					f = new FileWriter(saveDir.getAbsolutePath() +"/"+ relationMap.get(k) + "-cols");
+					for (Integer idx : colMap.get(relationMap.get(k))) {
+						f.write(idx + " ");
+					}
+					f.close();	
+				}
 			}
-			f.close();
-			
-			f = new FileWriter(saveDir.getAbsolutePath() +"/"+ "ext-matrix-cols");
-			for (Integer idx : attributeCol) {
-				f.write(idx + " ");
+
+			if (!invAttributeMap.keySet().isEmpty()) {
+
+				f = new FileWriter(saveDir.getAbsolutePath() +"/"+ "words");
+				for (Integer i : invAttributeMap.keySet()) {
+					f.write(invAttributeMap.get(i) + "\n");
+				}
+				f.close();
+
+				f = new FileWriter(saveDir.getAbsolutePath() +"/"+ "ext-matrix-rows");
+				for (Integer idx : attributeRow) {
+					f.write(idx + " ");
+				}
+				f.close();
+
+				f = new FileWriter(saveDir.getAbsolutePath() +"/"+ "ext-matrix-cols");
+				for (Integer idx : attributeCol) {
+					f.write(idx + " ");
+				}
+				f.close();
 			}
-			f.close();
-			
-			f = new FileWriter(saveDir.getAbsolutePath() +"/"+ "words");
-			for (Integer i : invAttributeMap.keySet()) {
-				f.write(invAttributeMap.get(i) + "\n");
-			}
-			f.close();
-			
-			
+
+
+
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return invEntityMap;
 	}
 
 }
