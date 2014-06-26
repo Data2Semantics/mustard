@@ -205,7 +205,7 @@ public class RDFDTGraphIntersectionSubTreeKernel implements GraphKernel<SingleDT
 
 	protected double subTreeScore(DNode<String> currentVertex, double discountFactor) {
 		// Base case of recursion
-		if (currentVertex.outDegree() == 0) {
+		if (currentVertex.out().isEmpty()) {
 			return 1.0;
 		} else { // recursive case
 			double score = 0;
