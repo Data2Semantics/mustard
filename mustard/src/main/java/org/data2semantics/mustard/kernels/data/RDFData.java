@@ -10,7 +10,7 @@ public class RDFData implements GraphData {
 	private RDFDataSet dataset;
 	private List<Resource> instances;
 	private List<Statement> blackList;
-	
+
 	public RDFData(RDFDataSet dataset, List<Resource> instances,
 			List<Statement> blackList) {
 		super();
@@ -29,5 +29,11 @@ public class RDFData implements GraphData {
 
 	public List<Statement> getBlackList() {
 		return blackList;
+	}
+
+	public int numInstances() {
+		return instances.size();
 	}	
+
+
 }

@@ -21,4 +21,10 @@ public class GraphList<G> implements GraphData {
 	public List<G> getGraphs() {
 		return graphs;
 	}
+
+	public int numInstances() {
+		return graphs.size();
+	}
+
+
 }

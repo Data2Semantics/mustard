@@ -24,7 +24,7 @@ import org.openrdf.model.Value;
  * @author Gerben
  *
  */
-public class RDFIntersectionTreeEdgeVertexPathKernel implements GraphKernel<RDFData>, FeatureVectorKernel<RDFData> {
+public class RDFIntersectionGraphEdgeVertexPathKernel implements GraphKernel<RDFData>, FeatureVectorKernel<RDFData> {
 	private int depth;
 	private boolean inference;
 	protected Map<Value, Integer> uri2int;
@@ -37,18 +37,12 @@ public class RDFIntersectionTreeEdgeVertexPathKernel implements GraphKernel<RDFD
 	private String label;
 	protected int pathLen;
 	private Value rootValue;
-	private boolean probabilities;
-	
-	
-	public RDFIntersectionTreeEdgeVertexPathKernel(int depth, boolean inference, boolean normalize) {
-		this(depth, false, inference, normalize);
-	}
-	
-	public RDFIntersectionTreeEdgeVertexPathKernel(int depth, boolean probabilities, boolean inference, boolean normalize) {
+
+
+	public RDFIntersectionGraphEdgeVertexPathKernel(int depth, boolean inference, boolean normalize) {
 		this.normalize = normalize;
 		this.depth = depth;
 		this.inference = inference;
-		this.probabilities = probabilities;
 
 		uri2int = new HashMap<Value, Integer>();
 		path2index = new HashMap<List<Integer>, Integer>();
@@ -56,8 +50,8 @@ public class RDFIntersectionTreeEdgeVertexPathKernel implements GraphKernel<RDFD
 		blackList = new HashSet<Statement>();
 		instances = new HashSet<Resource>();
 		this.pathLen = 2;
-		
-		this.label = "IPT_" + depth + "_" + probabilities + "_" + inference + "_" + normalize;
+
+		this.label = "IGP_" + depth + "_" + inference + "_" + normalize;
 	}
 
 	public String getLabel() {
@@ -67,20 +61,20 @@ public class RDFIntersectionTreeEdgeVertexPathKernel implements GraphKernel<RDFD
 	public void setNormalize(boolean normalize) {
 		this.normalize = normalize;		
 	}
-	
+
 	public SparseVector[] computeFeatureVectors(RDFData data) {
 		this.dataset = data.getDataset();	
 		this.blackList.addAll(data.getBlackList());
 		this.instances.addAll(data.getInstances());
 
 		rootValue = dataset.createLiteral(KernelUtils.ROOTID);
-		
+
 		SparseVector[] ret = new SparseVector[data.getInstances().size()];
 
 		for (int i = 0; i < data.getInstances().size(); i++) {
 			ret[i] = processVertex(data.getInstances().get(i));
 		}
-		
+
 		for (SparseVector fv : ret) {
 			fv.setLastIndex(path2index.size());
 		}
@@ -89,41 +83,38 @@ public class RDFIntersectionTreeEdgeVertexPathKernel implements GraphKernel<RDFD
 		}
 		return ret;
 	}
-	
+
 	private SparseVector processVertex(Resource root) {
 		SparseVector features = new SparseVector();
-		processVertexRec(root, new ArrayList<Integer>(), features, depth, root);
-		if (probabilities) {
-			features = normalizeFeatures(features);
-		}
+		processVertexRec(root, createStart(root), features, depth);	
 		return features;
 	}
-	
-	private SparseVector normalizeFeatures(SparseVector features) {
-		SparseVector res = new SparseVector();
-		for (int key : features.getIndices()) {
-			List<Integer> path = index2path.get(key);
-			if (path.size()==0) {
-				res.setValue(key, 1.0);
-			} else {
-				List<Integer> parent = path.subList(0, path.size()-pathLen);
-				int parentKey = path2index.get(parent);
-				res.setValue(key, features.getValue(key)/features.getValue(parentKey));
+
+	private void processVertexRec(Value v1, List<Integer> path, SparseVector vec, int maxDepth) {
+
+		// Count		
+		for (int i = 0; i < path.size(); i = i + 1) {
+			List<Integer> sub = path.subList(i, path.size());
+			
+			Integer index = path2index.get(sub); // path with object at end
+			if (index == null) {
+				index = path2index.size()+1;
+				path2index.put(sub, index);
+				index2path.put(index, sub);
+			}
+			vec.setValue(index, vec.getValue(index)+1);
+
+			if (path.size() > 1) {
+				sub = path.subList(i, path.size()-1);				
+				index = path2index.get(sub); // path with predicate at end
+				if (index == null) {
+					index = path2index.size()+1;
+					path2index.put(sub, index);
+					index2path.put(index, sub);
+				}
+				vec.setValue(index, vec.getValue(index)+1);
 			}
 		}
-		return res;
-	}
-	
-	private void processVertexRec(Value v1, List<Integer> path, SparseVector vec, int maxDepth, Resource instance) {
-
-		// Count
-		Integer index = path2index.get(path);
-		if (index == null) {
-			index = path2index.size()+1;
-			path2index.put(path, index);
-			index2path.put(index, path);
-		}
-		vec.setValue(index, vec.getValue(index)+1);
 
 		// Bottom out
 		if (maxDepth > 0 && (v1 instanceof Resource)) {
@@ -133,40 +124,56 @@ public class RDFIntersectionTreeEdgeVertexPathKernel implements GraphKernel<RDFD
 
 			for (Statement stmt : result) {
 				if (!blackList.contains(stmt)) {
-					List<Integer> newPath = createPath(stmt, path, instance);
-					processVertexRec(stmt.getObject(), newPath, vec, maxDepth-1, instance);
+					List<Integer> newPath = createPath(stmt, path);
+					processVertexRec(stmt.getObject(), newPath, vec, maxDepth-1);
 				}
 			}		
 		}
 	}
-	
-	protected List<Integer> createPath(Statement stmt, List<Integer> path, Resource instance) {
-		
+
+	protected List<Integer> createPath(Statement stmt, List<Integer> path) {
+
 		Integer key = uri2int.get(stmt.getPredicate());
 		if (key == null) {
 			key = new Integer(uri2int.size());
 			uri2int.put(stmt.getPredicate(), key);
 		}
-		
+
 		// Set the instance nodes to one identical rootValue node
 		Value obj = stmt.getObject();
-		if (obj instanceof Resource && instances.contains((Resource) obj)) {
+		if (obj instanceof Resource && instances.contains(obj)) {
 			obj = rootValue;
 		}
-		
+
 		Integer key2 = uri2int.get(obj);
 		if (key2 == null) {
 			key2 = new Integer(uri2int.size());
 			uri2int.put(obj, key2);
 		}
-		
+
 		List<Integer> newPath = new ArrayList<Integer>(path);
 		newPath.add(key);
 		newPath.add(key2);
 
 		return newPath;
 	}
-	
+
+	protected List<Integer> createStart(Value subject) {
+		List<Integer> start = new ArrayList<Integer>();
+		Integer key = null;
+		if(instances.contains(subject)) {
+			subject = rootValue;
+		}
+		key = uri2int.get(subject);
+		if (key == null) {
+			key = new Integer(uri2int.size());
+			uri2int.put(subject, key);
+		}
+
+		start.add(key);
+		return start;
+	}
+
 	public double[][] compute(RDFData data) {		
 		double[][] kernel = KernelUtils.initMatrix(data.getInstances().size(), data.getInstances().size());
 		SparseVector[] featureVectors = computeFeatureVectors(data);

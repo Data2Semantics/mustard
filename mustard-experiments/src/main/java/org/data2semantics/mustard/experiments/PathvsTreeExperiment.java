@@ -10,6 +10,9 @@ import org.data2semantics.mustard.experiments.utils.ResultsTable;
 import org.data2semantics.mustard.experiments.utils.SimpleGraphKernelExperiment;
 import org.data2semantics.mustard.kernels.data.GraphList;
 import org.data2semantics.mustard.kernels.data.RDFData;
+import org.data2semantics.mustard.kernels.graphkernels.CombinedKernel;
+import org.data2semantics.mustard.kernels.graphkernels.FeatureVectorKernel;
+import org.data2semantics.mustard.kernels.graphkernels.GraphKernel;
 import org.data2semantics.mustard.kernels.graphkernels.RDFIntersectionGraphEdgeVertexPathKernel;
 import org.data2semantics.mustard.kernels.graphkernels.RDFIntersectionTreeEdgeVertexPathKernel;
 import org.data2semantics.mustard.kernels.graphkernels.RDFWLSubTreeKernel;
@@ -28,7 +31,7 @@ import org.openrdf.model.Statement;
 import org.openrdf.model.Value;
 import org.openrdf.rio.RDFFormat;
 
-public class RescalExperiment {
+public class PathvsTreeExperiment {
 	private static String dataFile = "datasets/aifb-fixed_complete.n3";
 
 
@@ -60,52 +63,29 @@ public class RescalExperiment {
 		ResultsTable resTable = new ResultsTable();
 		resTable.setDigits(3);
 
-		long[] seeds = {11,21,31,41,51}; //,61,71,81,91,101};
+		long[] seeds = {11,21,31,41,51,61,71,81,91,101};
 
 		double[] cs = {1, 10, 100, 1000, 10000, 100000};	
 
 		LibSVMParameters svmParms = new LibSVMParameters(LibSVMParameters.C_SVC, cs);
-		svmParms.setNumFolds(5);	
+		svmParms.setNumFolds(10);	
 
 		RDFData data = new RDFData(dataset, instances, blackList);
 
-		/*
-		int[] numLatent = {50}; //,6,7,8,9,10};
-
-		for (int num : numLatent) {
-
-			List<RESCALKernel> kernels = new ArrayList<RESCALKernel>();
-			//RESCALKernel kernel = new RESCALKernel("C:/Users/Gerben/Dropbox/D2S/python_stuff/Ext-RESCAL-master/test", 0.001, 10, true);
-
-			kernels.add(new RESCALKernel("C:/Users/Gerben/Dropbox/D2S/python_stuff/Ext-RESCAL-master/test",  0.0, num, 3, false, true));
-			kernels.add(new RESCALKernel("C:/Users/Gerben/Dropbox/D2S/python_stuff/Ext-RESCAL-master/test",  0.001, num, 3, false, true));
-			kernels.add(new RESCALKernel("C:/Users/Gerben/Dropbox/D2S/python_stuff/Ext-RESCAL-master/test",  0.01, num, 3, false, true));
-			kernels.add(new RESCALKernel("C:/Users/Gerben/Dropbox/D2S/python_stuff/Ext-RESCAL-master/test",  0.1, num, 3, false, true));
-			kernels.add(new RESCALKernel("C:/Users/Gerben/Dropbox/D2S/python_stuff/Ext-RESCAL-master/test",  1.0, num, 3, false, true));
-
-
-			//Collections.shuffle(target);
-			SimpleGraphKernelExperiment<RDFData> exp = new SimpleGraphKernelExperiment<RDFData>(kernels, data, target, svmParms, seeds, evalFuncs);
-
-			resTable.newRow("Latent factors: " + num);
-			exp.run();
-
-			for (Result res : exp.getResults()) {
-				resTable.addResult(res);
-			}
-		}
-		//*/
+		boolean inference = false;
 		
-		/*
+		
+		
+		///*
 		List<RDFWLSubTreeKernel> kernelsWL = new ArrayList<RDFWLSubTreeKernel>();	
-				
-		kernelsWL.add(new RDFWLSubTreeKernel(0, 3, true, false, true, true));
-		kernelsWL.add(new RDFWLSubTreeKernel(1, 3, true, false, true, true));
-		kernelsWL.add(new RDFWLSubTreeKernel(2, 3, true, false, true, true));
-		kernelsWL.add(new RDFWLSubTreeKernel(3, 3, true, false, true, true));
-		kernelsWL.add(new RDFWLSubTreeKernel(4, 3, true, false, true, true));
-		kernelsWL.add(new RDFWLSubTreeKernel(5, 3, true, false, true, true));
-		kernelsWL.add(new RDFWLSubTreeKernel(6, 3, true, false, true, true));
+				 
+		//kernelsWL.add(new RDFWLSubTreeKernel(0, 3, inference, false, false, true));
+		//kernelsWL.add(new RDFWLSubTreeKernel(1, 3, inference, false, false, true));
+		//kernelsWL.add(new RDFWLSubTreeKernel(2, 3, inference, false, false, true));
+		//kernelsWL.add(new RDFWLSubTreeKernel(3, 3, inference, false, false, true));
+		//kernelsWL.add(new RDFWLSubTreeKernel(4, 3, inference, false, false, true));
+		//kernelsWL.add(new RDFWLSubTreeKernel(5, 3, inference, false, false, true));
+		kernelsWL.add(new RDFWLSubTreeKernel(6, 3, inference, true, false, true));
 
 		//Collections.shuffle(target);
 		SimpleGraphKernelExperiment<RDFData> exp = new SimpleGraphKernelExperiment<RDFData>(kernelsWL, data, target, svmParms, seeds, evalFuncs);
@@ -120,13 +100,13 @@ public class RescalExperiment {
 
 		List<RDFIntersectionGraphEdgeVertexPathKernel> kernelsIT = new ArrayList<RDFIntersectionGraphEdgeVertexPathKernel>();	
 		
-		kernelsIT.add(new RDFIntersectionGraphEdgeVertexPathKernel(1, false, true));
-		kernelsIT.add(new RDFIntersectionGraphEdgeVertexPathKernel(2, false, true));
-		kernelsIT.add(new RDFIntersectionGraphEdgeVertexPathKernel(3, false, true));
+		//kernelsIT.add(new RDFIntersectionGraphEdgeVertexPathKernel(1, false, true));
+		//kernelsIT.add(new RDFIntersectionGraphEdgeVertexPathKernel(2, false, true));
+		kernelsIT.add(new RDFIntersectionGraphEdgeVertexPathKernel(3, inference, true));
 		
 		
 		//Collections.shuffle(target);
-		SimpleGraphKernelExperiment<RDFData> exp = new SimpleGraphKernelExperiment<RDFData>(kernelsIT, data, target, svmParms, seeds, evalFuncs);
+		exp = new SimpleGraphKernelExperiment<RDFData>(kernelsIT, data, target, svmParms, seeds, evalFuncs);
 
 		resTable.newRow("IT");
 		exp.run();
@@ -135,6 +115,24 @@ public class RescalExperiment {
 			resTable.addResult(res);
 		}
 
+		
+		List<GraphKernel<RDFData>> kernelsComb = new ArrayList<GraphKernel<RDFData>>();	
+		List<GraphKernel<RDFData>> kernelComb = new ArrayList<GraphKernel<RDFData>>();	
+		
+		kernelsComb.add(new RDFIntersectionGraphEdgeVertexPathKernel(3, inference, true));
+		kernelsComb.add(new RDFWLSubTreeKernel(6, 3, inference, true, false, true));
+		
+		kernelComb.add(new CombinedKernel<RDFData>(kernelsComb, true));
+		
+		//Collections.shuffle(target);
+		exp = new SimpleGraphKernelExperiment<RDFData>(kernelsComb, data, target, svmParms, seeds, evalFuncs);
+
+		resTable.newRow("Comb");
+		exp.run();
+
+		for (Result res : exp.getResults()) {
+			resTable.addResult(res);
+		}
 		
 
 		System.out.println(resTable);
