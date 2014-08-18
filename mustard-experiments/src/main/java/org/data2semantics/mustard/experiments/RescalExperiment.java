@@ -67,8 +67,8 @@ public class RescalExperiment {
 
 		RDFData data = new RDFData(dataset, instances, blackList);
 
-		/*
-		int[] numLatent = {50}; //,6,7,8,9,10};
+		///*
+		int[] numLatent = {10, 20, 50, 100, 200}; //,6,7,8,9,10};
 
 		for (int num : numLatent) {
 
@@ -76,10 +76,12 @@ public class RescalExperiment {
 			//RESCALKernel kernel = new RESCALKernel("C:/Users/Gerben/Dropbox/D2S/python_stuff/Ext-RESCAL-master/test", 0.001, 10, true);
 
 			kernels.add(new RESCALKernel("C:/Users/Gerben/Dropbox/D2S/python_stuff/Ext-RESCAL-master/test",  0.0, num, 3, false, true));
+			/*
 			kernels.add(new RESCALKernel("C:/Users/Gerben/Dropbox/D2S/python_stuff/Ext-RESCAL-master/test",  0.001, num, 3, false, true));
 			kernels.add(new RESCALKernel("C:/Users/Gerben/Dropbox/D2S/python_stuff/Ext-RESCAL-master/test",  0.01, num, 3, false, true));
 			kernels.add(new RESCALKernel("C:/Users/Gerben/Dropbox/D2S/python_stuff/Ext-RESCAL-master/test",  0.1, num, 3, false, true));
 			kernels.add(new RESCALKernel("C:/Users/Gerben/Dropbox/D2S/python_stuff/Ext-RESCAL-master/test",  1.0, num, 3, false, true));
+			*/
 
 
 			//Collections.shuffle(target);
@@ -96,9 +98,9 @@ public class RescalExperiment {
 		
 		List<RDFWLSubTreeKernel> kernelsWL = new ArrayList<RDFWLSubTreeKernel>();	
 				
-		kernelsWL.add(new RDFWLSubTreeKernel(0, 3, false, false, false, true));
-		kernelsWL.add(new RDFWLSubTreeKernel(2, 3, false, false, false, true));
-		kernelsWL.add(new RDFWLSubTreeKernel(4, 3, false, false, false, true));
+		//kernelsWL.add(new RDFWLSubTreeKernel(0, 3, false, false, false, true));
+		//kernelsWL.add(new RDFWLSubTreeKernel(2, 3, false, false, false, true));
+		//kernelsWL.add(new RDFWLSubTreeKernel(4, 3, false, false, false, true));
 		kernelsWL.add(new RDFWLSubTreeKernel(6, 3, false, false, false, true));
 
 		//Collections.shuffle(target);
