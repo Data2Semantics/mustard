@@ -14,6 +14,7 @@ import org.data2semantics.mustard.experiments.utils.SimpleGraphKernelExperiment;
 import org.data2semantics.mustard.kernels.data.GraphList;
 import org.data2semantics.mustard.kernels.data.RDFData;
 import org.data2semantics.mustard.kernels.graphkernels.graphlist.PathCountKernel;
+import org.data2semantics.mustard.kernels.graphkernels.graphlist.PathCountKernelMkII;
 import org.data2semantics.mustard.kernels.graphkernels.graphlist.WLSubTreeKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFIntersectionTreeEdgeVertexPathKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFWLSubTreeHubRemovalKernel;
@@ -73,7 +74,7 @@ public class AffiliationPredictionTestExperiment {
 		double[] cs = {1, 10, 100, 1000, 10000};	
 		long[] seeds = {11,21,31,41,51,61,71,81,91,101};
 		int[] iterations  = {0,1,2,3,4,5,6};
-		int[] pathDepths = {0,1,2,3,4,5,6};
+		int[] pathDepths = {0,1,2,3,4};
 		int[] depths = {1,2,3};
 		boolean[] inferencing = {false, true};
 		boolean[] reversal = {false, true};
@@ -112,6 +113,39 @@ public class AffiliationPredictionTestExperiment {
 
 				for (int dd : pathDepths) {
 					PathCountKernel kernel = new PathCountKernel(dd, true);			
+					kernelsMG.add(kernel);
+				}
+
+				resTable.newRow(kernelsMG.get(0).getLabel() + "_" + inf);
+				SimpleGraphKernelExperiment<GraphList<DTGraph<String,String>>> exp2 = new SimpleGraphKernelExperiment<GraphList<DTGraph<String,String>>>(kernelsMG, new GraphList<DTGraph<String,String>>(graphs), target, svmParms, seeds, evalFuncs);
+
+				System.out.println(kernelsMG.get(0).getLabel());
+				exp2.run();
+
+				for (Result res : exp2.getResults()) {
+					resTable.addResult(res);
+				}
+				System.out.println(resTable);
+			}
+
+		}
+		//*/
+		
+		///*
+		for (boolean inf : inferencing) {	
+			for (int d : depths) {
+
+				Set<Statement> st = RDFUtils.getStatements4Depth(dataset, instances, d, inf);
+				st.removeAll(blackList);
+				DTGraph<String,String> graph = RDFUtils.statements2Graph(st, RDFUtils.REGULAR_LITERALS);
+				List<DTNode<String,String>> instanceNodes = RDFUtils.findInstances(graph, instances);
+				graph = RDFUtils.simplifyInstanceNodeLabels(graph, instanceNodes);
+				List<DTGraph<String,String>> graphs = RDFUtils.getSubGraphs(graph, instanceNodes, d);
+
+				List<PathCountKernelMkII> kernelsMG = new ArrayList<PathCountKernelMkII>();
+
+				for (int dd : pathDepths) {
+					PathCountKernelMkII kernel = new PathCountKernelMkII(dd, true);			
 					kernelsMG.add(kernel);
 				}
 
