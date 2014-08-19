@@ -13,11 +13,12 @@ import org.data2semantics.mustard.experiments.utils.ResultsTable;
 import org.data2semantics.mustard.experiments.utils.SimpleGraphKernelExperiment;
 import org.data2semantics.mustard.kernels.data.GraphList;
 import org.data2semantics.mustard.kernels.data.RDFData;
-import org.data2semantics.mustard.kernels.graphkernels.RDFDTGraphWLSubTreeKernel;
-import org.data2semantics.mustard.kernels.graphkernels.RDFIntersectionTreeEdgeVertexPathKernel;
-import org.data2semantics.mustard.kernels.graphkernels.RDFWLSubTreeHubRemovalKernel;
-import org.data2semantics.mustard.kernels.graphkernels.RDFWLSubTreeKernel;
-import org.data2semantics.mustard.kernels.graphkernels.WLSubTreeKernel;
+import org.data2semantics.mustard.kernels.graphkernels.graphlist.PathCountKernel;
+import org.data2semantics.mustard.kernels.graphkernels.graphlist.WLSubTreeKernel;
+import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFIntersectionTreeEdgeVertexPathKernel;
+import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFWLSubTreeHubRemovalKernel;
+import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFWLSubTreeKernel;
+import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.RDFDTGraphWLSubTreeKernel;
 import org.data2semantics.mustard.learners.evaluation.Accuracy;
 import org.data2semantics.mustard.learners.evaluation.EvaluationFunction;
 import org.data2semantics.mustard.learners.evaluation.EvaluationUtils;
@@ -71,7 +72,8 @@ public class AffiliationPredictionTestExperiment {
 		// 0.0001,0.001,0.01,0.1,
 		double[] cs = {1, 10, 100, 1000, 10000};	
 		long[] seeds = {11,21,31,41,51,61,71,81,91,101};
-		int[] iterations  = {0,2,4,6};
+		int[] iterations  = {0,1,2,3,4,5,6};
+		int[] pathDepths = {0,1,2,3,4,5,6};
 		int[] depths = {1,2,3};
 		boolean[] inferencing = {false, true};
 		boolean[] reversal = {false, true};
@@ -94,6 +96,40 @@ public class AffiliationPredictionTestExperiment {
 		resTable.setDigits(3);
 
 		int[] nrHubs = {30};
+
+		///*
+		for (boolean inf : inferencing) {	
+			for (int d : depths) {
+
+				Set<Statement> st = RDFUtils.getStatements4Depth(dataset, instances, d, inf);
+				st.removeAll(blackList);
+				DTGraph<String,String> graph = RDFUtils.statements2Graph(st, RDFUtils.REGULAR_LITERALS);
+				List<DTNode<String,String>> instanceNodes = RDFUtils.findInstances(graph, instances);
+				graph = RDFUtils.simplifyInstanceNodeLabels(graph, instanceNodes);
+				List<DTGraph<String,String>> graphs = RDFUtils.getSubGraphs(graph, instanceNodes, d);
+
+				List<PathCountKernel> kernelsMG = new ArrayList<PathCountKernel>();
+
+				for (int dd : pathDepths) {
+					PathCountKernel kernel = new PathCountKernel(dd, true);			
+					kernelsMG.add(kernel);
+				}
+
+				resTable.newRow(kernelsMG.get(0).getLabel() + "_" + inf);
+				SimpleGraphKernelExperiment<GraphList<DTGraph<String,String>>> exp2 = new SimpleGraphKernelExperiment<GraphList<DTGraph<String,String>>>(kernelsMG, new GraphList<DTGraph<String,String>>(graphs), target, svmParms, seeds, evalFuncs);
+
+				System.out.println(kernelsMG.get(0).getLabel());
+				exp2.run();
+
+				for (Result res : exp2.getResults()) {
+					resTable.addResult(res);
+				}
+				System.out.println(resTable);
+			}
+
+		}
+		//*/
+
 
 		///*
 		for (boolean inf : inferencing) {	
@@ -202,7 +238,7 @@ public class AffiliationPredictionTestExperiment {
 
 
 
-		///*
+		/*
 		for (boolean inf : inferencing) {
 			for (boolean rev : reversal) {
 				for (int d : depths) {
@@ -227,12 +263,13 @@ public class AffiliationPredictionTestExperiment {
 		}
 		//*/
 
+		/*
 		for (boolean inf : inferencing) {
 			for (int d : depths) {
 
 				List<RDFIntersectionTreeEdgeVertexPathKernel> kernels2 = new ArrayList<RDFIntersectionTreeEdgeVertexPathKernel>();
 				kernels2.add(new RDFIntersectionTreeEdgeVertexPathKernel(d, inf, true));
-				
+
 				resTable.newRow(kernels2.get(0).getLabel());
 				SimpleGraphKernelExperiment<RDFData> exp2 = new SimpleGraphKernelExperiment<RDFData>(kernels2, new RDFData(dataset, instances, blackList), target, svmParms, seeds, evalFuncs);
 
@@ -245,6 +282,7 @@ public class AffiliationPredictionTestExperiment {
 				System.out.println(resTable);
 			}
 		}
+		//*/
 
 
 

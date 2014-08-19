@@ -1,4 +1,4 @@
-package org.data2semantics.mustard.kernels.graphkernels;
+package org.data2semantics.mustard.kernels.graphkernels.singledtgraph;
 
 import org.nodes.DNode;
 

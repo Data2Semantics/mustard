@@ -9,5 +9,5 @@ package org.data2semantics.mustard.kernels.data;
  *
  */
 public interface GraphData {
-
+	public int numInstances();
 }

@@ -3,7 +3,7 @@ package org.data2semantics.mustard.experiments.modules.kernels;
 import org.data2semantics.mustard.kernels.data.GraphData;
 import org.data2semantics.mustard.kernels.data.RDFData;
 import org.data2semantics.mustard.kernels.graphkernels.GraphKernel;
-import org.data2semantics.mustard.kernels.graphkernels.RDFWLSubTreeKernel;
+import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFWLSubTreeKernel;
 import org.data2semantics.mustard.learners.SparseVector;
 import org.data2semantics.platform.Global;
 import org.data2semantics.platform.annotation.In;

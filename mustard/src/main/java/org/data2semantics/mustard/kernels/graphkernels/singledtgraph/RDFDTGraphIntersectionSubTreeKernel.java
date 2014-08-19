@@ -1,4 +1,4 @@
-package org.data2semantics.mustard.kernels.graphkernels;
+package org.data2semantics.mustard.kernels.graphkernels.singledtgraph;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -12,6 +12,7 @@ import java.util.TreeSet;
 
 import org.data2semantics.mustard.kernels.KernelUtils;
 import org.data2semantics.mustard.kernels.data.SingleDTGraph;
+import org.data2semantics.mustard.kernels.graphkernels.GraphKernel;
 import org.nodes.DGraph;
 import org.nodes.DNode;
 import org.nodes.DTGraph;

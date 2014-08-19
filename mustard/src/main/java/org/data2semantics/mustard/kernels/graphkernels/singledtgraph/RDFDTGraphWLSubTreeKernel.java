@@ -1,4 +1,4 @@
-package org.data2semantics.mustard.kernels.graphkernels;
+package org.data2semantics.mustard.kernels.graphkernels.singledtgraph;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,6 +7,8 @@ import java.util.Map;
 
 import org.data2semantics.mustard.kernels.KernelUtils;
 import org.data2semantics.mustard.kernels.data.SingleDTGraph;
+import org.data2semantics.mustard.kernels.graphkernels.FeatureVectorKernel;
+import org.data2semantics.mustard.kernels.graphkernels.GraphKernel;
 import org.data2semantics.mustard.learners.SparseVector;
 import org.data2semantics.mustard.weisfeilerlehman.MapLabel;
 import org.data2semantics.mustard.weisfeilerlehman.WeisfeilerLehmanDTGraphMapLabelIterator;

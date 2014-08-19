@@ -1,7 +1,7 @@
 package org.data2semantics.mustard.experiments.modules.kernels;
 
 import org.data2semantics.mustard.kernels.data.RDFData;
-import org.data2semantics.mustard.kernels.graphkernels.RDFIntersectionSubTreeKernel;
+import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFIntersectionSubTreeKernel;
 import org.data2semantics.platform.annotation.In;
 import org.data2semantics.platform.annotation.Main;
 import org.data2semantics.platform.annotation.Module;

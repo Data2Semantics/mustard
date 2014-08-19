@@ -1,4 +1,4 @@
-package org.data2semantics.mustard.kernels.graphkernels;
+package org.data2semantics.mustard.kernels.graphkernels.rdfdata;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,6 +9,8 @@ import java.util.Set;
 
 import org.data2semantics.mustard.kernels.KernelUtils;
 import org.data2semantics.mustard.kernels.data.RDFData;
+import org.data2semantics.mustard.kernels.graphkernels.FeatureVectorKernel;
+import org.data2semantics.mustard.kernels.graphkernels.GraphKernel;
 import org.data2semantics.mustard.learners.SparseVector;
 import org.data2semantics.mustard.rdf.RDFDataSet;
 import org.openrdf.model.Resource;
@@ -32,6 +34,7 @@ public class RDFIntersectionTreeEdgeVertexPathKernel implements GraphKernel<RDFD
 	private Map<Integer, List<Integer>> index2path;
 	private RDFDataSet dataset;
 	private Set<Statement> blackList;
+	private Set<Resource> instances;
 	private boolean normalize;
 	private String label;
 	protected int pathLen;
@@ -40,7 +43,7 @@ public class RDFIntersectionTreeEdgeVertexPathKernel implements GraphKernel<RDFD
 	
 	
 	public RDFIntersectionTreeEdgeVertexPathKernel(int depth, boolean inference, boolean normalize) {
-		this(depth, true, inference, normalize);
+		this(depth, false, inference, normalize);
 	}
 	
 	public RDFIntersectionTreeEdgeVertexPathKernel(int depth, boolean probabilities, boolean inference, boolean normalize) {
@@ -53,6 +56,7 @@ public class RDFIntersectionTreeEdgeVertexPathKernel implements GraphKernel<RDFD
 		path2index = new HashMap<List<Integer>, Integer>();
 		index2path = new HashMap<Integer, List<Integer>>();
 		blackList = new HashSet<Statement>();
+		instances = new HashSet<Resource>();
 		this.pathLen = 2;
 		
 		this.label = "IPT_" + depth + "_" + probabilities + "_" + inference + "_" + normalize;
@@ -69,6 +73,7 @@ public class RDFIntersectionTreeEdgeVertexPathKernel implements GraphKernel<RDFD
 	public SparseVector[] computeFeatureVectors(RDFData data) {
 		this.dataset = data.getDataset();	
 		this.blackList.addAll(data.getBlackList());
+		this.instances.addAll(data.getInstances());
 
 		rootValue = dataset.createLiteral(KernelUtils.ROOTID);
 		
@@ -147,7 +152,7 @@ public class RDFIntersectionTreeEdgeVertexPathKernel implements GraphKernel<RDFD
 		
 		// Set the instance nodes to one identical rootValue node
 		Value obj = stmt.getObject();
-		if (obj.toString().equals(instance.toString())) {
+		if (obj instanceof Resource && instances.contains((Resource) obj)) {
 			obj = rootValue;
 		}
 		

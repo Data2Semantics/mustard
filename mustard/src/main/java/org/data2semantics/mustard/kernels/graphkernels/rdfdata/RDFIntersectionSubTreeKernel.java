@@ -1,4 +1,4 @@
-package org.data2semantics.mustard.kernels.graphkernels;
+package org.data2semantics.mustard.kernels.graphkernels.rdfdata;
 
 
 import java.util.ArrayList;
@@ -7,6 +7,8 @@ import java.util.Set;
 
 import org.data2semantics.mustard.kernels.data.RDFData;
 import org.data2semantics.mustard.kernels.data.SingleDTGraph;
+import org.data2semantics.mustard.kernels.graphkernels.GraphKernel;
+import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.RDFDTGraphIntersectionSubTreeKernel;
 import org.data2semantics.mustard.rdf.RDFDataSet;
 import org.data2semantics.mustard.rdf.RDFUtils;
 import org.nodes.DTGraph;
@@ -14,21 +16,21 @@ import org.nodes.DTNode;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 
-public class RDFIntersectionPartialSubTreeKernel implements GraphKernel<RDFData> {
+public class RDFIntersectionSubTreeKernel implements GraphKernel<RDFData> {
 	private int depth;
 	private String label;
 	private boolean inference;
-	private RDFDTGraphIntersectionPartialSubTreeKernel kernel;
+	private RDFDTGraphIntersectionSubTreeKernel kernel;
 	private DTGraph<String,String> graph;
 	private List<DTNode<String,String>> instanceNodes;
 
-	public RDFIntersectionPartialSubTreeKernel(int depth, double discountFactor, boolean inference, boolean normalize) {
+	public RDFIntersectionSubTreeKernel(int depth, double discountFactor, boolean inference, boolean normalize) {
 		super();
-		this.label = "RDF_IPST_Kernel_" + depth + "_" + discountFactor + "_" + inference + "_" + normalize;
+		this.label = "RDF_IST_Kernel_" + depth + "_" + discountFactor + "_" + inference + "_" + normalize;
 		this.depth = depth;
 		this.inference = inference;
 
-		kernel = new RDFDTGraphIntersectionPartialSubTreeKernel(depth, discountFactor, normalize);
+		kernel = new RDFDTGraphIntersectionSubTreeKernel(depth, discountFactor, normalize);
 	}
 
 	public String getLabel() {
@@ -49,9 +51,8 @@ public class RDFIntersectionPartialSubTreeKernel implements GraphKernel<RDFData>
 		stmts.removeAll(blackList);
 		instanceNodes = new ArrayList<DTNode<String,String>>();
 		graph = RDFUtils.statements2Graph(stmts, RDFUtils.REGULAR_LITERALS, instances, instanceNodes, false);
-		
-//		graph = RDFUtils.statements2Graph(stmts, RDFUtils.REGULAR_LITERALS);
-//		instanceNodes = RDFUtils.findInstances(graph, instances);
+	
+		//instanceNodes = RDFUtils.findInstances(graph, instances);
 		//graph = RDFUtils.simplifyInstanceNodeLabels(graph, instanceNodes);
 	}	
 }

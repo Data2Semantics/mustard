@@ -15,7 +15,7 @@ import org.nodes.DTNode;
 public class SingleDTGraph implements GraphData {
 	private DTGraph<String,String> graph;
 	private List<DTNode<String,String>> instances;
-	
+
 	public SingleDTGraph(DTGraph<String, String> graph,
 			List<DTNode<String, String>> instances) {
 		super();
@@ -30,4 +30,10 @@ public class SingleDTGraph implements GraphData {
 	public List<DTNode<String, String>> getInstances() {
 		return instances;
 	}
+
+	public int numInstances() {
+		return instances.size();
+	}
+
+
 }

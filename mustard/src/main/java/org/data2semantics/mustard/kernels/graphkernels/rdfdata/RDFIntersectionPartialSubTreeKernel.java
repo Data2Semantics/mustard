@@ -1,43 +1,36 @@
-package org.data2semantics.mustard.kernels.graphkernels;
+package org.data2semantics.mustard.kernels.graphkernels.rdfdata;
+
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.data2semantics.mustard.kernels.data.RDFData;
 import org.data2semantics.mustard.kernels.data.SingleDTGraph;
-import org.data2semantics.mustard.learners.SparseVector;
+import org.data2semantics.mustard.kernels.graphkernels.GraphKernel;
+import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.RDFDTGraphIntersectionPartialSubTreeKernel;
 import org.data2semantics.mustard.rdf.RDFDataSet;
 import org.data2semantics.mustard.rdf.RDFUtils;
 import org.nodes.DTGraph;
-import org.nodes.DTLink;
 import org.nodes.DTNode;
-import org.nodes.MapDTGraph;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 
-public class RDFWLSubTreeKernel implements GraphKernel<RDFData>, FeatureVectorKernel<RDFData> {
+public class RDFIntersectionPartialSubTreeKernel implements GraphKernel<RDFData> {
 	private int depth;
 	private String label;
 	private boolean inference;
-	private RDFDTGraphWLSubTreeKernel kernel;
+	private RDFDTGraphIntersectionPartialSubTreeKernel kernel;
 	private DTGraph<String,String> graph;
 	private List<DTNode<String,String>> instanceNodes;
 
-	public RDFWLSubTreeKernel(int iterations, int depth, boolean inference, boolean normalize) {
-		this(iterations, depth, inference, false, false, normalize);
-	}
-
-	public RDFWLSubTreeKernel(int iterations, int depth, boolean inference, boolean reverse, boolean iterationWeighting, boolean normalize) {
+	public RDFIntersectionPartialSubTreeKernel(int depth, double discountFactor, boolean inference, boolean normalize) {
 		super();
-		this.label = "RDF_WL_Kernel_" + depth + "_" + iterations + "_" + inference + "_" + reverse + "_" + iterationWeighting + "_" + normalize;
+		this.label = "RDF_IPST_Kernel_" + depth + "_" + discountFactor + "_" + inference + "_" + normalize;
 		this.depth = depth;
 		this.inference = inference;
 
-		kernel = new RDFDTGraphWLSubTreeKernel(iterations, depth, reverse, iterationWeighting, normalize);
+		kernel = new RDFDTGraphIntersectionPartialSubTreeKernel(depth, discountFactor, normalize);
 	}
 
 	public String getLabel() {
@@ -46,11 +39,6 @@ public class RDFWLSubTreeKernel implements GraphKernel<RDFData>, FeatureVectorKe
 
 	public void setNormalize(boolean normalize) {
 		kernel.setNormalize(normalize);
-	}
-
-	public SparseVector[] computeFeatureVectors(RDFData data) {
-		init(data.getDataset(), data.getInstances(), data.getBlackList());
-		return kernel.computeFeatureVectors(new SingleDTGraph(graph, instanceNodes));
 	}
 
 	public double[][] compute(RDFData data) {
@@ -62,8 +50,10 @@ public class RDFWLSubTreeKernel implements GraphKernel<RDFData>, FeatureVectorKe
 		Set<Statement> stmts = RDFUtils.getStatements4Depth(dataset, instances, depth, inference);
 		stmts.removeAll(blackList);
 		instanceNodes = new ArrayList<DTNode<String,String>>();
-		graph = RDFUtils.statements2Graph(stmts, RDFUtils.REGULAR_LITERALS, instances, instanceNodes, true);
-		//instanceNodes = RDFUtils.findInstances(graph, instances);
+		graph = RDFUtils.statements2Graph(stmts, RDFUtils.REGULAR_LITERALS, instances, instanceNodes, false);
+		
+//		graph = RDFUtils.statements2Graph(stmts, RDFUtils.REGULAR_LITERALS);
+//		instanceNodes = RDFUtils.findInstances(graph, instances);
 		//graph = RDFUtils.simplifyInstanceNodeLabels(graph, instanceNodes);
 	}	
 }
