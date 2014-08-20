@@ -73,11 +73,11 @@ public class AffiliationPredictionTestExperiment {
 		// 0.0001,0.001,0.01,0.1,
 		double[] cs = {1, 10, 100, 1000, 10000};	
 		long[] seeds = {11,21,31,41,51,61,71,81,91,101};
-		int[] iterations  = {0,1,2,3,4,5,6};
-		int[] pathDepths = {0,1,2,3,4};
+		int[] iterations  = {6};
+		int[] pathDepths = {6};
 		int[] depths = {1,2,3};
-		boolean[] inferencing = {false, true};
-		boolean[] reversal = {false, true};
+		boolean[] inferencing = {false}; //, true};
+		boolean[] reversal = {false}; //, true};
 
 
 		LibSVMParameters svmParms = new LibSVMParameters(LibSVMParameters.C_SVC, cs);
@@ -131,7 +131,7 @@ public class AffiliationPredictionTestExperiment {
 		}
 		//*/
 		
-		///*
+		/*
 		for (boolean inf : inferencing) {	
 			for (int d : depths) {
 
