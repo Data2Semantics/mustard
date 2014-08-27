@@ -26,6 +26,7 @@ public class PathCountKernelMkII implements GraphKernel<GraphList<DTGraph<String
 	protected String label;
 	protected boolean normalize;
 	private Map<String, Integer> pathDict;
+	private Map<String, Integer> labelDict;
 
 
 	/**
@@ -53,7 +54,9 @@ public class PathCountKernelMkII implements GraphKernel<GraphList<DTGraph<String
 	}
 
 	public SparseVector[] computeFeatureVectors(GraphList<DTGraph<String,String>> data) {
-		pathDict = new HashMap<String,Integer>();
+		pathDict  = new HashMap<String,Integer>();
+		labelDict = new HashMap<String,Integer>();
+		
 		List<DTGraph<PathStringLabel,PathStringLabel>> graphs = copyGraphs(data.getGraphs());
 
 		// Initialize and compute the featureVectors
@@ -175,18 +178,18 @@ public class PathCountKernelMkII implements GraphKernel<GraphList<DTGraph<String
 		for (DTGraph<String,String> graph : oldGraphs) {
 			MapDTGraph<PathStringLabel,PathStringLabel> newGraph = new MapDTGraph<PathStringLabel,PathStringLabel>();
 			for (DTNode<String,String> vertex : graph.nodes()) {
-				if (!pathDict.containsKey(vertex.label())) {
-					pathDict.put(vertex.label(), pathDict.size());
+				if (!labelDict.containsKey(vertex.label())) {
+					labelDict.put(vertex.label(), labelDict.size());
 				}
-				String lab = Integer.toString(pathDict.get(vertex.label()));
+				String lab = Integer.toString(labelDict.get(vertex.label()));
 
 				newGraph.add(new PathStringLabel(lab));
 			}
 			for (DTLink<String,String> edge : graph.links()) {
-				if (!pathDict.containsKey(edge.tag())) {
-					pathDict.put(edge.tag(), pathDict.size());
+				if (!labelDict.containsKey(edge.tag())) {
+					labelDict.put(edge.tag(), labelDict.size());
 				}
-				String lab = Integer.toString(pathDict.get(edge.tag()));
+				String lab = Integer.toString(labelDict.get(edge.tag()));
 
 				newGraph.nodes().get(edge.from().index()).connect(newGraph.nodes().get(edge.to().index()), new PathStringLabel(lab)); // ?
 			}

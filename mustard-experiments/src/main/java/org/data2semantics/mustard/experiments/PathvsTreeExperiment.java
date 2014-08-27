@@ -14,7 +14,7 @@ import org.data2semantics.mustard.kernels.graphkernels.CombinedKernel;
 import org.data2semantics.mustard.kernels.graphkernels.FeatureVectorKernel;
 import org.data2semantics.mustard.kernels.graphkernels.GraphKernel;
 import org.data2semantics.mustard.kernels.graphkernels.graphlist.WLSubTreeKernel;
-import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFIntersectionGraphEdgeVertexPathKernel;
+import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFPathCountKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFIntersectionTreeEdgeVertexPathKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFWLSubTreeKernel;
 import org.data2semantics.mustard.learners.evaluation.Accuracy;
@@ -65,10 +65,16 @@ public class PathvsTreeExperiment {
 
 		long[] seeds = {11,21,31,41,51,61,71,81,91,101};
 
-		double[] cs = {1, 10, 100, 1000, 10000, 100000};	
+		double[] cs = {1, 10, 100, 1000, 10000};	
 
 		LibSVMParameters svmParms = new LibSVMParameters(LibSVMParameters.C_SVC, cs);
-		svmParms.setNumFolds(10);	
+		svmParms.setNumFolds(10);
+		
+		/*
+		svmParms.setWeightLabels(EvaluationUtils.computeWeightLabels(target));
+		svmParms.setWeights(EvaluationUtils.computeWeights(target));
+		//*/
+		
 
 		RDFData data = new RDFData(dataset, instances, blackList);
 
@@ -79,13 +85,13 @@ public class PathvsTreeExperiment {
 		///*
 		List<RDFWLSubTreeKernel> kernelsWL = new ArrayList<RDFWLSubTreeKernel>();	
 				 
-		//kernelsWL.add(new RDFWLSubTreeKernel(0, 3, inference, false, false, true));
-		//kernelsWL.add(new RDFWLSubTreeKernel(1, 3, inference, false, false, true));
-		//kernelsWL.add(new RDFWLSubTreeKernel(2, 3, inference, false, false, true));
-		//kernelsWL.add(new RDFWLSubTreeKernel(3, 3, inference, false, false, true));
-		//kernelsWL.add(new RDFWLSubTreeKernel(4, 3, inference, false, false, true));
-		//kernelsWL.add(new RDFWLSubTreeKernel(5, 3, inference, false, false, true));
-		kernelsWL.add(new RDFWLSubTreeKernel(6, 3, inference, true, false, true));
+		kernelsWL.add(new RDFWLSubTreeKernel(0, 3, inference, false, true, true));
+		kernelsWL.add(new RDFWLSubTreeKernel(1, 3, inference, false, true, true));
+		kernelsWL.add(new RDFWLSubTreeKernel(2, 3, inference, false, true, true));
+		kernelsWL.add(new RDFWLSubTreeKernel(3, 3, inference, false, true, true));
+		kernelsWL.add(new RDFWLSubTreeKernel(4, 3, inference, false, true, true));
+		kernelsWL.add(new RDFWLSubTreeKernel(5, 3, inference, false, true, true));
+		kernelsWL.add(new RDFWLSubTreeKernel(6, 3, inference, false, true, true));
 
 		//Collections.shuffle(target);
 		SimpleGraphKernelExperiment<RDFData> exp = new SimpleGraphKernelExperiment<RDFData>(kernelsWL, data, target, svmParms, seeds, evalFuncs);
@@ -98,11 +104,15 @@ public class PathvsTreeExperiment {
 		}
 		//*/
 
-		List<RDFIntersectionGraphEdgeVertexPathKernel> kernelsIT = new ArrayList<RDFIntersectionGraphEdgeVertexPathKernel>();	
+		List<RDFPathCountKernel> kernelsIT = new ArrayList<RDFPathCountKernel>();	
 		
-		//kernelsIT.add(new RDFIntersectionGraphEdgeVertexPathKernel(1, false, true));
-		//kernelsIT.add(new RDFIntersectionGraphEdgeVertexPathKernel(2, false, true));
-		kernelsIT.add(new RDFIntersectionGraphEdgeVertexPathKernel(3, inference, true));
+		kernelsIT.add(new RDFPathCountKernel(0, 3, inference, true));
+		kernelsIT.add(new RDFPathCountKernel(1, 3, inference, true));
+		kernelsIT.add(new RDFPathCountKernel(2, 3, inference, true));
+		kernelsIT.add(new RDFPathCountKernel(3, 3, inference, true));
+		kernelsIT.add(new RDFPathCountKernel(4, 3, inference, true));		
+		kernelsIT.add(new RDFPathCountKernel(5, 3, inference, true));
+		kernelsIT.add(new RDFPathCountKernel(6, 3, inference, true));
 		
 		
 		//Collections.shuffle(target);
@@ -115,17 +125,17 @@ public class PathvsTreeExperiment {
 			resTable.addResult(res);
 		}
 
-		
+		/*
 		List<GraphKernel<RDFData>> kernelsComb = new ArrayList<GraphKernel<RDFData>>();	
 		List<GraphKernel<RDFData>> kernelComb = new ArrayList<GraphKernel<RDFData>>();	
 		
-		kernelsComb.add(new RDFIntersectionGraphEdgeVertexPathKernel(3, inference, true));
+		kernelsComb.add(new RDFPathCountKernel(6, 3, inference, true));
 		kernelsComb.add(new RDFWLSubTreeKernel(6, 3, inference, true, false, true));
 		
 		kernelComb.add(new CombinedKernel<RDFData>(kernelsComb, true));
 		
 		//Collections.shuffle(target);
-		exp = new SimpleGraphKernelExperiment<RDFData>(kernelsComb, data, target, svmParms, seeds, evalFuncs);
+		exp = new SimpleGraphKernelExperiment<RDFData>(kernelComb, data, target, svmParms, seeds, evalFuncs);
 
 		resTable.newRow("Comb");
 		exp.run();
@@ -133,6 +143,7 @@ public class PathvsTreeExperiment {
 		for (Result res : exp.getResults()) {
 			resTable.addResult(res);
 		}
+		//*/
 		
 
 		System.out.println(resTable);
