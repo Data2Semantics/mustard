@@ -98,17 +98,17 @@ public class RescalExperiment {
 		}
 		//*/
 		
-		/*
+		///*
 		List<RDFWLSubTreeKernel> kernelsWL = new ArrayList<RDFWLSubTreeKernel>();	
 				
 
-		kernelsWL.add(new RDFWLSubTreeKernel(0, 3, true, false, true, true));
-		kernelsWL.add(new RDFWLSubTreeKernel(1, 3, true, false, true, true));
-		kernelsWL.add(new RDFWLSubTreeKernel(2, 3, true, false, true, true));
-		kernelsWL.add(new RDFWLSubTreeKernel(3, 3, true, false, true, true));
-		kernelsWL.add(new RDFWLSubTreeKernel(4, 3, true, false, true, true));
-		kernelsWL.add(new RDFWLSubTreeKernel(5, 3, true, false, true, true));
-		kernelsWL.add(new RDFWLSubTreeKernel(6, 3, true, false, true, true));
+		kernelsWL.add(new RDFWLSubTreeKernel(0, 3, false, false, true, true));
+		kernelsWL.add(new RDFWLSubTreeKernel(1, 3, false, false, true, true));
+		kernelsWL.add(new RDFWLSubTreeKernel(2, 3, false, false, true, true));
+		kernelsWL.add(new RDFWLSubTreeKernel(3, 3, false, false, true, true));
+		kernelsWL.add(new RDFWLSubTreeKernel(4, 3, false, false, true, true));
+		kernelsWL.add(new RDFWLSubTreeKernel(5, 3, false, false, true, true));
+		kernelsWL.add(new RDFWLSubTreeKernel(6, 3, false, false, true, true));
 
 
 		//Collections.shuffle(target);
@@ -122,6 +122,7 @@ public class RescalExperiment {
 		}
 		//*/
 
+		/*
 		List<RDFIntersectionGraphEdgeVertexPathKernel> kernelsIT = new ArrayList<RDFIntersectionGraphEdgeVertexPathKernel>();	
 		
 		kernelsIT.add(new RDFIntersectionGraphEdgeVertexPathKernel(1, false, true));
@@ -138,7 +139,7 @@ public class RescalExperiment {
 		for (Result res : exp.getResults()) {
 			resTable.addResult(res);
 		}
-
+		//*/
 		
 
 		System.out.println(resTable);

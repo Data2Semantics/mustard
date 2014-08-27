@@ -73,9 +73,9 @@ public class AffiliationPredictionTestExperiment {
 		// 0.0001,0.001,0.01,0.1,
 		double[] cs = {1, 10, 100, 1000, 10000};	
 		long[] seeds = {11,21,31,41,51,61,71,81,91,101};
-		int[] iterations  = {4};
-		int[] pathDepths = {4};
-		int[] depths = {1,2,3};
+		int[] iterations  = {0};
+		int[] pathDepths = {3};
+		int[] depths = {3};
 		boolean[] inferencing = {false};
 		boolean[] reversal = {false};
 
@@ -98,7 +98,7 @@ public class AffiliationPredictionTestExperiment {
 
 		int[] nrHubs = {30};
 
-		///*
+		/*
 		for (boolean inf : inferencing) {	
 			for (int d : depths) {
 
@@ -165,7 +165,7 @@ public class AffiliationPredictionTestExperiment {
 		//*/
 
 
-		///*
+		/*
 		for (boolean inf : inferencing) {	
 			for (boolean rev : reversal) {	
 				for (int d : depths) {

@@ -29,6 +29,7 @@ public class PathCountKernel implements GraphKernel<GraphList<DTGraph<String,Str
 	protected String label;
 	protected boolean normalize;
 	private Map<String, Integer> pathDict;
+	private Map<String, Integer> labelDict;
 
 
 	/**
@@ -56,7 +57,8 @@ public class PathCountKernel implements GraphKernel<GraphList<DTGraph<String,Str
 	}
 
 	public SparseVector[] computeFeatureVectors(GraphList<DTGraph<String,String>> data) {
-		pathDict = new HashMap<String,Integer>();
+		pathDict  = new HashMap<String,Integer>();
+		labelDict = new HashMap<String,Integer>();
 		List<DTGraph<String,String>> graphs = copyGraphs(data.getGraphs());
 
 		// Initialize and compute the featureVectors
@@ -110,7 +112,7 @@ public class PathCountKernel implements GraphKernel<GraphList<DTGraph<String,Str
 
 	private void countPathRec(SparseVector fv, DTNode<String,String> vertex, String path, int depth) {
 		// Count path
-		path = path + vertex.label();
+		path = path + "_" + vertex.label();
 
 		if (!pathDict.containsKey(path)) {
 			pathDict.put(path, pathDict.size());
@@ -119,14 +121,14 @@ public class PathCountKernel implements GraphKernel<GraphList<DTGraph<String,Str
 
 		if (depth > 0) {
 			for (DTLink<String,String> edge : vertex.linksOut()) {
-				countPathRec(fv, edge, path + "_", depth-1);
+				countPathRec(fv, edge, path, depth-1);
 			}
 		}	
 	}
 
 	private void countPathRec(SparseVector fv, DTLink<String,String> edge, String path, int depth) {
 		// Count path
-		path = path + edge.tag();
+		path = path + "_" + edge.tag();
 
 		if (!pathDict.containsKey(path)) {
 			pathDict.put(path, pathDict.size());
@@ -134,7 +136,7 @@ public class PathCountKernel implements GraphKernel<GraphList<DTGraph<String,Str
 		fv.setValue(pathDict.get(path), fv.getValue(pathDict.get(path)) + 1);
 
 		if (depth > 0) {
-			countPathRec(fv, edge.to(), path + "_", depth-1);
+			countPathRec(fv, edge.to(), path, depth-1);
 		}	
 	}
 
@@ -146,18 +148,18 @@ public class PathCountKernel implements GraphKernel<GraphList<DTGraph<String,Str
 		for (DTGraph<String,String> graph : oldGraphs) {
 			MapDTGraph<String,String> newGraph = new MapDTGraph<String,String>();
 			for (DTNode<String,String> vertex : graph.nodes()) {
-				if (!pathDict.containsKey(vertex.label())) {
-					pathDict.put(vertex.label(), pathDict.size());
+				if (!labelDict.containsKey(vertex.label())) {
+					labelDict.put(vertex.label(), labelDict.size());
 				}
-				String lab = Integer.toString(pathDict.get(vertex.label()));
+				String lab = Integer.toString(labelDict.get(vertex.label()));
 
 				newGraph.add(lab);
 			}
 			for (DTLink<String,String> edge : graph.links()) {
-				if (!pathDict.containsKey(edge.tag())) {
-					pathDict.put(edge.tag(), pathDict.size());
+				if (!labelDict.containsKey(edge.tag())) {
+					labelDict.put(edge.tag(), labelDict.size());
 				}
-				String lab = Integer.toString(pathDict.get(edge.tag()));
+				String lab = Integer.toString(labelDict.get(edge.tag()));
 
 				newGraph.nodes().get(edge.from().index()).connect(newGraph.nodes().get(edge.to().index()), lab); // ?
 			}
