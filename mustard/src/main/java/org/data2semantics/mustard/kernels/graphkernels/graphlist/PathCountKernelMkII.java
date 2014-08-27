@@ -37,7 +37,7 @@ public class PathCountKernelMkII implements GraphKernel<GraphList<DTGraph<String
 	public PathCountKernelMkII(int depth, boolean normalize) {
 		this.normalize = normalize;
 		this.depth = depth;
-		this.label = "PathCountKernel, depth=" + depth + "_" + normalize;
+		this.label = "PathCountKernel MkII, depth=" + depth + "_" + normalize;
 	}	
 
 	public PathCountKernelMkII(int iterations) {
@@ -63,22 +63,28 @@ public class PathCountKernelMkII implements GraphKernel<GraphList<DTGraph<String
 
 			// initial count
 			// Count paths
+			
+			Integer index = null;
 			for (DTNode<PathStringLabel,PathStringLabel> v : graphs.get(i).nodes()) {
 				for (String path : v.label().getPaths()) {
-					if (!pathDict.containsKey(path)) {
-						pathDict.put(path, pathDict.size());
+					index = pathDict.get(path);
+					if (index == null) {
+						index = pathDict.size();
+						pathDict.put(path, index);
 					}
-					featureVectors[i].setValue(pathDict.get(path), featureVectors[i].getValue(pathDict.get(path)) + 1);
+					featureVectors[i].setValue(index, featureVectors[i].getValue(index) + 1);
 				}
 
 			}
 
 			for (DTLink<PathStringLabel,PathStringLabel> e : graphs.get(i).links()) {	
 				for (String path : e.tag().getPaths()) {
-					if (!pathDict.containsKey(path)) {
-						pathDict.put(path, pathDict.size());
+					index = pathDict.get(path);
+					if (index == null) {
+						index = pathDict.size();
+						pathDict.put(path, index);
 					}
-					featureVectors[i].setValue(pathDict.get(path), featureVectors[i].getValue(pathDict.get(path)) + 1);
+					featureVectors[i].setValue(index, featureVectors[i].getValue(index) + 1);
 				}
 			}
 			
@@ -102,10 +108,12 @@ public class PathCountKernelMkII implements GraphKernel<GraphList<DTGraph<String
 					v.label().setNewPaths();
 
 					for (String path : v.label().getPaths()) {
-						if (!pathDict.containsKey(path)) {
-							pathDict.put(path, pathDict.size());
+						index = pathDict.get(path);
+						if (index == null) {
+							index = pathDict.size();
+							pathDict.put(path, index);
 						}
-						featureVectors[i].setValue(pathDict.get(path), featureVectors[i].getValue(pathDict.get(path)) + 1);
+						featureVectors[i].setValue(index, featureVectors[i].getValue(index) + 1);
 					}
 
 				}
@@ -114,10 +122,12 @@ public class PathCountKernelMkII implements GraphKernel<GraphList<DTGraph<String
 					e.tag().setNewPaths();	
 
 					for (String path : e.tag().getPaths()) {
-						if (!pathDict.containsKey(path)) {
-							pathDict.put(path, pathDict.size());
+						index = pathDict.get(path);
+						if (index == null) {
+							index = pathDict.size();
+							pathDict.put(path, index);
 						}
-						featureVectors[i].setValue(pathDict.get(path), featureVectors[i].getValue(pathDict.get(path)) + 1);
+						featureVectors[i].setValue(index, featureVectors[i].getValue(index) + 1);
 					}
 				}
 			}
@@ -194,7 +204,7 @@ public class PathCountKernelMkII implements GraphKernel<GraphList<DTGraph<String
 		public PathStringLabel(String label) {
 			this.label = label;
 			paths = new ArrayList<String>();
-			paths.add(label);
+			paths.add(new String(label));
 			newPaths = new ArrayList<String>();
 		}
 
@@ -204,15 +214,14 @@ public class PathCountKernelMkII implements GraphKernel<GraphList<DTGraph<String
 
 		public void addPaths(List<String> paths2) {
 			for (String path : paths2) {
-				newPaths.add(label + "_" + path);	
-			}
+				newPaths.add(label + "_" + path);			}
 		}
 
 		public void setNewPaths() {
-			if (!newPaths.isEmpty()) {
+			//if (!newPaths.isEmpty()) {
 				paths = newPaths;
 				newPaths = new ArrayList<String>();
-			}					
+			//}					
 		}
 	}
 }
