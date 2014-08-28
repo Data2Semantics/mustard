@@ -102,7 +102,7 @@ public class RDFDTGraphRootPathCountKernel implements GraphKernel<SingleDTGraph>
 		}	
 
 		// Count path
-		path = vertex.label() + "_" + path;
+		path = vertex.label() + path;
 
 		if (!pathDict.containsKey(path)) {
 			pathDict.put(path, pathDict.size());
@@ -119,7 +119,7 @@ public class RDFDTGraphRootPathCountKernel implements GraphKernel<SingleDTGraph>
 			path = countPathRec(fv, edge.to(), depth-1);
 		}	
 		// Count path
-		path = edge.tag() + "_" + path;
+		path = edge.tag() + path;
 
 		if (!pathDict.containsKey(path)) {
 			pathDict.put(path, pathDict.size());
@@ -132,7 +132,7 @@ public class RDFDTGraphRootPathCountKernel implements GraphKernel<SingleDTGraph>
 
 	private void countPathRec(SparseVector fv, DTNode<String,String> vertex, String path, int depth) {
 		// Count path
-		path = path + "_" + vertex.label();
+		path = path + vertex.label();
 
 		if (!pathDict.containsKey(path)) {
 			pathDict.put(path, pathDict.size());
@@ -149,7 +149,7 @@ public class RDFDTGraphRootPathCountKernel implements GraphKernel<SingleDTGraph>
 
 	private void countPathRec(SparseVector fv, DTLink<String,String> edge, String path, int depth) {
 		// Count path
-		path = path + "_" + edge.tag();
+		path = path + edge.tag();
 		
 		if (!pathDict.containsKey(path)) {
 			pathDict.put(path, pathDict.size());
@@ -178,7 +178,7 @@ public class RDFDTGraphRootPathCountKernel implements GraphKernel<SingleDTGraph>
 			if (!labelDict.containsKey(vertex.label())) {
 				labelDict.put(vertex.label(), labelDict.size());
 			}
-			String lab = Integer.toString(labelDict.get(vertex.label()));
+			String lab = "_" + Integer.toString(labelDict.get(vertex.label()));
 
 			if (instanceIndexMap.containsKey(vertex)) {
 				instanceVertices.set(instanceIndexMap.get(vertex), newGraph.add(lab));
@@ -192,7 +192,7 @@ public class RDFDTGraphRootPathCountKernel implements GraphKernel<SingleDTGraph>
 			if (!labelDict.containsKey(edge.tag())) {
 				labelDict.put(edge.tag(), labelDict.size());
 			}
-			String lab = Integer.toString(labelDict.get(edge.tag()));
+			String lab = "_" + Integer.toString(labelDict.get(edge.tag()));
 
 			newGraph.nodes().get(edge.from().index()).connect(newGraph.nodes().get(edge.to().index()), lab); // ?
 		}	

@@ -226,7 +226,7 @@ public class RDFDTGraphPathCountKernel implements GraphKernel<SingleDTGraph>, Fe
 							if (!labelDict.containsKey(edge.to().label())) {
 								labelDict.put(edge.to().label(), labelDict.size());
 							}										
-							DTNode<PathStringMapLabel,PathStringMapLabel> newN = rdfGraph.add(new PathStringMapLabel(Integer.toString(labelDict.get(edge.to().label()))));
+							DTNode<PathStringMapLabel,PathStringMapLabel> newN = rdfGraph.add(new PathStringMapLabel("_" + Integer.toString(labelDict.get(edge.to().label()))));
 							newN.label().initDepth(j);
 							vOldNewMap.put(edge.to(), newN);
 							vertexIndexMap.put(newN, j);
@@ -242,7 +242,7 @@ public class RDFDTGraphPathCountKernel implements GraphKernel<SingleDTGraph>, Fe
 							if (!labelDict.containsKey(edge.tag())) {
 								labelDict.put(edge.tag(), labelDict.size());
 							}
-							DTLink<PathStringMapLabel,PathStringMapLabel> newE = vOldNewMap.get(qV).connect(vOldNewMap.get(edge.to()), new PathStringMapLabel(Integer.toString(labelDict.get(edge.tag()))));
+							DTLink<PathStringMapLabel,PathStringMapLabel> newE = vOldNewMap.get(qV).connect(vOldNewMap.get(edge.to()), new PathStringMapLabel("_" + Integer.toString(labelDict.get(edge.tag()))));
 							newE.tag().initDepth(j);
 							eOldNewMap.put(edge, newE);
 							edgeIndexMap.put(newE, j);
@@ -330,7 +330,7 @@ public class RDFDTGraphPathCountKernel implements GraphKernel<SingleDTGraph>, Fe
 
 		public void addPaths(List<String> paths2, int depth) {
 			for (String path : paths2) {
-				newPathsMap.get(depth).add(label + "_" + path);			}
+				newPathsMap.get(depth).add(label + path);			}
 		}
 
 		public void setNewPaths() {

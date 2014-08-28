@@ -85,10 +85,10 @@ public class PathCountComparisonExperiment {
 
 		boolean inference = false;
 
-		int[] depths = {0,1,2,3};
-		int[] pathDepths = {6};
+		int[] depths = {1,2,3};
+		int[] pathDepths = {4};
 
-		/*
+		///*
 		for (int d : depths) {
 
 			Set<Statement> st = RDFUtils.getStatements4Depth(dataset, instances, d, inference);
@@ -96,7 +96,7 @@ public class PathCountComparisonExperiment {
 			DTGraph<String,String> graph = RDFUtils.statements2Graph(st, RDFUtils.REGULAR_LITERALS);
 			List<DTNode<String,String>> instanceNodes = RDFUtils.findInstances(graph, instances);
 			graph = RDFUtils.simplifyInstanceNodeLabels(graph, instanceNodes);
-			List<DTGraph<String,String>> graphs = RDFUtils.getSubGraphs(graph, instanceNodes, d);
+			List<DTGraph<String,String>> graphs = RDFUtils.getSubTrees(graph, instanceNodes, d);
 
 			List<PathCountKernel> kernelsMG = new ArrayList<PathCountKernel>();
 
