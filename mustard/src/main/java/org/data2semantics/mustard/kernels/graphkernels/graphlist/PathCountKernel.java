@@ -112,7 +112,7 @@ public class PathCountKernel implements GraphKernel<GraphList<DTGraph<String,Str
 
 	private void countPathRec(SparseVector fv, DTNode<String,String> vertex, String path, int depth) {
 		// Count path
-		path = path + "_" + vertex.label();
+		path = path + vertex.label();
 
 		if (!pathDict.containsKey(path)) {
 			pathDict.put(path, pathDict.size());
@@ -128,7 +128,7 @@ public class PathCountKernel implements GraphKernel<GraphList<DTGraph<String,Str
 
 	private void countPathRec(SparseVector fv, DTLink<String,String> edge, String path, int depth) {
 		// Count path
-		path = path + "_" + edge.tag();
+		path = path + edge.tag();
 
 		if (!pathDict.containsKey(path)) {
 			pathDict.put(path, pathDict.size());
@@ -151,7 +151,7 @@ public class PathCountKernel implements GraphKernel<GraphList<DTGraph<String,Str
 				if (!labelDict.containsKey(vertex.label())) {
 					labelDict.put(vertex.label(), labelDict.size());
 				}
-				String lab = Integer.toString(labelDict.get(vertex.label()));
+				String lab = "_" + Integer.toString(labelDict.get(vertex.label()));
 
 				newGraph.add(lab);
 			}
@@ -159,7 +159,7 @@ public class PathCountKernel implements GraphKernel<GraphList<DTGraph<String,Str
 				if (!labelDict.containsKey(edge.tag())) {
 					labelDict.put(edge.tag(), labelDict.size());
 				}
-				String lab = Integer.toString(labelDict.get(edge.tag()));
+				String lab = "_" + Integer.toString(labelDict.get(edge.tag()));
 
 				newGraph.nodes().get(edge.from().index()).connect(newGraph.nodes().get(edge.to().index()), lab); // ?
 			}

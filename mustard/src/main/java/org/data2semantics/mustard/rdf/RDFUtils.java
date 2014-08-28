@@ -16,6 +16,7 @@ import org.nodes.MapDTGraph;
 import org.nodes.algorithms.SlashBurn;
 import org.nodes.util.MaxObserver;
 import org.nodes.util.Functions.Dir;
+import org.nodes.util.Pair;
 import org.openrdf.model.Literal;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
@@ -58,6 +59,37 @@ public class RDFUtils {
 			subGraphs.add(newGraph);
 		}
 		return subGraphs;
+	}
+	
+	/**
+	 * Return subtrees instead of graphs, i.e. the same nodes get repeated into a tree, so no cycles. 
+	 * The first node in the graph is the root, i.e. nodes().get(0) should be the root node. 
+	 * 
+	 */
+	public static List<DTGraph<String,String>> getSubTrees(DTGraph<String,String> graph, List<DTNode<String,String>> instances, int depth) {
+		List<DTGraph<String,String>> subTrees = new ArrayList<DTGraph<String,String>>();
+			List<Pair<DTNode<String,String>,DTNode<String,String>>> searchNodes, newSearchNodes;
+
+		for (DTNode<String,String> startNode : instances) {
+			DTGraph<String,String> newGraph = new MapDTGraph<String,String>();
+			searchNodes = new ArrayList<Pair<DTNode<String,String>,DTNode<String,String>>>();
+			Pair<DTNode<String,String>,DTNode<String,String>> pair = new Pair<DTNode<String,String>,DTNode<String,String>>(startNode, newGraph.add(startNode.label())); // root gets index 0
+			searchNodes.add(pair);
+	
+			for (int i = 0; i < depth; i++) {
+				newSearchNodes = new ArrayList<Pair<DTNode<String,String>,DTNode<String,String>>>();
+				for (Pair<DTNode<String,String>,DTNode<String,String>> nodePair : searchNodes) {				
+					for (DTLink<String,String> link : nodePair.first().linksOut()) {
+						DTNode<String,String> n2 = newGraph.add(link.to().label());
+						newSearchNodes.add(new Pair<DTNode<String,String>,DTNode<String,String>>(link.to(),n2));					
+						nodePair.second().connect(n2, link.tag());
+					}
+				}
+				searchNodes = newSearchNodes;
+			}
+			subTrees.add(newGraph);
+		}
+		return subTrees;
 	}
 
 

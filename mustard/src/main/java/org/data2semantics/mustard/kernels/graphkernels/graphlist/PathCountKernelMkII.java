@@ -181,7 +181,7 @@ public class PathCountKernelMkII implements GraphKernel<GraphList<DTGraph<String
 				if (!labelDict.containsKey(vertex.label())) {
 					labelDict.put(vertex.label(), labelDict.size());
 				}
-				String lab = Integer.toString(labelDict.get(vertex.label()));
+				String lab = "_" + Integer.toString(labelDict.get(vertex.label()));
 
 				newGraph.add(new PathStringLabel(lab));
 			}
@@ -189,7 +189,7 @@ public class PathCountKernelMkII implements GraphKernel<GraphList<DTGraph<String
 				if (!labelDict.containsKey(edge.tag())) {
 					labelDict.put(edge.tag(), labelDict.size());
 				}
-				String lab = Integer.toString(labelDict.get(edge.tag()));
+				String lab = "_" + Integer.toString(labelDict.get(edge.tag()));
 
 				newGraph.nodes().get(edge.from().index()).connect(newGraph.nodes().get(edge.to().index()), new PathStringLabel(lab)); // ?
 			}
@@ -217,7 +217,7 @@ public class PathCountKernelMkII implements GraphKernel<GraphList<DTGraph<String
 
 		public void addPaths(List<String> paths2) {
 			for (String path : paths2) {
-				newPaths.add(label + "_" + path);			}
+				newPaths.add(label + path);			}
 		}
 
 		public void setNewPaths() {
