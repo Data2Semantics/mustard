@@ -86,7 +86,7 @@ public class PathCountComparisonExperiment {
 		boolean inference = false;
 
 		int[] depths = {0,1,2,3};
-		int[] pathDepths = {6};
+		int[] pathDepths = {1,2,3,4,5,6};
 
 		/*
 		for (int d : depths) {
@@ -203,9 +203,9 @@ public class PathCountComparisonExperiment {
 		for (int d : depths) {
 			List<RDFPathCountKernel> kernelsIT = new ArrayList<RDFPathCountKernel>();	
 
-			//for (int dd : pathDepths) {
-				kernelsIT.add(new RDFPathCountKernel(d * 2, d, inference, true));
-			//}
+			for (int dd : pathDepths) {
+				kernelsIT.add(new RDFPathCountKernel(dd, d, inference, true));
+			}
 
 
 			//Collections.shuffle(target);
@@ -224,9 +224,9 @@ public class PathCountComparisonExperiment {
 		for (int d : depths) {
 			List<RDFRootPathCountKernel> kernelsIT = new ArrayList<RDFRootPathCountKernel>();	
 
-			//for (int dd : pathDepths) {
-				kernelsIT.add(new RDFRootPathCountKernel(d * 2, d, true, inference, true));
-			//}
+			for (int dd : pathDepths) {
+				kernelsIT.add(new RDFRootPathCountKernel(dd, d, true, inference, true));
+			}
 
 
 			//Collections.shuffle(target);
