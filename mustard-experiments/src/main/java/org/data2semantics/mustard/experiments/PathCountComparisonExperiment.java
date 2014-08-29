@@ -85,8 +85,8 @@ public class PathCountComparisonExperiment {
 
 		boolean inference = false;
 
-		int[] depths = {0,1,2,3};
-		int[] pathDepths = {1,2,3,4,5,6};
+		int[] depths = {1,2,3};
+		int[] pathDepths = {1,2,3,4};
 
 
 		///*
@@ -119,7 +119,7 @@ public class PathCountComparisonExperiment {
 		}
 		//*/
 
-		/*
+		///*
 		for (int d : depths) {
 
 			Set<Statement> st = RDFUtils.getStatements4Depth(dataset, instances, d, inference);
