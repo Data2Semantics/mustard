@@ -60,7 +60,7 @@ public class RDFUtils {
 		}
 		return subGraphs;
 	}
-	
+
 	/**
 	 * Return subtrees instead of graphs, i.e. the same nodes get repeated into a tree, so no cycles. 
 	 * The first node in the graph is the root, i.e. nodes().get(0) should be the root node. 
@@ -68,14 +68,15 @@ public class RDFUtils {
 	 */
 	public static List<DTGraph<String,String>> getSubTrees(DTGraph<String,String> graph, List<DTNode<String,String>> instances, int depth) {
 		List<DTGraph<String,String>> subTrees = new ArrayList<DTGraph<String,String>>();
-			List<Pair<DTNode<String,String>,DTNode<String,String>>> searchNodes, newSearchNodes;
+		List<Pair<DTNode<String,String>,DTNode<String,String>>> searchNodes, newSearchNodes;
 
 		for (DTNode<String,String> startNode : instances) {
 			DTGraph<String,String> newGraph = new MapDTGraph<String,String>();
 			searchNodes = new ArrayList<Pair<DTNode<String,String>,DTNode<String,String>>>();
-			Pair<DTNode<String,String>,DTNode<String,String>> pair = new Pair<DTNode<String,String>,DTNode<String,String>>(startNode, newGraph.add(startNode.label())); // root gets index 0
-			searchNodes.add(pair);
-	
+
+			// root gets index 0
+			searchNodes.add(new Pair<DTNode<String,String>,DTNode<String,String>>(startNode, newGraph.add(startNode.label())));
+
 			for (int i = 0; i < depth; i++) {
 				newSearchNodes = new ArrayList<Pair<DTNode<String,String>,DTNode<String,String>>>();
 				for (Pair<DTNode<String,String>,DTNode<String,String>> nodePair : searchNodes) {				
@@ -262,7 +263,7 @@ public class RDFUtils {
 	}
 
 	private static void addStatement(DTGraph<String,String> graph, Statement stmt, boolean newObject, Map<Resource, DTNode<String,String>> iMap) {
-		
+
 		DTNode<String,String> n1 = iMap.get(stmt.getSubject());
 		if (n1 == null) {
 			n1 = graph.node(stmt.getSubject().toString());
