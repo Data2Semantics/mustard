@@ -16,16 +16,11 @@ import org.nodes.DTNode;
 import org.nodes.MapDTGraph;
 
 /**
- * This class implements a WL kernel directly on an RDF graph. The difference with a normal WL kernel is that subgraphs are not 
- * explicitly extracted. However we use the idea of subgraph implicitly by tracking for each vertex/edge the distance from an instance vertex.
- * For one thing, this leads to the fact that 1 black list is applied to the entire RDF graph, instead of 1 (small) blacklist per graph. 
- * 
- *
  * 
  * @author Gerben
  *
  */
-public class RDFDTGraphRootPathCountKernel implements GraphKernel<SingleDTGraph>, FeatureVectorKernel<SingleDTGraph> {
+public class RDFDTGraphTreePathCountKernel implements GraphKernel<SingleDTGraph>, FeatureVectorKernel<SingleDTGraph> {
 
 	private DTGraph<String,String> rdfGraph;
 	private List<DTNode<String,String>> instanceVertices;
@@ -33,17 +28,15 @@ public class RDFDTGraphRootPathCountKernel implements GraphKernel<SingleDTGraph>
 	private int pathLength;
 	private String label;
 	private boolean normalize;
-	private boolean withRoot;
 
 	private Map<String, Integer> pathDict;
 	private Map<String, Integer> labelDict;
 
 
 
-	public RDFDTGraphRootPathCountKernel(int pathLength, boolean withRoot, boolean normalize) {
+	public RDFDTGraphTreePathCountKernel(int pathLength, boolean normalize) {
 		this.normalize = normalize;
-		this.label = "RDF_DT_Graph_Root_PathCount_Kernel_" + pathLength + "_" + withRoot + "_" + normalize;
-		this.withRoot = withRoot;
+		this.label = "RDF_DT_Graph_Tree_PathCount_Kernel_" + pathLength + "_"  + normalize;
 
 		this.pathLength = pathLength;
 	}
@@ -66,15 +59,45 @@ public class RDFDTGraphRootPathCountKernel implements GraphKernel<SingleDTGraph>
 		labelDict = new HashMap<String, Integer>();
 		init(data.getGraph(), data.getInstances());
 
+		List<DTNode<String,String>> sf,nsf;
+		List<DTLink<String,String>> sflinks;
+		
+		
 		// Initialize and compute the featureVectors
 		SparseVector[] featureVectors = new SparseVector[data.numInstances()];
 		for (int i = 0; i < featureVectors.length; i++) {
 			featureVectors[i] = new SparseVector();
-			if (withRoot) {
-				countPathRec(featureVectors[i], instanceVertices.get(i), "", pathLength);
-			} else {
-				countPathRec(featureVectors[i], instanceVertices.get(i), pathLength);
+			
+			countPathRec(featureVectors[i], instanceVertices.get(i), "", pathLength);
+			
+			sf = new ArrayList<DTNode<String,String>>();
+			for (DTLink<String,String> e : instanceVertices.get(i).linksOut()) {
+				sf.add(e.to());
+				//sf.addAll(instanceVertices.get(i).out());
 			}
+			
+			sflinks = new ArrayList<DTLink<String,String>>();
+			sflinks.addAll(instanceVertices.get(i).linksOut());
+			
+			for (int j = pathLength - 1; j > 0; j = j - 2) {
+				for (DTLink<String,String> e : sflinks) {
+					countPathRec(featureVectors[i], e, "", j);
+				}
+				sflinks = new ArrayList<DTLink<String,String>>();
+				nsf = new ArrayList<DTNode<String,String>>();
+				
+				for (DTNode<String,String> n : sf) {
+					countPathRec(featureVectors[i], n, "", j-1);
+					if (j - 1 > 0) {
+						sflinks.addAll(n.linksOut());
+						for (DTLink<String,String> e : n.linksOut()) {
+							nsf.add(e.to());
+							//nsf.addAll(n.out());
+						}
+					}
+				}
+				sf = nsf;
+			}		
 		}
 
 		if (this.normalize) {
@@ -91,43 +114,6 @@ public class RDFDTGraphRootPathCountKernel implements GraphKernel<SingleDTGraph>
 		computeKernelMatrix(featureVectors, kernel);
 		return kernel;
 	}
-
-	// withRoot == false
-	private String countPathRec(SparseVector fv, DTNode<String,String> vertex, int depth) {
-		String path = "";
-		if (depth > 0) {
-			for (DTLink<String,String> edge : vertex.linksOut()) {
-				path = countPathRec(fv, edge, depth-1);
-			}
-		}	
-
-		// Count path
-		path = vertex.label() + path;
-
-		if (!pathDict.containsKey(path)) {
-			pathDict.put(path, pathDict.size());
-		}
-		fv.setValue(pathDict.get(path), fv.getValue(pathDict.get(path)) + 1);
-
-		return path;
-	}
-
-	// withRoot == false
-	private String countPathRec(SparseVector fv, DTLink<String,String> edge, int depth) {
-		String path = "";
-		if (depth > 0) {
-			path = countPathRec(fv, edge.to(), depth-1);
-		}	
-		// Count path
-		path = edge.tag() + path;
-
-		if (!pathDict.containsKey(path)) {
-			pathDict.put(path, pathDict.size());
-		}
-		fv.setValue(pathDict.get(path), fv.getValue(pathDict.get(path)) + 1);
-		return path;
-	}
-
 
 
 	private void countPathRec(SparseVector fv, DTNode<String,String> vertex, String path, int depth) {
@@ -149,12 +135,12 @@ public class RDFDTGraphRootPathCountKernel implements GraphKernel<SingleDTGraph>
 	private void countPathRec(SparseVector fv, DTLink<String,String> edge, String path, int depth) {
 		// Count path
 		path = path + edge.tag();
-		
+
 		if (!pathDict.containsKey(path)) {
 			pathDict.put(path, pathDict.size());
 		}
 		fv.setValue(pathDict.get(path), fv.getValue(pathDict.get(path)) + 1);
-		
+
 		if (depth > 0) {
 			countPathRec(fv, edge.to(), path, depth-1);
 		}	
