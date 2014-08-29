@@ -63,6 +63,8 @@ public class RDFDTGraphTreePathCountKernel implements GraphKernel<SingleDTGraph>
 		List<DTLink<String,String>> sflinks;
 		
 		
+		double avgLinks = 0;
+		
 		// Initialize and compute the featureVectors
 		SparseVector[] featureVectors = new SparseVector[data.numInstances()];
 		for (int i = 0; i < featureVectors.length; i++) {
@@ -77,7 +79,8 @@ public class RDFDTGraphTreePathCountKernel implements GraphKernel<SingleDTGraph>
 			}
 			
 			sflinks = new ArrayList<DTLink<String,String>>();
-			sflinks.addAll(instanceVertices.get(i).linksOut());
+			sflinks.addAll(instanceVertices.get(i).linksOut());		
+			avgLinks += instanceVertices.get(i).linksOut().size();
 			
 			for (int j = pathLength - 1; j > 0; j = j - 2) {
 				for (DTLink<String,String> e : sflinks) {
@@ -90,6 +93,7 @@ public class RDFDTGraphTreePathCountKernel implements GraphKernel<SingleDTGraph>
 					countPathRec(featureVectors[i], n, "", j-1);
 					if (j - 1 > 0) {
 						sflinks.addAll(n.linksOut());
+						avgLinks += n.linksOut().size();
 						for (DTLink<String,String> e : n.linksOut()) {
 							nsf.add(e.to());
 							//nsf.addAll(n.out());
@@ -99,6 +103,10 @@ public class RDFDTGraphTreePathCountKernel implements GraphKernel<SingleDTGraph>
 				sf = nsf;
 			}		
 		}
+		
+		avgLinks /= data.numInstances();
+		
+		System.out.println("Avg # links: " + avgLinks);
 
 		if (this.normalize) {
 			featureVectors = KernelUtils.normalize(featureVectors);

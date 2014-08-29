@@ -23,7 +23,7 @@ public class DataSetUtils {
 		return newBL;
 	}
 	
-	public static List<Statement> createBlacklist(RDFDataSet dataset, List<Pair<Resource>> instances) {
+	public static List<Statement> createBlacklist(RDFDataSet dataset, List<Pair<Resource, Resource>> instances) {
 		List<Statement> newBL = new ArrayList<Statement>();
 
 		for (int i = 0; i < instances.size(); i++) {

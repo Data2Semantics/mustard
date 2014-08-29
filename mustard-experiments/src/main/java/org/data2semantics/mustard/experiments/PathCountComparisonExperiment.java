@@ -16,6 +16,7 @@ import org.data2semantics.mustard.kernels.graphkernels.FeatureVectorKernel;
 import org.data2semantics.mustard.kernels.graphkernels.GraphKernel;
 import org.data2semantics.mustard.kernels.graphkernels.graphlist.PathCountKernel;
 import org.data2semantics.mustard.kernels.graphkernels.graphlist.PathCountKernelMkII;
+import org.data2semantics.mustard.kernels.graphkernels.graphlist.TreePathCountKernel;
 import org.data2semantics.mustard.kernels.graphkernels.graphlist.WLSubTreeKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFPathCountKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFIntersectionTreeEdgeVertexPathKernel;
@@ -32,6 +33,7 @@ import org.data2semantics.mustard.rdf.DataSetUtils;
 import org.data2semantics.mustard.rdf.RDFDataSet;
 import org.data2semantics.mustard.rdf.RDFFileDataSet;
 import org.data2semantics.mustard.rdf.RDFUtils;
+import org.data2semantics.mustard.weisfeilerlehman.StringLabel;
 import org.nodes.DTGraph;
 import org.nodes.DTNode;
 import org.openrdf.model.Resource;
@@ -86,11 +88,11 @@ public class PathCountComparisonExperiment {
 
 		boolean inference = false;
 
-		int[] depths = {1,2};
+		int[] depths = {1,2,3};
 		int[] pathDepths = {4};
 
 
-		///*
+		/*
 		for (int d : depths) {
 
 			Set<Statement> st = RDFUtils.getStatements4Depth(dataset, instances, d, inference);
@@ -114,10 +116,10 @@ public class PathCountComparisonExperiment {
 
 			List<PathCountKernel> kernelsMG = new ArrayList<PathCountKernel>();
 
-			//for (int dd : pathDepths) {
-				PathCountKernel kernel = new PathCountKernel(d*2, true);			
+			for (int dd : pathDepths) {
+				PathCountKernel kernel = new PathCountKernel(dd, true);			
 				kernelsMG.add(kernel);
-			//}
+			}
 
 			resTable.newRow(kernelsMG.get(0).getLabel() + "_" + inference);
 			SimpleGraphKernelExperiment<GraphList<DTGraph<String,String>>> exp2 = new SimpleGraphKernelExperiment<GraphList<DTGraph<String,String>>>(kernelsMG, new GraphList<DTGraph<String,String>>(graphs), target, svmParms, seeds, evalFuncs);
@@ -157,13 +159,14 @@ public class PathCountComparisonExperiment {
 			System.out.println("Avg # nodes: " + avgNodes + " , avg # links: " + avgLinks);
 
 			
-			List<PathCountKernel> kernelsMG = new ArrayList<PathCountKernel>();
+			List<TreePathCountKernel> kernelsMG = new ArrayList<TreePathCountKernel>();
 
-			//for (int dd : pathDepths) {
-				PathCountKernel kernel = new PathCountKernel(d*2, true);			
+			for (int dd : pathDepths) {
+				TreePathCountKernel kernel = new TreePathCountKernel(dd, true);			
 				kernelsMG.add(kernel);
-			//}
+			}
 
+			/*
 			resTable.newRow(kernelsMG.get(0).getLabel() + "_" + inference);
 			SimpleGraphKernelExperiment<GraphList<DTGraph<String,String>>> exp2 = new SimpleGraphKernelExperiment<GraphList<DTGraph<String,String>>>(kernelsMG, new GraphList<DTGraph<String,String>>(graphs), target, svmParms, seeds, evalFuncs);
 
@@ -174,6 +177,7 @@ public class PathCountComparisonExperiment {
 				resTable.addResult(res);
 			}
 			System.out.println(resTable);
+			*/
 		}
 		//*/
 

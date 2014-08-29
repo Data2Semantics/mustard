@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.data2semantics.mustard.kernels.KernelUtils;
+import org.data2semantics.mustard.weisfeilerlehman.StringLabel;
 import org.nodes.DTGraph;
 import org.nodes.DTLink;
 import org.nodes.DTNode;
