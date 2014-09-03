@@ -22,6 +22,7 @@ import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFPathCountKerne
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFIntersectionTreeEdgeVertexPathKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFRootPathCountKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFTreePathCountKernel;
+import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFTreeWLSubTreeKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFWLRootSubTreeKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFWLSubTreeKernel;
 import org.data2semantics.mustard.learners.evaluation.Accuracy;
@@ -89,7 +90,7 @@ public class PathCountComparisonExperiment {
 		boolean inference = false;
 
 		int[] depths = {1,2,3};
-		int[] pathDepths = {4};
+		int[] pathDepths = {0,1,2,3,4,5,6};
 
 
 		/*
@@ -134,7 +135,7 @@ public class PathCountComparisonExperiment {
 		}
 		//*/
 
-		///*
+		/*
 		for (int d : depths) {
 
 			Set<Statement> st = RDFUtils.getStatements4Depth(dataset, instances, d, inference);
@@ -178,13 +179,14 @@ public class PathCountComparisonExperiment {
 			}
 			System.out.println(resTable);
 			*/
-		}
+		//}
 		//*/
 
 
 		RDFData data = new RDFData(dataset, instances, blackList);
 
-
+		boolean WLreverse = false;
+		
 
 
 		/*
@@ -209,13 +211,13 @@ public class PathCountComparisonExperiment {
 		}
 		//*/
 
-		/*
+		///*
 		for (int d : depths) {
 			List<RDFWLRootSubTreeKernel> kernelsWL = new ArrayList<RDFWLRootSubTreeKernel>();	
 
-			//for (int dd : pathDepths) {
-				kernelsWL.add(new RDFWLRootSubTreeKernel(d*2, d, inference, false, false, true));
-			//}
+			for (int dd : pathDepths) {
+				kernelsWL.add(new RDFWLRootSubTreeKernel(dd, d, inference, WLreverse, false, true));
+			}
 	
 			//Collections.shuffle(target);
 			SimpleGraphKernelExperiment<RDFData> exp = new SimpleGraphKernelExperiment<RDFData>(kernelsWL, data, target, svmParms, seeds, evalFuncs);
@@ -228,6 +230,49 @@ public class PathCountComparisonExperiment {
 			}
 		}
 		//*/
+		
+		///*
+		for (int d : depths) {
+			List<RDFTreeWLSubTreeKernel> kernelsWL = new ArrayList<RDFTreeWLSubTreeKernel>();	
+
+			for (int dd : pathDepths) {
+				kernelsWL.add(new RDFTreeWLSubTreeKernel(dd, d, inference, WLreverse, false, true));
+			}
+	
+			//Collections.shuffle(target);
+			SimpleGraphKernelExperiment<RDFData> exp = new SimpleGraphKernelExperiment<RDFData>(kernelsWL, data, target, svmParms, seeds, evalFuncs);
+
+			resTable.newRow(kernelsWL.get(0).getLabel());
+			exp.run();
+
+			for (Result res : exp.getResults()) {
+				resTable.addResult(res);
+			}
+		}
+		//*/
+		
+		
+		///*
+		for (int d : depths) {
+			List<RDFWLSubTreeKernel> kernelsWL = new ArrayList<RDFWLSubTreeKernel>();	
+
+			for (int dd : pathDepths) {
+				kernelsWL.add(new RDFWLSubTreeKernel(dd, d, inference, WLreverse, false, true));
+			}
+	
+			//Collections.shuffle(target);
+			SimpleGraphKernelExperiment<RDFData> exp = new SimpleGraphKernelExperiment<RDFData>(kernelsWL, data, target, svmParms, seeds, evalFuncs);
+
+			resTable.newRow(kernelsWL.get(0).getLabel());
+			exp.run();
+
+			for (Result res : exp.getResults()) {
+				resTable.addResult(res);
+			}
+		}
+		//*/
+		
+
 
 
 		/*
@@ -251,7 +296,7 @@ public class PathCountComparisonExperiment {
 		}
 		//*/
 
-		///*
+		/*
 		for (int d : depths) {
 			List<RDFTreePathCountKernel> kernelsIT = new ArrayList<RDFTreePathCountKernel>();	
 

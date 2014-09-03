@@ -57,7 +57,7 @@ public class RDFDTGraphTreeWLSubTreeKernel implements GraphKernel<SingleDTGraph>
 		this.normalize = normalize;
 		this.reverse = false;
 		this.iterationWeighting = false;
-		this.label = "RDF_DT_Graph_WL_Kernel_" + iterations + "_" + depth + "_" + reverse + "_" + iterationWeighting;
+		this.label = "RDF_DT_Graph_Tree_WL_Kernel_" + iterations + "_" + depth + "_" + reverse + "_" + iterationWeighting;
 
 		instanceVertices = new ArrayList<DTNode<MapLabel,MapLabel>>();
 		this.instanceVertexIndexMap = new HashMap<DTNode<MapLabel,MapLabel>, List<Pair<DTNode<MapLabel,MapLabel>, Integer>>>();
