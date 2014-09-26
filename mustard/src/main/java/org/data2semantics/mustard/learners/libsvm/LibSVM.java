@@ -126,7 +126,10 @@ public class LibSVM {
 			for (double p : params.getPs()) {
 				svmParams.p = p;
 
-				for (double c : params.getItParams()) {
+				ParameterIterator pi = new ParameterIterator(params.getItParams());
+				
+				while (pi.hasNext()) {
+					double c = pi.nextParm();
 					if (svmParams.svm_type == LibSVMParameters.C_SVC || svmParams.svm_type == LibSVMParameters.EPSILON_SVR) {
 						svmParams.C = c;
 					} else {
@@ -135,6 +138,8 @@ public class LibSVM {
 					Prediction[] prediction = crossValidate(svmProbs.get(setting), svmParams, params.getNumFolds());
 					score = params.getEvalFunction().computeScore(target, prediction);
 
+					pi.updateParm(bestC == 0 || params.getEvalFunction().isBetter(score, bestScore));
+					
 					if (bestC == 0 || params.getEvalFunction().isBetter(score, bestScore)) {
 						bestC = c;
 						bestP = p;

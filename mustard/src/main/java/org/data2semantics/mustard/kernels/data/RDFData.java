@@ -6,6 +6,12 @@ import org.data2semantics.mustard.rdf.RDFDataSet;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 
+/**
+ * RDFData is graph data in the form of an RDFDataSet with a list of instances (Resources) and a blacklist (Statements)
+ * 
+ * @author Gerben
+ *
+ */
 public class RDFData implements GraphData {
 	private RDFDataSet dataset;
 	private List<Resource> instances;

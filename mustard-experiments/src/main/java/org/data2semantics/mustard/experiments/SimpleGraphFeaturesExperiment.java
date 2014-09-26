@@ -61,9 +61,9 @@ public class SimpleGraphFeaturesExperiment {
 	 */
 	public static void main(String[] args) {
 
-		//createAffiliationPredictionDataSet();
+		createAffiliationPredictionDataSet();
 		//createGeoDataSet(1, 1, 10, "http://data.bgs.ac.uk/ref/Lexicon/hasLithogenesis");
-		createCommitteeMemberPredictionDataSet();
+		//createCommitteeMemberPredictionDataSet();
 		
 		
 		List<EvaluationFunction> evalFuncs = new ArrayList<EvaluationFunction>();
@@ -74,7 +74,7 @@ public class SimpleGraphFeaturesExperiment {
 		resTable.setDigits(3);
 
 		long[] seeds = {11,21,31,41,51,61,71,81,91,101};
-		double[] cs = {1, 10, 100, 1000, 10000, 100000};	
+		double[] cs = {1, 10, 100, 1000, 10000};	
 
 		LibSVMParameters svmParms = new LibSVMParameters(LibSVMParameters.C_SVC, cs);
 		svmParms.setNumFolds(10);
@@ -115,7 +115,7 @@ public class SimpleGraphFeaturesExperiment {
 		}
 		//*/
 
-		///* Path Count Root
+		/* Path Count Root
 		for (boolean inf : inference) {
 			resTable.newRow("Path Count through root: " + inf);		 
 			for (int d : depths) {
@@ -138,7 +138,7 @@ public class SimpleGraphFeaturesExperiment {
 		}
 		//*/
 
-		///* WL Root
+		/* WL Root
 		for (boolean inf : inference) {
 			resTable.newRow("WL through root: " + inf);		 
 			for (int d : depths) {
@@ -161,7 +161,7 @@ public class SimpleGraphFeaturesExperiment {
 		}
 		//*/
 
-		///* Path Count Tree
+		/* Path Count Tree
 		for (boolean inf : inference) {
 			resTable.newRow("Path Count Tree: " + inf);		 
 			for (int d : depths) {
@@ -184,7 +184,7 @@ public class SimpleGraphFeaturesExperiment {
 		}
 		//*/
 
-		///* WL Tree
+		/* WL Tree
 		for (boolean inf : inference) {
 			resTable.newRow("WL Tree: " + inf);		 
 			for (int d : depths) {
@@ -209,7 +209,7 @@ public class SimpleGraphFeaturesExperiment {
 
 	
 		
-		///* RDF Path Count 
+		/* RDF Path Count 
 		for (boolean inf : inference) {
 			resTable.newRow("RDF Path Count: " + inf);		 
 			for (int d : depths) {
@@ -305,7 +305,7 @@ public class SimpleGraphFeaturesExperiment {
 		resTable.addCompResults(resTable.getBestResults());
 		System.out.println(resTable);
 		
-		///* Path Count full
+		/* Path Count full
 		for (boolean inf : inference) {
 			resTable.newRow("Path Count Full: " + inf);		
 			for (int d : depths) {
