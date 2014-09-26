@@ -20,6 +20,26 @@ ISWC task:
 0.767 	 0.75 	 37.0 	 0.769 	 0.751 	 2663.0 	 0.747 	 0.733 	 520934.0 	 Path Count Full: false
 0.767 	 0.749 	 26.0 	 0.771 	 0.752 	 3458.0 	 0.75 	 0.736 	 566713.0 	 Path Count Full: true
 
+ISWC 0-6
+0.769 	 0.757 	 7606.0 	 Baseline BoL: false
+0.761 	 0.749 	 8086.0 	 Baseline BoL: true
+0.77 	 0.752 	 49451.0 	 Path Count through root: false
+0.766 	 0.747 	 60980.0 	 Path Count through root: true
+0.652 	 0.521 	 44972.0 	 WL through root: false
+0.652 	 0.52 	 52588.0 	 WL through root: true
+0.756 	 0.739 	 60458.0 	 Path Count Tree: false
+0.76 	 0.743 	 69981.0 	 Path Count Tree: true
+0.764 	 0.75 	 83200.0 	 WL Tree: false
+0.763 	 0.749 	 93282.0 	 WL Tree: true
+0.759 	 0.744 	 81231.0 	 RDF Path Count: false
+0.762 	 0.744 	 90482.0 	 RDF Path Count: true
+0.777^1^4 	 0.766^2^5 	 79042.0 	 RDF WL: false
+0.776^1^4 	 0.765^2^5 	 87441.0 	 RDF WL: true
+0.765 	 0.751 	 177790.0 	 Regular WL: false
+0.765 	 0.751 	 190957.0 	 Regular WL: true
+0.76 	 0.745 	 885765.0 	 Path Count Full: false
+0.754 	 0.739 	 867608.0 	 Path Count Full: true
+
 Litho
 
 0.905^1^4 	 0.895^2^5 	 9500.0 	 Baseline BoL: false
