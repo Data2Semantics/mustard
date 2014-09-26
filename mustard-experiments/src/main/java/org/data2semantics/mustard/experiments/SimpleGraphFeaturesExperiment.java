@@ -48,6 +48,7 @@ import org.openrdf.rio.RDFFormat;
 public class SimpleGraphFeaturesExperiment {
 	private static String AIFB_FILE = "datasets/aifb-fixed_complete.n3";
 	private static String BGS_FOLDER =  "C:\\Users\\Gerben\\Dropbox\\data_bgs_ac_uk_ALL";
+	private static String AM_FOLDER =  "C:\\Users\\Gerben\\Dropbox\\AM_data";
 	private static String ISWC_FOLDER = "datasets/";
 
 	private static List<Resource> instances;
@@ -63,7 +64,9 @@ public class SimpleGraphFeaturesExperiment {
 
 		//createAffiliationPredictionDataSet();
 		//createGeoDataSet(1, 1, 10, "http://data.bgs.ac.uk/ref/Lexicon/hasLithogenesis");
-		createCommitteeMemberPredictionDataSet();
+		//createCommitteeMemberPredictionDataSet();
+		
+		createAMDataSet(1, 1, 10);
 		
 		
 		List<EvaluationFunction> evalFuncs = new ArrayList<EvaluationFunction>();
@@ -88,9 +91,9 @@ public class SimpleGraphFeaturesExperiment {
 		boolean reverseWL = true; // WL should be in reverse mode, which means regular subtrees
 		boolean[] inference = {false,true};
 
-		int[] depths = {3};
-		int[] pathDepths = {0,1,2,3,4,5,6};
-		int[] iterationsWL = {0,1,2,3,4,5,6};
+		int[] depths = {2};
+		int[] pathDepths = {4};
+		int[] iterationsWL = {4};
 
 
 		RDFData data = new RDFData(dataset, instances, blackList);
@@ -468,5 +471,45 @@ public class SimpleGraphFeaturesExperiment {
 
 		System.out.println("Pos and Neg: " + pos + " " + neg);
 		System.out.println("Baseline acc: " + Math.max(pos, neg) / ((double)pos+neg));
+	}
+	
+	private static void createAMDataSet(long seed, double fraction, int minSize) {
+		dataset = new RDFFileDataSet(AM_FOLDER, RDFFormat.TURTLE);
+		
+		Random rand = new Random(seed);
+
+		List<Statement> stmts = dataset.getStatementsFromStrings(null, "http://purl.org/collections/nl/am/objectCategory", null);
+		System.out.println(dataset.getLabel());
+
+		System.out.println("objects in AM: " + stmts.size());
+		
+		
+		instances = new ArrayList<Resource>();
+		labels = new ArrayList<Value>();
+		blackList = new ArrayList<Statement>();
+
+		for (Statement stmt : stmts) {
+			instances.add(stmt.getSubject());
+			labels.add(stmt.getObject());
+		}
+
+//		
+//		
+		EvaluationUtils.removeSmallClasses(instances, labels, minSize);
+		blackList = DataSetUtils.createBlacklist(dataset, instances, labels);
+		target = EvaluationUtils.createTarget(labels);
+		System.out.println(EvaluationUtils.computeClassCounts(target));
+		
+		Collections.shuffle(instances, new Random(seed));
+		Collections.shuffle(labels, new Random(seed));
+		Collections.shuffle(target, new Random(seed));
+		
+		instances = instances.subList(0, 100);
+		labels = labels.subList(0, 100);
+		target = target.subList(0, 100);
+		
+		System.out.println("Subset: ");
+		System.out.println(EvaluationUtils.computeClassCounts(target));
+		
 	}
 }
