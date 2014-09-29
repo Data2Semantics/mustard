@@ -98,7 +98,7 @@ public class SimpleGraphFeaturesExperiment {
 
 		RDFData data = new RDFData(dataset, instances, blackList);
 
-		///* The baseline experiment, BoW (or BoL if you prefer)
+		/* The baseline experiment, BoW (or BoL if you prefer)
 		for (boolean inf : inference) {
 			resTable.newRow("Baseline BoL: " + inf);		 
 			for (int d : depths) {
@@ -235,7 +235,7 @@ public class SimpleGraphFeaturesExperiment {
 		}
 		//*/
 
-		///* RDF WL 
+		/* RDF WL 
 		for (boolean inf : inference) {
 			resTable.newRow("RDF WL: " + inf);		 
 			for (int d : depths) {
@@ -308,7 +308,7 @@ public class SimpleGraphFeaturesExperiment {
 		resTable.addCompResults(resTable.getBestResults());
 		System.out.println(resTable);
 		
-		/* Path Count full
+		///* Path Count full
 		for (boolean inf : inference) {
 			resTable.newRow("Path Count Full: " + inf);		
 			for (int d : depths) {
@@ -495,18 +495,17 @@ public class SimpleGraphFeaturesExperiment {
 
 //		
 //		
-		EvaluationUtils.removeSmallClasses(instances, labels, minSize);
 		blackList = DataSetUtils.createBlacklist(dataset, instances, labels);
-		target = EvaluationUtils.createTarget(labels);
 		System.out.println(EvaluationUtils.computeClassCounts(target));
 		
 		Collections.shuffle(instances, new Random(seed));
 		Collections.shuffle(labels, new Random(seed));
-		Collections.shuffle(target, new Random(seed));
 		
-		instances = instances.subList(0, 100);
-		labels = labels.subList(0, 100);
-		target = target.subList(0, 100);
+		instances = instances.subList(0, 200);
+		labels = labels.subList(0, 200);
+		
+		EvaluationUtils.removeSmallClasses(instances, labels, minSize);
+		target = EvaluationUtils.createTarget(labels);
 		
 		System.out.println("Subset: ");
 		System.out.println(EvaluationUtils.computeClassCounts(target));

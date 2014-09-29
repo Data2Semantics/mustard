@@ -10,6 +10,7 @@ import java.util.Set;
 import org.data2semantics.mustard.learners.Prediction;
 import org.data2semantics.mustard.learners.SparseVector;
 import org.data2semantics.mustard.learners.libsvm.LibSVM;
+import org.data2semantics.mustard.learners.libsvm.ParameterIterator;
 
 import de.bwaldvogel.liblinear.Feature;
 import de.bwaldvogel.liblinear.FeatureNode;
@@ -81,7 +82,11 @@ public class LibLINEAR {
 
 			for (double p : params.getPs()) {
 				linearParams.setP(p);
-				for (double c : params.getCs()) {
+				
+				ParameterIterator pi = new ParameterIterator(params.getCs());
+				
+				while (pi.hasNext()) {
+					double c = pi.nextParm();
 					linearParams.setC(c);
 
 					if (params.isDoCrossValidation()) {
@@ -92,6 +97,8 @@ public class LibLINEAR {
 					}
 					score = params.getEvalFunction().computeScore(target, prediction);
 
+					pi.updateParm(bestC == 0 || params.getEvalFunction().isBetter(score, bestScore));
+					
 					if (bestC == 0 || params.getEvalFunction().isBetter(score, bestScore)) {
 						bestC = c;
 						bestP = p;
@@ -276,15 +283,15 @@ public class LibLINEAR {
 		prob.y = target;
 		prob.x = new FeatureNode[featureVectors.length][];	
 		prob.l = featureVectors.length;
-
+		
 		int maxIndex = 0;
 		for (int i = 0; i < featureVectors.length; i++) {
 			Set<Integer> indices = featureVectors[i].getIndices();
 			prob.x[i] = new FeatureNode[(bias >= 0) ? indices.size() + 1 : indices.size()];
 			int j = 0;
 			for (int index : indices) {
-				prob.x[i][j] = new FeatureNode(index, featureVectors[i].getValue(index));		
-				maxIndex = Math.max(maxIndex, index);
+				prob.x[i][j] = new FeatureNode(index + 1, featureVectors[i].getValue(index));	// Sparse Vectors start at index 0, LibLINEAR needs 1	
+				maxIndex = Math.max(maxIndex, index + 1);
 				j++;
 			}
 		}
