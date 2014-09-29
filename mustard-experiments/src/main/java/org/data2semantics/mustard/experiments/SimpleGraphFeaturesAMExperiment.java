@@ -37,7 +37,9 @@ import org.data2semantics.mustard.learners.libsvm.LibSVMParameters;
 import org.data2semantics.mustard.rdf.DataSetUtils;
 import org.data2semantics.mustard.rdf.RDFDataSet;
 import org.data2semantics.mustard.rdf.RDFFileDataSet;
+import org.data2semantics.mustard.rdf.RDFSingleDataSet;
 import org.data2semantics.mustard.rdf.RDFUtils;
+import org.data2semantics.mustard.util.Pair;
 import org.data2semantics.mustard.weisfeilerlehman.StringLabel;
 import org.nodes.DTGraph;
 import org.nodes.DTNode;
@@ -70,7 +72,7 @@ public class SimpleGraphFeaturesAMExperiment {
 		resTable.setDigits(3);
 
 		long[] seeds = {11};
-		long[] seedsDataset = {11,21,31,41,51}; //,61,71,81,91,101};
+		long[] seedsDataset = {11}; // ,21,31,41,51}; //,61,71,81,91,101};
 		double[] cs = {1, 10, 100, 1000};	
 
 		LibLINEARParameters svmParms = new LibLINEARParameters(LibLINEARParameters.SVC_DUAL, cs);
@@ -82,17 +84,21 @@ public class SimpleGraphFeaturesAMExperiment {
 		svmParms.setWeights(EvaluationUtils.computeWeights(target));
 		//*/
 
-
+		
 		boolean reverseWL = true; // WL should be in reverse mode, which means regular subtrees
-		boolean[] inference = {false,true};
+		boolean[] inference = {false};
 
 		int subsetSize = 200;
 
-		int[] depths = {1,2};
+		int[] depths = {2};
 		int[] pathDepths = {2,4,6};
 		int[] iterationsWL = {2,4,6};
 
 		boolean depthTimesTwo = true;
+
+
+		Map<Long, Map<Boolean, Map<Integer,Pair<RDFData, List<Double>>>>> cache = createDataSetCache(seedsDataset, subsetSize, 10, depths, inference);
+		dataset = null;
 
 
 		///* The baseline experiment, BoW (or BoL if you prefer)
@@ -101,8 +107,9 @@ public class SimpleGraphFeaturesAMExperiment {
 			for (int d : depths) {
 				List<Result> tempRes = new ArrayList<Result>();
 				for (long sDS : seedsDataset) {
-					createAMDataSet(dataset, sDS, subsetSize, 10);
-					RDFData data = new RDFData(dataset, instances, blackList);
+					Pair<RDFData, List<Double>> p = cache.get(sDS).get(inf).get(d);
+					RDFData data = p.getFirst();
+					target = p.getSecond();
 
 					List<RDFWLSubTreeKernel> kernelsBaseline = new ArrayList<RDFWLSubTreeKernel>();	
 					kernelsBaseline.add(new RDFWLSubTreeKernel(0, d, inf, reverseWL, false, true));
@@ -126,7 +133,7 @@ public class SimpleGraphFeaturesAMExperiment {
 				}
 			}
 		}
-		
+
 		System.out.println(resTable);
 
 		//*/
@@ -137,8 +144,9 @@ public class SimpleGraphFeaturesAMExperiment {
 			for (int d : depths) {
 				List<Result> tempRes = new ArrayList<Result>();
 				for (long sDS : seedsDataset) {
-					createAMDataSet(dataset, sDS, subsetSize, 10);
-					RDFData data = new RDFData(dataset, instances, blackList);
+					Pair<RDFData, List<Double>> p = cache.get(sDS).get(inf).get(d);
+					RDFData data = p.getFirst();
+					target = p.getSecond();
 
 					List<RDFRootPathCountKernel> kernels = new ArrayList<RDFRootPathCountKernel>();	
 
@@ -168,19 +176,20 @@ public class SimpleGraphFeaturesAMExperiment {
 				}
 			}
 		}
-		
+
 		System.out.println(resTable);
 
 		//*/
-		
+
 		//*/
 		for (boolean inf : inference) {
 			resTable.newRow("WL through root: " + inf);
 			for (int d : depths) {
 				List<Result> tempRes = new ArrayList<Result>();
 				for (long sDS : seedsDataset) {
-					createAMDataSet(dataset, sDS, subsetSize, 10);
-					RDFData data = new RDFData(dataset, instances, blackList);
+					Pair<RDFData, List<Double>> p = cache.get(sDS).get(inf).get(d);
+					RDFData data = p.getFirst();
+					target = p.getSecond();
 
 					List<RDFWLRootSubTreeKernel> kernels = new ArrayList<RDFWLRootSubTreeKernel>();	
 
@@ -210,7 +219,7 @@ public class SimpleGraphFeaturesAMExperiment {
 				}
 			}
 		}
-		
+
 		System.out.println(resTable);
 
 		//*/
@@ -218,12 +227,13 @@ public class SimpleGraphFeaturesAMExperiment {
 		//*/
 		for (boolean inf : inference) {
 			resTable.newRow("Path Count Tree: " + inf);	
-			
+
 			for (int d : depths) {
 				List<Result> tempRes = new ArrayList<Result>();
 				for (long sDS : seedsDataset) {
-					createAMDataSet(dataset, sDS, subsetSize, 10);
-					RDFData data = new RDFData(dataset, instances, blackList);
+					Pair<RDFData, List<Double>> p = cache.get(sDS).get(inf).get(d);
+					RDFData data = p.getFirst();
+					target = p.getSecond();
 
 					List<RDFTreePathCountKernel> kernels = new ArrayList<RDFTreePathCountKernel>();		
 
@@ -253,20 +263,21 @@ public class SimpleGraphFeaturesAMExperiment {
 				}
 			}
 		}
-		
+
 		System.out.println(resTable);
 
 		//*/
-		
+
 		//*/
 		for (boolean inf : inference) {
 			resTable.newRow("WL Tree: " + inf);	
-			
+
 			for (int d : depths) {
 				List<Result> tempRes = new ArrayList<Result>();
 				for (long sDS : seedsDataset) {
-					createAMDataSet(dataset, sDS, subsetSize, 10);
-					RDFData data = new RDFData(dataset, instances, blackList);
+					Pair<RDFData, List<Double>> p = cache.get(sDS).get(inf).get(d);
+					RDFData data = p.getFirst();
+					target = p.getSecond();
 
 					List<RDFTreeWLSubTreeKernel> kernels = new ArrayList<RDFTreeWLSubTreeKernel>();	
 
@@ -296,21 +307,22 @@ public class SimpleGraphFeaturesAMExperiment {
 				}
 			}
 		}
-		
+
 		System.out.println(resTable);
 
 		//*/
-		
+
 
 		///* RDF Path Count 
 		for (boolean inf : inference) {
 			resTable.newRow("RDF Path Count: " + inf);
-			
+
 			for (int d : depths) {
 				List<Result> tempRes = new ArrayList<Result>();
 				for (long sDS : seedsDataset) {
-					createAMDataSet(dataset, sDS, subsetSize, 10);
-					RDFData data = new RDFData(dataset, instances, blackList);
+					Pair<RDFData, List<Double>> p = cache.get(sDS).get(inf).get(d);
+					RDFData data = p.getFirst();
+					target = p.getSecond();
 
 					List<RDFPathCountKernel> kernels = new ArrayList<RDFPathCountKernel>();	
 
@@ -340,7 +352,7 @@ public class SimpleGraphFeaturesAMExperiment {
 				}
 			}
 		}
-		
+
 		System.out.println(resTable);
 
 		//*/
@@ -349,12 +361,13 @@ public class SimpleGraphFeaturesAMExperiment {
 		///* RDF WL
 		for (boolean inf : inference) {
 			resTable.newRow("RDF WL: " + inf);
-			
+
 			for (int d : depths) {
 				List<Result> tempRes = new ArrayList<Result>();
 				for (long sDS : seedsDataset) {
-					createAMDataSet(dataset, sDS, subsetSize, 10);
-					RDFData data = new RDFData(dataset, instances, blackList);
+					Pair<RDFData, List<Double>> p = cache.get(sDS).get(inf).get(d);
+					RDFData data = p.getFirst();
+					target = p.getSecond();
 
 					List<RDFWLSubTreeKernel> kernels = new ArrayList<RDFWLSubTreeKernel>();	
 
@@ -384,7 +397,7 @@ public class SimpleGraphFeaturesAMExperiment {
 				}
 			}
 		}
-		
+
 		System.out.println(resTable);
 
 		//*/
@@ -494,15 +507,39 @@ public class SimpleGraphFeaturesAMExperiment {
 
 	}
 
+	private static Map<Long, Map<Boolean, Map<Integer,Pair<RDFData, List<Double>>>>> createDataSetCache(long[] seeds, int subsetSize, int minSize, int[] depths, boolean[] inference) {
+		Map<Long, Map<Boolean, Map<Integer,Pair<RDFData, List<Double>>>>> cache = new HashMap<Long, Map<Boolean, Map<Integer,Pair<RDFData, List<Double>>>>>();
 
-	private static void createAMDataSet(RDFDataSet dataset, long seed, int subsetSize, int minSize) {
+		for (long seed : seeds) {
+			cache.put(seed, new HashMap<Boolean, Map<Integer,Pair<RDFData, List<Double>>>>());
+			createAMDataSet(seed, subsetSize, minSize);
+
+			for (boolean inf : inference) {
+				cache.get(seed).put(inf, new HashMap<Integer,Pair<RDFData, List<Double>>>());
+				
+				for (int depth : depths) {
+					Set<Statement> stmts = RDFUtils.getStatements4Depth(dataset, instances, depth, inf);
+					stmts.removeAll(blackList);
+
+					RDFDataSet cDS = new RDFSingleDataSet("Dataset: " + seed + ", " + inf + ", " + depth);
+					cDS.addStatements(stmts);
+					RDFData data = new RDFData(cDS, new ArrayList<Resource>(instances), new ArrayList<Statement>()); // we can have an empty blackList now.
+
+					cache.get(seed).get(inf).put(depth, new Pair<RDFData,List<Double>>(data, new ArrayList<Double>(target)));
+				}
+			}
+		}
+		return cache;
+	}
+
+
+	private static void createAMDataSet(long seed, int subsetSize, int minSize) {
 
 		Random rand = new Random(seed);
 
 		List<Statement> stmts = dataset.getStatementsFromStrings(null, "http://purl.org/collections/nl/am/objectCategory", null);
-		System.out.println(dataset.getLabel());
-
-		System.out.println("objects in AM: " + stmts.size());
+		
+		System.out.println(dataset.getLabel() + " # objects: " + stmts.size());
 
 
 		instances = new ArrayList<Resource>();
@@ -528,8 +565,6 @@ public class SimpleGraphFeaturesAMExperiment {
 		EvaluationUtils.removeSmallClasses(instances, labels, minSize);
 		target = EvaluationUtils.createTarget(labels);
 
-		System.out.println("Subset: ");
-		System.out.println(EvaluationUtils.computeClassCounts(target));
-
+		System.out.println("Subset class count: " + EvaluationUtils.computeClassCounts(target));
 	}
 }
