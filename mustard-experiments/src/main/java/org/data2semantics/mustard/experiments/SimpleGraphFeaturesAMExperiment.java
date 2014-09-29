@@ -86,7 +86,7 @@ public class SimpleGraphFeaturesAMExperiment {
 		boolean reverseWL = true; // WL should be in reverse mode, which means regular subtrees
 		boolean[] inference = {false,true};
 
-		int subsetSize = 700;
+		int subsetSize = 200;
 
 		int[] depths = {1,2};
 		int[] pathDepths = {2,4,6};
@@ -98,8 +98,8 @@ public class SimpleGraphFeaturesAMExperiment {
 		///* The baseline experiment, BoW (or BoL if you prefer)
 		for (boolean inf : inference) {
 			resTable.newRow("Baseline BoL: " + inf);
-			List<Result> tempRes = new ArrayList<Result>();
 			for (int d : depths) {
+				List<Result> tempRes = new ArrayList<Result>();
 				for (long sDS : seedsDataset) {
 					createAMDataSet(dataset, sDS, subsetSize, 10);
 					RDFData data = new RDFData(dataset, instances, blackList);
@@ -134,8 +134,8 @@ public class SimpleGraphFeaturesAMExperiment {
 		//*/
 		for (boolean inf : inference) {
 			resTable.newRow("Path Count through root: " + inf);	
-			List<Result> tempRes = new ArrayList<Result>();
 			for (int d : depths) {
+				List<Result> tempRes = new ArrayList<Result>();
 				for (long sDS : seedsDataset) {
 					createAMDataSet(dataset, sDS, subsetSize, 10);
 					RDFData data = new RDFData(dataset, instances, blackList);
@@ -176,8 +176,8 @@ public class SimpleGraphFeaturesAMExperiment {
 		//*/
 		for (boolean inf : inference) {
 			resTable.newRow("WL through root: " + inf);
-			List<Result> tempRes = new ArrayList<Result>();
 			for (int d : depths) {
+				List<Result> tempRes = new ArrayList<Result>();
 				for (long sDS : seedsDataset) {
 					createAMDataSet(dataset, sDS, subsetSize, 10);
 					RDFData data = new RDFData(dataset, instances, blackList);
@@ -218,8 +218,9 @@ public class SimpleGraphFeaturesAMExperiment {
 		//*/
 		for (boolean inf : inference) {
 			resTable.newRow("Path Count Tree: " + inf);	
-			List<Result> tempRes = new ArrayList<Result>();
+			
 			for (int d : depths) {
+				List<Result> tempRes = new ArrayList<Result>();
 				for (long sDS : seedsDataset) {
 					createAMDataSet(dataset, sDS, subsetSize, 10);
 					RDFData data = new RDFData(dataset, instances, blackList);
@@ -260,8 +261,9 @@ public class SimpleGraphFeaturesAMExperiment {
 		//*/
 		for (boolean inf : inference) {
 			resTable.newRow("WL Tree: " + inf);	
-			List<Result> tempRes = new ArrayList<Result>();
+			
 			for (int d : depths) {
+				List<Result> tempRes = new ArrayList<Result>();
 				for (long sDS : seedsDataset) {
 					createAMDataSet(dataset, sDS, subsetSize, 10);
 					RDFData data = new RDFData(dataset, instances, blackList);
@@ -303,8 +305,9 @@ public class SimpleGraphFeaturesAMExperiment {
 		///* RDF Path Count 
 		for (boolean inf : inference) {
 			resTable.newRow("RDF Path Count: " + inf);
-			List<Result> tempRes = new ArrayList<Result>();
+			
 			for (int d : depths) {
+				List<Result> tempRes = new ArrayList<Result>();
 				for (long sDS : seedsDataset) {
 					createAMDataSet(dataset, sDS, subsetSize, 10);
 					RDFData data = new RDFData(dataset, instances, blackList);
@@ -346,8 +349,9 @@ public class SimpleGraphFeaturesAMExperiment {
 		///* RDF WL
 		for (boolean inf : inference) {
 			resTable.newRow("RDF WL: " + inf);
-			List<Result> tempRes = new ArrayList<Result>();
+			
 			for (int d : depths) {
+				List<Result> tempRes = new ArrayList<Result>();
 				for (long sDS : seedsDataset) {
 					createAMDataSet(dataset, sDS, subsetSize, 10);
 					RDFData data = new RDFData(dataset, instances, blackList);
