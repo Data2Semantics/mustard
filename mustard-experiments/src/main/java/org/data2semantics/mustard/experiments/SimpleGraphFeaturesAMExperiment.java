@@ -75,7 +75,7 @@ public class SimpleGraphFeaturesAMExperiment {
 
 		LibLINEARParameters svmParms = new LibLINEARParameters(LibLINEARParameters.SVC_DUAL, cs);
 		svmParms.setDoCrossValidation(false);
-		svmParms.setNumFolds(5);
+		svmParms.setNumFolds(3);
 
 		/*
 		svmParms.setWeightLabels(EvaluationUtils.computeWeightLabels(target));
@@ -86,7 +86,7 @@ public class SimpleGraphFeaturesAMExperiment {
 		boolean reverseWL = true; // WL should be in reverse mode, which means regular subtrees
 		boolean[] inference = {false,true};
 
-		int subsetSize = 200;
+		int subsetSize = 400;
 
 		int[] depths = {1,2};
 		int[] pathDepths = {2,4,6};
@@ -101,8 +101,12 @@ public class SimpleGraphFeaturesAMExperiment {
 			for (int d : depths) {
 				List<Result> tempRes = new ArrayList<Result>();
 				for (long sDS : seedsDataset) {
+					long tic = System.currentTimeMillis();
 					createAMDataSet(dataset, sDS, subsetSize, 10);
 					RDFData data = new RDFData(dataset, instances, blackList);
+					long toc = System.currentTimeMillis();
+					
+					System.out.println("Dataset time: " + (toc - tic));
 
 					List<RDFWLSubTreeKernel> kernelsBaseline = new ArrayList<RDFWLSubTreeKernel>();	
 					kernelsBaseline.add(new RDFWLSubTreeKernel(0, d, inf, reverseWL, false, true));
