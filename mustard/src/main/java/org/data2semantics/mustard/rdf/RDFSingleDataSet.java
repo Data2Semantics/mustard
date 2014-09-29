@@ -1,6 +1,7 @@
 package org.data2semantics.mustard.rdf;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.openrdf.model.Literal;
@@ -79,7 +80,7 @@ public class RDFSingleDataSet extends RDFDataSet
 	 * @see org.data2semantics.tools.rdf.RDFDataSet#addStatements(java.util.List)
 	 */
 	@Override
-	public void addStatements(List<Statement> stmts) {
+	public void addStatements(Collection<Statement> stmts) {
 		try {
 			this.rdfRep.getConnection().add(stmts, (Resource) null);
 		} catch (Exception e) {

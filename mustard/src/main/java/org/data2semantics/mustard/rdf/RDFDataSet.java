@@ -1,5 +1,6 @@
 package org.data2semantics.mustard.rdf;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.openrdf.model.Literal;
@@ -31,7 +32,7 @@ public abstract class RDFDataSet
 	
 	public abstract Literal createLiteral(String lit);
 	
-	public abstract void addStatements(List<Statement> stmts);
+	public abstract void addStatements(Collection<Statement> stmts);
 	
 
 	public List<Statement> getFullGraph() 
