@@ -72,7 +72,7 @@ public class SimpleGraphFeaturesAMExperiment {
 		resTable.setDigits(3);
 
 		long[] seeds = {11};
-		long[] seedsDataset = {11}; // ,21,31,41,51}; //,61,71,81,91,101};
+		long[] seedsDataset = {11,21,31,41,51}; //,61,71,81,91,101};
 		double[] cs = {1, 10, 100, 1000};	
 
 		LibLINEARParameters svmParms = new LibLINEARParameters(LibLINEARParameters.SVC_DUAL, cs);
@@ -86,18 +86,19 @@ public class SimpleGraphFeaturesAMExperiment {
 
 		
 		boolean reverseWL = true; // WL should be in reverse mode, which means regular subtrees
-		boolean[] inference = {false};
+		boolean[] inference = {false,true};
 
-		int subsetSize = 400;
+		int subsetSize = 100;
+		int minClassSize = 0;
 
-		int[] depths = {2};
+		int[] depths = {1,2};
 		int[] pathDepths = {2,4,6};
 		int[] iterationsWL = {2,4,6};
 
 		boolean depthTimesTwo = true;
 
 
-		Map<Long, Map<Boolean, Map<Integer,Pair<RDFData, List<Double>>>>> cache = createDataSetCache(seedsDataset, subsetSize, 10, depths, inference);
+		Map<Long, Map<Boolean, Map<Integer,Pair<RDFData, List<Double>>>>> cache = createDataSetCache(seedsDataset, subsetSize, minClassSize, depths, inference);
 		dataset = null;
 
 
