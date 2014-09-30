@@ -88,7 +88,7 @@ public class SimpleGraphFeaturesAMExperiment {
 		boolean reverseWL = true; // WL should be in reverse mode, which means regular subtrees
 		boolean[] inference = {false,true};
 
-		int subsetSize = 100;
+		int subsetSize = 400;
 		int minClassSize = 0;
 
 		int[] depths = {1,2};
