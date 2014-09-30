@@ -28,6 +28,7 @@ import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFTreePathCountK
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFTreeWLSubTreeKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFWLRootSubTreeKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFWLSubTreeKernel;
+import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.RDFDTGraphWLSubTreeKernel;
 import org.data2semantics.mustard.learners.evaluation.Accuracy;
 import org.data2semantics.mustard.learners.evaluation.EvaluationFunction;
 import org.data2semantics.mustard.learners.evaluation.EvaluationUtils;
@@ -64,9 +65,8 @@ public class SimpleGraphFeaturesExperiment {
 
 		createAffiliationPredictionDataSet();
 		//createGeoDataSet(1, 1, 10, "http://data.bgs.ac.uk/ref/Lexicon/hasLithogenesis");
-		//createCommitteeMemberPredictionDataSet();
-		
-		createAMDataSet(1, 1, 10);
+		//createCommitteeMemberPredictionDataSet();	
+		//createAMDataSet(1, 1, 10);
 		
 		
 		List<EvaluationFunction> evalFuncs = new ArrayList<EvaluationFunction>();
@@ -91,14 +91,16 @@ public class SimpleGraphFeaturesExperiment {
 		boolean reverseWL = true; // WL should be in reverse mode, which means regular subtrees
 		boolean[] inference = {false,true};
 
-		int[] depths = {2};
-		int[] pathDepths = {4};
-		int[] iterationsWL = {4};
+		int[] depths = {1,2,3};
+		int[] pathDepths = {0,2,4,6};
+		int[] iterationsWL = {0,2,4,6};
+		
+		boolean depthTimesTwo = true;
 
 
 		RDFData data = new RDFData(dataset, instances, blackList);
 
-		/* The baseline experiment, BoW (or BoL if you prefer)
+		//* The baseline experiment, BoW (or BoL if you prefer)
 		for (boolean inf : inference) {
 			resTable.newRow("Baseline BoL: " + inf);		 
 			for (int d : depths) {
@@ -124,10 +126,14 @@ public class SimpleGraphFeaturesExperiment {
 			for (int d : depths) {
 
 				List<RDFRootPathCountKernel> kernels = new ArrayList<RDFRootPathCountKernel>();	
-
-				for (int dd : pathDepths) {
-					kernels.add(new RDFRootPathCountKernel(dd, d, true, inf, true));
-				}
+			
+				if (depthTimesTwo) {
+					kernels.add(new RDFRootPathCountKernel(d*2, d, true, inf, true));
+				} else {
+					for (int dd : iterationsWL) {
+						kernels.add(new RDFRootPathCountKernel(dd, d, true, inf, true));
+					}
+				}				
 
 				//Collections.shuffle(target);
 				SimpleGraphKernelExperiment<RDFData> exp = new SimpleGraphKernelExperiment<RDFData>(kernels, data, target, svmParms, seeds, evalFuncs);
@@ -147,9 +153,13 @@ public class SimpleGraphFeaturesExperiment {
 			for (int d : depths) {
 
 				List<RDFWLRootSubTreeKernel> kernels = new ArrayList<RDFWLRootSubTreeKernel>();	
-
-				for (int dd : iterationsWL) {
-					kernels.add(new RDFWLRootSubTreeKernel(dd, d, inf, reverseWL, false, true));
+				
+				if (depthTimesTwo) {
+					kernels.add(new RDFWLRootSubTreeKernel(d*2, d, inf, reverseWL, false, true));
+				} else {
+					for (int dd : iterationsWL) {
+						kernels.add(new RDFWLRootSubTreeKernel(dd, d, inf, reverseWL, false, true));
+					}
 				}
 
 				//Collections.shuffle(target);
@@ -170,9 +180,13 @@ public class SimpleGraphFeaturesExperiment {
 			for (int d : depths) {
 
 				List<RDFTreePathCountKernel> kernels = new ArrayList<RDFTreePathCountKernel>();	
-
-				for (int dd : pathDepths) {
-					kernels.add(new RDFTreePathCountKernel(dd, d, inf, true));
+				
+				if (depthTimesTwo) {
+					kernels.add(new RDFTreePathCountKernel(d*2, d, inf, true));
+				} else {
+					for (int dd : iterationsWL) {
+						kernels.add(new RDFTreePathCountKernel(dd, d, inf, true));
+					}
 				}
 
 				//Collections.shuffle(target);
@@ -193,9 +207,13 @@ public class SimpleGraphFeaturesExperiment {
 			for (int d : depths) {
 
 				List<RDFTreeWLSubTreeKernel> kernels = new ArrayList<RDFTreeWLSubTreeKernel>();	
-
-				for (int dd : iterationsWL) {
-					kernels.add(new RDFTreeWLSubTreeKernel(dd, d, inf, reverseWL, false, true));
+				
+				if (depthTimesTwo) {
+					kernels.add(new RDFTreeWLSubTreeKernel(d*2, d, inf, reverseWL, false, true));
+				} else {
+					for (int dd : iterationsWL) {
+						kernels.add(new RDFTreeWLSubTreeKernel(dd, d, inf, reverseWL, false, true));
+					}
 				}
 
 				//Collections.shuffle(target);
@@ -212,15 +230,19 @@ public class SimpleGraphFeaturesExperiment {
 
 	
 		
-		/* RDF Path Count 
+		///* RDF Path Count 
 		for (boolean inf : inference) {
 			resTable.newRow("RDF Path Count: " + inf);		 
 			for (int d : depths) {
 
 				List<RDFPathCountKernel> kernels = new ArrayList<RDFPathCountKernel>();	
-
-				for (int dd : pathDepths) {
-					kernels.add(new RDFPathCountKernel(dd, d, inf, true));
+				
+				if (depthTimesTwo) {
+					kernels.add(new RDFPathCountKernel(d*2, d, inf, true));
+				} else {
+					for (int dd : iterationsWL) {
+						kernels.add(new RDFPathCountKernel(dd, d, inf, true));
+					}
 				}
 
 				//Collections.shuffle(target);
@@ -235,15 +257,19 @@ public class SimpleGraphFeaturesExperiment {
 		}
 		//*/
 
-		/* RDF WL 
+		///* RDF WL 
 		for (boolean inf : inference) {
 			resTable.newRow("RDF WL: " + inf);		 
 			for (int d : depths) {
 
 				List<RDFWLSubTreeKernel> kernels = new ArrayList<RDFWLSubTreeKernel>();	
 
-				for (int dd : iterationsWL) {
-					kernels.add(new RDFWLSubTreeKernel(dd, d, inf, reverseWL, false, true));
+				if (depthTimesTwo) {
+					kernels.add(new RDFWLSubTreeKernel(d*2, d, inf, reverseWL, false, true));
+				} else {
+					for (int dd : iterationsWL) {
+						kernels.add(new RDFWLSubTreeKernel(dd, d, inf, reverseWL, false, true));
+					}
 				}
 
 				//Collections.shuffle(target);
@@ -259,7 +285,7 @@ public class SimpleGraphFeaturesExperiment {
 		//*/
 		
 		
-		///* Regular WL
+		/* Regular WL
 		for (boolean inf : inference) {
 			resTable.newRow("Regular WL: " + inf);		
 			for (int d : depths) {
@@ -284,10 +310,15 @@ public class SimpleGraphFeaturesExperiment {
 				System.out.println("Avg # nodes: " + avgNodes + " , avg # links: " + avgLinks);
 
 				List<WLSubTreeKernel> kernels = new ArrayList<WLSubTreeKernel>();
-
-				for (int dd : iterationsWL) {
-					WLSubTreeKernel kernel = new WLSubTreeKernel(dd, reverseWL, true);			
+				
+				if (depthTimesTwo) {
+					WLSubTreeKernel kernel = new WLSubTreeKernel(d*2, reverseWL, true);			
 					kernels.add(kernel);
+				} else {
+					for (int dd : iterationsWL) {
+						WLSubTreeKernel kernel = new WLSubTreeKernel(dd, reverseWL, true);			
+						kernels.add(kernel);
+					}
 				}
 
 				//resTable.newRow(kernels.get(0).getLabel() + "_" + inf);
@@ -308,7 +339,7 @@ public class SimpleGraphFeaturesExperiment {
 		resTable.addCompResults(resTable.getBestResults());
 		System.out.println(resTable);
 		
-		///* Path Count full
+		/* Path Count full
 		for (boolean inf : inference) {
 			resTable.newRow("Path Count Full: " + inf);		
 			for (int d : depths) {
@@ -333,10 +364,15 @@ public class SimpleGraphFeaturesExperiment {
 				System.out.println("Avg # nodes: " + avgNodes + " , avg # links: " + avgLinks);
 
 				List<PathCountKernel> kernels = new ArrayList<PathCountKernel>();
-
-				for (int dd : pathDepths) {
-					PathCountKernel kernel = new PathCountKernel(dd, true);			
+				
+				if (depthTimesTwo) {
+					PathCountKernel kernel = new PathCountKernel(d*2, true);			
 					kernels.add(kernel);
+				} else {
+					for (int dd : iterationsWL) {
+						PathCountKernel kernel = new PathCountKernel(dd, true);			
+						kernels.add(kernel);
+					}
 				}
 
 				//resTable.newRow(kernels.get(0).getLabel() + "_" + inf);
