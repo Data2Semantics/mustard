@@ -14,6 +14,7 @@ import org.data2semantics.mustard.experiments.utils.ResultsTable;
 import org.data2semantics.mustard.experiments.utils.SimpleGraphFeatureVectorKernelExperiment;
 import org.data2semantics.mustard.kernels.data.GraphList;
 import org.data2semantics.mustard.kernels.data.RDFData;
+import org.data2semantics.mustard.kernels.data.SingleDTGraph;
 import org.data2semantics.mustard.kernels.graphkernels.CombinedKernel;
 import org.data2semantics.mustard.kernels.graphkernels.FeatureVectorKernel;
 import org.data2semantics.mustard.kernels.graphkernels.GraphKernel;
@@ -28,6 +29,12 @@ import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFTreePathCountK
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFTreeWLSubTreeKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFWLRootSubTreeKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFWLSubTreeKernel;
+import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.RDFDTGraphPathCountKernel;
+import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.RDFDTGraphRootPathCountKernel;
+import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.RDFDTGraphTreePathCountKernel;
+import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.RDFDTGraphTreeWLSubTreeKernel;
+import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.RDFDTGraphWLRootSubTreeKernel;
+import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.RDFDTGraphWLSubTreeKernel;
 import org.data2semantics.mustard.learners.evaluation.Accuracy;
 import org.data2semantics.mustard.learners.evaluation.EvaluationFunction;
 import org.data2semantics.mustard.learners.evaluation.EvaluationUtils;
@@ -98,7 +105,7 @@ public class SimpleGraphFeaturesAMExperiment {
 		boolean depthTimesTwo = true;
 
 
-		Map<Long, Map<Boolean, Map<Integer,Pair<RDFData, List<Double>>>>> cache = createDataSetCache(seedsDataset, subsetSize, minClassSize, depths, inference);
+		Map<Long, Map<Boolean, Map<Integer,Pair<SingleDTGraph, List<Double>>>>> cache = createDataSetCache(seedsDataset, subsetSize, minClassSize, depths, inference);
 		dataset = null;
 
 
@@ -108,16 +115,16 @@ public class SimpleGraphFeaturesAMExperiment {
 			for (int d : depths) {
 				List<Result> tempRes = new ArrayList<Result>();
 				for (long sDS : seedsDataset) {
-					Pair<RDFData, List<Double>> p = cache.get(sDS).get(inf).get(d);
-					RDFData data = p.getFirst();
+					Pair<SingleDTGraph, List<Double>> p = cache.get(sDS).get(inf).get(d);
+					SingleDTGraph data = p.getFirst();
 					target = p.getSecond();
 
 
-					List<RDFWLSubTreeKernel> kernelsBaseline = new ArrayList<RDFWLSubTreeKernel>();	
-					kernelsBaseline.add(new RDFWLSubTreeKernel(0, d, inf, reverseWL, false, true));
+					List<RDFDTGraphWLSubTreeKernel> kernelsBaseline = new ArrayList<RDFDTGraphWLSubTreeKernel>();	
+					kernelsBaseline.add(new RDFDTGraphWLSubTreeKernel(0, d, reverseWL, false, true));
 
 					//Collections.shuffle(target);
-					SimpleGraphFeatureVectorKernelExperiment<RDFData> exp = new SimpleGraphFeatureVectorKernelExperiment<RDFData>(kernelsBaseline, data, target, svmParms, seeds, evalFuncs);
+					SimpleGraphFeatureVectorKernelExperiment<SingleDTGraph> exp = new SimpleGraphFeatureVectorKernelExperiment<SingleDTGraph>(kernelsBaseline, data, target, svmParms, seeds, evalFuncs);
 					exp.run();
 
 					if (tempRes.isEmpty()) {
@@ -146,21 +153,21 @@ public class SimpleGraphFeaturesAMExperiment {
 			for (int d : depths) {
 				List<Result> tempRes = new ArrayList<Result>();
 				for (long sDS : seedsDataset) {
-					Pair<RDFData, List<Double>> p = cache.get(sDS).get(inf).get(d);
-					RDFData data = p.getFirst();
+					Pair<SingleDTGraph, List<Double>> p = cache.get(sDS).get(inf).get(d);
+					SingleDTGraph data = p.getFirst();
 					target = p.getSecond();
 
-					List<RDFRootPathCountKernel> kernels = new ArrayList<RDFRootPathCountKernel>();	
+					List<RDFDTGraphRootPathCountKernel> kernels = new ArrayList<RDFDTGraphRootPathCountKernel>();	
 
 					if (depthTimesTwo) {
-						kernels.add(new RDFRootPathCountKernel(d*2, d, true, inf, true));
+						kernels.add(new RDFDTGraphRootPathCountKernel(d*2, true, true));
 					} else {
 						for (int dd : pathDepths) {
-							kernels.add(new RDFRootPathCountKernel(dd, d, true, inf, true));
+							kernels.add(new RDFDTGraphRootPathCountKernel(dd, true, true));
 						}
 					}
 
-					SimpleGraphFeatureVectorKernelExperiment<RDFData> exp = new SimpleGraphFeatureVectorKernelExperiment<RDFData>(kernels, data, target, svmParms, seeds, evalFuncs);
+					SimpleGraphFeatureVectorKernelExperiment<SingleDTGraph> exp = new SimpleGraphFeatureVectorKernelExperiment<SingleDTGraph>(kernels, data, target, svmParms, seeds, evalFuncs);
 					exp.run();
 
 					if (tempRes.isEmpty()) {
@@ -189,21 +196,21 @@ public class SimpleGraphFeaturesAMExperiment {
 			for (int d : depths) {
 				List<Result> tempRes = new ArrayList<Result>();
 				for (long sDS : seedsDataset) {
-					Pair<RDFData, List<Double>> p = cache.get(sDS).get(inf).get(d);
-					RDFData data = p.getFirst();
+					Pair<SingleDTGraph, List<Double>> p = cache.get(sDS).get(inf).get(d);
+					SingleDTGraph data = p.getFirst();
 					target = p.getSecond();
 
-					List<RDFWLRootSubTreeKernel> kernels = new ArrayList<RDFWLRootSubTreeKernel>();	
+					List<RDFDTGraphWLRootSubTreeKernel> kernels = new ArrayList<RDFDTGraphWLRootSubTreeKernel>();	
 
 					if (depthTimesTwo) {
-						kernels.add(new RDFWLRootSubTreeKernel(d*2, d, inf, reverseWL, false, true));
+						kernels.add(new RDFDTGraphWLRootSubTreeKernel(d*2, d, reverseWL, false, true));
 					} else {
 						for (int dd : pathDepths) {
-							kernels.add(new RDFWLRootSubTreeKernel(dd, d, inf, reverseWL, false, true));
+							kernels.add(new RDFDTGraphWLRootSubTreeKernel(dd, d, reverseWL, false, true));
 						}
 					}
 
-					SimpleGraphFeatureVectorKernelExperiment<RDFData> exp = new SimpleGraphFeatureVectorKernelExperiment<RDFData>(kernels, data, target, svmParms, seeds, evalFuncs);
+					SimpleGraphFeatureVectorKernelExperiment<SingleDTGraph> exp = new SimpleGraphFeatureVectorKernelExperiment<SingleDTGraph>(kernels, data, target, svmParms, seeds, evalFuncs);
 					exp.run();
 
 					if (tempRes.isEmpty()) {
@@ -233,21 +240,21 @@ public class SimpleGraphFeaturesAMExperiment {
 			for (int d : depths) {
 				List<Result> tempRes = new ArrayList<Result>();
 				for (long sDS : seedsDataset) {
-					Pair<RDFData, List<Double>> p = cache.get(sDS).get(inf).get(d);
-					RDFData data = p.getFirst();
+					Pair<SingleDTGraph, List<Double>> p = cache.get(sDS).get(inf).get(d);
+					SingleDTGraph data = p.getFirst();
 					target = p.getSecond();
 
-					List<RDFTreePathCountKernel> kernels = new ArrayList<RDFTreePathCountKernel>();		
+					List<RDFDTGraphTreePathCountKernel> kernels = new ArrayList<RDFDTGraphTreePathCountKernel>();		
 
 					if (depthTimesTwo) {
-						kernels.add(new RDFTreePathCountKernel(d*2, d, inf, true));
+						kernels.add(new RDFDTGraphTreePathCountKernel(d*2, true));
 					} else {
 						for (int dd : pathDepths) {
-							kernels.add(new RDFTreePathCountKernel(dd, d, inf, true));
+							kernels.add(new RDFDTGraphTreePathCountKernel(dd, true));
 						}
 					}
 
-					SimpleGraphFeatureVectorKernelExperiment<RDFData> exp = new SimpleGraphFeatureVectorKernelExperiment<RDFData>(kernels, data, target, svmParms, seeds, evalFuncs);
+					SimpleGraphFeatureVectorKernelExperiment<SingleDTGraph> exp = new SimpleGraphFeatureVectorKernelExperiment<SingleDTGraph>(kernels, data, target, svmParms, seeds, evalFuncs);
 					exp.run();
 
 					if (tempRes.isEmpty()) {
@@ -277,21 +284,21 @@ public class SimpleGraphFeaturesAMExperiment {
 			for (int d : depths) {
 				List<Result> tempRes = new ArrayList<Result>();
 				for (long sDS : seedsDataset) {
-					Pair<RDFData, List<Double>> p = cache.get(sDS).get(inf).get(d);
-					RDFData data = p.getFirst();
+					Pair<SingleDTGraph, List<Double>> p = cache.get(sDS).get(inf).get(d);
+					SingleDTGraph data = p.getFirst();
 					target = p.getSecond();
 
-					List<RDFTreeWLSubTreeKernel> kernels = new ArrayList<RDFTreeWLSubTreeKernel>();	
+					List<RDFDTGraphTreeWLSubTreeKernel> kernels = new ArrayList<RDFDTGraphTreeWLSubTreeKernel>();	
 
 					if (depthTimesTwo) {
-						kernels.add(new RDFTreeWLSubTreeKernel(d*2, d, inf, reverseWL, false, true));
+						kernels.add(new RDFDTGraphTreeWLSubTreeKernel(d*2, d, reverseWL, false, true));
 					} else {
 						for (int dd : pathDepths) {
-							kernels.add(new RDFTreeWLSubTreeKernel(dd, d, inf, reverseWL, false, true));
+							kernels.add(new RDFDTGraphTreeWLSubTreeKernel(dd, d, reverseWL, false, true));
 						}
 					}
 
-					SimpleGraphFeatureVectorKernelExperiment<RDFData> exp = new SimpleGraphFeatureVectorKernelExperiment<RDFData>(kernels, data, target, svmParms, seeds, evalFuncs);
+					SimpleGraphFeatureVectorKernelExperiment<SingleDTGraph> exp = new SimpleGraphFeatureVectorKernelExperiment<SingleDTGraph>(kernels, data, target, svmParms, seeds, evalFuncs);
 					exp.run();
 
 					if (tempRes.isEmpty()) {
@@ -322,21 +329,21 @@ public class SimpleGraphFeaturesAMExperiment {
 			for (int d : depths) {
 				List<Result> tempRes = new ArrayList<Result>();
 				for (long sDS : seedsDataset) {
-					Pair<RDFData, List<Double>> p = cache.get(sDS).get(inf).get(d);
-					RDFData data = p.getFirst();
+					Pair<SingleDTGraph, List<Double>> p = cache.get(sDS).get(inf).get(d);
+					SingleDTGraph data = p.getFirst();
 					target = p.getSecond();
 
-					List<RDFPathCountKernel> kernels = new ArrayList<RDFPathCountKernel>();	
+					List<RDFDTGraphPathCountKernel> kernels = new ArrayList<RDFDTGraphPathCountKernel>();	
 
 					if (depthTimesTwo) {
-						kernels.add(new RDFPathCountKernel(d*2, d, inf, true));
+						kernels.add(new RDFDTGraphPathCountKernel(d*2, d, true));
 					} else {
 						for (int dd : pathDepths) {
-							kernels.add(new RDFPathCountKernel(dd, d, inf, true));
+							kernels.add(new RDFDTGraphPathCountKernel(dd, d, true));
 						}
 					}
 
-					SimpleGraphFeatureVectorKernelExperiment<RDFData> exp = new SimpleGraphFeatureVectorKernelExperiment<RDFData>(kernels, data, target, svmParms, seeds, evalFuncs);
+					SimpleGraphFeatureVectorKernelExperiment<SingleDTGraph> exp = new SimpleGraphFeatureVectorKernelExperiment<SingleDTGraph>(kernels, data, target, svmParms, seeds, evalFuncs);
 					exp.run();
 
 					if (tempRes.isEmpty()) {
@@ -367,21 +374,21 @@ public class SimpleGraphFeaturesAMExperiment {
 			for (int d : depths) {
 				List<Result> tempRes = new ArrayList<Result>();
 				for (long sDS : seedsDataset) {
-					Pair<RDFData, List<Double>> p = cache.get(sDS).get(inf).get(d);
-					RDFData data = p.getFirst();
+					Pair<SingleDTGraph, List<Double>> p = cache.get(sDS).get(inf).get(d);
+					SingleDTGraph data = p.getFirst();
 					target = p.getSecond();
 
-					List<RDFWLSubTreeKernel> kernels = new ArrayList<RDFWLSubTreeKernel>();	
+					List<RDFDTGraphWLSubTreeKernel> kernels = new ArrayList<RDFDTGraphWLSubTreeKernel>();	
 
 					if (depthTimesTwo) {
-						kernels.add(new RDFWLSubTreeKernel(d*2, d, inf, reverseWL, false, true));
+						kernels.add(new RDFDTGraphWLSubTreeKernel(d*2, d, reverseWL, false, true));
 					} else {
 						for (int dd : iterationsWL) {
-							kernels.add(new RDFWLSubTreeKernel(dd, d, inf, reverseWL, false, true));
+							kernels.add(new RDFDTGraphWLSubTreeKernel(dd, d, reverseWL, false, true));
 						}
 					}
 
-					SimpleGraphFeatureVectorKernelExperiment<RDFData> exp = new SimpleGraphFeatureVectorKernelExperiment<RDFData>(kernels, data, target, svmParms, seeds, evalFuncs);
+					SimpleGraphFeatureVectorKernelExperiment<SingleDTGraph> exp = new SimpleGraphFeatureVectorKernelExperiment<SingleDTGraph>(kernels, data, target, svmParms, seeds, evalFuncs);
 					exp.run();
 
 					if (tempRes.isEmpty()) {
@@ -509,25 +516,24 @@ public class SimpleGraphFeaturesAMExperiment {
 
 	}
 
-	private static Map<Long, Map<Boolean, Map<Integer,Pair<RDFData, List<Double>>>>> createDataSetCache(long[] seeds, int subsetSize, int minSize, int[] depths, boolean[] inference) {
-		Map<Long, Map<Boolean, Map<Integer,Pair<RDFData, List<Double>>>>> cache = new HashMap<Long, Map<Boolean, Map<Integer,Pair<RDFData, List<Double>>>>>();
+	private static Map<Long, Map<Boolean, Map<Integer,Pair<SingleDTGraph, List<Double>>>>> createDataSetCache(long[] seeds, int subsetSize, int minSize, int[] depths, boolean[] inference) {
+		Map<Long, Map<Boolean, Map<Integer,Pair<SingleDTGraph, List<Double>>>>> cache = new HashMap<Long, Map<Boolean, Map<Integer,Pair<SingleDTGraph, List<Double>>>>>();
 
 		for (long seed : seeds) {
-			cache.put(seed, new HashMap<Boolean, Map<Integer,Pair<RDFData, List<Double>>>>());
+			cache.put(seed, new HashMap<Boolean, Map<Integer,Pair<SingleDTGraph, List<Double>>>>());
 			createAMDataSet(seed, subsetSize, minSize);
 
 			for (boolean inf : inference) {
-				cache.get(seed).put(inf, new HashMap<Integer,Pair<RDFData, List<Double>>>());
+				cache.get(seed).put(inf, new HashMap<Integer,Pair<SingleDTGraph, List<Double>>>());
 				
 				for (int depth : depths) {
 					Set<Statement> stmts = RDFUtils.getStatements4Depth(dataset, instances, depth, inf);
 					stmts.removeAll(blackList);
-
-					RDFDataSet cDS = new RDFSingleDataSet("Dataset: " + seed + ", " + inf + ", " + depth);
-					cDS.addStatements(stmts);
-					RDFData data = new RDFData(cDS, new ArrayList<Resource>(instances), new ArrayList<Statement>()); // we can have an empty blackList now.
-
-					cache.get(seed).get(inf).put(depth, new Pair<RDFData,List<Double>>(data, new ArrayList<Double>(target)));
+					List<DTNode<String,String>> instanceNodes = new ArrayList<DTNode<String,String>>();
+					DTGraph<String,String> graph = RDFUtils.statements2Graph(stmts, RDFUtils.REGULAR_LITERALS, instances, instanceNodes, true);
+					SingleDTGraph g = new SingleDTGraph(graph, instanceNodes);
+					
+					cache.get(seed).get(inf).put(depth, new Pair<SingleDTGraph,List<Double>>(g, new ArrayList<Double>(target)));
 				}
 			}
 		}
@@ -569,4 +575,8 @@ public class SimpleGraphFeaturesAMExperiment {
 
 		System.out.println("Subset class count: " + EvaluationUtils.computeClassCounts(target));
 	}
+	
+	
+
+	
 }
