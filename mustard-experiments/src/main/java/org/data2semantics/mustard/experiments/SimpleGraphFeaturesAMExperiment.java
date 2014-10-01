@@ -549,7 +549,6 @@ public class SimpleGraphFeaturesAMExperiment {
 		
 		System.out.println(dataset.getLabel() + " # objects: " + stmts.size());
 
-
 		instances = new ArrayList<Resource>();
 		labels = new ArrayList<Value>();
 		blackList = new ArrayList<Statement>();
