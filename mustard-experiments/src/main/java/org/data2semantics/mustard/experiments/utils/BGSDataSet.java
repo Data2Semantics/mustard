@@ -12,7 +12,7 @@ import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 import org.openrdf.model.Value;
 
-public class BGSDataSet implements ClassificationDataSet {
+public class BGSDataSet implements LargeClassificationDataSet {
 	private RDFDataSet tripleStore;
 	private String property;
 	private int minClassSize;
@@ -24,8 +24,7 @@ public class BGSDataSet implements ClassificationDataSet {
 
 
 
-	public BGSDataSet(RDFDataSet tripleStore, String property,
-			int minClassSize, long seed, double fraction) {
+	public BGSDataSet(RDFDataSet tripleStore, String property, long seed, double fraction, int minClassSize) {
 		this.tripleStore = tripleStore;
 		this.property = property;
 		this.minClassSize = minClassSize;
@@ -33,7 +32,11 @@ public class BGSDataSet implements ClassificationDataSet {
 		this.fraction = fraction;
 	}
 
-	public void create() {	
+	public void create() {
+		create(seed, fraction, minClassSize);	
+	}
+	
+	public void create(long seed, double fraction, int minClassSize) {	
 		Random rand = new Random(seed);
 
 		List<Statement> stmts = tripleStore.getStatementsFromStrings(null, "http://www.w3.org/2000/01/rdf-schema#isDefinedBy", "http://data.bgs.ac.uk/ref/Lexicon/NamedRockUnit");
@@ -66,7 +69,7 @@ public class BGSDataSet implements ClassificationDataSet {
 				}
 			}
 		}
-
+		
 		EvaluationUtils.removeSmallClasses(instances, labels, minClassSize);
 		blackList = DataSetUtils.createBlacklist(tripleStore, instances2, labels2);
 

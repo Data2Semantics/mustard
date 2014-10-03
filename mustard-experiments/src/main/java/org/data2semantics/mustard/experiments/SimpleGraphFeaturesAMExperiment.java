@@ -9,6 +9,10 @@ import java.util.Random;
 import java.util.Set;
 
 import org.data2semantics.mustard.experiments.rescal.RESCALKernel;
+import org.data2semantics.mustard.experiments.utils.AMDataSet;
+import org.data2semantics.mustard.experiments.utils.BGSDataSet;
+import org.data2semantics.mustard.experiments.utils.ClassificationDataSet;
+import org.data2semantics.mustard.experiments.utils.LargeClassificationDataSet;
 import org.data2semantics.mustard.experiments.utils.Result;
 import org.data2semantics.mustard.experiments.utils.ResultsTable;
 import org.data2semantics.mustard.experiments.utils.SimpleGraphFeatureVectorKernelExperiment;
@@ -56,20 +60,26 @@ import org.openrdf.model.Value;
 import org.openrdf.rio.RDFFormat;
 
 public class SimpleGraphFeaturesAMExperiment {
-	private static String AM_FOLDER =  "C:\\Users\\Gerben\\Dropbox\\AM_data";
+	private static final String AM_FOLDER =  "C:\\Users\\Gerben\\Dropbox\\AM_data";
+	private static final String BGS_FOLDER = "C:\\Users\\Gerben\\Dropbox\\data_bgs_ac_uk_ALL";
 
 	private static List<Resource> instances;
 	private static List<Value> labels;
 	private static List<Statement> blackList;
 	private static List<Double> target;
-	private static RDFDataSet dataset;
+	private static RDFDataSet tripleStore;
 
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
 
-		dataset = new RDFFileDataSet(AM_FOLDER, RDFFormat.TURTLE);
+		
+		//tripleStore = new RDFFileDataSet(AM_FOLDER, RDFFormat.TURTLE);
+		//LargeClassificationDataSet ds = new AMDataSet(tripleStore, 10, 0.01, 5);
+		
+		tripleStore = new RDFFileDataSet(BGS_FOLDER, RDFFormat.NTRIPLES);
+		LargeClassificationDataSet ds = new BGSDataSet(tripleStore, "http://data.bgs.ac.uk/ref/Lexicon/hasTheme", 10, 0.05, 5);
 
 		List<EvaluationFunction> evalFuncs = new ArrayList<EvaluationFunction>();
 		evalFuncs.add(new Accuracy());
@@ -77,6 +87,7 @@ public class SimpleGraphFeaturesAMExperiment {
 
 		ResultsTable resTable = new ResultsTable();
 		resTable.setDigits(3);
+		resTable.setManWU(0.05);
 
 		long[] seeds = {11};
 		long[] seedsDataset = {11,21,31,41,51}; //,61,71,81,91,101};
@@ -91,22 +102,23 @@ public class SimpleGraphFeaturesAMExperiment {
 		svmParms.setWeights(EvaluationUtils.computeWeights(target));
 		//*/
 
+		double fraction = 0.1;
+		int minClassSize = 50;
+		
 		
 		boolean reverseWL = true; // WL should be in reverse mode, which means regular subtrees
 		boolean[] inference = {false,true};
 
-		int subsetSize = 600;
-		int minClassSize = 5;
-
-		int[] depths = {1,2};
+		int[] depths = {1,2,3};
 		int[] pathDepths = {2,4,6};
 		int[] iterationsWL = {2,4,6};
 
 		boolean depthTimesTwo = true;
 
+			
 
-		Map<Long, Map<Boolean, Map<Integer,Pair<SingleDTGraph, List<Double>>>>> cache = createDataSetCache(seedsDataset, subsetSize, minClassSize, depths, inference);
-		dataset = null;
+		Map<Long, Map<Boolean, Map<Integer,Pair<SingleDTGraph, List<Double>>>>> cache = createDataSetCache(ds, seedsDataset, fraction, minClassSize, depths, inference);
+		tripleStore = null;
 
 
 		///* The baseline experiment, BoW (or BoL if you prefer)
@@ -147,7 +159,7 @@ public class SimpleGraphFeaturesAMExperiment {
 
 		//*/
 
-		//*/
+		/*
 		for (boolean inf : inference) {
 			resTable.newRow("Path Count through root: " + inf);	
 			for (int d : depths) {
@@ -190,7 +202,7 @@ public class SimpleGraphFeaturesAMExperiment {
 
 		//*/
 
-		//*/
+		/*
 		for (boolean inf : inference) {
 			resTable.newRow("WL through root: " + inf);
 			for (int d : depths) {
@@ -233,7 +245,7 @@ public class SimpleGraphFeaturesAMExperiment {
 
 		//*/
 
-		//*/
+		/*
 		for (boolean inf : inference) {
 			resTable.newRow("Path Count Tree: " + inf);	
 
@@ -277,7 +289,7 @@ public class SimpleGraphFeaturesAMExperiment {
 
 		//*/
 
-		//*/
+		/*
 		for (boolean inf : inference) {
 			resTable.newRow("WL Tree: " + inf);	
 
@@ -516,24 +528,24 @@ public class SimpleGraphFeaturesAMExperiment {
 
 	}
 
-	private static Map<Long, Map<Boolean, Map<Integer,Pair<SingleDTGraph, List<Double>>>>> createDataSetCache(long[] seeds, int subsetSize, int minSize, int[] depths, boolean[] inference) {
+	private static Map<Long, Map<Boolean, Map<Integer,Pair<SingleDTGraph, List<Double>>>>> createDataSetCache(LargeClassificationDataSet data, long[] seeds, double fraction, int minSize, int[] depths, boolean[] inference) {
 		Map<Long, Map<Boolean, Map<Integer,Pair<SingleDTGraph, List<Double>>>>> cache = new HashMap<Long, Map<Boolean, Map<Integer,Pair<SingleDTGraph, List<Double>>>>>();
 
 		for (long seed : seeds) {
 			cache.put(seed, new HashMap<Boolean, Map<Integer,Pair<SingleDTGraph, List<Double>>>>());
-			createAMDataSet(seed, subsetSize, minSize);
-
+			data.create(seed, fraction, minSize);
+	
 			for (boolean inf : inference) {
 				cache.get(seed).put(inf, new HashMap<Integer,Pair<SingleDTGraph, List<Double>>>());
 				
 				for (int depth : depths) {
-					Set<Statement> stmts = RDFUtils.getStatements4Depth(dataset, instances, depth, inf);
-					stmts.removeAll(blackList);
+					Set<Statement> stmts = RDFUtils.getStatements4Depth(tripleStore, data.getRDFData().getInstances(), depth, inf);
+					stmts.removeAll(data.getRDFData().getBlackList());
 					List<DTNode<String,String>> instanceNodes = new ArrayList<DTNode<String,String>>();
-					DTGraph<String,String> graph = RDFUtils.statements2Graph(stmts, RDFUtils.REGULAR_LITERALS, instances, instanceNodes, true);
+					DTGraph<String,String> graph = RDFUtils.statements2Graph(stmts, RDFUtils.REGULAR_LITERALS, data.getRDFData().getInstances(), instanceNodes, true);
 					SingleDTGraph g = new SingleDTGraph(graph, instanceNodes);
 					
-					cache.get(seed).get(inf).put(depth, new Pair<SingleDTGraph,List<Double>>(g, new ArrayList<Double>(target)));
+					cache.get(seed).get(inf).put(depth, new Pair<SingleDTGraph,List<Double>>(g, new ArrayList<Double>(data.getTarget())));
 				}
 			}
 		}
@@ -545,9 +557,9 @@ public class SimpleGraphFeaturesAMExperiment {
 
 		Random rand = new Random(seed);
 
-		List<Statement> stmts = dataset.getStatementsFromStrings(null, "http://purl.org/collections/nl/am/objectCategory", null);
+		List<Statement> stmts = tripleStore.getStatementsFromStrings(null, "http://purl.org/collections/nl/am/objectCategory", null);
 		
-		System.out.println(dataset.getLabel() + " # objects: " + stmts.size());
+		System.out.println(tripleStore.getLabel() + " # objects: " + stmts.size());
 
 		instances = new ArrayList<Resource>();
 		labels = new ArrayList<Value>();
@@ -560,7 +572,7 @@ public class SimpleGraphFeaturesAMExperiment {
 
 		//		
 		//		
-		blackList = DataSetUtils.createBlacklist(dataset, instances, labels);
+		blackList = DataSetUtils.createBlacklist(tripleStore, instances, labels);
 		//System.out.println(EvaluationUtils.computeClassCounts(target));
 
 		Collections.shuffle(instances, new Random(seed));

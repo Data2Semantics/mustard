@@ -12,9 +12,8 @@ import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 import org.openrdf.model.Value;
 
-public class AMDataSet implements ClassificationDataSet {
+public class AMDataSet implements LargeClassificationDataSet {
 	private RDFDataSet tripleStore;
-	private String property;
 	private int minClassSize;
 	private long seed;
 	private double fraction;
@@ -24,16 +23,18 @@ public class AMDataSet implements ClassificationDataSet {
 
 
 
-	public AMDataSet(RDFDataSet tripleStore, String property,
-			int minClassSize, long seed, double fraction) {
+	public AMDataSet(RDFDataSet tripleStore, long seed, double fraction, int minClassSize) {
 		this.tripleStore = tripleStore;
-		this.property = property;
 		this.minClassSize = minClassSize;
 		this.seed = seed;
 		this.fraction = fraction;
 	}
 
-	public void create() {	
+	public void create() {
+		create(seed, fraction, minClassSize);	
+	}
+
+	public void create(long seed, double fraction, int minClassSize) {	
 		Random rand = new Random(seed);
 
 		List<Statement> stmts = tripleStore.getStatementsFromStrings(null, "http://purl.org/collections/nl/am/objectCategory", null);
