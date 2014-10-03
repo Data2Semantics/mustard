@@ -17,24 +17,30 @@ public class AMDataSet implements LargeClassificationDataSet {
 	private int minClassSize;
 	private long seed;
 	private double fraction;
+	private int maxNumClasses;
 
 	private List<Double> target;
 	private RDFData rdfData;
 
 
 
-	public AMDataSet(RDFDataSet tripleStore, long seed, double fraction, int minClassSize) {
+	public AMDataSet(RDFDataSet tripleStore, long seed, double fraction, int minClassSize, int maxNumClasses) {
 		this.tripleStore = tripleStore;
 		this.minClassSize = minClassSize;
+		this.maxNumClasses = maxNumClasses;
 		this.seed = seed;
+		
 		this.fraction = fraction;
 	}
 
 	public void create() {
-		create(seed, fraction, minClassSize);	
+		createSubSet(seed, fraction, minClassSize, maxNumClasses);	
 	}
+	
+	
+	
+	public void createSubSet(long seed, double fraction, int minClassSize,int maxNumClasses) {
 
-	public void create(long seed, double fraction, int minClassSize) {	
 		Random rand = new Random(seed);
 
 		List<Statement> stmts = tripleStore.getStatementsFromStrings(null, "http://purl.org/collections/nl/am/objectCategory", null);
@@ -61,6 +67,7 @@ public class AMDataSet implements LargeClassificationDataSet {
 				labels.add(stmt.getObject());
 			}
 		}
+		EvaluationUtils.keepLargestClasses(instances, labels, maxNumClasses);
 		EvaluationUtils.removeSmallClasses(instances, labels, minClassSize);
 
 		rdfData = new RDFData(tripleStore, instances, blackList);

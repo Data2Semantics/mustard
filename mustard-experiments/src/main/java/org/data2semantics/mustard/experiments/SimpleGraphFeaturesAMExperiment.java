@@ -76,10 +76,10 @@ public class SimpleGraphFeaturesAMExperiment {
 
 		
 		//tripleStore = new RDFFileDataSet(AM_FOLDER, RDFFormat.TURTLE);
-		//LargeClassificationDataSet ds = new AMDataSet(tripleStore, 10, 0.01, 5);
+		//LargeClassificationDataSet ds = new AMDataSet(tripleStore, 10, 0.01, 5, 4);
 		
 		tripleStore = new RDFFileDataSet(BGS_FOLDER, RDFFormat.NTRIPLES);
-		LargeClassificationDataSet ds = new BGSDataSet(tripleStore, "http://data.bgs.ac.uk/ref/Lexicon/hasTheme", 10, 0.05, 5);
+		LargeClassificationDataSet ds = new BGSDataSet(tripleStore, "http://data.bgs.ac.uk/ref/Lexicon/hasTheme", 10, 0.05, 5, 3);
 
 		List<EvaluationFunction> evalFuncs = new ArrayList<EvaluationFunction>();
 		evalFuncs.add(new Accuracy());
@@ -104,6 +104,7 @@ public class SimpleGraphFeaturesAMExperiment {
 
 		double fraction = 0.1;
 		int minClassSize = 50;
+		int maxNumClasses = 4;
 		
 		
 		boolean reverseWL = true; // WL should be in reverse mode, which means regular subtrees
@@ -117,7 +118,7 @@ public class SimpleGraphFeaturesAMExperiment {
 
 			
 
-		Map<Long, Map<Boolean, Map<Integer,Pair<SingleDTGraph, List<Double>>>>> cache = createDataSetCache(ds, seedsDataset, fraction, minClassSize, depths, inference);
+		Map<Long, Map<Boolean, Map<Integer,Pair<SingleDTGraph, List<Double>>>>> cache = createDataSetCache(ds, seedsDataset, fraction, minClassSize, maxNumClasses, depths, inference);
 		tripleStore = null;
 
 
@@ -528,12 +529,12 @@ public class SimpleGraphFeaturesAMExperiment {
 
 	}
 
-	private static Map<Long, Map<Boolean, Map<Integer,Pair<SingleDTGraph, List<Double>>>>> createDataSetCache(LargeClassificationDataSet data, long[] seeds, double fraction, int minSize, int[] depths, boolean[] inference) {
+	private static Map<Long, Map<Boolean, Map<Integer,Pair<SingleDTGraph, List<Double>>>>> createDataSetCache(LargeClassificationDataSet data, long[] seeds, double fraction, int minSize, int maxClasses, int[] depths, boolean[] inference) {
 		Map<Long, Map<Boolean, Map<Integer,Pair<SingleDTGraph, List<Double>>>>> cache = new HashMap<Long, Map<Boolean, Map<Integer,Pair<SingleDTGraph, List<Double>>>>>();
 
 		for (long seed : seeds) {
 			cache.put(seed, new HashMap<Boolean, Map<Integer,Pair<SingleDTGraph, List<Double>>>>());
-			data.create(seed, fraction, minSize);
+			data.createSubSet(seed, fraction, minSize, maxClasses);
 	
 			for (boolean inf : inference) {
 				cache.get(seed).put(inf, new HashMap<Integer,Pair<SingleDTGraph, List<Double>>>());

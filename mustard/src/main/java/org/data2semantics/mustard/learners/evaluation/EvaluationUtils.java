@@ -1,20 +1,22 @@
 package org.data2semantics.mustard.learners.evaluation;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 public class EvaluationUtils {
-	
+
 	public static <T> List<Double> createTarget(List<T> labels) {
 		return createTarget(labels, new HashMap<T,Double>());
 	}
- 
+
 	public static <T> List<Double> createTarget(List<T> labels, Map<T,Double> labelMap) {
 		List<Double> target = new ArrayList<Double>();
 		double t = 0;
-		
+
 		for (T label : labels) {
 			if (!labelMap.containsKey(label)) {
 				t += 1;
@@ -24,7 +26,7 @@ public class EvaluationUtils {
 		}	
 		return target;	
 	}
-	
+
 	public static double[] target2Doubles(List<Double> target) {
 		double[] ret = new double[target.size()];
 		for (int i = 0; i < target.size(); i++) {
@@ -32,7 +34,7 @@ public class EvaluationUtils {
 		}
 		return ret;
 	}
-	
+
 	public static List<Double> doubles2target(double[] doubles) {
 		List<Double> ret = new ArrayList<Double>();
 		for (int i = 0; i < doubles.length; i++) {
@@ -40,7 +42,7 @@ public class EvaluationUtils {
 		}
 		return ret;
 	}
-	
+
 	public static int[] target2Integers(List<Integer> target) {
 		int[] ret = new int[target.size()];
 		for (int i = 0; i < target.size(); i++) {
@@ -48,7 +50,7 @@ public class EvaluationUtils {
 		}
 		return ret;
 	}
-	
+
 	public static List<Integer> ints2target(int[] ints) {
 		List<Integer> ret = new ArrayList<Integer>();
 		for (int i = 0; i < ints.length; i++) {
@@ -56,17 +58,17 @@ public class EvaluationUtils {
 		}
 		return ret;
 	}
-	
-	
+
+
 	public static <T> Map<Double, T> reverseLabelMap(Map<T,Double> labelMap) {
 		Map<Double,T> revMap = new HashMap<Double,T>(); 
-	
+
 		for (T k : labelMap.keySet()) {
 			revMap.put(labelMap.get(k), k);
 		}
 		return revMap;
 	}
-	
+
 	public static Map<Double, Double> computeClassCounts(List<Double> target) {
 		Map<Double, Double> counts = new HashMap<Double, Double>();
 
@@ -79,18 +81,18 @@ public class EvaluationUtils {
 		}
 		return counts;
 	}
-	
+
 	public static int[] computeWeightLabels(List<Double> target) {
 		Map<Double, Double> counts = EvaluationUtils.computeClassCounts(target);
 		int[] wLabels = new int[counts.size()];
-		
+
 		int index = 0;
 		for (double label : counts.keySet()) {
 			wLabels[index++] = (int) label;
 		}
 		return wLabels;
 	}
-	
+
 	public static double[] computeWeights(List<Double> target) {
 		Map<Double, Double> counts = EvaluationUtils.computeClassCounts(target);
 		double[] weights = new double[counts.size()];
@@ -101,8 +103,8 @@ public class EvaluationUtils {
 		}
 		return weights;
 	}
-		
-	
+
+
 	public static <O1,O2> void removeSmallClasses(List<O1> instances, List<O2> labels, int smallClassSize) {
 		Map<O2, Integer> counts = new HashMap<O2, Integer>();
 
@@ -129,5 +131,41 @@ public class EvaluationUtils {
 		labels.clear();
 		labels.addAll(keepLabels);
 	}
-	
+
+	public static <O1,O2> void keepLargestClasses(List<O1> instances, List<O2> labels, int numberOfClasses) {
+		Map<O2, Integer> counts = new HashMap<O2, Integer>();
+		for (int i = 0; i < labels.size(); i++) {
+			if (!counts.containsKey(labels.get(i))) {
+				counts.put(labels.get(i), 1);
+			} else {
+				counts.put(labels.get(i), counts.get(labels.get(i)) + 1);
+			}
+		}
+
+		Map<Integer, O2> invCounts = new TreeMap<Integer, O2>();
+		for (O2 k : counts.keySet()) {
+			invCounts.put(counts.get(k), k);
+		}
+
+		List<O2> keepLabels = new ArrayList<O2>();
+		List<O1> keepInstances = new ArrayList<O1>();
+		
+		List<Integer> freq = new ArrayList<Integer>(invCounts.keySet());
+		for (int j = 0; j < numberOfClasses && j < freq.size(); j++) {
+			O2 key = invCounts.get(freq.get(freq.size()-j-1));
+			
+			for (int i = 0; i < labels.size(); i++) {
+				if (labels.get(i).equals(key)) { 
+					keepInstances.add(instances.get(i));
+					keepLabels.add(labels.get(i));
+				}
+			}
+		}
+
+		instances.clear();
+		instances.addAll(keepInstances);
+		labels.clear();
+		labels.addAll(keepLabels);
+	}
+
 }

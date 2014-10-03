@@ -16,6 +16,7 @@ public class BGSDataSet implements LargeClassificationDataSet {
 	private RDFDataSet tripleStore;
 	private String property;
 	private int minClassSize;
+	private int maxNumClasses;
 	private long seed;
 	private double fraction;
 
@@ -24,19 +25,23 @@ public class BGSDataSet implements LargeClassificationDataSet {
 
 
 
-	public BGSDataSet(RDFDataSet tripleStore, String property, long seed, double fraction, int minClassSize) {
+	public BGSDataSet(RDFDataSet tripleStore, String property, long seed, double fraction, int minClassSize, int maxNumClasses) {
 		this.tripleStore = tripleStore;
 		this.property = property;
 		this.minClassSize = minClassSize;
+		this.maxNumClasses = maxNumClasses;
 		this.seed = seed;
 		this.fraction = fraction;
 	}
 
 	public void create() {
-		create(seed, fraction, minClassSize);	
+		createSubSet(seed, fraction, minClassSize, maxNumClasses);	
 	}
 	
-	public void create(long seed, double fraction, int minClassSize) {	
+	
+	
+	public void createSubSet(long seed, double fraction, int minClassSize,
+			int maxNumClasses) {
 		Random rand = new Random(seed);
 
 		List<Statement> stmts = tripleStore.getStatementsFromStrings(null, "http://www.w3.org/2000/01/rdf-schema#isDefinedBy", "http://data.bgs.ac.uk/ref/Lexicon/NamedRockUnit");
@@ -71,6 +76,7 @@ public class BGSDataSet implements LargeClassificationDataSet {
 		}
 		
 		EvaluationUtils.removeSmallClasses(instances, labels, minClassSize);
+		EvaluationUtils.keepLargestClasses(instances, labels, maxNumClasses);
 		blackList = DataSetUtils.createBlacklist(tripleStore, instances2, labels2);
 
 		rdfData = new RDFData(tripleStore, instances, blackList);
