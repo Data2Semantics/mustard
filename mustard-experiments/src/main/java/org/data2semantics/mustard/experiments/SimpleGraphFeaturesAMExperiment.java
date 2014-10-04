@@ -74,10 +74,10 @@ public class SimpleGraphFeaturesAMExperiment {
 	 */
 	public static void main(String[] args) {
 
-		
+
 		//tripleStore = new RDFFileDataSet(AM_FOLDER, RDFFormat.TURTLE);
 		//LargeClassificationDataSet ds = new AMDataSet(tripleStore, 10, 0.01, 5, 4);
-		
+
 		tripleStore = new RDFFileDataSet(BGS_FOLDER, RDFFormat.NTRIPLES);
 		LargeClassificationDataSet ds = new BGSDataSet(tripleStore, "http://data.bgs.ac.uk/ref/Lexicon/hasTheme", 10, 0.05, 5, 3);
 
@@ -96,7 +96,7 @@ public class SimpleGraphFeaturesAMExperiment {
 		LibLINEARParameters svmParms = new LibLINEARParameters(LibLINEARParameters.SVC_DUAL, cs);
 		//svmParms.setDoCrossValidation(false);
 		svmParms.setNumFolds(5);
-		
+
 		//svmParms.setEvalFunction(new F1());
 
 		/*
@@ -107,8 +107,8 @@ public class SimpleGraphFeaturesAMExperiment {
 		double fraction = 0.05;
 		int minClassSize = 0;
 		int maxNumClasses = 3;
-		
-		
+
+
 		boolean reverseWL = true; // WL should be in reverse mode, which means regular subtrees
 		boolean[] inference = {false,true};
 
@@ -118,7 +118,7 @@ public class SimpleGraphFeaturesAMExperiment {
 
 		boolean depthTimesTwo = true;
 
-			
+
 
 		Map<Long, Map<Boolean, Map<Integer,Pair<SingleDTGraph, List<Double>>>>> cache = createDataSetCache(ds, seedsDataset, fraction, minClassSize, maxNumClasses, depths, inference);
 		tripleStore = null;
@@ -337,7 +337,7 @@ public class SimpleGraphFeaturesAMExperiment {
 		//*/
 
 
-		///* RDF Path Count 
+		/* RDF Path Count 
 		for (boolean inf : inference) {
 			resTable.newRow("RDF Path Count: " + inf);
 
@@ -382,7 +382,7 @@ public class SimpleGraphFeaturesAMExperiment {
 		//*/
 
 
-		///* RDF WL
+		/* RDF WL
 		for (boolean inf : inference) {
 			resTable.newRow("RDF WL: " + inf);
 
@@ -429,44 +429,54 @@ public class SimpleGraphFeaturesAMExperiment {
 
 
 
-		/* Regular WL
+		///* Regular WL
 		for (boolean inf : inference) {
 			resTable.newRow("Regular WL: " + inf);		
 			for (int d : depths) {
+				List<Result> tempRes = new ArrayList<Result>();
+				for (long sDS : seedsDataset) {
+					Pair<SingleDTGraph, List<Double>> p = cache.get(sDS).get(inf).get(d);
+					SingleDTGraph data = p.getFirst();
+					target = p.getSecond();
 
-				Set<Statement> st = RDFUtils.getStatements4Depth(dataset, instances, d, inf);
-				st.removeAll(blackList);
-				DTGraph<String,String> graph = RDFUtils.statements2Graph(st, RDFUtils.REGULAR_LITERALS);
-				List<DTNode<String,String>> instanceNodes = RDFUtils.findInstances(graph, instances);
-				graph = RDFUtils.simplifyInstanceNodeLabels(graph, instanceNodes);
-				List<DTGraph<String,String>> graphs = RDFUtils.getSubGraphs(graph, instanceNodes, d);
+					List<DTGraph<String,String>> graphs = RDFUtils.getSubGraphs(data.getGraph(), data.getInstances(), d);
 
-				double avgNodes = 0;
-				double avgLinks = 0;
+					double avgNodes = 0;
+					double avgLinks = 0;
 
-				for (DTGraph<String,String> g : graphs){
-					avgNodes += g.nodes().size();
-					avgLinks += g.links().size();
+					for (DTGraph<String,String> g : graphs){
+						avgNodes += g.nodes().size();
+						avgLinks += g.links().size();
+					}
+					avgNodes /= graphs.size();
+					avgLinks /= graphs.size();
+
+					System.out.println("Avg # nodes: " + avgNodes + " , avg # links: " + avgLinks);
+
+					List<WLSubTreeKernel> kernels = new ArrayList<WLSubTreeKernel>();
+
+					for (int dd : iterationsWL) {
+						WLSubTreeKernel kernel = new WLSubTreeKernel(dd, reverseWL, true);			
+						kernels.add(kernel);
+					}
+
+					//resTable.newRow(kernels.get(0).getLabel() + "_" + inf);
+					SimpleGraphFeatureVectorKernelExperiment<GraphList<DTGraph<String,String>>> exp2 = new SimpleGraphFeatureVectorKernelExperiment<GraphList<DTGraph<String,String>>>(kernels, new GraphList<DTGraph<String,String>>(graphs), target, svmParms, seeds, evalFuncs);
+
+					//System.out.println(kernels.get(0).getLabel());
+					exp2.run();
+					
+					if (tempRes.isEmpty()) {
+						for (Result res : exp2.getResults()) {
+							tempRes.add(res);
+						}
+					} else {
+						for (int i = 0; i < tempRes.size(); i++) {
+							tempRes.get(i).addResult(exp2.getResults().get(i));
+						}
+					}
 				}
-				avgNodes /= graphs.size();
-				avgLinks /= graphs.size();
-
-				System.out.println("Avg # nodes: " + avgNodes + " , avg # links: " + avgLinks);
-
-				List<WLSubTreeKernel> kernels = new ArrayList<WLSubTreeKernel>();
-
-				for (int dd : iterationsWL) {
-					WLSubTreeKernel kernel = new WLSubTreeKernel(dd, reverseWL, true);			
-					kernels.add(kernel);
-				}
-
-				//resTable.newRow(kernels.get(0).getLabel() + "_" + inf);
-				SimpleGraphFeatureVectorKernelExperiment<GraphList<DTGraph<String,String>>> exp2 = new SimpleGraphFeatureVectorKernelExperiment<GraphList<DTGraph<String,String>>>(kernels, new GraphList<DTGraph<String,String>>(graphs), target, svmParms, seeds, evalFuncs);
-
-				//System.out.println(kernels.get(0).getLabel());
-				exp2.run();
-
-				for (Result res : exp2.getResults()) {
+				for (Result res : tempRes) {
 					resTable.addResult(res);
 				}
 				System.out.println(resTable);
@@ -478,44 +488,55 @@ public class SimpleGraphFeaturesAMExperiment {
 		resTable.addCompResults(resTable.getBestResults());
 		System.out.println(resTable);
 
-		/* Path Count full
+		
+		///* Path Count full
 		for (boolean inf : inference) {
 			resTable.newRow("Path Count Full: " + inf);		
 			for (int d : depths) {
+				List<Result> tempRes = new ArrayList<Result>();
+				for (long sDS : seedsDataset) {
+					Pair<SingleDTGraph, List<Double>> p = cache.get(sDS).get(inf).get(d);
+					SingleDTGraph data = p.getFirst();
+					target = p.getSecond();
 
-				Set<Statement> st = RDFUtils.getStatements4Depth(dataset, instances, d, inf);
-				st.removeAll(blackList);
-				DTGraph<String,String> graph = RDFUtils.statements2Graph(st, RDFUtils.REGULAR_LITERALS);
-				List<DTNode<String,String>> instanceNodes = RDFUtils.findInstances(graph, instances);
-				graph = RDFUtils.simplifyInstanceNodeLabels(graph, instanceNodes);
-				List<DTGraph<String,String>> graphs = RDFUtils.getSubGraphs(graph, instanceNodes, d);
+					List<DTGraph<String,String>> graphs = RDFUtils.getSubGraphs(data.getGraph(), data.getInstances(), d);
 
-				double avgNodes = 0;
-				double avgLinks = 0;
+					double avgNodes = 0;
+					double avgLinks = 0;
 
-				for (DTGraph<String,String> g : graphs){
-					avgNodes += g.nodes().size();
-					avgLinks += g.links().size();
+					for (DTGraph<String,String> g : graphs){
+						avgNodes += g.nodes().size();
+						avgLinks += g.links().size();
+					}
+					avgNodes /= graphs.size();
+					avgLinks /= graphs.size();
+
+					System.out.println("Avg # nodes: " + avgNodes + " , avg # links: " + avgLinks);
+
+					List<PathCountKernel> kernels = new ArrayList<PathCountKernel>();
+
+					for (int dd : pathDepths) {
+						PathCountKernel kernel = new PathCountKernel(dd, true);			
+						kernels.add(kernel);
+					}
+
+					//resTable.newRow(kernels.get(0).getLabel() + "_" + inf);
+					SimpleGraphFeatureVectorKernelExperiment<GraphList<DTGraph<String,String>>> exp2 = new SimpleGraphFeatureVectorKernelExperiment<GraphList<DTGraph<String,String>>>(kernels, new GraphList<DTGraph<String,String>>(graphs), target, svmParms, seeds, evalFuncs);
+
+					//System.out.println(kernels.get(0).getLabel());
+					exp2.run();
+					
+					if (tempRes.isEmpty()) {
+						for (Result res : exp2.getResults()) {
+							tempRes.add(res);
+						}
+					} else {
+						for (int i = 0; i < tempRes.size(); i++) {
+							tempRes.get(i).addResult(exp2.getResults().get(i));
+						}
+					}
 				}
-				avgNodes /= graphs.size();
-				avgLinks /= graphs.size();
-
-				System.out.println("Avg # nodes: " + avgNodes + " , avg # links: " + avgLinks);
-
-				List<PathCountKernel> kernels = new ArrayList<PathCountKernel>();
-
-				for (int dd : pathDepths) {
-					PathCountKernel kernel = new PathCountKernel(dd, true);			
-					kernels.add(kernel);
-				}
-
-				//resTable.newRow(kernels.get(0).getLabel() + "_" + inf);
-				SimpleGraphFeatureVectorKernelExperiment<GraphList<DTGraph<String,String>>> exp2 = new SimpleGraphFeatureVectorKernelExperiment<GraphList<DTGraph<String,String>>>(kernels, new GraphList<DTGraph<String,String>>(graphs), target, svmParms, seeds, evalFuncs);
-
-				//System.out.println(kernels.get(0).getLabel());
-				exp2.run();
-
-				for (Result res : exp2.getResults()) {
+				for (Result res : tempRes) {
 					resTable.addResult(res);
 				}
 				System.out.println(resTable);
@@ -537,17 +558,17 @@ public class SimpleGraphFeaturesAMExperiment {
 		for (long seed : seeds) {
 			cache.put(seed, new HashMap<Boolean, Map<Integer,Pair<SingleDTGraph, List<Double>>>>());
 			data.createSubSet(seed, fraction, minSize, maxClasses);
-	
+
 			for (boolean inf : inference) {
 				cache.get(seed).put(inf, new HashMap<Integer,Pair<SingleDTGraph, List<Double>>>());
-				
+
 				for (int depth : depths) {
 					Set<Statement> stmts = RDFUtils.getStatements4Depth(tripleStore, data.getRDFData().getInstances(), depth, inf);
 					stmts.removeAll(data.getRDFData().getBlackList());
 					List<DTNode<String,String>> instanceNodes = new ArrayList<DTNode<String,String>>();
 					DTGraph<String,String> graph = RDFUtils.statements2Graph(stmts, RDFUtils.REGULAR_LITERALS, data.getRDFData().getInstances(), instanceNodes, true);
 					SingleDTGraph g = new SingleDTGraph(graph, instanceNodes);
-					
+
 					cache.get(seed).get(inf).put(depth, new Pair<SingleDTGraph,List<Double>>(g, new ArrayList<Double>(data.getTarget())));
 				}
 			}
@@ -561,7 +582,7 @@ public class SimpleGraphFeaturesAMExperiment {
 		Random rand = new Random(seed);
 
 		List<Statement> stmts = tripleStore.getStatementsFromStrings(null, "http://purl.org/collections/nl/am/objectCategory", null);
-		
+
 		System.out.println(tripleStore.getLabel() + " # objects: " + stmts.size());
 
 		instances = new ArrayList<Resource>();
@@ -589,8 +610,8 @@ public class SimpleGraphFeaturesAMExperiment {
 
 		System.out.println("Subset class count: " + EvaluationUtils.computeClassCounts(target));
 	}
-	
-	
 
-	
+
+
+
 }
