@@ -91,20 +91,22 @@ public class SimpleGraphFeaturesAMExperiment {
 
 		long[] seeds = {11};
 		long[] seedsDataset = {11,21,31,41,51}; //,61,71,81,91,101};
-		double[] cs = {1, 10, 100, 1000};	
+		double[] cs = {1};	
 
 		LibLINEARParameters svmParms = new LibLINEARParameters(LibLINEARParameters.SVC_DUAL, cs);
-		svmParms.setDoCrossValidation(false);
-		svmParms.setNumFolds(3);
+		//svmParms.setDoCrossValidation(false);
+		svmParms.setNumFolds(5);
+		
+		//svmParms.setEvalFunction(new F1());
 
 		/*
 		svmParms.setWeightLabels(EvaluationUtils.computeWeightLabels(target));
 		svmParms.setWeights(EvaluationUtils.computeWeights(target));
 		//*/
 
-		double fraction = 0.1;
-		int minClassSize = 50;
-		int maxNumClasses = 4;
+		double fraction = 0.05;
+		int minClassSize = 0;
+		int maxNumClasses = 3;
 		
 		
 		boolean reverseWL = true; // WL should be in reverse mode, which means regular subtrees
