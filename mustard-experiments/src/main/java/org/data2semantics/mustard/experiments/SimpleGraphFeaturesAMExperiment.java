@@ -75,11 +75,11 @@ public class SimpleGraphFeaturesAMExperiment {
 	public static void main(String[] args) {
 
 
-		//tripleStore = new RDFFileDataSet(AM_FOLDER, RDFFormat.TURTLE);
-		//LargeClassificationDataSet ds = new AMDataSet(tripleStore, 10, 0.01, 5, 4);
+		tripleStore = new RDFFileDataSet(AM_FOLDER, RDFFormat.TURTLE);
+		LargeClassificationDataSet ds = new AMDataSet(tripleStore, 10, 0.01, 5, 4);
 
-		tripleStore = new RDFFileDataSet(BGS_FOLDER, RDFFormat.NTRIPLES);
-		LargeClassificationDataSet ds = new BGSDataSet(tripleStore, "http://data.bgs.ac.uk/ref/Lexicon/hasTheme", 10, 0.05, 5, 3);
+		//tripleStore = new RDFFileDataSet(BGS_FOLDER, RDFFormat.NTRIPLES);
+		//LargeClassificationDataSet ds = new BGSDataSet(tripleStore, "http://data.bgs.ac.uk/ref/Lexicon/hasTheme", 10, 0.05, 5, 3);
 
 		List<EvaluationFunction> evalFuncs = new ArrayList<EvaluationFunction>();
 		evalFuncs.add(new Accuracy());
@@ -104,15 +104,15 @@ public class SimpleGraphFeaturesAMExperiment {
 		svmParms.setWeights(EvaluationUtils.computeWeights(target));
 		//*/
 
-		double fraction = 0.05;
+		double fraction = 0.01;
 		int minClassSize = 0;
-		int maxNumClasses = 3;
+		int maxNumClasses = 20;
 
 
 		boolean reverseWL = true; // WL should be in reverse mode, which means regular subtrees
 		boolean[] inference = {false,true};
 
-		int[] depths = {1,2,3};
+		int[] depths = {1,2};
 		int[] pathDepths = {2,4,6};
 		int[] iterationsWL = {2,4,6};
 
@@ -455,11 +455,14 @@ public class SimpleGraphFeaturesAMExperiment {
 
 					List<WLSubTreeKernel> kernels = new ArrayList<WLSubTreeKernel>();
 
-					for (int dd : iterationsWL) {
-						WLSubTreeKernel kernel = new WLSubTreeKernel(dd, reverseWL, true);			
-						kernels.add(kernel);
-					}
-
+					if (depthTimesTwo) {
+						kernels.add(new WLSubTreeKernel(d*2, reverseWL, true));
+					} else {
+						for (int dd : pathDepths) {
+							kernels.add(new WLSubTreeKernel(dd, reverseWL, true));
+						}
+					}	
+				
 					//resTable.newRow(kernels.get(0).getLabel() + "_" + inf);
 					SimpleGraphFeatureVectorKernelExperiment<GraphList<DTGraph<String,String>>> exp2 = new SimpleGraphFeatureVectorKernelExperiment<GraphList<DTGraph<String,String>>>(kernels, new GraphList<DTGraph<String,String>>(graphs), target, svmParms, seeds, evalFuncs);
 
@@ -515,11 +518,14 @@ public class SimpleGraphFeaturesAMExperiment {
 
 					List<PathCountKernel> kernels = new ArrayList<PathCountKernel>();
 
-					for (int dd : pathDepths) {
-						PathCountKernel kernel = new PathCountKernel(dd, true);			
-						kernels.add(kernel);
+					if (depthTimesTwo) {
+						kernels.add(new PathCountKernel(d*2, true));
+					} else {
+						for (int dd : pathDepths) {
+							kernels.add(new PathCountKernel(dd, true));
+						}
 					}
-
+		
 					//resTable.newRow(kernels.get(0).getLabel() + "_" + inf);
 					SimpleGraphFeatureVectorKernelExperiment<GraphList<DTGraph<String,String>>> exp2 = new SimpleGraphFeatureVectorKernelExperiment<GraphList<DTGraph<String,String>>>(kernels, new GraphList<DTGraph<String,String>>(graphs), target, svmParms, seeds, evalFuncs);
 
