@@ -55,6 +55,9 @@ public class AMDataSet implements LargeClassificationDataSet {
 			instances.add(stmt.getSubject());
 			labels.add(stmt.getObject());
 		}
+		
+		target = EvaluationUtils.createTarget(labels);	
+		System.out.println("# classes: " + EvaluationUtils.computeClassCounts(target).keySet().size());
 
 		blackList = DataSetUtils.createBlacklist(tripleStore, instances, labels);
 
@@ -71,8 +74,7 @@ public class AMDataSet implements LargeClassificationDataSet {
 		EvaluationUtils.removeSmallClasses(instances, labels, minClassSize);
 
 		rdfData = new RDFData(tripleStore, instances, blackList);
-		target = EvaluationUtils.createTarget(labels);
-		
+		target = EvaluationUtils.createTarget(labels);	
 		System.out.println("Subset class count: " + EvaluationUtils.computeClassCounts(target));
 	}
 

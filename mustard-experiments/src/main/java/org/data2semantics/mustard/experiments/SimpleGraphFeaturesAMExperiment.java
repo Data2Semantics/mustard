@@ -106,7 +106,7 @@ public class SimpleGraphFeaturesAMExperiment {
 
 		double fraction = 0.01;
 		int minClassSize = 0;
-		int maxNumClasses = 20;
+		int maxNumClasses = 100;
 
 
 		boolean reverseWL = true; // WL should be in reverse mode, which means regular subtrees
