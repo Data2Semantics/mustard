@@ -78,7 +78,10 @@ public class SimpleGraphFeaturesExperiment {
 		evalFuncs.add(new F1());
 
 		ResultsTable resTable = new ResultsTable();
-		resTable.setDigits(3);
+		resTable.setDigits(2);
+		resTable.setSignificanceTest(ResultsTable.SigTest.PAIRED_TTEST);
+		resTable.setpValue(0.05);
+		resTable.setShowStdDev(true);
 
 		long[] seeds = {11,21,31,41,51,61,71,81,91,101};
 		double[] cs = {1};	
@@ -96,10 +99,10 @@ public class SimpleGraphFeaturesExperiment {
 		boolean[] inference = {false,true};
 
 		int[] depths = {1,2,3};
-		int[] pathDepths = {0,2,4,6};
-		int[] iterationsWL = {0,2,4,6};
+		int[] pathDepths = {0,1,2,3,4,5,6};
+		int[] iterationsWL = {0,1,2,3,4,5,6};
 		
-		boolean depthTimesTwo = true;
+		boolean depthTimesTwo = false;
 
 		ClassificationDataSet ds = new AIFBDataSet(tripleStore);
 		ds.create();
@@ -107,12 +110,30 @@ public class SimpleGraphFeaturesExperiment {
 		RDFData data = ds.getRDFData();
 		List<Double> target = ds.getTarget();
 
-		/* The baseline experiment, BoW (or BoL if you prefer)
+		///* The baseline experiment, BoW (or BoL if you prefer)
 		for (boolean inf : inference) {
 			resTable.newRow("Baseline BoL: " + inf);		 
 			for (int d : depths) {
 				List<RDFWLSubTreeKernel> kernelsBaseline = new ArrayList<RDFWLSubTreeKernel>();	
 				kernelsBaseline.add(new RDFWLSubTreeKernel(0, d, inf, reverseWL, false, true));
+
+				SimpleGraphKernelExperiment<RDFData> exp = new SimpleGraphKernelExperiment<RDFData>(kernelsBaseline, data, target, svmParms, seeds, evalFuncs);
+
+				exp.run();
+
+				for (Result res : exp.getResults()) {
+					resTable.addResult(res);
+				}
+			}
+		}
+		//*/
+		
+		///* The baseline experiment, BoW (or BoL if you prefer) Tree variant
+		for (boolean inf : inference) {
+			resTable.newRow("Baseline BoL Tree: " + inf);		 
+			for (int d : depths) {
+				List<RDFTreeWLSubTreeKernel> kernelsBaseline = new ArrayList<RDFTreeWLSubTreeKernel>();	
+				kernelsBaseline.add(new RDFTreeWLSubTreeKernel(0, d, inf, reverseWL, false, true));
 
 				SimpleGraphKernelExperiment<RDFData> exp = new SimpleGraphKernelExperiment<RDFData>(kernelsBaseline, data, target, svmParms, seeds, evalFuncs);
 
@@ -289,6 +310,33 @@ public class SimpleGraphFeaturesExperiment {
 		}
 		//*/
 		
+		/* RDF WL 
+		for (boolean inf : inference) {
+			resTable.newRow("RDF WL: " + inf);		 
+			for (int d : depths) {
+
+				List<RDFWLSubTreeKernel> kernels = new ArrayList<RDFWLSubTreeKernel>();	
+
+				if (depthTimesTwo) {
+					kernels.add(new RDFWLSubTreeKernel(d*2, d, inf, false, false, true));
+				} else {
+					for (int dd : iterationsWL) {
+						kernels.add(new RDFWLSubTreeKernel(dd, d, inf, false, false, true));
+					}
+				}
+
+				//Collections.shuffle(target);
+				SimpleGraphKernelExperiment<RDFData> exp = new SimpleGraphKernelExperiment<RDFData>(kernels, data, target, svmParms, seeds, evalFuncs);
+
+				exp.run();
+
+				for (Result res : exp.getResults()) {
+					resTable.addResult(res);
+				}
+			}
+		}
+		//*/
+		
 		
 		/* Regular WL
 		for (boolean inf : inference) {
@@ -340,11 +388,61 @@ public class SimpleGraphFeaturesExperiment {
 		}
 		//*/
 		
+		/* Regular WL
+				for (boolean inf : inference) {
+					resTable.newRow("Regular WL: " + inf);		
+					for (int d : depths) {
+
+						Set<Statement> st = RDFUtils.getStatements4Depth(tripleStore, ds.getRDFData().getInstances(), d, inf);
+						st.removeAll(ds.getRDFData().getBlackList());
+						DTGraph<String,String> graph = RDFUtils.statements2Graph(st, RDFUtils.REGULAR_LITERALS);
+						List<DTNode<String,String>> instanceNodes = RDFUtils.findInstances(graph, ds.getRDFData().getInstances());
+						graph = RDFUtils.simplifyInstanceNodeLabels(graph, instanceNodes);
+						List<DTGraph<String,String>> graphs = RDFUtils.getSubGraphs(graph, instanceNodes, d);
+
+						double avgNodes = 0;
+						double avgLinks = 0;
+
+						for (DTGraph<String,String> g : graphs){
+							avgNodes += g.nodes().size();
+							avgLinks += g.links().size();
+						}
+						avgNodes /= graphs.size();
+						avgLinks /= graphs.size();
+
+						System.out.println("Avg # nodes: " + avgNodes + " , avg # links: " + avgLinks);
+
+						List<WLSubTreeKernel> kernels = new ArrayList<WLSubTreeKernel>();
+						
+						if (depthTimesTwo) {
+							WLSubTreeKernel kernel = new WLSubTreeKernel(d*2, false, true);			
+							kernels.add(kernel);
+						} else {
+							for (int dd : iterationsWL) {
+								WLSubTreeKernel kernel = new WLSubTreeKernel(dd, false, true);			
+								kernels.add(kernel);
+							}
+						}
+
+						//resTable.newRow(kernels.get(0).getLabel() + "_" + inf);
+						SimpleGraphKernelExperiment<GraphList<DTGraph<String,String>>> exp2 = new SimpleGraphKernelExperiment<GraphList<DTGraph<String,String>>>(kernels, new GraphList<DTGraph<String,String>>(graphs), target, svmParms, seeds, evalFuncs);
+
+						//System.out.println(kernels.get(0).getLabel());
+						exp2.run();
+
+						for (Result res : exp2.getResults()) {
+							resTable.addResult(res);
+						}
+						System.out.println(resTable);
+					}
+				}
+				//*/
+		
 		
 		resTable.addCompResults(resTable.getBestResults());
 		System.out.println(resTable);
 		
-		///* Path Count full
+		/* Path Count full
 		for (boolean inf : inference) {
 			resTable.newRow("Path Count Full: " + inf);		
 			for (int d : depths) {

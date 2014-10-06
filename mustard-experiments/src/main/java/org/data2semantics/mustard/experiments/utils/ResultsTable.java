@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.apache.commons.math3.stat.inference.MannWhitneyUTest;
 import org.apache.commons.math3.stat.inference.TTest;
+import org.apache.commons.math3.stat.inference.WilcoxonSignedRankTest;
 
 public class ResultsTable implements Serializable {
 
@@ -14,16 +15,19 @@ public class ResultsTable implements Serializable {
 	private List<List<Result>> table;
 	private List<String> rowLabels;
 	private List<Result> compRes;
-	private boolean doTTest;
+	private boolean showStdDev;
 	private double pValue;
 	private int digits;
 
-
+	private SigTest significanceTest;
+	
+	
 	public ResultsTable() {
 		table = new ArrayList<List<Result>>();
 		rowLabels = new ArrayList<String>();
 		compRes = new ArrayList<Result>();
-		doTTest = true;
+		significanceTest = SigTest.TTEST;
+		showStdDev = false;
 		pValue = 0.05;
 		digits = 2;
 	}
@@ -79,6 +83,11 @@ public class ResultsTable implements Serializable {
 					}
 
 					tableStr.append(formatScore(res.getScore()) + signif);
+					
+					if (showStdDev) {
+						tableStr.append("("+formatScore(res.getStdDev())+")");	
+					}
+					
 					tableStr.append(" \t ");
 				}
 				tableStr.append(rowLabels.get(i));
@@ -141,28 +150,57 @@ public class ResultsTable implements Serializable {
 		return bestResults;
 	}
 	
+	@Deprecated
 	public void setTTest(double pValue) {
-		doTTest = true;
+		significanceTest = SigTest.TTEST;
 		this.pValue = pValue;
 	}
 	
+	@Deprecated
 	public void setManWU(double pValue) {
-		doTTest = false;
+		significanceTest = SigTest.MANN_WHITNEY_U;
 		this.pValue = pValue;
 	}
 	
 	public void setDigits(int digits) {
 		this.digits = digits;
 	}
+		
+	public void setpValue(double pValue) {
+		this.pValue = pValue;
+	}
+
+	public void setShowStdDev(boolean showStdDev) {
+		this.showStdDev = showStdDev;
+	}
 	
+	public void setSignificanceTest(SigTest significanceTest) {
+		this.significanceTest = significanceTest;
+	}
+
 	private boolean signifTest(double[] s1, double[] s2) {
-		if (doTTest) {
+		if (significanceTest == SigTest.TTEST) {
 			TTest ttest = new TTest();
 			return ttest.tTest(s1, s2, pValue);
 
-		} else {
+		} 
+		if (significanceTest == SigTest.PAIRED_TTEST) {
+			TTest ttest = new TTest();
+			return ttest.pairedTTest(s1, s2, pValue);
+
+		}
+		if (significanceTest == SigTest.MANN_WHITNEY_U) {
 			MannWhitneyUTest mwuTest = new MannWhitneyUTest();
 			return mwuTest.mannWhitneyUTest(s1, s2) < pValue;
 		}
+		if (significanceTest == SigTest.WILCOXON_SIGNED_RANK) {
+			WilcoxonSignedRankTest wsrTest = new WilcoxonSignedRankTest();
+			return wsrTest.wilcoxonSignedRankTest(s1, s2, true) < pValue;
+		}		
+		return false;
+	}
+	
+	public enum SigTest {
+		TTEST, PAIRED_TTEST, MANN_WHITNEY_U, WILCOXON_SIGNED_RANK;
 	}
 }

@@ -106,7 +106,7 @@ public class SimpleGraphFeaturesAMExperiment {
 
 		double fraction = 0.01;
 		int minClassSize = 0;
-		int maxNumClasses = 100;
+		int maxNumClasses = 15;
 
 
 		boolean reverseWL = true; // WL should be in reverse mode, which means regular subtrees
@@ -137,6 +137,42 @@ public class SimpleGraphFeaturesAMExperiment {
 
 					List<RDFDTGraphWLSubTreeKernel> kernelsBaseline = new ArrayList<RDFDTGraphWLSubTreeKernel>();	
 					kernelsBaseline.add(new RDFDTGraphWLSubTreeKernel(0, d, reverseWL, false, true));
+
+					//Collections.shuffle(target);
+					SimpleGraphFeatureVectorKernelExperiment<SingleDTGraph> exp = new SimpleGraphFeatureVectorKernelExperiment<SingleDTGraph>(kernelsBaseline, data, target, svmParms, seeds, evalFuncs);
+					exp.run();
+
+					if (tempRes.isEmpty()) {
+						for (Result res : exp.getResults()) {
+							tempRes.add(res);
+						}
+					} else {
+						for (int i = 0; i < tempRes.size(); i++) {
+							tempRes.get(i).addResult(exp.getResults().get(i));
+						}
+					}
+				}
+				for (Result res : tempRes) {
+					resTable.addResult(res);
+				}
+			}
+		}
+
+		System.out.println(resTable);
+		
+		///* The baseline experiment, BoW (or BoL if you prefer) Tree Variant
+		for (boolean inf : inference) {
+			resTable.newRow("Baseline BoL Tree: " + inf);
+			for (int d : depths) {
+				List<Result> tempRes = new ArrayList<Result>();
+				for (long sDS : seedsDataset) {
+					Pair<SingleDTGraph, List<Double>> p = cache.get(sDS).get(inf).get(d);
+					SingleDTGraph data = p.getFirst();
+					target = p.getSecond();
+
+
+					List<RDFDTGraphTreeWLSubTreeKernel> kernelsBaseline = new ArrayList<RDFDTGraphTreeWLSubTreeKernel>();	
+					kernelsBaseline.add(new RDFDTGraphTreeWLSubTreeKernel(0, d, reverseWL, false, true));
 
 					//Collections.shuffle(target);
 					SimpleGraphFeatureVectorKernelExperiment<SingleDTGraph> exp = new SimpleGraphFeatureVectorKernelExperiment<SingleDTGraph>(kernelsBaseline, data, target, svmParms, seeds, evalFuncs);
@@ -429,7 +465,7 @@ public class SimpleGraphFeaturesAMExperiment {
 
 
 
-		///* Regular WL
+		/* Regular WL
 		for (boolean inf : inference) {
 			resTable.newRow("Regular WL: " + inf);		
 			for (int d : depths) {
@@ -492,7 +528,7 @@ public class SimpleGraphFeaturesAMExperiment {
 		System.out.println(resTable);
 
 		
-		///* Path Count full
+		/* Path Count full
 		for (boolean inf : inference) {
 			resTable.newRow("Path Count Full: " + inf);		
 			for (int d : depths) {

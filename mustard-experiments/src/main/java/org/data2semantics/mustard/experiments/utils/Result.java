@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.math3.stat.StatUtils;
 import org.data2semantics.mustard.learners.evaluation.EvaluationFunction;
 
 public class Result implements Serializable {
@@ -73,6 +74,7 @@ public class Result implements Serializable {
 
 	public void setEval(EvaluationFunction eval) {
 		this.eval = eval;
+		this.higherIsBetter = eval.isHigherIsBetter();
 	}
 
 	public boolean isHigherIsBetter() {
@@ -89,6 +91,10 @@ public class Result implements Serializable {
 			total += score;
 		}
 		return total / scores.length;
+	}
+	
+	public double getStdDev() {
+		return Math.sqrt(StatUtils.variance(scores));
 	}
 
 	public static List<Result> mergeResultLists(List<List<Result>> results) {
