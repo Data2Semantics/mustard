@@ -200,7 +200,7 @@ public class SimpleGraphFeaturesExperiment {
 		}
 		//*/
 
-		/* Path Count Tree
+		///* Path Count Tree
 		for (boolean inf : inference) {
 			resTable.newRow("Path Count Tree: " + inf);		 
 			for (int d : depths) {
@@ -227,7 +227,7 @@ public class SimpleGraphFeaturesExperiment {
 		}
 		//*/
 
-		/* WL Tree
+		///* WL Tree
 		for (boolean inf : inference) {
 			resTable.newRow("WL Tree: " + inf);		 
 			for (int d : depths) {
