@@ -107,7 +107,7 @@ public class SimpleGraphFeaturesExperiment {
 		RDFData data = ds.getRDFData();
 		List<Double> target = ds.getTarget();
 
-		//* The baseline experiment, BoW (or BoL if you prefer)
+		/* The baseline experiment, BoW (or BoL if you prefer)
 		for (boolean inf : inference) {
 			resTable.newRow("Baseline BoL: " + inf);		 
 			for (int d : depths) {
@@ -125,7 +125,7 @@ public class SimpleGraphFeaturesExperiment {
 		}
 		//*/
 
-		///* Path Count Root
+		/* Path Count Root
 		for (boolean inf : inference) {
 			resTable.newRow("Path Count through root: " + inf);		 
 			for (int d : depths) {
@@ -152,7 +152,7 @@ public class SimpleGraphFeaturesExperiment {
 		}
 		//*/
 
-		///* WL Root
+		/* WL Root
 		for (boolean inf : inference) {
 			resTable.newRow("WL through root: " + inf);		 
 			for (int d : depths) {
@@ -179,7 +179,7 @@ public class SimpleGraphFeaturesExperiment {
 		}
 		//*/
 
-		///* Path Count Tree
+		/* Path Count Tree
 		for (boolean inf : inference) {
 			resTable.newRow("Path Count Tree: " + inf);		 
 			for (int d : depths) {
@@ -206,7 +206,7 @@ public class SimpleGraphFeaturesExperiment {
 		}
 		//*/
 
-		///* WL Tree
+		/* WL Tree
 		for (boolean inf : inference) {
 			resTable.newRow("WL Tree: " + inf);		 
 			for (int d : depths) {
@@ -235,7 +235,7 @@ public class SimpleGraphFeaturesExperiment {
 
 	
 		
-		///* RDF Path Count 
+		/* RDF Path Count 
 		for (boolean inf : inference) {
 			resTable.newRow("RDF Path Count: " + inf);		 
 			for (int d : depths) {
@@ -262,7 +262,7 @@ public class SimpleGraphFeaturesExperiment {
 		}
 		//*/
 
-		///* RDF WL 
+		/* RDF WL 
 		for (boolean inf : inference) {
 			resTable.newRow("RDF WL: " + inf);		 
 			for (int d : depths) {
@@ -290,7 +290,7 @@ public class SimpleGraphFeaturesExperiment {
 		//*/
 		
 		
-		///* Regular WL
+		/* Regular WL
 		for (boolean inf : inference) {
 			resTable.newRow("Regular WL: " + inf);		
 			for (int d : depths) {
