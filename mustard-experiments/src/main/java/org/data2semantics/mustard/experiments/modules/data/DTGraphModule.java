@@ -28,7 +28,7 @@ public class DTGraphModule {
 	
 	public DTGraphModule(
 			@In(name="dataset") RDFDataSet dataset,
-			@In(name="inference") boolean inference) {
+			@In(name="inference") Boolean  inference) {
 		this(dataset, null, new ArrayList<Statement>(), inference, 0);
 	}
 	
@@ -36,8 +36,8 @@ public class DTGraphModule {
 			@In(name="dataset") RDFDataSet dataset, 
 			@In(name="instances") List<Resource> instances,
 			@In(name="blackList") List<Statement> blackList,
-			@In(name="inference") boolean inference,
-			@In(name="graphDepth") int graphDepth) {
+			@In(name="inference") Boolean inference,
+			@In(name="graphDepth") Integer graphDepth) {
 		this.dataset = dataset;
 		this.instances = instances;
 		this.blackList = blackList;

@@ -1,8 +1,10 @@
 package org.data2semantics.mustard.learners.evaluation;
 
+import java.io.Serializable;
+
 import org.data2semantics.mustard.learners.Prediction;
 
-public class Accuracy implements EvaluationFunction {
+public class Accuracy implements EvaluationFunction, Serializable {
 	
 	public double computeScore(double[] target, Prediction[] prediction) {
 		double correct = 0;	

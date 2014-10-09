@@ -11,10 +11,10 @@ import org.data2semantics.platform.annotation.Out;
 public class RDFIntersectionSubTreeKernelModule extends AbstractKernelModule<RDFData> {
 	
 	public RDFIntersectionSubTreeKernelModule(
-			@In(name="depth") int depth,
-			@In(name="discountFactor") double discountFactor,
-			@In(name="inference") boolean inference, 
-			@In(name="normalize") boolean normalize,
+			@In(name="depth") Integer depth,
+			@In(name="discountFactor") Double discountFactor,
+			@In(name="inference") Boolean inference, 
+			@In(name="normalize") Boolean normalize,
 			@In(name="graphData") RDFData graphData) {
 		
 		super(new RDFIntersectionSubTreeKernel(depth, discountFactor, inference, normalize), graphData);
@@ -31,7 +31,7 @@ public class RDFIntersectionSubTreeKernelModule extends AbstractKernelModule<RDF
 	}
 
 	@Out(name="runtime")
-	public long getRuntime() {
+	public Long getRuntime() {
 		return super.getRuntime();
 	}
 }

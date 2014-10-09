@@ -39,7 +39,7 @@ public class RDFDataSetModule {
 	public RDFDataSetModule(
 			@In(name="filename") String filename, 
 			@In(name="mimetype") String mimetype,
-			@In(name="isUrl") boolean isUrl) {
+			@In(name="isUrl") Boolean isUrl) {
 		super();
 		this.filename = filename;
 		this.format = RDFFormat.forMIMEType(mimetype);

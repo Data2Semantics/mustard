@@ -104,4 +104,10 @@ public class RDFMultiDataSet extends RDFDataSet {
 	public void removeStatements(Resource subject, URI predicate, Value object) {
 		datasets.get(0).removeStatements(subject, predicate, object);
 	}
+
+	@Override
+	protected void initialize() {
+		// TODO Auto-generated method stub
+		
+	}
 }

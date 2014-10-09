@@ -11,12 +11,12 @@ import org.data2semantics.platform.annotation.Out;
 public class RDFWLSubTreeKernelModule extends AbstractKernelModule<RDFData> {
 	
 	public RDFWLSubTreeKernelModule(
-			@In(name="iterations") int iterations, 
-			@In(name="depth") int depth,
-			@In(name="inference") boolean inference, 
-			@In(name="reverse") boolean reverse,
-			@In(name="iterationWeighting") boolean iterationWeighting,
-			@In(name="normalize") boolean normalize,
+			@In(name="iterations") Integer iterations, 
+			@In(name="depth") Integer depth,
+			@In(name="inference") Boolean inference, 
+			@In(name="reverse") Boolean reverse,
+			@In(name="iterationWeighting") Boolean iterationWeighting,
+			@In(name="normalize") Boolean normalize,
 			@In(name="graphData") RDFData graphData) {
 		
 			super(new RDFWLSubTreeKernel(iterations, depth, inference, reverse, iterationWeighting, normalize), graphData);
@@ -33,7 +33,7 @@ public class RDFWLSubTreeKernelModule extends AbstractKernelModule<RDFData> {
 	}
 
 	@Out(name="runtime")
-	public long getRuntime() {
+	public Long getRuntime() {
 		return super.getRuntime();
 	}
 	

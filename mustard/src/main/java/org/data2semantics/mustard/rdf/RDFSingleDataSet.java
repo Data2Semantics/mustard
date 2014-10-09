@@ -20,10 +20,14 @@ import org.openrdf.sail.memory.MemoryStore;
 
 public class RDFSingleDataSet extends RDFDataSet
 {
-	protected Repository rdfRep;
+	protected transient Repository rdfRep;
 	private String label;
 
 	public RDFSingleDataSet() {
+		initialize();
+	}
+	
+	protected void initialize(){
 		try {
 			rdfRep = new SailRepository(new ForwardChainingRDFSInferencer(new MemoryStore()));
 			rdfRep.initialize();

@@ -12,10 +12,10 @@ public class RDFIntersectionPartialSubTreeKernelModule extends AbstractKernelMod
 
 	
 	public RDFIntersectionPartialSubTreeKernelModule(
-			@In(name="depth") int depth,
-			@In(name="discountFactor") double discountFactor,
-			@In(name="inference") boolean inference, 
-			@In(name="normalize") boolean normalize,
+			@In(name="depth") Integer depth,
+			@In(name="discountFactor") Double discountFactor,
+			@In(name="inference") Boolean inference, 
+			@In(name="normalize") Boolean normalize,
 			@In(name="graphData") RDFData graphData) {
 		
 		super(new RDFIntersectionPartialSubTreeKernel(depth, discountFactor, inference, normalize), graphData);
@@ -32,7 +32,7 @@ public class RDFIntersectionPartialSubTreeKernelModule extends AbstractKernelMod
 	}
 
 	@Out(name="runtime")
-	public long getRuntime() {
+	public Long getRuntime() {
 		return super.getRuntime();
 	}
 }

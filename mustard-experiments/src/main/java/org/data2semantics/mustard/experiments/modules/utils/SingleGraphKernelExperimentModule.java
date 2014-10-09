@@ -33,8 +33,8 @@ public class SingleGraphKernelExperimentModule {
 			@In(name="matrix") double[][] kernel, 
 			@In(name="target") List<Double> target,
 			@In(name="parms") LibSVMParameters parms, 
-			@In(name="folds") int folds,
-			@In(name="seed") int seed) {
+			@In(name="folds") Integer folds,
+			@In(name="seed") Integer seed) {
 		
 		this.kernel = kernel;
 		this.target = target;
@@ -71,12 +71,12 @@ public class SingleGraphKernelExperimentModule {
 	
 	
 	@Out(name="accuracy")
-	public double getAccuracy() {
+	public Double getAccuracy() {
 		return new Accuracy().computeScore(targetA, pred);
 	}
 	
 	@Out(name="f1")
-	public double getF1() {
+	public Double getF1() {
 		return new F1().computeScore(targetA, pred);
 	}
 	

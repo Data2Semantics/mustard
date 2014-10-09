@@ -52,7 +52,7 @@ public abstract class AbstractKernelModule<G extends GraphData> {
 	}
 
 	@Out(name="runtime")
-	public long getRuntime() {
+	public Long getRuntime() {
 		return runtime;
 	}
 	

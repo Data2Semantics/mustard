@@ -1,5 +1,6 @@
 package org.data2semantics.mustard.kernels.data;
 
+import java.io.Serializable;
 import java.util.List;
 
 import org.data2semantics.mustard.rdf.RDFDataSet;
@@ -12,7 +13,7 @@ import org.openrdf.model.Statement;
  * @author Gerben
  *
  */
-public class RDFData implements GraphData {
+public class RDFData implements GraphData, Serializable {
 	private RDFDataSet dataset;
 	private List<Resource> instances;
 	private List<Statement> blackList;
