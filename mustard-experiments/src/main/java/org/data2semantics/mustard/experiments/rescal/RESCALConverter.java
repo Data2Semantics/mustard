@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.codehaus.plexus.util.FileUtils;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 import org.openrdf.model.URI;

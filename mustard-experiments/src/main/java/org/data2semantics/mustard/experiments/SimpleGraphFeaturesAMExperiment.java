@@ -75,11 +75,11 @@ public class SimpleGraphFeaturesAMExperiment {
 	public static void main(String[] args) {
 
 
-		tripleStore = new RDFFileDataSet(AM_FOLDER, RDFFormat.TURTLE);
-		LargeClassificationDataSet ds = new AMDataSet(tripleStore, 10, 0.01, 5, 4);
+		//tripleStore = new RDFFileDataSet(AM_FOLDER, RDFFormat.TURTLE);
+		//LargeClassificationDataSet ds = new AMDataSet(tripleStore, 10, 0.01, 5, 4);
 
-		//tripleStore = new RDFFileDataSet(BGS_FOLDER, RDFFormat.NTRIPLES);
-		//LargeClassificationDataSet ds = new BGSDataSet(tripleStore, "http://data.bgs.ac.uk/ref/Lexicon/hasTheme", 10, 0.05, 5, 3);
+		tripleStore = new RDFFileDataSet(BGS_FOLDER, RDFFormat.NTRIPLES);
+		LargeClassificationDataSet ds = new BGSDataSet(tripleStore, "http://data.bgs.ac.uk/ref/Lexicon/hasTheme", 10, 0.05, 5, 3);
 
 		List<EvaluationFunction> evalFuncs = new ArrayList<EvaluationFunction>();
 		evalFuncs.add(new Accuracy());
@@ -87,7 +87,9 @@ public class SimpleGraphFeaturesAMExperiment {
 
 		ResultsTable resTable = new ResultsTable();
 		resTable.setDigits(3);
-		resTable.setManWU(0.05);
+		resTable.setpValue(0.05);
+		resTable.setSignificanceTest(ResultsTable.SigTest.WILCOXON_SIGNED_RANK);
+		resTable.setShowStdDev(true);
 
 		long[] seeds = {11};
 		long[] seedsDataset = {11,21,31,41,51}; //,61,71,81,91,101};
@@ -104,15 +106,15 @@ public class SimpleGraphFeaturesAMExperiment {
 		svmParms.setWeights(EvaluationUtils.computeWeights(target));
 		//*/
 
-		double fraction = 0.01;
+		double fraction = 0.02;
 		int minClassSize = 0;
-		int maxNumClasses = 15;
+		int maxNumClasses = 3;
 
 
 		boolean reverseWL = true; // WL should be in reverse mode, which means regular subtrees
 		boolean[] inference = {false,true};
 
-		int[] depths = {1,2};
+		int[] depths = {1,2,3};
 		int[] pathDepths = {2,4,6};
 		int[] iterationsWL = {2,4,6};
 
@@ -328,7 +330,7 @@ public class SimpleGraphFeaturesAMExperiment {
 
 		//*/
 
-		/*
+		///*
 		for (boolean inf : inference) {
 			resTable.newRow("WL Tree: " + inf);	
 
@@ -418,7 +420,7 @@ public class SimpleGraphFeaturesAMExperiment {
 		//*/
 
 
-		/* RDF WL
+		///* RDF WL
 		for (boolean inf : inference) {
 			resTable.newRow("RDF WL: " + inf);
 

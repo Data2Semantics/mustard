@@ -18,19 +18,22 @@ public class AMDataSet implements LargeClassificationDataSet {
 	private long seed;
 	private double fraction;
 	private int maxNumClasses;
+	private boolean noMaterial;
 
 	private List<Double> target;
 	private RDFData rdfData;
 
-
-
-	public AMDataSet(RDFDataSet tripleStore, long seed, double fraction, int minClassSize, int maxNumClasses) {
+	public AMDataSet(RDFDataSet tripleStore, long seed, double fraction, int minClassSize, int maxNumClasses, boolean noMaterial) {
 		this.tripleStore = tripleStore;
 		this.minClassSize = minClassSize;
 		this.maxNumClasses = maxNumClasses;
 		this.seed = seed;
-		
 		this.fraction = fraction;
+		this.noMaterial = noMaterial;
+	}
+
+	public AMDataSet(RDFDataSet tripleStore, long seed, double fraction, int minClassSize, int maxNumClasses) {
+		this(tripleStore, seed, fraction, minClassSize, maxNumClasses, false);
 	}
 
 	public void create() {
