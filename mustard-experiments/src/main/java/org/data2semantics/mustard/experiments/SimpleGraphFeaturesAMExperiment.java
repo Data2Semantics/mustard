@@ -3,6 +3,7 @@ package org.data2semantics.mustard.experiments;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -87,13 +88,13 @@ public class SimpleGraphFeaturesAMExperiment {
 
 		ResultsTable resTable = new ResultsTable();
 		resTable.setDigits(3);
-		resTable.setpValue(0.05);
 		resTable.setSignificanceTest(ResultsTable.SigTest.WILCOXON_SIGNED_RANK);
+		resTable.setpValue(0.05);
 		resTable.setShowStdDev(true);
 
 		long[] seeds = {11};
-		long[] seedsDataset = {11,21,31,41,51}; //,61,71,81,91,101};
-		double[] cs = {1};	
+		long[] seedsDataset = {11,21,31,41,51,61,71,81,91,101};
+		double[] cs = {1, 10, 100, 1000};	
 
 		LibLINEARParameters svmParms = new LibLINEARParameters(LibLINEARParameters.SVC_DUAL, cs);
 		//svmParms.setDoCrossValidation(false);
@@ -106,7 +107,8 @@ public class SimpleGraphFeaturesAMExperiment {
 		svmParms.setWeights(EvaluationUtils.computeWeights(target));
 		//*/
 
-		double fraction = 0.02;
+
+		double fraction = 0.05;
 		int minClassSize = 0;
 		int maxNumClasses = 3;
 
@@ -200,7 +202,7 @@ public class SimpleGraphFeaturesAMExperiment {
 
 		//*/
 
-		/*
+		///*
 		for (boolean inf : inference) {
 			resTable.newRow("Path Count through root: " + inf);	
 			for (int d : depths) {
@@ -243,7 +245,7 @@ public class SimpleGraphFeaturesAMExperiment {
 
 		//*/
 
-		/*
+		///*
 		for (boolean inf : inference) {
 			resTable.newRow("WL through root: " + inf);
 			for (int d : depths) {
@@ -286,7 +288,7 @@ public class SimpleGraphFeaturesAMExperiment {
 
 		//*/
 
-		/*
+		///*
 		for (boolean inf : inference) {
 			resTable.newRow("Path Count Tree: " + inf);	
 
@@ -467,7 +469,7 @@ public class SimpleGraphFeaturesAMExperiment {
 
 
 
-		/* Regular WL
+		///* Regular WL
 		for (boolean inf : inference) {
 			resTable.newRow("Regular WL: " + inf);		
 			for (int d : depths) {
@@ -530,7 +532,7 @@ public class SimpleGraphFeaturesAMExperiment {
 		System.out.println(resTable);
 
 		
-		/* Path Count full
+		///* Path Count full
 		for (boolean inf : inference) {
 			resTable.newRow("Path Count Full: " + inf);		
 			for (int d : depths) {
@@ -607,11 +609,16 @@ public class SimpleGraphFeaturesAMExperiment {
 				cache.get(seed).put(inf, new HashMap<Integer,Pair<SingleDTGraph, List<Double>>>());
 
 				for (int depth : depths) {
+					System.out.println("Getting Statements...");
 					Set<Statement> stmts = RDFUtils.getStatements4Depth(tripleStore, data.getRDFData().getInstances(), depth, inf);
-					stmts.removeAll(data.getRDFData().getBlackList());
+					System.out.println("# Statements: " + stmts.size());
+					stmts.removeAll(new HashSet<Statement>(data.getRDFData().getBlackList()));
+					System.out.println("# Statements: " + stmts.size() + ", after blackList");
+					System.out.println("Building Graph...");
 					List<DTNode<String,String>> instanceNodes = new ArrayList<DTNode<String,String>>();
 					DTGraph<String,String> graph = RDFUtils.statements2Graph(stmts, RDFUtils.REGULAR_LITERALS, data.getRDFData().getInstances(), instanceNodes, true);
 					SingleDTGraph g = new SingleDTGraph(graph, instanceNodes);
+					System.out.println("Built Graph with " + graph.nodes().size() + ", and " + graph.links().size() + " links");
 
 					cache.get(seed).get(inf).put(depth, new Pair<SingleDTGraph,List<Double>>(g, new ArrayList<Double>(data.getTarget())));
 				}

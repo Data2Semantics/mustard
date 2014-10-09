@@ -34,9 +34,9 @@ public class AffiliationDataSetModule {
 	
 	public AffiliationDataSetModule(
 			@In(name="dataset") RDFDataSet dataset,
-			@In(name="minSize") int minSize,
-			@In(name="fraction") double fraction,
-			@In(name="seed") int seed,
+			@In(name="minSize") Integer minSize,
+			@In(name="fraction") Double fraction,
+			@In(name="seed") Integer seed,
 			@In(name="property") String property
 			) {
 		this.dataset = dataset;

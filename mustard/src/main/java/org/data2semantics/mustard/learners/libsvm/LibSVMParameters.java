@@ -1,5 +1,7 @@
 package org.data2semantics.mustard.learners.libsvm;
 
+import java.io.Serializable;
+
 import org.data2semantics.mustard.learners.evaluation.Accuracy;
 import org.data2semantics.mustard.learners.evaluation.EvaluationFunction;
 import org.data2semantics.mustard.learners.evaluation.MeanSquaredError;
@@ -13,7 +15,7 @@ import org.data2semantics.mustard.learners.evaluation.MeanSquaredError;
  * @author Gerben
  *
  */
-public class LibSVMParameters {
+public class LibSVMParameters implements Serializable {
 	public static final int ONE_CLASS = svm_parameter.ONE_CLASS;
 	public static final int C_SVC = svm_parameter.C_SVC;
 	public static final int NU_SVC = svm_parameter.NU_SVC;
