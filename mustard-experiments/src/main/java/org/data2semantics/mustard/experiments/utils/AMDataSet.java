@@ -39,7 +39,7 @@ public class AMDataSet implements LargeClassificationDataSet {
 	
 	
 	
-	public void createSubSet(long seed, double fraction, int minClassSize,int maxNumClasses) {
+	public void createSubSet(long seed, double fraction, int minClassSize, int maxNumClasses) {
 
 		Random rand = new Random(seed);
 
@@ -47,30 +47,37 @@ public class AMDataSet implements LargeClassificationDataSet {
 
 		System.out.println(tripleStore.getLabel() + " # objects: " + stmts.size());
 
-		List<Resource> instances = new ArrayList<Resource>();
-		List<Value> labels = new ArrayList<Value>();
+		List<Resource> instances2 = new ArrayList<Resource>();
+		List<Value> labels2 = new ArrayList<Value>();
 		List<Statement> blackList = new ArrayList<Statement>();
 
 		for (Statement stmt : stmts) {
-			instances.add(stmt.getSubject());
-			labels.add(stmt.getObject());
+			instances2.add(stmt.getSubject());
+			labels2.add(stmt.getObject());
 		}
 		
-		target = EvaluationUtils.createTarget(labels);	
+		target = EvaluationUtils.createTarget(labels2);	
 		System.out.println("# classes: " + EvaluationUtils.computeClassCounts(target).keySet().size());
 
-		blackList = DataSetUtils.createBlacklist(tripleStore, instances, labels);
+		blackList = DataSetUtils.createBlacklist(tripleStore, instances2, labels2);
+		EvaluationUtils.keepLargestClasses(instances2, labels2, maxNumClasses);
+		
+		
+		// --- Materials blacklist ---
+		blackList.addAll(tripleStore.getStatementsFromStrings(null, "http://purl.org/collections/nl/am/material", null));	
+		// ---------------------------
+				
+		List<Resource> instances = new ArrayList<Resource>();
+		List<Value> labels = new ArrayList<Value>();
 
-		instances = new ArrayList<Resource>();
-		labels = new ArrayList<Value>();
-
-		for (Statement stmt : stmts) {
+		for (int i = 0; i < instances2.size(); i++) {
 			if (rand.nextDouble() < fraction) {
-				instances.add(stmt.getSubject());
-				labels.add(stmt.getObject());
+				instances.add(instances2.get(i));
+				labels.add(labels2.get(i));
 			}
 		}
-		EvaluationUtils.keepLargestClasses(instances, labels, maxNumClasses);
+	
+		//EvaluationUtils.keepLargestClasses(instances, labels, maxNumClasses);
 		EvaluationUtils.removeSmallClasses(instances, labels, minClassSize);
 
 		rdfData = new RDFData(tripleStore, instances, blackList);
