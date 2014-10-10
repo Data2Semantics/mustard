@@ -76,11 +76,11 @@ public class SimpleGraphFeaturesAMExperiment {
 	public static void main(String[] args) {
 
 
-		//tripleStore = new RDFFileDataSet(AM_FOLDER, RDFFormat.TURTLE);
-		//LargeClassificationDataSet ds = new AMDataSet(tripleStore, 10, 0.01, 5, 4);
+		tripleStore = new RDFFileDataSet(AM_FOLDER, RDFFormat.TURTLE);
+		LargeClassificationDataSet ds = new AMDataSet(tripleStore, 10, 0.01, 5, 4, true);
 
-		tripleStore = new RDFFileDataSet(BGS_FOLDER, RDFFormat.NTRIPLES);
-		LargeClassificationDataSet ds = new BGSDataSet(tripleStore, "http://data.bgs.ac.uk/ref/Lexicon/hasTheme", 10, 0.05, 5, 3);
+		//tripleStore = new RDFFileDataSet(BGS_FOLDER, RDFFormat.NTRIPLES);
+		//LargeClassificationDataSet ds = new BGSDataSet(tripleStore, "http://data.bgs.ac.uk/ref/Lexicon/hasTheme", 10, 0.05, 5, 3);
 
 		List<EvaluationFunction> evalFuncs = new ArrayList<EvaluationFunction>();
 		evalFuncs.add(new Accuracy());
@@ -88,7 +88,7 @@ public class SimpleGraphFeaturesAMExperiment {
 
 		ResultsTable resTable = new ResultsTable();
 		resTable.setDigits(3);
-		resTable.setSignificanceTest(ResultsTable.SigTest.WILCOXON_SIGNED_RANK);
+		resTable.setSignificanceTest(ResultsTable.SigTest.PAIRED_TTEST);
 		resTable.setpValue(0.05);
 		resTable.setShowStdDev(true);
 
@@ -108,15 +108,15 @@ public class SimpleGraphFeaturesAMExperiment {
 		//*/
 
 
-		double fraction = 0.05;
+		double fraction = 0.01;
 		int minClassSize = 0;
-		int maxNumClasses = 3;
+		int maxNumClasses = 10;
 
 
 		boolean reverseWL = true; // WL should be in reverse mode, which means regular subtrees
 		boolean[] inference = {false,true};
 
-		int[] depths = {1,2,3};
+		int[] depths = {1,2};
 		int[] pathDepths = {2,4,6};
 		int[] iterationsWL = {2,4,6};
 
