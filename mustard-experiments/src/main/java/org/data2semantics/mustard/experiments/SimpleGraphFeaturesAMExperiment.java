@@ -93,7 +93,7 @@ public class SimpleGraphFeaturesAMExperiment {
 		resTable.setShowStdDev(true);
 
 		long[] seeds = {11};
-		long[] seedsDataset = {11,21,31,41,51,61,71,81,91,101};
+		long[] seedsDataset = {11,21}; //,31,41,51,61,71,81,91,101};
 		double[] cs = {1, 10, 100, 1000};	
 
 		LibLINEARParameters svmParms = new LibLINEARParameters(LibLINEARParameters.SVC_DUAL, cs);
@@ -108,7 +108,7 @@ public class SimpleGraphFeaturesAMExperiment {
 		//*/
 
 
-		double fraction = 0.05;
+		double fraction = 0.01;
 		int minClassSize = 0;
 		int maxNumClasses = 3;
 
@@ -608,6 +608,11 @@ public class SimpleGraphFeaturesAMExperiment {
 			for (boolean inf : inference) {
 				stats.put(inf, new HashMap<Integer, Pair<Double, Double>>());
 				for (int depth : depths) {
+					
+					if (!stats.get(inf).containsKey(depth)) {
+						stats.get(inf).put(depth, new Pair<Double,Double>(0.0,0.0));
+					}
+					
 					Pair<SingleDTGraph, List<Double>> p = cache.get(seed).get(inf).get(depth);
 					List<DTGraph<String,String>> graphs = RDFUtils.getSubGraphs(p.getFirst().getGraph(), p.getFirst().getInstances(), depth);
 					
@@ -620,7 +625,10 @@ public class SimpleGraphFeaturesAMExperiment {
 					v /= graphs.size();
 					e /= graphs.size();
 					
-					stats.get(inf).put(depth, new Pair(v,e));
+					v += stats.get(inf).get(depth).getFirst();
+					e += stats.get(inf).get(depth).getSecond();
+					
+					stats.get(inf).put(depth, new Pair<Double,Double>(v,e));
 				}
 			}
 		}
@@ -628,7 +636,7 @@ public class SimpleGraphFeaturesAMExperiment {
 		for (boolean k1 : stats.keySet()) {
 			System.out.println("Inference: " + k1);
 			for (int k2 : stats.get(k1).keySet()) {
-				System.out.println("Depth " + k2 + ", vertices: " + stats.get(k1).get(k2).getFirst() + " , edges: " + stats.get(k1).get(k2).getSecond());
+				System.out.println("Depth " + k2 + ", vertices: " + (stats.get(k1).get(k2).getFirst()/seeds.length) + " , edges: " + (stats.get(k1).get(k2).getSecond()/seeds.length));
 			}
 		}
 	}
