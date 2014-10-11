@@ -8,8 +8,12 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
+import org.apache.commons.math3.stat.inference.MannWhitneyUTest;
+import org.apache.commons.math3.stat.inference.TTest;
+import org.apache.commons.math3.stat.inference.WilcoxonSignedRankTest;
 import org.data2semantics.mustard.experiments.rescal.RESCALKernel;
 import org.data2semantics.mustard.experiments.utils.AIFBDataSet;
+import org.data2semantics.mustard.experiments.utils.BGSLithoDataSet;
 import org.data2semantics.mustard.experiments.utils.ClassificationDataSet;
 import org.data2semantics.mustard.experiments.utils.Result;
 import org.data2semantics.mustard.experiments.utils.ResultsTable;
@@ -64,8 +68,30 @@ public class SimpleGraphFeaturesExperiment {
 	 * @param args
 	 */
 	public static void main(String[] args) {
+//		double[] s1 = {-10,-10,-10,-10,-10,-10,-10,-10,-10,-10};
+//		double[] s2 = {-10,-10,-10,-1,-10,-10,-10,-10,-10,-10};
+//		
+//		WilcoxonSignedRankTest wsrTest = new WilcoxonSignedRankTest();
+//		System.out.println(wsrTest.wilcoxonSignedRankTest(s1, s2, true));
+//
+//		MannWhitneyUTest mwuTest = new MannWhitneyUTest();
+//		System.out.println(mwuTest.mannWhitneyUTest(s1, s2));
+//		
+//		TTest ttest = new TTest();
+//		System.out.println(ttest.pairedTTest(s1, s2, 0.05));
+//		System.out.println(ttest.tTest(s1, s2, 0.05));
 
-		RDFDataSet tripleStore = new RDFFileDataSet(AIFB_FILE, RDFFormat.N3);
+
+
+		
+		
+		//RDFDataSet tripleStore = new RDFFileDataSet(AIFB_FILE, RDFFormat.N3);
+		//ClassificationDataSet ds = new AIFBDataSet(tripleStore);
+		//ds.create();
+		
+		RDFDataSet tripleStore = new RDFFileDataSet("C:\\Users\\Gerben\\Dropbox\\data_bgs_ac_uk_ALL", RDFFormat.NTRIPLES);
+		ClassificationDataSet ds = new BGSLithoDataSet(tripleStore);
+		ds.create();
 		
 		//createAffiliationPredictionDataSet();
 		//createGeoDataSet(1, 1, 10, "http://data.bgs.ac.uk/ref/Lexicon/hasLithogenesis");
@@ -84,7 +110,7 @@ public class SimpleGraphFeaturesExperiment {
 		resTable.setShowStdDev(true);
 
 		long[] seeds = {11,21,31,41,51,61,71,81,91,101};
-		double[] cs = {1};	
+		double[] cs = {1,10,100,1000};	
 
 		LibSVMParameters svmParms = new LibSVMParameters(LibSVMParameters.C_SVC, cs);
 		svmParms.setNumFolds(10);
@@ -96,21 +122,20 @@ public class SimpleGraphFeaturesExperiment {
 
 
 		boolean reverseWL = true; // WL should be in reverse mode, which means regular subtrees
-		boolean[] inference = {false,true};
+		boolean[] inference = {true};
 
 		int[] depths = {1,2,3};
 		int[] pathDepths = {0,1,2,3,4,5,6};
 		int[] iterationsWL = {0,1,2,3,4,5,6};
 		
-		boolean depthTimesTwo = false;
+		boolean depthTimesTwo = true;
 
-		ClassificationDataSet ds = new AIFBDataSet(tripleStore);
-		ds.create();
+
 		
 		RDFData data = ds.getRDFData();
 		List<Double> target = ds.getTarget();
 
-		///* The baseline experiment, BoW (or BoL if you prefer)
+		/* The baseline experiment, BoW (or BoL if you prefer)
 		for (boolean inf : inference) {
 			resTable.newRow("Baseline BoL: " + inf);		 
 			for (int d : depths) {
@@ -128,7 +153,7 @@ public class SimpleGraphFeaturesExperiment {
 		}
 		//*/
 		
-		///* The baseline experiment, BoW (or BoL if you prefer) Tree variant
+		/* The baseline experiment, BoW (or BoL if you prefer) Tree variant
 		for (boolean inf : inference) {
 			resTable.newRow("Baseline BoL Tree: " + inf);		 
 			for (int d : depths) {
@@ -200,7 +225,7 @@ public class SimpleGraphFeaturesExperiment {
 		}
 		//*/
 
-		///* Path Count Tree
+		/* Path Count Tree
 		for (boolean inf : inference) {
 			resTable.newRow("Path Count Tree: " + inf);		 
 			for (int d : depths) {
@@ -227,7 +252,7 @@ public class SimpleGraphFeaturesExperiment {
 		}
 		//*/
 
-		///* WL Tree
+		/* WL Tree
 		for (boolean inf : inference) {
 			resTable.newRow("WL Tree: " + inf);		 
 			for (int d : depths) {
@@ -442,7 +467,7 @@ public class SimpleGraphFeaturesExperiment {
 		resTable.addCompResults(resTable.getBestResults());
 		System.out.println(resTable);
 		
-		/* Path Count full
+		///* Path Count full
 		for (boolean inf : inference) {
 			resTable.newRow("Path Count Full: " + inf);		
 			for (int d : depths) {
