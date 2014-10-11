@@ -20,6 +20,7 @@ import org.data2semantics.mustard.experiments.utils.ResultsTable;
 import org.data2semantics.mustard.experiments.utils.SimpleGraphKernelExperiment;
 import org.data2semantics.mustard.kernels.data.GraphList;
 import org.data2semantics.mustard.kernels.data.RDFData;
+import org.data2semantics.mustard.kernels.data.SingleDTGraph;
 import org.data2semantics.mustard.kernels.graphkernels.CombinedKernel;
 import org.data2semantics.mustard.kernels.graphkernels.FeatureVectorKernel;
 import org.data2semantics.mustard.kernels.graphkernels.GraphKernel;
@@ -44,6 +45,7 @@ import org.data2semantics.mustard.rdf.DataSetUtils;
 import org.data2semantics.mustard.rdf.RDFDataSet;
 import org.data2semantics.mustard.rdf.RDFFileDataSet;
 import org.data2semantics.mustard.rdf.RDFUtils;
+import org.data2semantics.mustard.util.Pair;
 import org.data2semantics.mustard.weisfeilerlehman.StringLabel;
 import org.nodes.DTGraph;
 import org.nodes.DTNode;
@@ -68,37 +70,37 @@ public class SimpleGraphFeaturesExperiment {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-//		double[] s1 = {-10,-10,-10,-10,-10,-10,-10,-10,-10,-10};
-//		double[] s2 = {-10,-10,-10,-1,-10,-10,-10,-10,-10,-10};
-//		
-//		WilcoxonSignedRankTest wsrTest = new WilcoxonSignedRankTest();
-//		System.out.println(wsrTest.wilcoxonSignedRankTest(s1, s2, true));
-//
-//		MannWhitneyUTest mwuTest = new MannWhitneyUTest();
-//		System.out.println(mwuTest.mannWhitneyUTest(s1, s2));
-//		
-//		TTest ttest = new TTest();
-//		System.out.println(ttest.pairedTTest(s1, s2, 0.05));
-//		System.out.println(ttest.tTest(s1, s2, 0.05));
+		//		double[] s1 = {-10,-10,-10,-10,-10,-10,-10,-10,-10,-10};
+		//		double[] s2 = {-10,-10,-10,-1,-10,-10,-10,-10,-10,-10};
+		//		
+		//		WilcoxonSignedRankTest wsrTest = new WilcoxonSignedRankTest();
+		//		System.out.println(wsrTest.wilcoxonSignedRankTest(s1, s2, true));
+		//
+		//		MannWhitneyUTest mwuTest = new MannWhitneyUTest();
+		//		System.out.println(mwuTest.mannWhitneyUTest(s1, s2));
+		//		
+		//		TTest ttest = new TTest();
+		//		System.out.println(ttest.pairedTTest(s1, s2, 0.05));
+		//		System.out.println(ttest.tTest(s1, s2, 0.05));
 
 
 
-		
-		
-		//RDFDataSet tripleStore = new RDFFileDataSet(AIFB_FILE, RDFFormat.N3);
-		//ClassificationDataSet ds = new AIFBDataSet(tripleStore);
-		//ds.create();
-		
-		RDFDataSet tripleStore = new RDFFileDataSet("C:\\Users\\Gerben\\Dropbox\\data_bgs_ac_uk_ALL", RDFFormat.NTRIPLES);
-		ClassificationDataSet ds = new BGSLithoDataSet(tripleStore);
+
+
+		RDFDataSet tripleStore = new RDFFileDataSet(AIFB_FILE, RDFFormat.N3);
+		ClassificationDataSet ds = new AIFBDataSet(tripleStore);
 		ds.create();
-		
+
+		//RDFDataSet tripleStore = new RDFFileDataSet("C:\\Users\\Gerben\\Dropbox\\data_bgs_ac_uk_ALL", RDFFormat.NTRIPLES);
+		//ClassificationDataSet ds = new BGSLithoDataSet(tripleStore);
+		//ds.create();
+
 		//createAffiliationPredictionDataSet();
 		//createGeoDataSet(1, 1, 10, "http://data.bgs.ac.uk/ref/Lexicon/hasLithogenesis");
 		//createCommitteeMemberPredictionDataSet();	
 		//createAMDataSet(1, 1, 10);
-		
-		
+
+
 		List<EvaluationFunction> evalFuncs = new ArrayList<EvaluationFunction>();
 		evalFuncs.add(new Accuracy());
 		evalFuncs.add(new F1());
@@ -122,18 +124,20 @@ public class SimpleGraphFeaturesExperiment {
 
 
 		boolean reverseWL = true; // WL should be in reverse mode, which means regular subtrees
-		boolean[] inference = {true};
+		boolean[] inference = {false,true};
 
 		int[] depths = {1,2,3};
 		int[] pathDepths = {0,1,2,3,4,5,6};
 		int[] iterationsWL = {0,1,2,3,4,5,6};
-		
+
 		boolean depthTimesTwo = true;
 
 
-		
+
 		RDFData data = ds.getRDFData();
 		List<Double> target = ds.getTarget();
+
+		computeGraphStatistics(tripleStore, ds, inference, depths);
 
 		/* The baseline experiment, BoW (or BoL if you prefer)
 		for (boolean inf : inference) {
@@ -152,7 +156,7 @@ public class SimpleGraphFeaturesExperiment {
 			}
 		}
 		//*/
-		
+
 		/* The baseline experiment, BoW (or BoL if you prefer) Tree variant
 		for (boolean inf : inference) {
 			resTable.newRow("Baseline BoL Tree: " + inf);		 
@@ -177,7 +181,7 @@ public class SimpleGraphFeaturesExperiment {
 			for (int d : depths) {
 
 				List<RDFRootPathCountKernel> kernels = new ArrayList<RDFRootPathCountKernel>();	
-			
+
 				if (depthTimesTwo) {
 					kernels.add(new RDFRootPathCountKernel(d*2, d, true, inf, true));
 				} else {
@@ -204,7 +208,7 @@ public class SimpleGraphFeaturesExperiment {
 			for (int d : depths) {
 
 				List<RDFWLRootSubTreeKernel> kernels = new ArrayList<RDFWLRootSubTreeKernel>();	
-				
+
 				if (depthTimesTwo) {
 					kernels.add(new RDFWLRootSubTreeKernel(d*2, d, inf, reverseWL, false, true));
 				} else {
@@ -231,7 +235,7 @@ public class SimpleGraphFeaturesExperiment {
 			for (int d : depths) {
 
 				List<RDFTreePathCountKernel> kernels = new ArrayList<RDFTreePathCountKernel>();	
-				
+
 				if (depthTimesTwo) {
 					kernels.add(new RDFTreePathCountKernel(d*2, d, inf, true));
 				} else {
@@ -258,7 +262,7 @@ public class SimpleGraphFeaturesExperiment {
 			for (int d : depths) {
 
 				List<RDFTreeWLSubTreeKernel> kernels = new ArrayList<RDFTreeWLSubTreeKernel>();	
-				
+
 				if (depthTimesTwo) {
 					kernels.add(new RDFTreeWLSubTreeKernel(d*2, d, inf, reverseWL, false, true));
 				} else {
@@ -279,15 +283,15 @@ public class SimpleGraphFeaturesExperiment {
 		}
 		//*/
 
-	
-		
+
+
 		/* RDF Path Count 
 		for (boolean inf : inference) {
 			resTable.newRow("RDF Path Count: " + inf);		 
 			for (int d : depths) {
 
 				List<RDFPathCountKernel> kernels = new ArrayList<RDFPathCountKernel>();	
-				
+
 				if (depthTimesTwo) {
 					kernels.add(new RDFPathCountKernel(d*2, d, inf, true));
 				} else {
@@ -334,7 +338,7 @@ public class SimpleGraphFeaturesExperiment {
 			}
 		}
 		//*/
-		
+
 		/* RDF WL 
 		for (boolean inf : inference) {
 			resTable.newRow("RDF WL: " + inf);		 
@@ -361,8 +365,8 @@ public class SimpleGraphFeaturesExperiment {
 			}
 		}
 		//*/
-		
-		
+
+
 		/* Regular WL
 		for (boolean inf : inference) {
 			resTable.newRow("Regular WL: " + inf);		
@@ -388,7 +392,7 @@ public class SimpleGraphFeaturesExperiment {
 				System.out.println("Avg # nodes: " + avgNodes + " , avg # links: " + avgLinks);
 
 				List<WLSubTreeKernel> kernels = new ArrayList<WLSubTreeKernel>();
-				
+
 				if (depthTimesTwo) {
 					WLSubTreeKernel kernel = new WLSubTreeKernel(d*2, reverseWL, true);			
 					kernels.add(kernel);
@@ -412,7 +416,7 @@ public class SimpleGraphFeaturesExperiment {
 			}
 		}
 		//*/
-		
+
 		/* Regular WL
 				for (boolean inf : inference) {
 					resTable.newRow("Regular WL: " + inf);		
@@ -438,7 +442,7 @@ public class SimpleGraphFeaturesExperiment {
 						System.out.println("Avg # nodes: " + avgNodes + " , avg # links: " + avgLinks);
 
 						List<WLSubTreeKernel> kernels = new ArrayList<WLSubTreeKernel>();
-						
+
 						if (depthTimesTwo) {
 							WLSubTreeKernel kernel = new WLSubTreeKernel(d*2, false, true);			
 							kernels.add(kernel);
@@ -462,11 +466,11 @@ public class SimpleGraphFeaturesExperiment {
 					}
 				}
 				//*/
-		
-		
+
+
 		resTable.addCompResults(resTable.getBestResults());
 		System.out.println(resTable);
-		
+
 		///* Path Count full
 		for (boolean inf : inference) {
 			resTable.newRow("Path Count Full: " + inf);		
@@ -492,7 +496,7 @@ public class SimpleGraphFeaturesExperiment {
 				System.out.println("Avg # nodes: " + avgNodes + " , avg # links: " + avgLinks);
 
 				List<PathCountKernel> kernels = new ArrayList<PathCountKernel>();
-				
+
 				if (depthTimesTwo) {
 					PathCountKernel kernel = new PathCountKernel(d*2, true);			
 					kernels.add(kernel);
@@ -521,158 +525,194 @@ public class SimpleGraphFeaturesExperiment {
 
 		resTable.addCompResults(resTable.getBestResults());
 		System.out.println(resTable);
-
-
 	}
-//	private static void createAffiliationPredictionDataSet() {
-//		dataset = new RDFFileDataSet(AIFB_FILE, RDFFormat.N3);
-//
-//		List<Statement> stmts = dataset.getStatementsFromStrings(null, "http://swrc.ontoware.org/ontology#affiliation", null);
-//
-//		instances = new ArrayList<Resource>();
-//		labels = new ArrayList<Value>();
-//
-//		for (Statement stmt : stmts) {
-//			instances.add(stmt.getSubject());
-//			labels.add(stmt.getObject());
-//		}
-//
-//		EvaluationUtils.removeSmallClasses(instances, labels, 5);
-//		blackList = DataSetUtils.createBlacklist(dataset, instances, labels);
-//
-//		target = EvaluationUtils.createTarget(labels);
-//	}
-//	
-//	
-//	private static void createGeoDataSet(long seed, double fraction, int minSize, String property) {
-//		dataset = new RDFFileDataSet(BGS_FOLDER, RDFFormat.NTRIPLES);
-//		
-//		String majorityClass = "http://data.bgs.ac.uk/id/Lexicon/Class/LS";
-//		Random rand = new Random(seed);
-//
-//		List<Statement> stmts = dataset.getStatementsFromStrings(null, "http://www.w3.org/2000/01/rdf-schema#isDefinedBy", "http://data.bgs.ac.uk/ref/Lexicon/NamedRockUnit");
-//		System.out.println(dataset.getLabel());
-//
-//		System.out.println("Component Rock statements: " + stmts.size());
-//		instances = new ArrayList<Resource>();
-//		labels = new ArrayList<Value>();
-//		blackList = new ArrayList<Statement>();
-//
-//		// http://data.bgs.ac.uk/ref/Lexicon/hasRockUnitRank
-//		// http://data.bgs.ac.uk/ref/Lexicon/hasTheme
-//
-//		for(Statement stmt: stmts) {
-//			List<Statement> stmts2 = dataset.getStatementsFromStrings(stmt.getSubject().toString(), property, null);
-//
-//			if (stmts2.size() > 1) {
-//				System.out.println("more than 1 Class");
-//			}
-//
-//			for (Statement stmt2 : stmts2) {
-//
-//				if (rand.nextDouble() <= fraction) {
-//					instances.add(stmt2.getSubject());
-//
-//					labels.add(stmt2.getObject());
-//					/*
-//				if (stmt2.getObject().toString().equals(majorityClass)) {
-//					labels.add(ds.createLiteral("pos"));
-//				} else {
-//					labels.add(ds.createLiteral("neg"));
-//				}
-//					 */
-//				}
-//			}
-//		}
-//
-//
-//		//capClassSize(50, seed);
-//		EvaluationUtils.removeSmallClasses(instances, labels, minSize);
-//		blackList = DataSetUtils.createBlacklist(dataset, instances, labels);
-//		target = EvaluationUtils.createTarget(labels);
-//	}
-//
-//	
-//	private static void createCommitteeMemberPredictionDataSet() {
-//		RDFFileDataSet testSetA = new RDFFileDataSet(ISWC_FOLDER + "iswc-2011-complete.rdf", RDFFormat.RDFXML);
-//		//testSetA.addFile("datasets/eswc-2011-complete.rdf", RDFFormat.RDFXML);
-//		//testSetA.addFile("datasets/eswc-2012-complete.rdf", RDFFormat.RDFXML);
-//		//testSetA.addFile("datasets/eswc-2008-complete.rdf", RDFFormat.RDFXML);
-//		//testSetA.addFile("datasets/eswc-2009-complete.rdf", RDFFormat.RDFXML);
-//		//testSetA.addFile("datasets/iswc-2012-complete.rdf", RDFFormat.RDFXML);
-//		//testSetA.addFile("datasets/iswc-2011-complete.rdf", RDFFormat.RDFXML);
-//		testSetA.addFile(ISWC_FOLDER + "iswc-2010-complete.rdf", RDFFormat.RDFXML);
-//		//testSetA.addFile("datasets/iswc-2009-complete.rdf", RDFFormat.RDFXML);
-//		//testSetA.addFile("datasets/iswc-2008-complete.rdf", RDFFormat.RDFXML);
-//
-//		RDFFileDataSet testSetB = new RDFFileDataSet(ISWC_FOLDER + "iswc-2012-complete.rdf", RDFFormat.RDFXML);
-//
-//		instances = new ArrayList<Resource>();
-//		List<Resource> instancesB = new ArrayList<Resource>();
-//		labels = new ArrayList<Value>();
-//		List<Statement> stmts = testSetA.getStatementsFromStrings(null, "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", "http://xmlns.com/foaf/0.1/Person");
-//		for (Statement stmt : stmts) {
-//			instancesB.add(stmt.getSubject()); 
-//		}	
-//
-//		int pos = 0, neg = 0;
-//		for (Resource instance : instancesB) {
-//			if (!testSetB.getStatements(instance, null, null).isEmpty()) {
-//				instances.add(instance);
-//				if (testSetB.getStatementsFromStrings(instance.toString(), "http://data.semanticweb.org/ns/swc/ontology#holdsRole", "http://data.semanticweb.org/conference/iswc/2012/pc-member/research", false).size() > 0) {
-//					labels.add(testSetA.createLiteral("true"));
-//					pos++;
-//				} else {
-//					labels.add(testSetA.createLiteral("false"));
-//					neg++;
-//				}
-//			}
-//		}
-//
-//		dataset = testSetA;		
-//		blackList = new ArrayList<Statement>();
-//		target = EvaluationUtils.createTarget(labels);
-//
-//		System.out.println("Pos and Neg: " + pos + " " + neg);
-//		System.out.println("Baseline acc: " + Math.max(pos, neg) / ((double)pos+neg));
-//	}
-//	
-//	private static void createAMDataSet(long seed, double fraction, int minSize) {
-//		dataset = new RDFFileDataSet(AM_FOLDER, RDFFormat.TURTLE);
-//		
-//		Random rand = new Random(seed);
-//
-//		List<Statement> stmts = dataset.getStatementsFromStrings(null, "http://purl.org/collections/nl/am/objectCategory", null);
-//		System.out.println(dataset.getLabel());
-//
-//		System.out.println("objects in AM: " + stmts.size());
-//		
-//		
-//		instances = new ArrayList<Resource>();
-//		labels = new ArrayList<Value>();
-//		blackList = new ArrayList<Statement>();
-//
-//		for (Statement stmt : stmts) {
-//			instances.add(stmt.getSubject());
-//			labels.add(stmt.getObject());
-//		}
-//
-////		
-////		
-//		blackList = DataSetUtils.createBlacklist(dataset, instances, labels);
-//		System.out.println(EvaluationUtils.computeClassCounts(target));
-//		
-//		Collections.shuffle(instances, new Random(seed));
-//		Collections.shuffle(labels, new Random(seed));
-//		
-//		instances = instances.subList(0, 200);
-//		labels = labels.subList(0, 200);
-//		
-//		EvaluationUtils.removeSmallClasses(instances, labels, minSize);
-//		target = EvaluationUtils.createTarget(labels);
-//		
-//		System.out.println("Subset: ");
-//		System.out.println(EvaluationUtils.computeClassCounts(target));
-//		
-//	}
+
+	private static void computeGraphStatistics(RDFDataSet tripleStore, ClassificationDataSet ds, boolean[] inference, int[] depths) {
+		Map<Boolean, Map<Integer, Pair<Double, Double>>> stats = new HashMap<Boolean, Map<Integer, Pair<Double, Double>>>();
+
+
+		for (boolean inf : inference) {
+			stats.put(inf, new HashMap<Integer, Pair<Double, Double>>());
+			for (int depth : depths) {
+
+				Set<Statement> st = RDFUtils.getStatements4Depth(tripleStore, ds.getRDFData().getInstances(), depth, inf);
+				st.removeAll(ds.getRDFData().getBlackList());
+				DTGraph<String,String> graph = RDFUtils.statements2Graph(st, RDFUtils.REGULAR_LITERALS);
+				List<DTNode<String,String>> instanceNodes = RDFUtils.findInstances(graph, ds.getRDFData().getInstances());
+				graph = RDFUtils.simplifyInstanceNodeLabels(graph, instanceNodes);
+				List<DTGraph<String,String>> graphs = RDFUtils.getSubGraphs(graph, instanceNodes, depth);
+
+				double v = 0;
+				double e = 0;
+				for (DTGraph<String,String> g : graphs) {
+					v += g.nodes().size();
+					e += g.links().size();
+				}
+				v /= graphs.size();
+				e /= graphs.size();
+
+				stats.get(inf).put(depth, new Pair<Double,Double>(v,e));
+			}
+
+		}
+
+		for (boolean k1 : stats.keySet()) {
+			System.out.println("Inference: " + k1);
+			for (int k2 : stats.get(k1).keySet()) {
+				System.out.println("Depth " + k2 + ", vertices: " + (stats.get(k1).get(k2).getFirst()) + " , edges: " + (stats.get(k1).get(k2).getSecond()));
+			}
+		}
+	}
+
+	//	private static void createAffiliationPredictionDataSet() {
+	//		dataset = new RDFFileDataSet(AIFB_FILE, RDFFormat.N3);
+	//
+	//		List<Statement> stmts = dataset.getStatementsFromStrings(null, "http://swrc.ontoware.org/ontology#affiliation", null);
+	//
+	//		instances = new ArrayList<Resource>();
+	//		labels = new ArrayList<Value>();
+	//
+	//		for (Statement stmt : stmts) {
+	//			instances.add(stmt.getSubject());
+	//			labels.add(stmt.getObject());
+	//		}
+	//
+	//		EvaluationUtils.removeSmallClasses(instances, labels, 5);
+	//		blackList = DataSetUtils.createBlacklist(dataset, instances, labels);
+	//
+	//		target = EvaluationUtils.createTarget(labels);
+	//	}
+	//	
+	//	
+	//	private static void createGeoDataSet(long seed, double fraction, int minSize, String property) {
+	//		dataset = new RDFFileDataSet(BGS_FOLDER, RDFFormat.NTRIPLES);
+	//		
+	//		String majorityClass = "http://data.bgs.ac.uk/id/Lexicon/Class/LS";
+	//		Random rand = new Random(seed);
+	//
+	//		List<Statement> stmts = dataset.getStatementsFromStrings(null, "http://www.w3.org/2000/01/rdf-schema#isDefinedBy", "http://data.bgs.ac.uk/ref/Lexicon/NamedRockUnit");
+	//		System.out.println(dataset.getLabel());
+	//
+	//		System.out.println("Component Rock statements: " + stmts.size());
+	//		instances = new ArrayList<Resource>();
+	//		labels = new ArrayList<Value>();
+	//		blackList = new ArrayList<Statement>();
+	//
+	//		// http://data.bgs.ac.uk/ref/Lexicon/hasRockUnitRank
+	//		// http://data.bgs.ac.uk/ref/Lexicon/hasTheme
+	//
+	//		for(Statement stmt: stmts) {
+	//			List<Statement> stmts2 = dataset.getStatementsFromStrings(stmt.getSubject().toString(), property, null);
+	//
+	//			if (stmts2.size() > 1) {
+	//				System.out.println("more than 1 Class");
+	//			}
+	//
+	//			for (Statement stmt2 : stmts2) {
+	//
+	//				if (rand.nextDouble() <= fraction) {
+	//					instances.add(stmt2.getSubject());
+	//
+	//					labels.add(stmt2.getObject());
+	//					/*
+	//				if (stmt2.getObject().toString().equals(majorityClass)) {
+	//					labels.add(ds.createLiteral("pos"));
+	//				} else {
+	//					labels.add(ds.createLiteral("neg"));
+	//				}
+	//					 */
+	//				}
+	//			}
+	//		}
+	//
+	//
+	//		//capClassSize(50, seed);
+	//		EvaluationUtils.removeSmallClasses(instances, labels, minSize);
+	//		blackList = DataSetUtils.createBlacklist(dataset, instances, labels);
+	//		target = EvaluationUtils.createTarget(labels);
+	//	}
+	//
+	//	
+	//	private static void createCommitteeMemberPredictionDataSet() {
+	//		RDFFileDataSet testSetA = new RDFFileDataSet(ISWC_FOLDER + "iswc-2011-complete.rdf", RDFFormat.RDFXML);
+	//		//testSetA.addFile("datasets/eswc-2011-complete.rdf", RDFFormat.RDFXML);
+	//		//testSetA.addFile("datasets/eswc-2012-complete.rdf", RDFFormat.RDFXML);
+	//		//testSetA.addFile("datasets/eswc-2008-complete.rdf", RDFFormat.RDFXML);
+	//		//testSetA.addFile("datasets/eswc-2009-complete.rdf", RDFFormat.RDFXML);
+	//		//testSetA.addFile("datasets/iswc-2012-complete.rdf", RDFFormat.RDFXML);
+	//		//testSetA.addFile("datasets/iswc-2011-complete.rdf", RDFFormat.RDFXML);
+	//		testSetA.addFile(ISWC_FOLDER + "iswc-2010-complete.rdf", RDFFormat.RDFXML);
+	//		//testSetA.addFile("datasets/iswc-2009-complete.rdf", RDFFormat.RDFXML);
+	//		//testSetA.addFile("datasets/iswc-2008-complete.rdf", RDFFormat.RDFXML);
+	//
+	//		RDFFileDataSet testSetB = new RDFFileDataSet(ISWC_FOLDER + "iswc-2012-complete.rdf", RDFFormat.RDFXML);
+	//
+	//		instances = new ArrayList<Resource>();
+	//		List<Resource> instancesB = new ArrayList<Resource>();
+	//		labels = new ArrayList<Value>();
+	//		List<Statement> stmts = testSetA.getStatementsFromStrings(null, "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", "http://xmlns.com/foaf/0.1/Person");
+	//		for (Statement stmt : stmts) {
+	//			instancesB.add(stmt.getSubject()); 
+	//		}	
+	//
+	//		int pos = 0, neg = 0;
+	//		for (Resource instance : instancesB) {
+	//			if (!testSetB.getStatements(instance, null, null).isEmpty()) {
+	//				instances.add(instance);
+	//				if (testSetB.getStatementsFromStrings(instance.toString(), "http://data.semanticweb.org/ns/swc/ontology#holdsRole", "http://data.semanticweb.org/conference/iswc/2012/pc-member/research", false).size() > 0) {
+	//					labels.add(testSetA.createLiteral("true"));
+	//					pos++;
+	//				} else {
+	//					labels.add(testSetA.createLiteral("false"));
+	//					neg++;
+	//				}
+	//			}
+	//		}
+	//
+	//		dataset = testSetA;		
+	//		blackList = new ArrayList<Statement>();
+	//		target = EvaluationUtils.createTarget(labels);
+	//
+	//		System.out.println("Pos and Neg: " + pos + " " + neg);
+	//		System.out.println("Baseline acc: " + Math.max(pos, neg) / ((double)pos+neg));
+	//	}
+	//	
+	//	private static void createAMDataSet(long seed, double fraction, int minSize) {
+	//		dataset = new RDFFileDataSet(AM_FOLDER, RDFFormat.TURTLE);
+	//		
+	//		Random rand = new Random(seed);
+	//
+	//		List<Statement> stmts = dataset.getStatementsFromStrings(null, "http://purl.org/collections/nl/am/objectCategory", null);
+	//		System.out.println(dataset.getLabel());
+	//
+	//		System.out.println("objects in AM: " + stmts.size());
+	//		
+	//		
+	//		instances = new ArrayList<Resource>();
+	//		labels = new ArrayList<Value>();
+	//		blackList = new ArrayList<Statement>();
+	//
+	//		for (Statement stmt : stmts) {
+	//			instances.add(stmt.getSubject());
+	//			labels.add(stmt.getObject());
+	//		}
+	//
+	////		
+	////		
+	//		blackList = DataSetUtils.createBlacklist(dataset, instances, labels);
+	//		System.out.println(EvaluationUtils.computeClassCounts(target));
+	//		
+	//		Collections.shuffle(instances, new Random(seed));
+	//		Collections.shuffle(labels, new Random(seed));
+	//		
+	//		instances = instances.subList(0, 200);
+	//		labels = labels.subList(0, 200);
+	//		
+	//		EvaluationUtils.removeSmallClasses(instances, labels, minSize);
+	//		target = EvaluationUtils.createTarget(labels);
+	//		
+	//		System.out.println("Subset: ");
+	//		System.out.println(EvaluationUtils.computeClassCounts(target));
+	//		
+	//	}
 }

@@ -93,7 +93,7 @@ public class SimpleGraphFeaturesAMExperiment {
 		resTable.setShowStdDev(true);
 
 		long[] seeds = {11};
-		long[] seedsDataset = {11,21}; //,31,41,51,61,71,81,91,101};
+		long[] seedsDataset = {11,21,31}; //,21}; //,31,41,51,61,71,81,91,101};
 		double[] cs = {1, 10, 100, 1000};	
 
 		LibLINEARParameters svmParms = new LibLINEARParameters(LibLINEARParameters.SVC_DUAL, cs);
@@ -116,7 +116,7 @@ public class SimpleGraphFeaturesAMExperiment {
 		boolean reverseWL = true; // WL should be in reverse mode, which means regular subtrees
 		boolean[] inference = {false,true};
 
-		int[] depths = {1,2,3};
+		int[] depths = {1,2};
 		int[] pathDepths = {2,4,6};
 		int[] iterationsWL = {2,4,6};
 
@@ -606,9 +606,10 @@ public class SimpleGraphFeaturesAMExperiment {
 		
 		for (long seed : seeds) {
 			for (boolean inf : inference) {
-				stats.put(inf, new HashMap<Integer, Pair<Double, Double>>());
-				for (int depth : depths) {
-					
+				if (!stats.containsKey(inf)) {
+					stats.put(inf, new HashMap<Integer, Pair<Double, Double>>());
+				}
+				for (int depth : depths) {					
 					if (!stats.get(inf).containsKey(depth)) {
 						stats.get(inf).put(depth, new Pair<Double,Double>(0.0,0.0));
 					}
