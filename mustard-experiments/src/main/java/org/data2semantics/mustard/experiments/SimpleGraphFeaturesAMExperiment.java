@@ -76,18 +76,18 @@ public class SimpleGraphFeaturesAMExperiment {
 	public static void main(String[] args) {
 
 
-		tripleStore = new RDFFileDataSet(AM_FOLDER, RDFFormat.TURTLE);
-		LargeClassificationDataSet ds = new AMDataSet(tripleStore, 10, 0.01, 5, 4, true);
+		//tripleStore = new RDFFileDataSet(AM_FOLDER, RDFFormat.TURTLE);
+		//LargeClassificationDataSet ds = new AMDataSet(tripleStore, 10, 0.01, 5, 4, true);
 
-		//tripleStore = new RDFFileDataSet(BGS_FOLDER, RDFFormat.NTRIPLES);
-		//LargeClassificationDataSet ds = new BGSDataSet(tripleStore, "http://data.bgs.ac.uk/ref/Lexicon/hasTheme", 10, 0.05, 5, 3);
+		tripleStore = new RDFFileDataSet(BGS_FOLDER, RDFFormat.NTRIPLES);
+		LargeClassificationDataSet ds = new BGSDataSet(tripleStore, "http://data.bgs.ac.uk/ref/Lexicon/hasTheme", 10, 0.05, 5, 3);
 
 		List<EvaluationFunction> evalFuncs = new ArrayList<EvaluationFunction>();
 		evalFuncs.add(new Accuracy());
 		evalFuncs.add(new F1());
 
 		ResultsTable resTable = new ResultsTable();
-		resTable.setDigits(3);
+		resTable.setDigits(2);
 		resTable.setSignificanceTest(ResultsTable.SigTest.PAIRED_TTEST);
 		resTable.setpValue(0.05);
 		resTable.setShowStdDev(true);
@@ -108,15 +108,15 @@ public class SimpleGraphFeaturesAMExperiment {
 		//*/
 
 
-		double fraction = 0.01;
+		double fraction = 0.05;
 		int minClassSize = 0;
-		int maxNumClasses = 10;
+		int maxNumClasses = 3;
 
 
 		boolean reverseWL = true; // WL should be in reverse mode, which means regular subtrees
 		boolean[] inference = {false,true};
 
-		int[] depths = {1,2};
+		int[] depths = {1,2,3};
 		int[] pathDepths = {2,4,6};
 		int[] iterationsWL = {2,4,6};
 
@@ -127,6 +127,7 @@ public class SimpleGraphFeaturesAMExperiment {
 		Map<Long, Map<Boolean, Map<Integer,Pair<SingleDTGraph, List<Double>>>>> cache = createDataSetCache(ds, seedsDataset, fraction, minClassSize, maxNumClasses, depths, inference);
 		tripleStore = null;
 
+		computeGraphStatistics(cache, seedsDataset, inference, depths);
 
 		///* The baseline experiment, BoW (or BoL if you prefer)
 		for (boolean inf : inference) {
@@ -163,6 +164,8 @@ public class SimpleGraphFeaturesAMExperiment {
 		}
 
 		System.out.println(resTable);
+		
+		//*/
 		
 		///* The baseline experiment, BoW (or BoL if you prefer) Tree Variant
 		for (boolean inf : inference) {
@@ -422,7 +425,7 @@ public class SimpleGraphFeaturesAMExperiment {
 		//*/
 
 
-		///* RDF WL
+		/* RDF WL
 		for (boolean inf : inference) {
 			resTable.newRow("RDF WL: " + inf);
 
@@ -598,6 +601,39 @@ public class SimpleGraphFeaturesAMExperiment {
 
 	}
 
+	private static void computeGraphStatistics(Map<Long, Map<Boolean, Map<Integer,Pair<SingleDTGraph, List<Double>>>>> cache, long[] seeds, boolean[] inference, int[] depths) {
+		Map<Boolean, Map<Integer, Pair<Double, Double>>> stats = new HashMap<Boolean, Map<Integer, Pair<Double, Double>>>();
+		
+		for (long seed : seeds) {
+			for (boolean inf : inference) {
+				stats.put(inf, new HashMap<Integer, Pair<Double, Double>>());
+				for (int depth : depths) {
+					Pair<SingleDTGraph, List<Double>> p = cache.get(seed).get(inf).get(depth);
+					List<DTGraph<String,String>> graphs = RDFUtils.getSubGraphs(p.getFirst().getGraph(), p.getFirst().getInstances(), depth);
+					
+					double v = 0;
+					double e = 0;
+					for (DTGraph<String,String> graph : graphs) {
+						v += graph.nodes().size();
+						e += graph.links().size();
+					}
+					v /= graphs.size();
+					e /= graphs.size();
+					
+					stats.get(inf).put(depth, new Pair(v,e));
+				}
+			}
+		}
+		
+		for (boolean k1 : stats.keySet()) {
+			System.out.println("Inference: " + k1);
+			for (int k2 : stats.get(k1).keySet()) {
+				System.out.println("Depth " + k2 + ", vertices: " + stats.get(k1).get(k2).getFirst() + " , edges: " + stats.get(k1).get(k2).getSecond());
+			}
+		}
+	}
+	
+	
 	private static Map<Long, Map<Boolean, Map<Integer,Pair<SingleDTGraph, List<Double>>>>> createDataSetCache(LargeClassificationDataSet data, long[] seeds, double fraction, int minSize, int maxClasses, int[] depths, boolean[] inference) {
 		Map<Long, Map<Boolean, Map<Integer,Pair<SingleDTGraph, List<Double>>>>> cache = new HashMap<Long, Map<Boolean, Map<Integer,Pair<SingleDTGraph, List<Double>>>>>();
 
