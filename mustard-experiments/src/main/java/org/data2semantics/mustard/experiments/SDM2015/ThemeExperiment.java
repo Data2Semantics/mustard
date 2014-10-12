@@ -63,8 +63,6 @@ import org.openrdf.rio.RDFFormat;
 public class ThemeExperiment {
 	private static final String BGS_FOLDER = "C:\\Users\\Gerben\\Dropbox\\data_bgs_ac_uk_ALL";
 
-	private static List<Resource> instances;
-	private static List<Value> labels;
 	private static List<Double> target;
 	private static RDFDataSet tripleStore;
 

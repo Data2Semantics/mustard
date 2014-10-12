@@ -63,8 +63,6 @@ import org.openrdf.rio.RDFFormat;
 public class CategoryExperiment {
 	private static final String AM_FOLDER =  "C:\\Users\\Gerben\\Dropbox\\AM_data";
 	
-	private static List<Resource> instances;
-	private static List<Value> labels;
 	private static List<Double> target;
 	private static RDFDataSet tripleStore;
 
