@@ -93,7 +93,7 @@ public class SimpleGraphFeaturesAMExperiment {
 		resTable.setShowStdDev(true);
 
 		long[] seeds = {11};
-		long[] seedsDataset = {11,21,31}; //,21}; //,31,41,51,61,71,81,91,101};
+		long[] seedsDataset = {11,21,31,41,51,61,71,81,91,101};
 		double[] cs = {1, 10, 100, 1000};	
 
 		LibLINEARParameters svmParms = new LibLINEARParameters(LibLINEARParameters.SVC_DUAL, cs);
@@ -108,13 +108,13 @@ public class SimpleGraphFeaturesAMExperiment {
 		//*/
 
 
-		double fraction = 0.01;
+		double fraction = 0.05;
 		int minClassSize = 0;
 		int maxNumClasses = 3;
 
 
 		boolean reverseWL = true; // WL should be in reverse mode, which means regular subtrees
-		boolean[] inference = {false,true};
+		boolean[] inference = {true,false};
 
 		int[] depths = {1,2};
 		int[] pathDepths = {2,4,6};
@@ -129,7 +129,7 @@ public class SimpleGraphFeaturesAMExperiment {
 
 		computeGraphStatistics(cache, seedsDataset, inference, depths);
 
-		///* The baseline experiment, BoW (or BoL if you prefer)
+		/* The baseline experiment, BoW (or BoL if you prefer)
 		for (boolean inf : inference) {
 			resTable.newRow("Baseline BoL: " + inf);
 			for (int d : depths) {
@@ -167,7 +167,7 @@ public class SimpleGraphFeaturesAMExperiment {
 		
 		//*/
 		
-		///* The baseline experiment, BoW (or BoL if you prefer) Tree Variant
+		/* The baseline experiment, BoW (or BoL if you prefer) Tree Variant
 		for (boolean inf : inference) {
 			resTable.newRow("Baseline BoL Tree: " + inf);
 			for (int d : depths) {
@@ -205,7 +205,7 @@ public class SimpleGraphFeaturesAMExperiment {
 
 		//*/
 
-		///*
+		/*
 		for (boolean inf : inference) {
 			resTable.newRow("Path Count through root: " + inf);	
 			for (int d : depths) {
@@ -248,7 +248,7 @@ public class SimpleGraphFeaturesAMExperiment {
 
 		//*/
 
-		///*
+		/*
 		for (boolean inf : inference) {
 			resTable.newRow("WL through root: " + inf);
 			for (int d : depths) {
@@ -291,7 +291,7 @@ public class SimpleGraphFeaturesAMExperiment {
 
 		//*/
 
-		///*
+		/*
 		for (boolean inf : inference) {
 			resTable.newRow("Path Count Tree: " + inf);	
 
@@ -335,7 +335,7 @@ public class SimpleGraphFeaturesAMExperiment {
 
 		//*/
 
-		///*
+		/*
 		for (boolean inf : inference) {
 			resTable.newRow("WL Tree: " + inf);	
 
@@ -472,7 +472,7 @@ public class SimpleGraphFeaturesAMExperiment {
 
 
 
-		///* Regular WL
+		/* Regular WL
 		for (boolean inf : inference) {
 			resTable.newRow("Regular WL: " + inf);		
 			for (int d : depths) {
