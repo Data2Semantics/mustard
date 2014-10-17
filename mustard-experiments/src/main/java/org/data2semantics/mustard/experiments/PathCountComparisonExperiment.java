@@ -23,7 +23,7 @@ import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFIntersectionTr
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFRootPathCountKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFTreePathCountKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFTreeWLSubTreeKernel;
-import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFWLRootSubTreeKernel;
+import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFRootWLSubTreeKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFWLSubTreeKernel;
 import org.data2semantics.mustard.learners.evaluation.Accuracy;
 import org.data2semantics.mustard.learners.evaluation.EvaluationFunction;
@@ -213,10 +213,10 @@ public class PathCountComparisonExperiment {
 
 		///*
 		for (int d : depths) {
-			List<RDFWLRootSubTreeKernel> kernelsWL = new ArrayList<RDFWLRootSubTreeKernel>();	
+			List<RDFRootWLSubTreeKernel> kernelsWL = new ArrayList<RDFRootWLSubTreeKernel>();	
 
 			for (int dd : pathDepths) {
-				kernelsWL.add(new RDFWLRootSubTreeKernel(dd, d, inference, WLreverse, false, true));
+				kernelsWL.add(new RDFRootWLSubTreeKernel(dd, d, inference, WLreverse, false, true));
 			}
 	
 			//Collections.shuffle(target);

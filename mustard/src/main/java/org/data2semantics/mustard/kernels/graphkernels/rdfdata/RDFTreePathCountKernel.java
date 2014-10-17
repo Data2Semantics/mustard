@@ -39,7 +39,7 @@ public class RDFTreePathCountKernel implements GraphKernel<RDFData>, FeatureVect
 		this.depth = depth;
 		this.inference = inference;
 
-		kernel = new RDFDTGraphTreePathCountKernel(pathLength, normalize);
+		kernel = new RDFDTGraphTreePathCountKernel(pathLength, depth, normalize);
 	}
 
 	public String getLabel() {

@@ -14,7 +14,7 @@ import org.data2semantics.mustard.weisfeilerlehman.WeisfeilerLehmanIterator;
 import org.nodes.DTGraph;
 import org.nodes.DTLink;
 import org.nodes.DTNode;
-import org.nodes.MapDTGraph;
+import org.nodes.LightDTGraph;
 
 
 /**
@@ -146,7 +146,7 @@ public class WLSubTreeKernel implements GraphKernel<GraphList<DTGraph<String,Str
 		List<DTGraph<StringLabel,StringLabel>> newGraphs = new ArrayList<DTGraph<StringLabel,StringLabel>>();	
 
 		for (DTGraph<String,String> graph : oldGraphs) {
-			MapDTGraph<StringLabel,StringLabel> newGraph = new MapDTGraph<StringLabel,StringLabel>();
+			LightDTGraph<StringLabel,StringLabel> newGraph = new LightDTGraph<StringLabel,StringLabel>();
 			for (DTNode<String,String> vertex : graph.nodes()) {
 				newGraph.add(new StringLabel(vertex.label()));
 			}

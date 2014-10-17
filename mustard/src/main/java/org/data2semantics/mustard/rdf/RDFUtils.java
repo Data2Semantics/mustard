@@ -13,6 +13,8 @@ import org.data2semantics.mustard.weisfeilerlehman.StringLabel;
 import org.nodes.DTGraph;
 import org.nodes.DTLink;
 import org.nodes.DTNode;
+import org.nodes.LightDTGraph;
+import org.nodes.LightDTGraph;
 import org.nodes.MapDTGraph;
 import org.nodes.algorithms.SlashBurn;
 import org.nodes.util.MaxObserver;
@@ -34,7 +36,7 @@ public class RDFUtils {
 		List<DTNode<String,String>> searchNodes, newSearchNodes;
 
 		for (DTNode<String,String> startNode : instances) {
-			DTGraph<String,String> newGraph = new MapDTGraph<String,String>();
+			DTGraph<String,String> newGraph = new LightDTGraph<String,String>();
 			searchNodes = new ArrayList<DTNode<String,String>>();
 			searchNodes.add(startNode);
 			nodeMap = new HashMap<DTNode<String,String>,DTNode<String,String>>();
@@ -72,7 +74,7 @@ public class RDFUtils {
 		List<Pair<DTNode<String,String>,DTNode<String,String>>> searchNodes, newSearchNodes;
 
 		for (DTNode<String,String> startNode : instances) {
-			DTGraph<String,String> newGraph = new MapDTGraph<String,String>();
+			DTGraph<String,String> newGraph = new LightDTGraph<String,String>();
 			searchNodes = new ArrayList<Pair<DTNode<String,String>,DTNode<String,String>>>();
 
 			// root gets index 0
@@ -99,7 +101,7 @@ public class RDFUtils {
 	public static DTGraph<String,String> simplifyInstanceNodeLabels(DTGraph<String,String> oldGraph, List<DTNode<String,String>> instanceNodes) {
 		String rootLabel = KernelUtils.ROOTID;
 		Map<DTNode<String,String>, Integer> ns = new HashMap<DTNode<String,String>,Integer>();
-		DTGraph<String,String> graph = new MapDTGraph<String,String>();
+		DTGraph<String,String> graph = new LightDTGraph<String,String>();
 
 		for (int i = 0; i < instanceNodes.size(); i++) {
 			ns.put(instanceNodes.get(i), i);
@@ -157,7 +159,7 @@ public class RDFUtils {
 	}
 
 	public static DTGraph<String,String> removeHubs(DTGraph<String,String> oldGraph, List<DTNode<String,String>> instanceNodes, Map<String, Integer> hubMap) {
-		DTGraph<String,String> graph = new MapDTGraph<String,String>();
+		DTGraph<String,String> graph = new LightDTGraph<String,String>();
 		Set<DTLink<String,String>> toRemoveLinks = new HashSet<DTLink<String,String>>();
 
 		Map<DTNode<String,String>,Integer> iNodeMap = new HashMap<DTNode<String,String>,Integer>();	
@@ -226,6 +228,35 @@ public class RDFUtils {
 		return iNodes;
 	}
 
+	public static DTGraph<String,String> statements2GraphList(List<Statement> stmts, int literalOption, List<Resource> instances, List<DTNode<String,String>> instanceNodes, boolean simplifyInstanceNodes) {
+		DTGraph<String,String> graph = new LightDTGraph<String,String>();	
+		Map<Resource, DTNode<String,String>> iMap = new HashMap<Resource, DTNode<String,String>>();
+
+		for (Resource instance : instances) {
+			if (simplifyInstanceNodes) {
+				iMap.put(instance, graph.add(KernelUtils.ROOTID));
+			} else {
+				iMap.put(instance, graph.add(instance.toString()));
+			}
+			instanceNodes.add(iMap.get(instance));
+		}	
+
+		for (Statement s : stmts) {
+			if (s.getObject() instanceof Literal && literalOption != NO_LITERALS) {
+				if (literalOption == REGULAR_LITERALS) {
+					addStatement(graph, s, false, iMap);
+				}
+				if (literalOption == REPEAT_LITERALS) {
+					addStatement(graph, s, true, iMap);
+				}
+			} else if (!(s.getObject() instanceof Literal)){
+				addStatement(graph, s, false, iMap);
+			}
+		}	
+		return graph;
+	}
+	
+	
 	/**
 	 * Convert a set of RDF statements into a DTGraph and set the list of instances to a identical label if boolean is set
 	 * The nodes for these instances are put in instanceNodes
@@ -236,7 +267,7 @@ public class RDFUtils {
 	 * @return
 	 */
 	public static DTGraph<String,String> statements2Graph(Set<Statement> stmts, int literalOption, List<Resource> instances, List<DTNode<String,String>> instanceNodes, boolean simplifyInstanceNodes) {
-		DTGraph<String,String> graph = new MapDTGraph<String,String>();	
+		DTGraph<String,String> graph = new LightDTGraph<String,String>();	
 		Map<Resource, DTNode<String,String>> iMap = new HashMap<Resource, DTNode<String,String>>();
 
 		for (Resource instance : instances) {
@@ -299,7 +330,7 @@ public class RDFUtils {
 	 * @return
 	 */
 	public static DTGraph<String,String> statements2Graph(Set<Statement> stmts, int literalOption) {
-		DTGraph<String,String> graph = new MapDTGraph<String,String>();
+		DTGraph<String,String> graph = new LightDTGraph<String,String>();
 
 		for (Statement s : stmts) {
 			if (s.getObject() instanceof Literal && literalOption != NO_LITERALS) {

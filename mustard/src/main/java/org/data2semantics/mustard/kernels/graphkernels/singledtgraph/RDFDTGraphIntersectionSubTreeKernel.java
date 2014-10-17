@@ -19,7 +19,7 @@ import org.nodes.DTGraph;
 import org.nodes.DTLink;
 import org.nodes.DTNode;
 import org.nodes.LightDGraph;
-import org.nodes.MapDTGraph;
+import org.nodes.LightDTGraph;
 import org.nodes.algorithms.SlashBurn;
 import org.nodes.util.Pair;
 import org.nodes.util.Functions.Dir;
@@ -86,7 +86,7 @@ public class RDFDTGraphIntersectionSubTreeKernel implements GraphKernel<SingleDT
 	}
 	
 	private DTGraph<String,String> toIntGraph(DTGraph<String,String> graph, List<DTNode<String,String>> iNodes) {
-		DTGraph<String,String> newG = new MapDTGraph<String,String>();
+		DTGraph<String,String> newG = new LightDTGraph<String,String>();
 		Map<String,String> labelMap = new HashMap<String,String>();
 		
 		Map<DTNode<String,String>,Integer> iNodeMap = new HashMap<DTNode<String,String>,Integer>();	

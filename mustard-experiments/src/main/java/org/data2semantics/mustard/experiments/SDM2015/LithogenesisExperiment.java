@@ -11,10 +11,10 @@ import java.util.Set;
 import org.apache.commons.math3.stat.inference.MannWhitneyUTest;
 import org.apache.commons.math3.stat.inference.TTest;
 import org.apache.commons.math3.stat.inference.WilcoxonSignedRankTest;
+import org.data2semantics.mustard.experiments.data.AIFBDataSet;
+import org.data2semantics.mustard.experiments.data.BGSLithoDataSet;
+import org.data2semantics.mustard.experiments.data.ClassificationDataSet;
 import org.data2semantics.mustard.experiments.rescal.RESCALKernel;
-import org.data2semantics.mustard.experiments.utils.AIFBDataSet;
-import org.data2semantics.mustard.experiments.utils.BGSLithoDataSet;
-import org.data2semantics.mustard.experiments.utils.ClassificationDataSet;
 import org.data2semantics.mustard.experiments.utils.Result;
 import org.data2semantics.mustard.experiments.utils.ResultsTable;
 import org.data2semantics.mustard.experiments.utils.SimpleGraphKernelExperiment;
@@ -33,7 +33,7 @@ import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFIntersectionTr
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFRootPathCountKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFTreePathCountKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFTreeWLSubTreeKernel;
-import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFWLRootSubTreeKernel;
+import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFRootWLSubTreeKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFWLSubTreeKernel;
 import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.RDFDTGraphWLSubTreeKernel;
 import org.data2semantics.mustard.learners.evaluation.Accuracy;
@@ -166,13 +166,13 @@ public class LithogenesisExperiment {
 			resTable.newRow("WL through root: " + inf);		 
 			for (int d : depths) {
 
-				List<RDFWLRootSubTreeKernel> kernels = new ArrayList<RDFWLRootSubTreeKernel>();	
+				List<RDFRootWLSubTreeKernel> kernels = new ArrayList<RDFRootWLSubTreeKernel>();	
 
 				if (depthTimesTwo) {
-					kernels.add(new RDFWLRootSubTreeKernel(d*2, d, inf, reverseWL, false, true));
+					kernels.add(new RDFRootWLSubTreeKernel(d*2, d, inf, reverseWL, false, true));
 				} else {
 					for (int dd : iterationsWL) {
-						kernels.add(new RDFWLRootSubTreeKernel(dd, d, inf, reverseWL, false, true));
+						kernels.add(new RDFRootWLSubTreeKernel(dd, d, inf, reverseWL, false, true));
 					}
 				}
 

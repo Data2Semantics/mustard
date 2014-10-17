@@ -17,7 +17,7 @@ import org.data2semantics.mustard.weisfeilerlehman.WeisfeilerLehmanIterator;
 import org.nodes.DTGraph;
 import org.nodes.DTLink;
 import org.nodes.DTNode;
-import org.nodes.MapDTGraph;
+import org.nodes.LightDTGraph;
 
 /**
  * This class implements a WL kernel directly on an RDF graph. The difference with a normal WL kernel is that subgraphs are not 
@@ -136,7 +136,7 @@ public class RDFDTGraphTreeWLSubTreeKernel implements GraphKernel<SingleDTGraph>
 		Map<DTNode<String,String>, DTNode<MapLabel,MapLabel>> vOldNewMap = new HashMap<DTNode<String,String>,DTNode<MapLabel,MapLabel>>();
 		Map<DTLink<String,String>, DTLink<MapLabel,MapLabel>> eOldNewMap = new HashMap<DTLink<String,String>,DTLink<MapLabel,MapLabel>>();
 		
-		rdfGraph = new MapDTGraph<MapLabel,MapLabel>();
+		rdfGraph = new LightDTGraph<MapLabel,MapLabel>();
 
 		for (DTNode<String,String> oldStartV : instances) {				
 			vertexIndexMap = new ArrayList<Pair<DTNode<MapLabel,MapLabel>, Integer>>();

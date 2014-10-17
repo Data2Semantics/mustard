@@ -11,10 +11,10 @@ import java.util.Set;
 import org.apache.commons.math3.stat.inference.MannWhitneyUTest;
 import org.apache.commons.math3.stat.inference.TTest;
 import org.apache.commons.math3.stat.inference.WilcoxonSignedRankTest;
+import org.data2semantics.mustard.experiments.data.AIFBDataSet;
+import org.data2semantics.mustard.experiments.data.BGSLithoDataSet;
+import org.data2semantics.mustard.experiments.data.ClassificationDataSet;
 import org.data2semantics.mustard.experiments.rescal.RESCALKernel;
-import org.data2semantics.mustard.experiments.utils.AIFBDataSet;
-import org.data2semantics.mustard.experiments.utils.BGSLithoDataSet;
-import org.data2semantics.mustard.experiments.utils.ClassificationDataSet;
 import org.data2semantics.mustard.experiments.utils.Result;
 import org.data2semantics.mustard.experiments.utils.ResultsTable;
 import org.data2semantics.mustard.experiments.utils.SimpleGraphKernelExperiment;
@@ -33,7 +33,7 @@ import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFIntersectionTr
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFRootPathCountKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFTreePathCountKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFTreeWLSubTreeKernel;
-import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFWLRootSubTreeKernel;
+import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFRootWLSubTreeKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFWLSubTreeKernel;
 import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.RDFDTGraphWLSubTreeKernel;
 import org.data2semantics.mustard.learners.evaluation.Accuracy;
@@ -137,7 +137,7 @@ public class SimpleGraphFeaturesExperiment {
 		RDFData data = ds.getRDFData();
 		List<Double> target = ds.getTarget();
 
-		computeGraphStatistics(tripleStore, ds, inference, depths);
+		//computeGraphStatistics(tripleStore, ds, inference, depths);
 
 		/* The baseline experiment, BoW (or BoL if you prefer)
 		for (boolean inf : inference) {
@@ -229,7 +229,7 @@ public class SimpleGraphFeaturesExperiment {
 		}
 		//*/
 
-		/* Path Count Tree
+		///* Path Count Tree
 		for (boolean inf : inference) {
 			resTable.newRow("Path Count Tree: " + inf);		 
 			for (int d : depths) {
@@ -471,7 +471,7 @@ public class SimpleGraphFeaturesExperiment {
 		resTable.addCompResults(resTable.getBestResults());
 		System.out.println(resTable);
 
-		///* Path Count full
+		/* Path Count full
 		for (boolean inf : inference) {
 			resTable.newRow("Path Count Full: " + inf);		
 			for (int d : depths) {

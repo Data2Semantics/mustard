@@ -16,7 +16,7 @@ import org.data2semantics.mustard.weisfeilerlehman.WeisfeilerLehmanIterator;
 import org.nodes.DTGraph;
 import org.nodes.DTLink;
 import org.nodes.DTNode;
-import org.nodes.MapDTGraph;
+import org.nodes.LightDTGraph;
 
 /**
  * This is a simple modified version of the WL sub tree kernel to compute only the trees with the root vertices. Not the fastest implementation, but it is
@@ -26,7 +26,7 @@ import org.nodes.MapDTGraph;
  * @author Gerben
  *
  */
-public class RDFDTGraphWLRootSubTreeKernel implements GraphKernel<SingleDTGraph>, FeatureVectorKernel<SingleDTGraph> {
+public class RDFDTGraphRootWLSubTreeKernel implements GraphKernel<SingleDTGraph>, FeatureVectorKernel<SingleDTGraph> {
 
 	private Map<DTNode<MapLabel,MapLabel>, Map<DTNode<MapLabel,MapLabel>, Integer>> instanceVertexIndexMap;
 	private Map<DTNode<MapLabel,MapLabel>, Map<DTLink<MapLabel,MapLabel>, Integer>> instanceEdgeIndexMap;
@@ -42,7 +42,7 @@ public class RDFDTGraphWLRootSubTreeKernel implements GraphKernel<SingleDTGraph>
 	private boolean iterationWeighting;
 
 
-	public RDFDTGraphWLRootSubTreeKernel(int iterations, int depth, boolean reverse, boolean iterationWeighting, boolean normalize) {
+	public RDFDTGraphRootWLSubTreeKernel(int iterations, int depth, boolean reverse, boolean iterationWeighting, boolean normalize) {
 		this(iterations, depth, normalize);
 		this.reverse = reverse;
 		this.iterationWeighting = iterationWeighting;
@@ -50,7 +50,7 @@ public class RDFDTGraphWLRootSubTreeKernel implements GraphKernel<SingleDTGraph>
 	}
 
 
-	public RDFDTGraphWLRootSubTreeKernel(int iterations, int depth, boolean normalize) {
+	public RDFDTGraphRootWLSubTreeKernel(int iterations, int depth, boolean normalize) {
 		this.normalize = normalize;
 		this.reverse = false;
 		this.iterationWeighting = false;
@@ -133,7 +133,7 @@ public class RDFDTGraphWLRootSubTreeKernel implements GraphKernel<SingleDTGraph>
 		Map<DTNode<String,String>, DTNode<MapLabel,MapLabel>> vOldNewMap = new HashMap<DTNode<String,String>,DTNode<MapLabel,MapLabel>>();
 		Map<DTLink<String,String>, DTLink<MapLabel,MapLabel>> eOldNewMap = new HashMap<DTLink<String,String>,DTLink<MapLabel,MapLabel>>();
 
-		rdfGraph = new MapDTGraph<MapLabel,MapLabel>();
+		rdfGraph = new LightDTGraph<MapLabel,MapLabel>();
 
 		for (DTNode<String,String> oldStartV : instances) {				
 			vertexIndexMap = new HashMap<DTNode<MapLabel,MapLabel>, Integer>();

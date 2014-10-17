@@ -9,11 +9,11 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
+import org.data2semantics.mustard.experiments.data.AMDataSet;
+import org.data2semantics.mustard.experiments.data.BGSDataSet;
+import org.data2semantics.mustard.experiments.data.ClassificationDataSet;
+import org.data2semantics.mustard.experiments.data.LargeClassificationDataSet;
 import org.data2semantics.mustard.experiments.rescal.RESCALKernel;
-import org.data2semantics.mustard.experiments.utils.AMDataSet;
-import org.data2semantics.mustard.experiments.utils.BGSDataSet;
-import org.data2semantics.mustard.experiments.utils.ClassificationDataSet;
-import org.data2semantics.mustard.experiments.utils.LargeClassificationDataSet;
 import org.data2semantics.mustard.experiments.utils.Result;
 import org.data2semantics.mustard.experiments.utils.ResultsTable;
 import org.data2semantics.mustard.experiments.utils.SimpleGraphFeatureVectorKernelExperiment;
@@ -32,13 +32,13 @@ import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFIntersectionTr
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFRootPathCountKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFTreePathCountKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFTreeWLSubTreeKernel;
-import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFWLRootSubTreeKernel;
+import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFRootWLSubTreeKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFWLSubTreeKernel;
 import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.RDFDTGraphPathCountKernel;
 import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.RDFDTGraphRootPathCountKernel;
 import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.RDFDTGraphTreePathCountKernel;
 import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.RDFDTGraphTreeWLSubTreeKernel;
-import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.RDFDTGraphWLRootSubTreeKernel;
+import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.RDFDTGraphRootWLSubTreeKernel;
 import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.RDFDTGraphWLSubTreeKernel;
 import org.data2semantics.mustard.learners.evaluation.Accuracy;
 import org.data2semantics.mustard.learners.evaluation.EvaluationFunction;
@@ -116,17 +116,42 @@ public class SimpleGraphFeaturesAMExperiment {
 		boolean reverseWL = true; // WL should be in reverse mode, which means regular subtrees
 		boolean[] inference = {true,false};
 
-		int[] depths = {1,2};
+		int[] depths = {1,2,3};
 		int[] pathDepths = {2,4,6};
 		int[] iterationsWL = {2,4,6};
 
 		boolean depthTimesTwo = true;
 
+		
+		ds.createSubSet(11, 0.01, 0, 3);
+		Set<Statement> stmts = RDFUtils.getStatements4Depth(tripleStore, ds.getRDFData().getInstances(), 3, false);
+		
+		List<Statement> stmts2 = new ArrayList<Statement>(stmts);
+		
+		System.out.println("Total statements: " + stmts.size());
+		
+		int tot = 0;
+		
+		long tic = System.currentTimeMillis();
+		List<DTNode<String,String>> instanceNodes = new ArrayList<DTNode<String,String>>();
+		DTGraph<String,String> graph = RDFUtils.statements2Graph(stmts, RDFUtils.REGULAR_LITERALS, ds.getRDFData().getInstances(), instanceNodes, true);
+		long toc = System.currentTimeMillis();
+		
+		System.out.println("Set iteration time: " + (toc - tic));
+		
+		
+		tot = 0;
+		tic = System.currentTimeMillis();
+	    instanceNodes = new ArrayList<DTNode<String,String>>();
+		graph = RDFUtils.statements2GraphList(stmts2, RDFUtils.REGULAR_LITERALS, ds.getRDFData().getInstances(), instanceNodes, true);
+		toc = System.currentTimeMillis();
+		
+		System.out.println("List iteration time: " + (toc - tic));
 
 
 		Map<Long, Map<Boolean, Map<Integer,Pair<SingleDTGraph, List<Double>>>>> cache = createDataSetCache(ds, seedsDataset, fraction, minClassSize, maxNumClasses, depths, inference);
 		tripleStore = null;
-
+		
 		computeGraphStatistics(cache, seedsDataset, inference, depths);
 
 		/* The baseline experiment, BoW (or BoL if you prefer)

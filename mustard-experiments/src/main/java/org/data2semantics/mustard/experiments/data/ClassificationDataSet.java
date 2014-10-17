@@ -1,4 +1,4 @@
-package org.data2semantics.mustard.experiments.utils;
+package org.data2semantics.mustard.experiments.data;
 
 import java.util.List;
 

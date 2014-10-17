@@ -13,7 +13,7 @@ import org.data2semantics.mustard.learners.SparseVector;
 import org.nodes.DTGraph;
 import org.nodes.DTLink;
 import org.nodes.DTNode;
-import org.nodes.MapDTGraph;
+import org.nodes.LightDTGraph;
 
 
 /**
@@ -176,7 +176,7 @@ public class PathCountKernelMkII implements GraphKernel<GraphList<DTGraph<String
 		List<DTGraph<PathStringLabel,PathStringLabel>> newGraphs = new ArrayList<DTGraph<PathStringLabel,PathStringLabel>>();	
 
 		for (DTGraph<String,String> graph : oldGraphs) {
-			MapDTGraph<PathStringLabel,PathStringLabel> newGraph = new MapDTGraph<PathStringLabel,PathStringLabel>();
+			LightDTGraph<PathStringLabel,PathStringLabel> newGraph = new LightDTGraph<PathStringLabel,PathStringLabel>();
 			for (DTNode<String,String> vertex : graph.nodes()) {
 				if (!labelDict.containsKey(vertex.label())) {
 					labelDict.put(vertex.label(), labelDict.size());

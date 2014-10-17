@@ -1,4 +1,4 @@
-package org.data2semantics.mustard.experiments.utils;
+package org.data2semantics.mustard.experiments.data;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,30 +12,20 @@ import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 import org.openrdf.model.Value;
 
-public class BGSDataSet implements LargeClassificationDataSet {
+public class BGSLithoDataSet implements ClassificationDataSet {
 	private RDFDataSet tripleStore;
-	private String property;
-	private int minClassSize;
-	private int maxNumClasses;
-	private long seed;
-	private double fraction;
-
+	
 	private List<Double> target;
 	private RDFData rdfData;
 
 
 
-	public BGSDataSet(RDFDataSet tripleStore, String property, long seed, double fraction, int minClassSize, int maxNumClasses) {
+	public BGSLithoDataSet(RDFDataSet tripleStore) {
 		this.tripleStore = tripleStore;
-		this.property = property;
-		this.minClassSize = minClassSize;
-		this.maxNumClasses = maxNumClasses;
-		this.seed = seed;
-		this.fraction = fraction;
 	}
 
 	public void create() {
-		createSubSet(seed, fraction, minClassSize, maxNumClasses);	
+		createSubSet(1, 1, 5, 100);	
 	}
 	
 	
@@ -58,7 +48,7 @@ public class BGSDataSet implements LargeClassificationDataSet {
 		// http://data.bgs.ac.uk/ref/Lexicon/hasTheme
 
 		for(Statement stmt: stmts) {
-			List<Statement> stmts2 = tripleStore.getStatementsFromStrings(stmt.getSubject().toString(), property, null);
+			List<Statement> stmts2 = tripleStore.getStatementsFromStrings(stmt.getSubject().toString(), "http://data.bgs.ac.uk/ref/Lexicon/hasLithogenesis", null);
 
 			if (stmts2.size() > 1) {
 				System.out.println("more than 1 Class");

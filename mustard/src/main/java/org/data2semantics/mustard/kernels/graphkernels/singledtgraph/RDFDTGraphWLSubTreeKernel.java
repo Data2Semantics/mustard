@@ -16,6 +16,7 @@ import org.data2semantics.mustard.weisfeilerlehman.WeisfeilerLehmanIterator;
 import org.nodes.DTGraph;
 import org.nodes.DTLink;
 import org.nodes.DTNode;
+import org.nodes.LightDTGraph;
 import org.nodes.MapDTGraph;
 
 /**
@@ -135,7 +136,7 @@ public class RDFDTGraphWLSubTreeKernel implements GraphKernel<SingleDTGraph>, Fe
 		Map<DTNode<String,String>, DTNode<MapLabel,MapLabel>> vOldNewMap = new HashMap<DTNode<String,String>,DTNode<MapLabel,MapLabel>>();
 		Map<DTLink<String,String>, DTLink<MapLabel,MapLabel>> eOldNewMap = new HashMap<DTLink<String,String>,DTLink<MapLabel,MapLabel>>();
 		
-		rdfGraph = new MapDTGraph<MapLabel,MapLabel>();
+		rdfGraph = new LightDTGraph<MapLabel,MapLabel>();
 
 		for (DTNode<String,String> oldStartV : instances) {				
 			vertexIndexMap = new HashMap<DTNode<MapLabel,MapLabel>, Integer>();
@@ -164,7 +165,7 @@ public class RDFDTGraphWLSubTreeKernel implements GraphKernel<SingleDTGraph>, Fe
 				newFrontV = new ArrayList<DTNode<String,String>>();
 				for (DTNode<String,String> qV : frontV) {
 					for (DTLink<String,String> edge : qV.linksOut()) {
-						if (vOldNewMap.containsKey(edge.to())) { // This vertex has been added to rdfGraph
+						if (vOldNewMap.containsKey(edge.to())) { // This vertex has been added to rdfGraph						
 							if (!vertexIndexMap.containsKey(vOldNewMap.get(edge.to())) || !reverse) { // we have not seen it for this instance or labels travel to the fringe vertices, in which case we want to have the lowest depth encounter
 								vertexIndexMap.put(vOldNewMap.get(edge.to()), j);
 							}

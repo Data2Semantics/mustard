@@ -13,7 +13,7 @@ import org.data2semantics.mustard.learners.SparseVector;
 import org.nodes.DTGraph;
 import org.nodes.DTLink;
 import org.nodes.DTNode;
-import org.nodes.MapDTGraph;
+import org.nodes.LightDTGraph;
 
 /**
  * This class implements a WL kernel directly on an RDF graph. The difference with a normal WL kernel is that subgraphs are not 
@@ -185,7 +185,7 @@ public class RDFDTGraphPathCountKernel implements GraphKernel<SingleDTGraph>, Fe
 		Map<DTNode<String,String>, DTNode<PathStringMapLabel,PathStringMapLabel>> vOldNewMap = new HashMap<DTNode<String,String>,DTNode<PathStringMapLabel,PathStringMapLabel>>();
 		Map<DTLink<String,String>, DTLink<PathStringMapLabel,PathStringMapLabel>> eOldNewMap = new HashMap<DTLink<String,String>,DTLink<PathStringMapLabel,PathStringMapLabel>>();
 
-		rdfGraph = new MapDTGraph<PathStringMapLabel,PathStringMapLabel>();
+		rdfGraph = new LightDTGraph<PathStringMapLabel,PathStringMapLabel>();
 
 		for (DTNode<String,String> oldStartV : instances) {				
 			vertexIndexMap = new HashMap<DTNode<PathStringMapLabel,PathStringMapLabel>, Integer>();

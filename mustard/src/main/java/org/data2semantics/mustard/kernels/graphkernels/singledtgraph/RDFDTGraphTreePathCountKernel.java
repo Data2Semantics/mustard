@@ -13,7 +13,7 @@ import org.data2semantics.mustard.learners.SparseVector;
 import org.nodes.DTGraph;
 import org.nodes.DTLink;
 import org.nodes.DTNode;
-import org.nodes.MapDTGraph;
+import org.nodes.LightDTGraph;
 
 /**
  * 
@@ -26,6 +26,7 @@ public class RDFDTGraphTreePathCountKernel implements GraphKernel<SingleDTGraph>
 	private List<DTNode<String,String>> instanceVertices;
 
 	private int pathLength;
+	private int depth;
 	private String label;
 	private boolean normalize;
 
@@ -34,11 +35,12 @@ public class RDFDTGraphTreePathCountKernel implements GraphKernel<SingleDTGraph>
 
 
 
-	public RDFDTGraphTreePathCountKernel(int pathLength, boolean normalize) {
+	public RDFDTGraphTreePathCountKernel(int pathLength, int depth, boolean normalize) {
 		this.normalize = normalize;
-		this.label = "RDF_DT_Graph_Tree_PathCount_Kernel_" + pathLength + "_"  + normalize;
+		this.label = "RDF_DT_Graph_Tree_PathCount_Kernel_" + pathLength + "_" + depth + "_" + normalize;
 
 		this.pathLength = pathLength;
+		this.depth = depth;
 	}
 
 	public String getLabel() {
@@ -65,6 +67,10 @@ public class RDFDTGraphTreePathCountKernel implements GraphKernel<SingleDTGraph>
 		
 		double avgLinks = 0;
 		
+		if (pathLength > depth * 2) { // cannot count paths longer than 2 times the depth (not a typical parameter scenario though).
+			pathLength = depth * 2;
+		}
+		
 		// Initialize and compute the featureVectors
 		SparseVector[] featureVectors = new SparseVector[data.numInstances()];
 		for (int i = 0; i < featureVectors.length; i++) {
@@ -82,21 +88,22 @@ public class RDFDTGraphTreePathCountKernel implements GraphKernel<SingleDTGraph>
 			sflinks.addAll(instanceVertices.get(i).linksOut());		
 			avgLinks += instanceVertices.get(i).linksOut().size();
 			
-			for (int j = pathLength - 1; j > 0; j = j - 2) {
+			int currentPL = pathLength-1;
+			for (int d = depth; d > 0; d--, currentPL = currentPL - 2) {
+				currentPL = Math.min((d * 2) - 1, currentPL);
 				for (DTLink<String,String> e : sflinks) {
-					countPathRec(featureVectors[i], e, "", j);
+					countPathRec(featureVectors[i], e, "", currentPL);
 				}
 				sflinks = new ArrayList<DTLink<String,String>>();
 				nsf = new ArrayList<DTNode<String,String>>();
 				
 				for (DTNode<String,String> n : sf) {
-					countPathRec(featureVectors[i], n, "", j-1);
-					if (j - 1 > 0) {
+					countPathRec(featureVectors[i], n, "", currentPL-1);
+					if (currentPL - 1 > 0) {
 						sflinks.addAll(n.linksOut());
 						avgLinks += n.linksOut().size();
 						for (DTLink<String,String> e : n.linksOut()) {
 							nsf.add(e.to());
-							//nsf.addAll(n.out());
 						}
 					}
 				}
@@ -156,7 +163,7 @@ public class RDFDTGraphTreePathCountKernel implements GraphKernel<SingleDTGraph>
 
 
 	private void init(DTGraph<String,String> graph, List<DTNode<String,String>> instances) {
-		rdfGraph = new MapDTGraph<String,String>();
+		rdfGraph = new LightDTGraph<String,String>();
 		instanceVertices = new ArrayList<DTNode<String,String>>();
 		Map<DTNode<String,String>, Integer> instanceIndexMap = new HashMap<DTNode<String,String>, Integer>();
 
@@ -165,7 +172,7 @@ public class RDFDTGraphTreePathCountKernel implements GraphKernel<SingleDTGraph>
 			instanceVertices.add(null);
 		}
 
-		MapDTGraph<String,String> newGraph = new MapDTGraph<String,String>();
+		LightDTGraph<String,String> newGraph = new LightDTGraph<String,String>();
 		for (DTNode<String,String> vertex : graph.nodes()) {
 			if (!labelDict.containsKey(vertex.label())) {
 				labelDict.put(vertex.label(), labelDict.size());

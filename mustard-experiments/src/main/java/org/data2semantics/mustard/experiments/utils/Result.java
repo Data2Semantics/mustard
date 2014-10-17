@@ -2,6 +2,7 @@ package org.data2semantics.mustard.experiments.utils;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.math3.stat.StatUtils;
@@ -34,7 +35,20 @@ public class Result implements Serializable {
 		this.scores = scores;
 		this.label = label;
 	}
-
+	
+	public Result(String input) {
+		label = input.split(":")[0];
+		String vals = input.split(":")[1];
+		vals = vals.replace("[", "");
+		vals = vals.replace("]", "");
+		String[] vals2 = vals.split(",");
+		scores = new double[vals2.length];
+		
+		for (int i = 0; i < vals2.length; i++) {
+			scores[i] = Double.parseDouble(vals2[i]);
+		}
+	}
+	
 	public void addResult(Result res) {
 		if (this.scores == null) {
 			this.scores = res.getScores();
@@ -120,6 +134,10 @@ public class Result implements Serializable {
 		} else {
 			return getScore() < res.getScore();
 		}
+	}
+	
+	public String toString() {
+		return label + ":"  + Arrays.toString(getScores());
 	}
 
 }

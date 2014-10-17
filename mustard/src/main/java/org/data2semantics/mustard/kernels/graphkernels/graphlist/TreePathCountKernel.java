@@ -16,7 +16,7 @@ import org.data2semantics.mustard.weisfeilerlehman.WeisfeilerLehmanIterator;
 import org.nodes.DTGraph;
 import org.nodes.DTLink;
 import org.nodes.DTNode;
-import org.nodes.MapDTGraph;
+import org.nodes.LightDTGraph;
 
 
 /**
@@ -182,7 +182,7 @@ public class TreePathCountKernel implements GraphKernel<GraphList<DTGraph<String
 		List<DTGraph<String,String>> newGraphs = new ArrayList<DTGraph<String,String>>();	
 
 		for (DTGraph<String,String> graph : oldGraphs) {
-			MapDTGraph<String,String> newGraph = new MapDTGraph<String,String>();
+			LightDTGraph<String,String> newGraph = new LightDTGraph<String,String>();
 			for (DTNode<String,String> vertex : graph.nodes()) {
 				if (!labelDict.containsKey(vertex.label())) {
 					labelDict.put(vertex.label(), labelDict.size());

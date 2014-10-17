@@ -30,10 +30,10 @@ public class F1 implements EvaluationFunction {
 		
 		for (double label : counts.keySet()) {
 			for (int i = 0; i < prediction.length; i++) {
-				if ((prediction[i].getLabel() == label && target[i] == label)) {
+				if ((prediction[i].getLabel() == label && target[i] == label)) { // TP
 					temp1 += 1;
 				}
-				else if ((prediction[i].getLabel() == label || target[i] == label)) {
+				else if ((prediction[i].getLabel() == label || target[i] == label)) { // FP || FN (because we have all the TP already)
 					temp2 += 1;
 				}
 			}
