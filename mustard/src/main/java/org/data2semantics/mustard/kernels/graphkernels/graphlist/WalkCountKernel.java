@@ -24,7 +24,7 @@ import org.nodes.LightDTGraph;
  * 
  * @author Gerben *
  */
-public class PathCountKernel implements GraphKernel<GraphList<DTGraph<String,String>>>, FeatureVectorKernel<GraphList<DTGraph<String,String>>> {
+public class WalkCountKernel implements GraphKernel<GraphList<DTGraph<String,String>>>, FeatureVectorKernel<GraphList<DTGraph<String,String>>> {
 	private int depth = 4;
 	protected String label;
 	protected boolean normalize;
@@ -38,13 +38,13 @@ public class PathCountKernel implements GraphKernel<GraphList<DTGraph<String,Str
 	 * @param iterations
 	 * @param normalize
 	 */
-	public PathCountKernel(int depth, boolean normalize) {
+	public WalkCountKernel(int depth, boolean normalize) {
 		this.normalize = normalize;
 		this.depth = depth;
 		this.label = "PathCountKernel, depth=" + depth + "_" + normalize;
 	}	
 
-	public PathCountKernel(int iterations) {
+	public WalkCountKernel(int iterations) {
 		this(iterations, true);
 	}
 

@@ -14,7 +14,7 @@ import org.data2semantics.mustard.experiments.utils.SimpleGraphKernelExperiment;
 import org.data2semantics.mustard.kernels.data.RDFData;
 import org.data2semantics.mustard.kernels.data.SingleDTGraph;
 import org.data2semantics.mustard.kernels.graphkernels.GraphKernel;
-import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFTreePathCountKernel;
+import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFTreeWalkCountKernel;
 import org.data2semantics.mustard.learners.evaluation.Accuracy;
 import org.data2semantics.mustard.learners.evaluation.EvaluationFunction;
 import org.data2semantics.mustard.learners.evaluation.F1;
@@ -55,21 +55,19 @@ public class ClusterExperiment {
 		List<DTNode<String,String>> instanceNodes = new ArrayList<DTNode<String,String>>();
 		DTGraph<String,String> graph = RDFUtils.statements2Graph(stmts, RDFUtils.REGULAR_LITERALS, ds.getRDFData().getInstances(), instanceNodes, true);
 
-		// get the kernel
-		List<GraphKernel<SingleDTGraph>> kernels = new ArrayList<GraphKernel<SingleDTGraph>>();	
-		kernels.add(parser.graphKernel());
-
+		List<? extends GraphKernel<SingleDTGraph>> kernels = parser.graphKernel();
+		
 		SimpleGraphKernelExperiment<SingleDTGraph> exp = new SimpleGraphKernelExperiment<SingleDTGraph>(kernels, new SingleDTGraph(graph, instanceNodes), ds.getTarget(), svmParms, seeds, evalFuncs);
 
-		System.out.println("Running: " + kernels.get(0).getLabel());
+		System.out.println("Running: " + parser.getSaveFileString());
 		exp.run();
 
 		try {
-			FileWriter fw = new FileWriter(kernels.get(0).getLabel() + "_" + parser.getDepth() + "_" + parser.isInference() + ".result");
+			FileWriter fw = new FileWriter(parser.getSaveFileString() + ".result");
 
-			fw.write(kernels.get(0).getLabel() + "_" + parser.getDepth() + "_" + parser.isInference() + ":" + 1);
+			fw.write(parser.getSaveFileString() + ":" + 1);
 			fw.write("\n");
-			System.out.println(kernels.get(0).getLabel() + "_" + parser.getDepth() + "_" + parser.isInference() + ":" + 1);
+			System.out.println(parser.getSaveFileString() + ":" + 1);
 			for (Result res : exp.getResults()) {
 				System.out.println(res);
 				fw.write(res.toString());

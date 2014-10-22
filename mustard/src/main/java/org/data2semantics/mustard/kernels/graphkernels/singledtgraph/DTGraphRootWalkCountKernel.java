@@ -25,7 +25,7 @@ import org.nodes.LightDTGraph;
  * @author Gerben
  *
  */
-public class RDFDTGraphRootPathCountKernel implements GraphKernel<SingleDTGraph>, FeatureVectorKernel<SingleDTGraph> {
+public class DTGraphRootWalkCountKernel implements GraphKernel<SingleDTGraph>, FeatureVectorKernel<SingleDTGraph> {
 
 	private DTGraph<String,String> rdfGraph;
 	private List<DTNode<String,String>> instanceVertices;
@@ -33,19 +33,16 @@ public class RDFDTGraphRootPathCountKernel implements GraphKernel<SingleDTGraph>
 	private int pathLength;
 	private String label;
 	private boolean normalize;
-	private boolean withRoot;
 
 	private Map<String, Integer> pathDict;
 	private Map<String, Integer> labelDict;
 
 
 
-	public RDFDTGraphRootPathCountKernel(int pathLength, boolean withRoot, boolean normalize) {
+	public DTGraphRootWalkCountKernel(int pathLength, boolean normalize) {
 		this.normalize = normalize;
-		this.label = "RDF_DT_Graph_Root_PathCount_Kernel_" + pathLength + "_" + withRoot + "_" + normalize;
-		this.withRoot = withRoot;
-
 		this.pathLength = pathLength;
+		this.label = "RDF_DT_Graph_Root_PathCount_Kernel_" + pathLength + "_" + normalize;
 	}
 
 	public String getLabel() {
@@ -70,11 +67,7 @@ public class RDFDTGraphRootPathCountKernel implements GraphKernel<SingleDTGraph>
 		SparseVector[] featureVectors = new SparseVector[data.numInstances()];
 		for (int i = 0; i < featureVectors.length; i++) {
 			featureVectors[i] = new SparseVector();
-			if (withRoot) {
-				countPathRec(featureVectors[i], instanceVertices.get(i), "", pathLength);
-			} else {
-				countPathRec(featureVectors[i], instanceVertices.get(i), pathLength);
-			}
+			countPathRec(featureVectors[i], instanceVertices.get(i), "", pathLength);
 		}
 
 		if (this.normalize) {
@@ -92,74 +85,30 @@ public class RDFDTGraphRootPathCountKernel implements GraphKernel<SingleDTGraph>
 		return kernel;
 	}
 
-	// withRoot == false
-	private String countPathRec(SparseVector fv, DTNode<String,String> vertex, int depth) {
-		String path = "";
-		if (depth > 0) {
-			for (DTLink<String,String> edge : vertex.linksOut()) {
-				path = countPathRec(fv, edge, depth-1);
-			}
-		}	
-
-		// Count path
-		path = vertex.label() + path;
-
-		if (!pathDict.containsKey(path)) {
-			pathDict.put(path, pathDict.size());
-		}
-		fv.setValue(pathDict.get(path), fv.getValue(pathDict.get(path)) + 1);
-
-		return path;
-	}
-
-	// withRoot == false
-	private String countPathRec(SparseVector fv, DTLink<String,String> edge, int depth) {
-		String path = "";
-		if (depth > 0) {
-			path = countPathRec(fv, edge.to(), depth-1);
-		}	
-		// Count path
-		path = edge.tag() + path;
-
-		if (!pathDict.containsKey(path)) {
-			pathDict.put(path, pathDict.size());
-		}
-		fv.setValue(pathDict.get(path), fv.getValue(pathDict.get(path)) + 1);
-		return path;
-	}
-
-
-
 	private void countPathRec(SparseVector fv, DTNode<String,String> vertex, String path, int depth) {
 		// Count path
 		path = path + vertex.label();
-
 		if (!pathDict.containsKey(path)) {
 			pathDict.put(path, pathDict.size());
 		}
 		fv.setValue(pathDict.get(path), fv.getValue(pathDict.get(path)) + 1);
-
 		if (depth > 0) {
 			for (DTLink<String,String> edge : vertex.linksOut()) {
 				countPathRec(fv, edge, path, depth-1);
 			}
 		}	
 	}
-
 	private void countPathRec(SparseVector fv, DTLink<String,String> edge, String path, int depth) {
 		// Count path
 		path = path + edge.tag();
-		
 		if (!pathDict.containsKey(path)) {
 			pathDict.put(path, pathDict.size());
 		}
 		fv.setValue(pathDict.get(path), fv.getValue(pathDict.get(path)) + 1);
-		
 		if (depth > 0) {
 			countPathRec(fv, edge.to(), path, depth-1);
 		}	
 	}
-
 
 	private void init(DTGraph<String,String> graph, List<DTNode<String,String>> instances) {
 		rdfGraph = new LightDTGraph<String,String>();

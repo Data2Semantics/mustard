@@ -11,8 +11,8 @@ import org.data2semantics.mustard.kernels.data.RDFData;
 import org.data2semantics.mustard.kernels.data.SingleDTGraph;
 import org.data2semantics.mustard.kernels.graphkernels.FeatureVectorKernel;
 import org.data2semantics.mustard.kernels.graphkernels.GraphKernel;
-import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.RDFDTGraphTreeWLSubTreeKernel;
-import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.RDFDTGraphWLSubTreeKernel;
+import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphTreeWLSubTreeKernel;
+import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphWLSubTreeKernel;
 import org.data2semantics.mustard.learners.SparseVector;
 import org.data2semantics.mustard.rdf.RDFDataSet;
 import org.data2semantics.mustard.rdf.RDFUtils;
@@ -27,7 +27,7 @@ public class RDFTreeWLSubTreeKernel implements GraphKernel<RDFData>, FeatureVect
 	private int depth;
 	private String label;
 	private boolean inference;
-	private RDFDTGraphTreeWLSubTreeKernel kernel;
+	private DTGraphTreeWLSubTreeKernel kernel;
 	private DTGraph<String,String> graph;
 	private List<DTNode<String,String>> instanceNodes;
 
@@ -41,7 +41,7 @@ public class RDFTreeWLSubTreeKernel implements GraphKernel<RDFData>, FeatureVect
 		this.depth = depth;
 		this.inference = inference;
 
-		kernel = new RDFDTGraphTreeWLSubTreeKernel(iterations, depth, reverse, iterationWeighting, normalize);
+		kernel = new DTGraphTreeWLSubTreeKernel(iterations, depth, reverse, iterationWeighting, normalize);
 	}
 
 	public String getLabel() {

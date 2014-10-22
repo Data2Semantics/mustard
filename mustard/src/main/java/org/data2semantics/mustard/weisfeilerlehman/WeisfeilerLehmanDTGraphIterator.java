@@ -13,12 +13,18 @@ import org.nodes.DTNode;
 
 public class WeisfeilerLehmanDTGraphIterator extends WeisfeilerLehmanIterator<DTGraph<StringLabel,StringLabel>> {
 	private boolean reverse;
+	private boolean trackPrevNBH;
 
 	public WeisfeilerLehmanDTGraphIterator(boolean reverse) {
-		super();
-		this.reverse = reverse;
+		this(reverse, false);
 	}
 
+
+	public WeisfeilerLehmanDTGraphIterator(boolean reverse, boolean trackPrevNBH) {
+		super();
+		this.reverse = reverse;
+		this.trackPrevNBH = trackPrevNBH;
+	}
 
 	@Override
 	public void wlInitialize(List<DTGraph<StringLabel, StringLabel>> graphs) {
@@ -90,6 +96,7 @@ public class WeisfeilerLehmanDTGraphIterator extends WeisfeilerLehmanIterator<DT
 
 		// 2. add bucket labels to existing labels
 		// Change the original label to a prefix label
+		/*
 		for (DTGraph<StringLabel,StringLabel> graph : graphs) {
 			for (DTLink<StringLabel,StringLabel> edge : graph.links()) {
 				edge.tag().append("_");
@@ -98,6 +105,7 @@ public class WeisfeilerLehmanDTGraphIterator extends WeisfeilerLehmanIterator<DT
 				vertex.label().append("_");
 			}
 		}
+		 */
 
 		// Since the labels are not necessarily neatly from i to n+i, we sort them
 		List<String> keysE = new ArrayList<String>(bucketsE.keySet());
@@ -111,39 +119,67 @@ public class WeisfeilerLehmanDTGraphIterator extends WeisfeilerLehmanIterator<DT
 			// Process vertices
 			Bucket<DTNode<StringLabel,StringLabel>> bucketV = bucketsV.get(key);			
 			for (DTNode<StringLabel,StringLabel> vertex : bucketV.getContents()) {
-				vertex.label().append(bucketV.getLabel());
 				vertex.label().append("_");
+				vertex.label().append(bucketV.getLabel());				
 			}
 		}
 		for (String key : keysE) {
 			// Process edges
 			Bucket<DTLink<StringLabel,StringLabel>> bucketE = bucketsE.get(key);			
 			for (DTLink<StringLabel,StringLabel> edge : bucketE.getContents()) {
-				edge.tag().append(bucketE.getLabel());
 				edge.tag().append("_");
+				edge.tag().append(bucketE.getLabel());
 			}
 		}
 
 		String label;
 		for (DTGraph<StringLabel,StringLabel> graph : graphs) {
 			for (DTLink<StringLabel,StringLabel> edge : graph.links()) {
-				label = labelDict.get(edge.tag().toString());						
-				if (label == null) {					
-					label = Integer.toString(labelDict.size());
-					labelDict.put(edge.tag().toString(), label);				
+				if (trackPrevNBH) {
+					String nb = edge.tag().toString();
+					nb = nb.substring(nb.indexOf("_"));
+
+					if (nb.equals(edge.tag().getPrevNBH())) {
+						edge.tag().setSameAsPrev(true);
+					}
+					edge.tag().setPrevNBH(nb);
 				}
-				edge.tag().clear();
-				edge.tag().append(label);			
+
+				if (!edge.tag().isSameAsPrev()) {
+					label = labelDict.get(edge.tag().toString());						
+					if (label == null) {					
+						label = Integer.toString(labelDict.size());
+						labelDict.put(edge.tag().toString(), label);				
+					}
+					edge.tag().clear();
+					edge.tag().append(label);
+				}
 			}
 
 			for (DTNode<StringLabel,StringLabel> vertex : graph.nodes()) {
-				label = labelDict.get(vertex.label().toString());
-				if (label == null) {
-					label = Integer.toString(labelDict.size());
-					labelDict.put(vertex.label().toString(), label);
+				if (trackPrevNBH) {
+					String nb = vertex.label().toString();
+					if (nb.contains("_")) {
+						nb = nb.substring(nb.indexOf("_"));
+					} else {
+						nb = "";
+					}
+
+					if (nb.equals(vertex.label().getPrevNBH())) {
+						vertex.label().setSameAsPrev(true);
+					}
+					vertex.label().setPrevNBH(nb);
 				}
-				vertex.label().clear();
-				vertex.label().append(label);
+
+				if (!vertex.label().isSameAsPrev()) {
+					label = labelDict.get(vertex.label().toString());
+					if (label == null) {
+						label = Integer.toString(labelDict.size());
+						labelDict.put(vertex.label().toString(), label);
+					}
+					vertex.label().clear();
+					vertex.label().append(label);
+				}
 			}
 		}
 	}

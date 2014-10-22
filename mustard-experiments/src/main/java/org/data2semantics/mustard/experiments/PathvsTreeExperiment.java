@@ -14,7 +14,7 @@ import org.data2semantics.mustard.kernels.graphkernels.CombinedKernel;
 import org.data2semantics.mustard.kernels.graphkernels.FeatureVectorKernel;
 import org.data2semantics.mustard.kernels.graphkernels.GraphKernel;
 import org.data2semantics.mustard.kernels.graphkernels.graphlist.WLSubTreeKernel;
-import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFPathCountKernel;
+import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFWalkCountKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFIntersectionTreeEdgeVertexPathKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFWLSubTreeKernel;
 import org.data2semantics.mustard.learners.evaluation.Accuracy;
@@ -104,15 +104,15 @@ public class PathvsTreeExperiment {
 		}
 		//*/
 
-		List<RDFPathCountKernel> kernelsIT = new ArrayList<RDFPathCountKernel>();	
+		List<RDFWalkCountKernel> kernelsIT = new ArrayList<RDFWalkCountKernel>();	
 		
-		kernelsIT.add(new RDFPathCountKernel(0, 3, inference, true));
-		kernelsIT.add(new RDFPathCountKernel(1, 3, inference, true));
-		kernelsIT.add(new RDFPathCountKernel(2, 3, inference, true));
-		kernelsIT.add(new RDFPathCountKernel(3, 3, inference, true));
-		kernelsIT.add(new RDFPathCountKernel(4, 3, inference, true));		
-		kernelsIT.add(new RDFPathCountKernel(5, 3, inference, true));
-		kernelsIT.add(new RDFPathCountKernel(6, 3, inference, true));
+		kernelsIT.add(new RDFWalkCountKernel(0, 3, inference, true));
+		kernelsIT.add(new RDFWalkCountKernel(1, 3, inference, true));
+		kernelsIT.add(new RDFWalkCountKernel(2, 3, inference, true));
+		kernelsIT.add(new RDFWalkCountKernel(3, 3, inference, true));
+		kernelsIT.add(new RDFWalkCountKernel(4, 3, inference, true));		
+		kernelsIT.add(new RDFWalkCountKernel(5, 3, inference, true));
+		kernelsIT.add(new RDFWalkCountKernel(6, 3, inference, true));
 		
 		
 		//Collections.shuffle(target);

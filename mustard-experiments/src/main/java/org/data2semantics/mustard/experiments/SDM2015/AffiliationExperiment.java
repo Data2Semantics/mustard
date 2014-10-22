@@ -24,18 +24,18 @@ import org.data2semantics.mustard.kernels.data.SingleDTGraph;
 import org.data2semantics.mustard.kernels.graphkernels.CombinedKernel;
 import org.data2semantics.mustard.kernels.graphkernels.FeatureVectorKernel;
 import org.data2semantics.mustard.kernels.graphkernels.GraphKernel;
-import org.data2semantics.mustard.kernels.graphkernels.graphlist.PathCountKernel;
+import org.data2semantics.mustard.kernels.graphkernels.graphlist.WalkCountKernel;
 import org.data2semantics.mustard.kernels.graphkernels.graphlist.PathCountKernelMkII;
 import org.data2semantics.mustard.kernels.graphkernels.graphlist.TreePathCountKernel;
 import org.data2semantics.mustard.kernels.graphkernels.graphlist.WLSubTreeKernel;
-import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFPathCountKernel;
+import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFWalkCountKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFIntersectionTreeEdgeVertexPathKernel;
-import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFRootPathCountKernel;
-import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFTreePathCountKernel;
+import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFRootWalkCountKernel;
+import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFTreeWalkCountKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFTreeWLSubTreeKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFRootWLSubTreeKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFWLSubTreeKernel;
-import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.RDFDTGraphWLSubTreeKernel;
+import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphWLSubTreeKernel;
 import org.data2semantics.mustard.learners.evaluation.Accuracy;
 import org.data2semantics.mustard.learners.evaluation.EvaluationFunction;
 import org.data2semantics.mustard.learners.evaluation.EvaluationUtils;
@@ -138,13 +138,13 @@ public class AffiliationExperiment {
 			resTable.newRow("Path Count through root: " + inf);		 
 			for (int d : depths) {
 
-				List<RDFRootPathCountKernel> kernels = new ArrayList<RDFRootPathCountKernel>();	
+				List<RDFRootWalkCountKernel> kernels = new ArrayList<RDFRootWalkCountKernel>();	
 
 				if (depthTimesTwo) {
-					kernels.add(new RDFRootPathCountKernel(d*2, d, true, inf, true));
+					kernels.add(new RDFRootWalkCountKernel(d*2, inf, true));
 				} else {
 					for (int dd : iterationsWL) {
-						kernels.add(new RDFRootPathCountKernel(dd, d, true, inf, true));
+						kernels.add(new RDFRootWalkCountKernel(dd, inf, true));
 					}
 				}				
 
@@ -168,10 +168,10 @@ public class AffiliationExperiment {
 				List<RDFRootWLSubTreeKernel> kernels = new ArrayList<RDFRootWLSubTreeKernel>();	
 
 				if (depthTimesTwo) {
-					kernels.add(new RDFRootWLSubTreeKernel(d*2, d, inf, reverseWL, false, true));
+					kernels.add(new RDFRootWLSubTreeKernel(d*2, inf, false, true));
 				} else {
 					for (int dd : iterationsWL) {
-						kernels.add(new RDFRootWLSubTreeKernel(dd, d, inf, reverseWL, false, true));
+						kernels.add(new RDFRootWLSubTreeKernel(dd, inf, false, true));
 					}
 				}
 
@@ -192,13 +192,13 @@ public class AffiliationExperiment {
 			resTable.newRow("Path Count Tree: " + inf);		 
 			for (int d : depths) {
 
-				List<RDFTreePathCountKernel> kernels = new ArrayList<RDFTreePathCountKernel>();	
+				List<RDFTreeWalkCountKernel> kernels = new ArrayList<RDFTreeWalkCountKernel>();	
 
 				if (depthTimesTwo) {
-					kernels.add(new RDFTreePathCountKernel(d*2, d, inf, true));
+					kernels.add(new RDFTreeWalkCountKernel(d*2, d, inf, true));
 				} else {
 					for (int dd : iterationsWL) {
-						kernels.add(new RDFTreePathCountKernel(dd, d, inf, true));
+						kernels.add(new RDFTreeWalkCountKernel(dd, d, inf, true));
 					}
 				}
 
@@ -318,14 +318,14 @@ public class AffiliationExperiment {
 
 				System.out.println("Avg # nodes: " + avgNodes + " , avg # links: " + avgLinks);
 
-				List<PathCountKernel> kernels = new ArrayList<PathCountKernel>();
+				List<WalkCountKernel> kernels = new ArrayList<WalkCountKernel>();
 
 				if (depthTimesTwo) {
-					PathCountKernel kernel = new PathCountKernel(d*2, true);			
+					WalkCountKernel kernel = new WalkCountKernel(d*2, true);			
 					kernels.add(kernel);
 				} else {
 					for (int dd : iterationsWL) {
-						PathCountKernel kernel = new PathCountKernel(dd, true);			
+						WalkCountKernel kernel = new WalkCountKernel(dd, true);			
 						kernels.add(kernel);
 					}
 				}

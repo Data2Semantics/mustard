@@ -1,9 +1,7 @@
 package org.data2semantics.mustard.kernels.graphkernels.singledtgraph;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -20,12 +18,6 @@ import org.nodes.DTLink;
 import org.nodes.DTNode;
 import org.nodes.LightDGraph;
 import org.nodes.LightDTGraph;
-import org.nodes.algorithms.SlashBurn;
-import org.nodes.util.Pair;
-import org.nodes.util.Functions.Dir;
-import org.openrdf.model.Literal;
-import org.openrdf.model.Resource;
-import org.openrdf.model.Statement;
 
 /**
  * Implementation of the Intersection SubTree kernel directly on the RDF graph, as suggested in the original paper.
@@ -33,17 +25,17 @@ import org.openrdf.model.Statement;
  * @author Gerben
  *
  */
-public class RDFDTGraphIntersectionSubTreeKernel implements GraphKernel<SingleDTGraph> {
+public class DTGraphIntersectionSubTreeKernel implements GraphKernel<SingleDTGraph> {
 	private int depth;
 	private double discountFactor;
 	protected String label;
 	protected boolean normalize;
 
-	public RDFDTGraphIntersectionSubTreeKernel() {
+	public DTGraphIntersectionSubTreeKernel() {
 		this(2, 1, true);
 	}
 
-	public RDFDTGraphIntersectionSubTreeKernel(int depth, double discountFactor, boolean normalize) {
+	public DTGraphIntersectionSubTreeKernel(int depth, double discountFactor, boolean normalize) {
 		this.normalize = normalize;
 		this.label = "RDF Intersection SubTree Kernel_" + depth + "_" + discountFactor + "_" + normalize;
 
@@ -300,6 +292,7 @@ public class RDFDTGraphIntersectionSubTreeKernel implements GraphKernel<SingleDT
 			}
 		}
 
+		@Override
 		public String toString() {
 			return "(" + first + "," + second + ")";
 		}

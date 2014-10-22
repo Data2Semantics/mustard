@@ -26,6 +26,7 @@ import org.openrdf.model.Value;
  * @author Gerben
  *
  */
+@Deprecated
 public class RDFIntersectionGraphEdgeVertexPathKernel implements GraphKernel<RDFData>, FeatureVectorKernel<RDFData> {
 	private int depth;
 	private boolean inference;

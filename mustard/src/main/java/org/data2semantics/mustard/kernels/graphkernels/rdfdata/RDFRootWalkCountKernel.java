@@ -11,8 +11,9 @@ import org.data2semantics.mustard.kernels.data.RDFData;
 import org.data2semantics.mustard.kernels.data.SingleDTGraph;
 import org.data2semantics.mustard.kernels.graphkernels.FeatureVectorKernel;
 import org.data2semantics.mustard.kernels.graphkernels.GraphKernel;
-import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.RDFDTGraphPathCountKernel;
-import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.RDFDTGraphWLSubTreeKernel;
+import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphWalkCountKernel;
+import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphRootWalkCountKernel;
+import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphWLSubTreeKernel;
 import org.data2semantics.mustard.learners.SparseVector;
 import org.data2semantics.mustard.rdf.RDFDataSet;
 import org.data2semantics.mustard.rdf.RDFUtils;
@@ -23,22 +24,21 @@ import org.nodes.MapDTGraph;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 
-public class RDFPathCountKernel implements GraphKernel<RDFData>, FeatureVectorKernel<RDFData> {
+public class RDFRootWalkCountKernel implements GraphKernel<RDFData>, FeatureVectorKernel<RDFData> {
 	private int depth;
-	private int pathLength;
 	private String label;
 	private boolean inference;
-	private RDFDTGraphPathCountKernel kernel;
+	private DTGraphRootWalkCountKernel kernel;
 	private DTGraph<String,String> graph;
 	private List<DTNode<String,String>> instanceNodes;
 
-	public RDFPathCountKernel(int pathLength, int depth,  boolean inference, boolean normalize) {
+	public RDFRootWalkCountKernel(int pathLength, boolean inference, boolean normalize) {
 		super();
-		this.label = "RDF_PathCount_Kernel_" + pathLength + "_" + depth +  "_" + inference + "_" + normalize;
-		this.depth = depth;
+		this.label = "RDF_Root_PathCount_Kernel_" + pathLength + "_" + inference + "_" + normalize;
+		this.depth = (int) Math.round(pathLength / 2.0);;
 		this.inference = inference;
-		this.pathLength = pathLength;
-		kernel = new RDFDTGraphPathCountKernel(pathLength, depth, normalize);
+
+		kernel = new DTGraphRootWalkCountKernel(pathLength, normalize);
 	}
 
 	public String getLabel() {

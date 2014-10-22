@@ -8,11 +8,11 @@ import org.nodes.DNode;
  * @author Gerben
  *
  */
-public class RDFDTGraphIntersectionPartialSubTreeKernel extends
-		RDFDTGraphIntersectionSubTreeKernel {
+public class DTGraphIntersectionPartialSubTreeKernel extends
+		DTGraphIntersectionSubTreeKernel {
 
 
-	public RDFDTGraphIntersectionPartialSubTreeKernel(int depth, double discountFactor, boolean normalize) {
+	public DTGraphIntersectionPartialSubTreeKernel(int depth, double discountFactor, boolean normalize) {
 		super(depth, discountFactor, normalize);
 		this.label = "RDF Intersection Partial SubTree Kernel_" + depth + "_" + discountFactor + "_" + normalize;;
 	}

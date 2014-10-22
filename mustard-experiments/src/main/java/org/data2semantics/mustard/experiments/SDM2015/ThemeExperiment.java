@@ -23,23 +23,23 @@ import org.data2semantics.mustard.kernels.data.SingleDTGraph;
 import org.data2semantics.mustard.kernels.graphkernels.CombinedKernel;
 import org.data2semantics.mustard.kernels.graphkernels.FeatureVectorKernel;
 import org.data2semantics.mustard.kernels.graphkernels.GraphKernel;
-import org.data2semantics.mustard.kernels.graphkernels.graphlist.PathCountKernel;
+import org.data2semantics.mustard.kernels.graphkernels.graphlist.WalkCountKernel;
 import org.data2semantics.mustard.kernels.graphkernels.graphlist.PathCountKernelMkII;
 import org.data2semantics.mustard.kernels.graphkernels.graphlist.TreePathCountKernel;
 import org.data2semantics.mustard.kernels.graphkernels.graphlist.WLSubTreeKernel;
-import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFPathCountKernel;
+import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFWalkCountKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFIntersectionTreeEdgeVertexPathKernel;
-import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFRootPathCountKernel;
-import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFTreePathCountKernel;
+import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFRootWalkCountKernel;
+import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFTreeWalkCountKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFTreeWLSubTreeKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFRootWLSubTreeKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFWLSubTreeKernel;
-import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.RDFDTGraphPathCountKernel;
-import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.RDFDTGraphRootPathCountKernel;
-import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.RDFDTGraphTreePathCountKernel;
-import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.RDFDTGraphTreeWLSubTreeKernel;
-import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.RDFDTGraphRootWLSubTreeKernel;
-import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.RDFDTGraphWLSubTreeKernel;
+import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphWalkCountKernel;
+import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphRootWalkCountKernel;
+import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphTreeWalkCountKernel;
+import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphTreeWLSubTreeKernel;
+import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphRootWLSubTreeKernel;
+import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphWLSubTreeKernel;
 import org.data2semantics.mustard.learners.evaluation.Accuracy;
 import org.data2semantics.mustard.learners.evaluation.EvaluationFunction;
 import org.data2semantics.mustard.learners.evaluation.EvaluationUtils;
@@ -124,8 +124,8 @@ public class ThemeExperiment {
 					target = p.getSecond();
 
 
-					List<RDFDTGraphWLSubTreeKernel> kernelsBaseline = new ArrayList<RDFDTGraphWLSubTreeKernel>();	
-					kernelsBaseline.add(new RDFDTGraphWLSubTreeKernel(0, d, reverseWL, false, true));
+					List<DTGraphWLSubTreeKernel> kernelsBaseline = new ArrayList<DTGraphWLSubTreeKernel>();	
+					kernelsBaseline.add(new DTGraphWLSubTreeKernel(0, d, reverseWL, false, true));
 
 					//Collections.shuffle(target);
 					SimpleGraphFeatureVectorKernelExperiment<SingleDTGraph> exp = new SimpleGraphFeatureVectorKernelExperiment<SingleDTGraph>(kernelsBaseline, data, target, svmParms, seeds, evalFuncs);
@@ -162,8 +162,8 @@ public class ThemeExperiment {
 					target = p.getSecond();
 
 
-					List<RDFDTGraphTreeWLSubTreeKernel> kernelsBaseline = new ArrayList<RDFDTGraphTreeWLSubTreeKernel>();	
-					kernelsBaseline.add(new RDFDTGraphTreeWLSubTreeKernel(0, d, reverseWL, false, true));
+					List<DTGraphTreeWLSubTreeKernel> kernelsBaseline = new ArrayList<DTGraphTreeWLSubTreeKernel>();	
+					kernelsBaseline.add(new DTGraphTreeWLSubTreeKernel(0, d, reverseWL, false, true));
 
 					//Collections.shuffle(target);
 					SimpleGraphFeatureVectorKernelExperiment<SingleDTGraph> exp = new SimpleGraphFeatureVectorKernelExperiment<SingleDTGraph>(kernelsBaseline, data, target, svmParms, seeds, evalFuncs);
@@ -199,13 +199,13 @@ public class ThemeExperiment {
 					SingleDTGraph data = p.getFirst();
 					target = p.getSecond();
 
-					List<RDFDTGraphRootPathCountKernel> kernels = new ArrayList<RDFDTGraphRootPathCountKernel>();	
+					List<DTGraphRootWalkCountKernel> kernels = new ArrayList<DTGraphRootWalkCountKernel>();	
 
 					if (depthTimesTwo) {
-						kernels.add(new RDFDTGraphRootPathCountKernel(d*2, true, true));
+						kernels.add(new DTGraphRootWalkCountKernel(d*2, true));
 					} else {
 						for (int dd : pathDepths) {
-							kernels.add(new RDFDTGraphRootPathCountKernel(dd, true, true));
+							kernels.add(new DTGraphRootWalkCountKernel(dd, true));
 						}
 					}
 
@@ -242,13 +242,13 @@ public class ThemeExperiment {
 					SingleDTGraph data = p.getFirst();
 					target = p.getSecond();
 
-					List<RDFDTGraphRootWLSubTreeKernel> kernels = new ArrayList<RDFDTGraphRootWLSubTreeKernel>();	
+					List<DTGraphRootWLSubTreeKernel> kernels = new ArrayList<DTGraphRootWLSubTreeKernel>();	
 
 					if (depthTimesTwo) {
-						kernels.add(new RDFDTGraphRootWLSubTreeKernel(d*2, d, reverseWL, false, true));
+						kernels.add(new DTGraphRootWLSubTreeKernel(d*2, false, true));
 					} else {
 						for (int dd : pathDepths) {
-							kernels.add(new RDFDTGraphRootWLSubTreeKernel(dd, d, reverseWL, false, true));
+							kernels.add(new DTGraphRootWLSubTreeKernel(dd, false, true));
 						}
 					}
 
@@ -286,13 +286,13 @@ public class ThemeExperiment {
 					SingleDTGraph data = p.getFirst();
 					target = p.getSecond();
 
-					List<RDFDTGraphTreePathCountKernel> kernels = new ArrayList<RDFDTGraphTreePathCountKernel>();		
+					List<DTGraphTreeWalkCountKernel> kernels = new ArrayList<DTGraphTreeWalkCountKernel>();		
 
 					if (depthTimesTwo) {
-						kernels.add(new RDFDTGraphTreePathCountKernel(d*2, d, true));
+						kernels.add(new DTGraphTreeWalkCountKernel(d*2, d, true));
 					} else {
 						for (int dd : pathDepths) {
-							kernels.add(new RDFDTGraphTreePathCountKernel(dd, d, true));
+							kernels.add(new DTGraphTreeWalkCountKernel(dd, d, true));
 						}
 					}
 
@@ -330,13 +330,13 @@ public class ThemeExperiment {
 					SingleDTGraph data = p.getFirst();
 					target = p.getSecond();
 
-					List<RDFDTGraphTreeWLSubTreeKernel> kernels = new ArrayList<RDFDTGraphTreeWLSubTreeKernel>();	
+					List<DTGraphTreeWLSubTreeKernel> kernels = new ArrayList<DTGraphTreeWLSubTreeKernel>();	
 
 					if (depthTimesTwo) {
-						kernels.add(new RDFDTGraphTreeWLSubTreeKernel(d*2, d, reverseWL, false, true));
+						kernels.add(new DTGraphTreeWLSubTreeKernel(d*2, d, reverseWL, false, true));
 					} else {
 						for (int dd : pathDepths) {
-							kernels.add(new RDFDTGraphTreeWLSubTreeKernel(dd, d, reverseWL, false, true));
+							kernels.add(new DTGraphTreeWLSubTreeKernel(dd, d, reverseWL, false, true));
 						}
 					}
 
@@ -451,13 +451,13 @@ public class ThemeExperiment {
 
 					System.out.println("Avg # nodes: " + avgNodes + " , avg # links: " + avgLinks);
 
-					List<PathCountKernel> kernels = new ArrayList<PathCountKernel>();
+					List<WalkCountKernel> kernels = new ArrayList<WalkCountKernel>();
 
 					if (depthTimesTwo) {
-						kernels.add(new PathCountKernel(d*2, true));
+						kernels.add(new WalkCountKernel(d*2, true));
 					} else {
 						for (int dd : pathDepths) {
-							kernels.add(new PathCountKernel(dd, true));
+							kernels.add(new WalkCountKernel(dd, true));
 						}
 					}
 		

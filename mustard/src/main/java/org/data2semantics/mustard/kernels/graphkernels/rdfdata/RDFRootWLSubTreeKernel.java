@@ -11,8 +11,8 @@ import org.data2semantics.mustard.kernels.data.RDFData;
 import org.data2semantics.mustard.kernels.data.SingleDTGraph;
 import org.data2semantics.mustard.kernels.graphkernels.FeatureVectorKernel;
 import org.data2semantics.mustard.kernels.graphkernels.GraphKernel;
-import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.RDFDTGraphRootWLSubTreeKernel;
-import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.RDFDTGraphWLSubTreeKernel;
+import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphRootWLSubTreeKernel;
+import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphWLSubTreeKernel;
 import org.data2semantics.mustard.learners.SparseVector;
 import org.data2semantics.mustard.rdf.RDFDataSet;
 import org.data2semantics.mustard.rdf.RDFUtils;
@@ -27,21 +27,17 @@ public class RDFRootWLSubTreeKernel implements GraphKernel<RDFData>, FeatureVect
 	private int depth;
 	private String label;
 	private boolean inference;
-	private RDFDTGraphRootWLSubTreeKernel kernel;
+	private DTGraphRootWLSubTreeKernel kernel;
 	private DTGraph<String,String> graph;
 	private List<DTNode<String,String>> instanceNodes;
 
-	public RDFRootWLSubTreeKernel(int iterations, int depth, boolean inference, boolean normalize) {
-		this(iterations, depth, inference, false, false, normalize);
-	}
-
-	public RDFRootWLSubTreeKernel(int iterations, int depth, boolean inference, boolean reverse, boolean iterationWeighting, boolean normalize) {
+	public RDFRootWLSubTreeKernel(int iterations, boolean inference, boolean iterationWeighting, boolean normalize) {
 		super();
-		this.label = "RDF_WL_Root_Kernel_" + depth + "_" + iterations + "_" + inference + "_" + reverse + "_" + iterationWeighting + "_" + normalize;
-		this.depth = depth;
+		this.label = "RDF_WL_Root_Kernel_" + iterations + "_" + inference + "_" + iterationWeighting + "_" + normalize;
+		this.depth = (int) Math.round(iterations / 2.0);
 		this.inference = inference;
 
-		kernel = new RDFDTGraphRootWLSubTreeKernel(iterations, depth, reverse, iterationWeighting, normalize);
+		kernel = new DTGraphRootWLSubTreeKernel(iterations, iterationWeighting, normalize);
 	}
 
 	public String getLabel() {

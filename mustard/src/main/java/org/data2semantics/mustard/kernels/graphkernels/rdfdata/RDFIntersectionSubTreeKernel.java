@@ -8,7 +8,7 @@ import java.util.Set;
 import org.data2semantics.mustard.kernels.data.RDFData;
 import org.data2semantics.mustard.kernels.data.SingleDTGraph;
 import org.data2semantics.mustard.kernels.graphkernels.GraphKernel;
-import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.RDFDTGraphIntersectionSubTreeKernel;
+import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphIntersectionSubTreeKernel;
 import org.data2semantics.mustard.rdf.RDFDataSet;
 import org.data2semantics.mustard.rdf.RDFUtils;
 import org.nodes.DTGraph;
@@ -20,7 +20,7 @@ public class RDFIntersectionSubTreeKernel implements GraphKernel<RDFData> {
 	private int depth;
 	private String label;
 	private boolean inference;
-	private RDFDTGraphIntersectionSubTreeKernel kernel;
+	private DTGraphIntersectionSubTreeKernel kernel;
 	private DTGraph<String,String> graph;
 	private List<DTNode<String,String>> instanceNodes;
 
@@ -30,7 +30,7 @@ public class RDFIntersectionSubTreeKernel implements GraphKernel<RDFData> {
 		this.depth = depth;
 		this.inference = inference;
 
-		kernel = new RDFDTGraphIntersectionSubTreeKernel(depth, discountFactor, normalize);
+		kernel = new DTGraphIntersectionSubTreeKernel(depth, discountFactor, normalize);
 	}
 
 	public String getLabel() {

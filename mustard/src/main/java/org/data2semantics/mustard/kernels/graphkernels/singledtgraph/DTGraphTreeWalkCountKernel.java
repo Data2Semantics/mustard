@@ -20,7 +20,7 @@ import org.nodes.LightDTGraph;
  * @author Gerben
  *
  */
-public class RDFDTGraphTreePathCountKernel implements GraphKernel<SingleDTGraph>, FeatureVectorKernel<SingleDTGraph> {
+public class DTGraphTreeWalkCountKernel implements GraphKernel<SingleDTGraph>, FeatureVectorKernel<SingleDTGraph> {
 
 	private DTGraph<String,String> rdfGraph;
 	private List<DTNode<String,String>> instanceVertices;
@@ -35,7 +35,7 @@ public class RDFDTGraphTreePathCountKernel implements GraphKernel<SingleDTGraph>
 
 
 
-	public RDFDTGraphTreePathCountKernel(int pathLength, int depth, boolean normalize) {
+	public DTGraphTreeWalkCountKernel(int pathLength, int depth, boolean normalize) {
 		this.normalize = normalize;
 		this.label = "RDF_DT_Graph_Tree_PathCount_Kernel_" + pathLength + "_" + depth + "_" + normalize;
 

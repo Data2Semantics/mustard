@@ -12,7 +12,7 @@ import org.data2semantics.mustard.kernels.data.RDFData;
 import org.data2semantics.mustard.kernels.data.SingleDTGraph;
 import org.data2semantics.mustard.kernels.graphkernels.FeatureVectorKernel;
 import org.data2semantics.mustard.kernels.graphkernels.GraphKernel;
-import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.RDFDTGraphWLSubTreeKernel;
+import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphWLSubTreeKernel;
 import org.data2semantics.mustard.learners.SparseVector;
 import org.data2semantics.mustard.rdf.RDFDataSet;
 import org.data2semantics.mustard.rdf.RDFUtils;
@@ -31,7 +31,7 @@ public class RDFWLSubTreeHubRemovalKernel implements GraphKernel<RDFData>, Featu
 	private String label;
 	private boolean inference;
 	private Map<String, Integer> hubMap;
-	private RDFDTGraphWLSubTreeKernel kernel;
+	private DTGraphWLSubTreeKernel kernel;
 	private DTGraph<String,String> graph;
 	private List<DTNode<String,String>> instanceNodes;
 
@@ -46,7 +46,7 @@ public class RDFWLSubTreeHubRemovalKernel implements GraphKernel<RDFData>, Featu
 		this.inference = inference;
 		this.hubMap = hubMap;
 
-		kernel = new RDFDTGraphWLSubTreeKernel(iterations, depth, reverse, iterationWeighting, normalize);
+		kernel = new DTGraphWLSubTreeKernel(iterations, depth, reverse, iterationWeighting, normalize);
 	}
 
 	public String getLabel() {

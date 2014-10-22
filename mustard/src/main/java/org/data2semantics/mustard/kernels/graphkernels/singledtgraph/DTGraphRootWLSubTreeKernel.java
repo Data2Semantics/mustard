@@ -26,7 +26,7 @@ import org.nodes.LightDTGraph;
  * @author Gerben
  *
  */
-public class RDFDTGraphRootWLSubTreeKernel implements GraphKernel<SingleDTGraph>, FeatureVectorKernel<SingleDTGraph> {
+public class DTGraphRootWLSubTreeKernel implements GraphKernel<SingleDTGraph>, FeatureVectorKernel<SingleDTGraph> {
 
 	private Map<DTNode<MapLabel,MapLabel>, Map<DTNode<MapLabel,MapLabel>, Integer>> instanceVertexIndexMap;
 	private Map<DTNode<MapLabel,MapLabel>, Map<DTLink<MapLabel,MapLabel>, Integer>> instanceEdgeIndexMap;
@@ -38,30 +38,24 @@ public class RDFDTGraphRootWLSubTreeKernel implements GraphKernel<SingleDTGraph>
 	private int iterations;
 	private String label;
 	private boolean normalize;
-	private boolean reverse;
 	private boolean iterationWeighting;
 
 
-	public RDFDTGraphRootWLSubTreeKernel(int iterations, int depth, boolean reverse, boolean iterationWeighting, boolean normalize) {
-		this(iterations, depth, normalize);
-		this.reverse = reverse;
+	public DTGraphRootWLSubTreeKernel(int iterations, boolean iterationWeighting, boolean normalize) {
 		this.iterationWeighting = iterationWeighting;
-		this.label = "RDF_DT_Graph_WL_Root_Kernel_" + iterations + "_" + depth + "_" + reverse + "_" + iterationWeighting;
-	}
-
-
-	public RDFDTGraphRootWLSubTreeKernel(int iterations, int depth, boolean normalize) {
-		this.normalize = normalize;
-		this.reverse = false;
-		this.iterationWeighting = false;
-		this.label = "RDF_DT_Graph_WL_Root_Kernel_" + iterations + "_" + depth + "_" + reverse + "_" + iterationWeighting;
-
+				
 		instanceVertices = new ArrayList<DTNode<MapLabel,MapLabel>>();
 		this.instanceVertexIndexMap = new HashMap<DTNode<MapLabel,MapLabel>, Map<DTNode<MapLabel,MapLabel>, Integer>>();
 		this.instanceEdgeIndexMap = new HashMap<DTNode<MapLabel,MapLabel>, Map<DTLink<MapLabel,MapLabel>, Integer>>();
 
-		this.depth = depth;
+		this.depth = (int) Math.round(iterations / 2.0);
 		this.iterations = iterations;
+		this.label = "RDF_DT_Graph_WL_Root_Kernel_" + iterations + "_" + iterationWeighting + "_" + normalize;
+	}
+
+
+	public DTGraphRootWLSubTreeKernel(int iterations, boolean normalize) {
+		this(iterations, false, normalize);
 	}
 
 	public String getLabel() {
@@ -76,10 +70,6 @@ public class RDFDTGraphRootWLSubTreeKernel implements GraphKernel<SingleDTGraph>
 		this.normalize = normalize;
 	}
 
-	public void setReverse(boolean reverse) {
-		this.reverse = reverse;
-	}
-
 	public SparseVector[] computeFeatureVectors(SingleDTGraph data) {
 		SparseVector[] featureVectors = new SparseVector[data.getInstances().size()];
 		for (int i = 0; i < featureVectors.length; i++) {
@@ -87,7 +77,7 @@ public class RDFDTGraphRootWLSubTreeKernel implements GraphKernel<SingleDTGraph>
 		}	
 
 		init(data.getGraph(), data.getInstances());
-		WeisfeilerLehmanIterator<DTGraph<MapLabel,MapLabel>> wl = new WeisfeilerLehmanDTGraphMapLabelIterator(reverse);
+		WeisfeilerLehmanIterator<DTGraph<MapLabel,MapLabel>> wl = new WeisfeilerLehmanDTGraphMapLabelIterator(true, false);
 
 		List<DTGraph<MapLabel,MapLabel>> gList = new ArrayList<DTGraph<MapLabel,MapLabel>>();
 		gList.add(rdfGraph);
@@ -163,7 +153,7 @@ public class RDFDTGraphRootWLSubTreeKernel implements GraphKernel<SingleDTGraph>
 				for (DTNode<String,String> qV : frontV) {
 					for (DTLink<String,String> edge : qV.linksOut()) {
 						if (vOldNewMap.containsKey(edge.to())) { // This vertex has been added to rdfGraph
-							if (!vertexIndexMap.containsKey(vOldNewMap.get(edge.to())) || !reverse) { // we have not seen it for this instance or labels travel to the fringe vertices, in which case we want to have the lowest depth encounter
+							if (!vertexIndexMap.containsKey(vOldNewMap.get(edge.to()))) { // we have not seen it for this instance
 								vertexIndexMap.put(vOldNewMap.get(edge.to()), j);
 							}
 							vOldNewMap.get(edge.to()).label().put(j, new StringBuilder(edge.to().label())); // However, we should always include it in the graph at depth j
@@ -176,7 +166,7 @@ public class RDFDTGraphRootWLSubTreeKernel implements GraphKernel<SingleDTGraph>
 
 						if (eOldNewMap.containsKey(edge)) {
 							// Process the edge, if we haven't seen it before
-							if (!edgeIndexMap.containsKey(eOldNewMap.get(edge)) || !reverse) { // see comment for vertices
+							if (!edgeIndexMap.containsKey(eOldNewMap.get(edge))) { // see comment for vertices
 								edgeIndexMap.put(eOldNewMap.get(edge), j);
 							}
 							eOldNewMap.get(edge).tag().put(j, new StringBuilder(edge.tag()));
@@ -215,26 +205,16 @@ public class RDFDTGraphRootWLSubTreeKernel implements GraphKernel<SingleDTGraph>
 	private void computeFVs(DTGraph<MapLabel,MapLabel> graph, List<DTNode<MapLabel,MapLabel>> instances, double weight, SparseVector[] featureVectors, int lastIndex) {
 		int index;
 		Map<DTNode<MapLabel,MapLabel>, Integer> vertexIndexMap;
-		//Map<DTLink<MapLabel,MapLabel>, Integer> edgeIndexMap;
-
 		for (int i = 0; i < instances.size(); i++) {
 			featureVectors[i].setLastIndex(lastIndex);
 
 			vertexIndexMap = instanceVertexIndexMap.get(instances.get(i));
 			for (DTNode<MapLabel,MapLabel> vertex : vertexIndexMap.keySet()) {
-				//index = Integer.parseInt(vertex.label().get(vertexIndexMap.get(vertex)).toString());
-				if ((reverse && vertexIndexMap.get(vertex) == depth) || (!reverse && vertexIndexMap.get(vertex) == 0)) {
+			if (vertexIndexMap.get(vertex) == depth) {
 					index = Integer.parseInt(vertex.label().get(vertexIndexMap.get(vertex)).toString());
 					featureVectors[i].setValue(index, featureVectors[i].getValue(index) + weight);
 				}
 			}
-			/*
-			edgeIndexMap = instanceEdgeIndexMap.get(instances.get(i));
-			for (DTLink<MapLabel,MapLabel> edge : edgeIndexMap.keySet()) {
-				index = Integer.parseInt(edge.tag().get(edgeIndexMap.get(edge)).toString());
-				featureVectors[i].setValue(index, featureVectors[i].getValue(index) + weight);
-			}
-			 */
 		}
 	}
 

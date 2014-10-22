@@ -10,6 +10,7 @@ import org.data2semantics.mustard.kernels.graphkernels.GraphKernel;
 import org.data2semantics.mustard.learners.SparseVector;
 import org.data2semantics.mustard.weisfeilerlehman.StringLabel;
 import org.data2semantics.mustard.weisfeilerlehman.WeisfeilerLehmanDTGraphIterator;
+import org.data2semantics.mustard.weisfeilerlehman.WeisfeilerLehmanDTGraphIterator;
 import org.data2semantics.mustard.weisfeilerlehman.WeisfeilerLehmanIterator;
 import org.nodes.DTGraph;
 import org.nodes.DTLink;
@@ -27,11 +28,18 @@ public class WLSubTreeKernel implements GraphKernel<GraphList<DTGraph<String,Str
 	protected String label;
 	protected boolean normalize;
 	private boolean reverse;
+	private boolean trackPrevNBH;
 
+	public WLSubTreeKernel(int iterations, boolean reverse, boolean trackPrevNBH, boolean normalize) {
+		this.reverse = reverse;
+		this.trackPrevNBH = trackPrevNBH;
+		this.normalize = normalize;
+		this.iterations = iterations;
+		this.label = "WL SubTree Kernel, it=" + iterations + "_" + reverse + "_" + trackPrevNBH + "_" + normalize;
+	}
 
 	public WLSubTreeKernel(int iterations, boolean reverse, boolean normalize) {
-		this(iterations, normalize);
-		this.reverse = reverse;
+		this(iterations, reverse, false, normalize);
 	}
 
 
@@ -42,12 +50,10 @@ public class WLSubTreeKernel implements GraphKernel<GraphList<DTGraph<String,Str
 	 * @param normalize
 	 */
 	public WLSubTreeKernel(int iterations, boolean normalize) {
-		this.normalize = normalize;
-		this.iterations = iterations;
-		this.reverse = false;
-		this.label = "WL SubTree Kernel, it=" + iterations + "_" + reverse + "_" + normalize;
+		this(iterations, false, false, normalize);
 	}	
 
+	
 	public WLSubTreeKernel(int iterations) {
 		this(iterations, true);
 	}
@@ -72,7 +78,7 @@ public class WLSubTreeKernel implements GraphKernel<GraphList<DTGraph<String,Str
 			featureVectors[i] = new SparseVector();
 		}
 
-		WeisfeilerLehmanIterator<DTGraph<StringLabel,StringLabel>> wl = new WeisfeilerLehmanDTGraphIterator(reverse);
+		WeisfeilerLehmanIterator<DTGraph<StringLabel,StringLabel>> wl = new WeisfeilerLehmanDTGraphIterator(reverse, trackPrevNBH);
 
 		wl.wlInitialize(graphs);
 
@@ -111,13 +117,17 @@ public class WLSubTreeKernel implements GraphKernel<GraphList<DTGraph<String,Str
 
 			// for each vertex, use the label as index into the feature vector and do a + 1,
 			for (DTNode<StringLabel,StringLabel> vertex : graphs.get(i).nodes()) {
-				index = Integer.parseInt(vertex.label().toString());	
-				featureVectors[i].setValue(index, featureVectors[i].getValue(index) + weight);
+				if (!vertex.label().isSameAsPrev()) {
+					index = Integer.parseInt(vertex.label().toString());	
+					featureVectors[i].setValue(index, featureVectors[i].getValue(index) + weight);
+				}
 			}
 
 			for (DTLink<StringLabel,StringLabel> edge : graphs.get(i).links()) {
-				index = Integer.parseInt(edge.tag().toString());
-				featureVectors[i].setValue(index, featureVectors[i].getValue(index) + weight);
+				if (!edge.tag().isSameAsPrev()) {
+					index = Integer.parseInt(edge.tag().toString());
+					featureVectors[i].setValue(index, featureVectors[i].getValue(index) + weight);
+				}
 			}
 		}
 	}

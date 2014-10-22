@@ -12,10 +12,16 @@ import org.nodes.DTNode;
 
 public class WeisfeilerLehmanDTGraphMapLabelIterator extends WeisfeilerLehmanIterator<DTGraph<MapLabel,MapLabel>> {
 	private boolean reverse;
+	private boolean trackPrevNBH;
 
 	public WeisfeilerLehmanDTGraphMapLabelIterator(boolean reverse) {
+		this(reverse, false);
+	}
+
+	public WeisfeilerLehmanDTGraphMapLabelIterator(boolean reverse, boolean trackPrevNBH) {
 		super();
 		this.reverse = reverse;
+		this.trackPrevNBH = trackPrevNBH;
 	}
 
 	@Override
@@ -114,6 +120,7 @@ public class WeisfeilerLehmanDTGraphMapLabelIterator extends WeisfeilerLehmanIte
 			// 2. add bucket labels to existing labels
 			// Change the original label to a prefix label
 
+			/*
 			for (DTLink<MapLabel,MapLabel> edge : graph.links()) {
 				for (int i : edge.tag().keySet()) {
 					edge.tag().get(i).append("_");   
@@ -125,6 +132,7 @@ public class WeisfeilerLehmanDTGraphMapLabelIterator extends WeisfeilerLehmanIte
 					vertex.label().get(i).append("_"); 
 				}
 			}
+			 */
 
 			// Since the labels are not necessarily neatly from i to n+i, we sort them
 			List<String> keysE = new ArrayList<String>(bucketsE.keySet());
@@ -137,16 +145,16 @@ public class WeisfeilerLehmanDTGraphMapLabelIterator extends WeisfeilerLehmanIte
 				// Process vertices
 				Bucket<VertexIndexPair> bucketV = bucketsV.get(keyV);			
 				for (VertexIndexPair vp : bucketV.getContents()) {
-					vp.getVertex().label().get(vp.getIndex()).append(bucketV.getLabel());
 					vp.getVertex().label().get(vp.getIndex()).append("_");
+					vp.getVertex().label().get(vp.getIndex()).append(bucketV.getLabel());				
 				}
 			}
 			for (String keyE : keysE) {
 				// Process edges
 				Bucket<EdgeIndexPair> bucketE = bucketsE.get(keyE);			
 				for (EdgeIndexPair ep : bucketE.getContents()) {
-					ep.getEdge().tag().get(ep.getIndex()).append(bucketE.getLabel());
 					ep.getEdge().tag().get(ep.getIndex()).append("_");
+					ep.getEdge().tag().get(ep.getIndex()).append(bucketE.getLabel());			
 				}
 			}
 		}
@@ -154,25 +162,51 @@ public class WeisfeilerLehmanDTGraphMapLabelIterator extends WeisfeilerLehmanIte
 		for (DTGraph<MapLabel,MapLabel> graph :graphs) {
 			String label;
 
-			for (DTLink<MapLabel,MapLabel> edge : graph.links()) {
+			for (DTLink<MapLabel,MapLabel> edge : graph.links()) {						
 				for (int i : edge.tag().keySet()) {
-					label = labelDict.get(edge.tag().get(i).toString());						
-					if (label == null) {					
-						label = Integer.toString(labelDict.size());
-						labelDict.put(edge.tag().get(i).toString(), label);				
+					if (trackPrevNBH) {
+						String nb = edge.tag().get(i).toString();
+						nb = nb.substring(nb.indexOf("_"));
+
+						if (nb.equals(edge.tag().getPrevNBH(i))) {
+							edge.tag().putSameAsPrev(i,true);
+						}
+						edge.tag().putPrevNBH(i,nb);
 					}
-					edge.tag().put(i, new StringBuilder(label));
+					if (!edge.tag().getSameAsPrev(i)) {
+						label = labelDict.get(edge.tag().get(i).toString());						
+						if (label == null) {					
+							label = Integer.toString(labelDict.size());
+							labelDict.put(edge.tag().get(i).toString(), label);				
+						}
+						edge.tag().put(i, new StringBuilder(label));
+					}
 				}
 			}
 
 			for (DTNode<MapLabel,MapLabel> vertex : graph.nodes()) {
 				for (int i : vertex.label().keySet()) {
-					label = labelDict.get(vertex.label().get(i).toString());
-					if (label == null) {
-						label = Integer.toString(labelDict.size());
-						labelDict.put(vertex.label().get(i).toString(), label);
+					if (trackPrevNBH) {
+						String nb = vertex.label().get(i).toString();
+						if (nb.contains("_")) {
+							nb = nb.substring(nb.indexOf("_"));
+						} else {
+							nb = "";
+						}
+						
+						if (nb.equals(vertex.label().getPrevNBH(i))) {
+							vertex.label().putSameAsPrev(i,true);
+						}
+						vertex.label().putPrevNBH(i,nb);
+					}				
+					if (!vertex.label().getSameAsPrev(i)) {
+						label = labelDict.get(vertex.label().get(i).toString());
+						if (label == null) {
+							label = Integer.toString(labelDict.size());
+							labelDict.put(vertex.label().get(i).toString(), label);
+						}
+						vertex.label().put(i, new StringBuilder(label));
 					}
-					vertex.label().put(i, new StringBuilder(label));
 				}
 			}
 		}

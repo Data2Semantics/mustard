@@ -10,9 +10,12 @@ package org.data2semantics.mustard.weisfeilerlehman;
  */
 public class StringLabel {
 	private StringBuilder sb;
+	private String prevNBH;
+	private boolean sameAsPrev;
 	
 	public StringLabel() {
 		this(new String());
+		sameAsPrev = false;
 	}
 
 	public StringLabel(String s) {
@@ -30,4 +33,20 @@ public class StringLabel {
 	public String toString() {
 		return sb.toString();
 	}
+
+	public String getPrevNBH() {
+		return prevNBH;
+	}
+
+	public void setPrevNBH(String prevNBH) {
+		this.prevNBH = prevNBH;
+	}
+
+	public boolean isSameAsPrev() {
+		return sameAsPrev;
+	}
+
+	public void setSameAsPrev(boolean sameAsPrev) {
+		this.sameAsPrev = sameAsPrev;
+	}	
 }
