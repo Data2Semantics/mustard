@@ -1,9 +1,5 @@
 package org.data2semantics.mustard.kernels.graphkernels.rdfdata;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -17,12 +13,7 @@ import org.data2semantics.mustard.learners.SparseVector;
 import org.data2semantics.mustard.rdf.RDFDataSet;
 import org.data2semantics.mustard.rdf.RDFUtils;
 import org.nodes.DTGraph;
-import org.nodes.DTLink;
 import org.nodes.DTNode;
-import org.nodes.MapDTGraph;
-import org.nodes.algorithms.SlashBurn;
-import org.nodes.util.MaxObserver;
-import org.nodes.util.Functions.Dir;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 

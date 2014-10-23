@@ -9,6 +9,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.data2semantics.mustard.kernels.KernelUtils;
+import org.data2semantics.mustard.kernels.data.GraphList;
+import org.data2semantics.mustard.kernels.data.SingleDTGraph;
 import org.data2semantics.mustard.weisfeilerlehman.StringLabel;
 import org.nodes.DTGraph;
 import org.nodes.DTLink;
@@ -29,7 +31,7 @@ public class RDFUtils {
 	public static final int REPEAT_LITERALS = 2;
 	public static final int REGULAR_LITERALS = 3;
 
-	public static List<DTGraph<String,String>> getSubGraphs(DTGraph<String,String> graph, List<DTNode<String,String>> instances, int depth) {
+	public static GraphList<DTGraph<String,String>> getSubGraphs(DTGraph<String,String> graph, List<DTNode<String,String>> instances, int depth) {
 		List<DTGraph<String,String>> subGraphs = new ArrayList<DTGraph<String,String>>();
 		Map<DTNode<String,String>,DTNode<String,String>> nodeMap;
 		Map<DTLink<String,String>,DTLink<String,String>> linkMap;
@@ -61,7 +63,7 @@ public class RDFUtils {
 			}
 			subGraphs.add(newGraph);
 		}
-		return subGraphs;
+		return new GraphList<DTGraph<String,String>>(subGraphs);
 	}
 
 	/**
@@ -69,7 +71,7 @@ public class RDFUtils {
 	 * The first node in the graph is the root, i.e. nodes().get(0) should be the root node. 
 	 * 
 	 */
-	public static List<DTGraph<String,String>> getSubTrees(DTGraph<String,String> graph, List<DTNode<String,String>> instances, int depth) {
+	public static GraphList<DTGraph<String,String>> getSubTrees(DTGraph<String,String> graph, List<DTNode<String,String>> instances, int depth) {
 		List<DTGraph<String,String>> subTrees = new ArrayList<DTGraph<String,String>>();
 		List<Pair<DTNode<String,String>,DTNode<String,String>>> searchNodes, newSearchNodes;
 
@@ -93,7 +95,7 @@ public class RDFUtils {
 			}
 			subTrees.add(newGraph);
 		}
-		return subTrees;
+		return new GraphList<DTGraph<String,String>>(subTrees);
 	}
 
 
@@ -158,6 +160,7 @@ public class RDFUtils {
 		return hubMap;
 	}
 
+	// TODO refactor to SingleDTGraph return type
 	public static DTGraph<String,String> removeHubs(DTGraph<String,String> oldGraph, List<DTNode<String,String>> instanceNodes, Map<String, Integer> hubMap) {
 		DTGraph<String,String> graph = new LightDTGraph<String,String>();
 		Set<DTLink<String,String>> toRemoveLinks = new HashSet<DTLink<String,String>>();
@@ -228,45 +231,16 @@ public class RDFUtils {
 		return iNodes;
 	}
 
-	public static DTGraph<String,String> statements2GraphList(List<Statement> stmts, int literalOption, List<Resource> instances, List<DTNode<String,String>> instanceNodes, boolean simplifyInstanceNodes) {
-		DTGraph<String,String> graph = new LightDTGraph<String,String>();	
-		Map<Resource, DTNode<String,String>> iMap = new HashMap<Resource, DTNode<String,String>>();
-
-		for (Resource instance : instances) {
-			if (simplifyInstanceNodes) {
-				iMap.put(instance, graph.add(KernelUtils.ROOTID));
-			} else {
-				iMap.put(instance, graph.add(instance.toString()));
-			}
-			instanceNodes.add(iMap.get(instance));
-		}	
-
-		for (Statement s : stmts) {
-			if (s.getObject() instanceof Literal && literalOption != NO_LITERALS) {
-				if (literalOption == REGULAR_LITERALS) {
-					addStatement(graph, s, false, iMap);
-				}
-				if (literalOption == REPEAT_LITERALS) {
-					addStatement(graph, s, true, iMap);
-				}
-			} else if (!(s.getObject() instanceof Literal)){
-				addStatement(graph, s, false, iMap);
-			}
-		}	
-		return graph;
-	}
-	
-	
 	/**
-	 * Convert a set of RDF statements into a DTGraph and set the list of instances to a identical label if boolean is set
-	 * The nodes for these instances are put in instanceNodes
-	 * 
+	 * Convert a set of RDF statements into a SingleDTGraph dataset object
+	 *  
 	 * @param stmts
 	 * @param literalOption
 	 * @param instances
-	 * @return
+	 * @return SingleDTGraph
 	 */
-	public static DTGraph<String,String> statements2Graph(Set<Statement> stmts, int literalOption, List<Resource> instances, List<DTNode<String,String>> instanceNodes, boolean simplifyInstanceNodes) {
+	public static SingleDTGraph statements2Graph(Set<Statement> stmts, int literalOption, List<Resource> instances, boolean simplifyInstanceNodes) {
+		List<DTNode<String,String>> instanceNodes = new ArrayList<DTNode<String,String>>();
 		DTGraph<String,String> graph = new LightDTGraph<String,String>();	
 		Map<Resource, DTNode<String,String>> iMap = new HashMap<Resource, DTNode<String,String>>();
 
@@ -291,7 +265,7 @@ public class RDFUtils {
 				addStatement(graph, s, false, iMap);
 			}
 		}	
-		return graph;
+		return new SingleDTGraph(graph, instanceNodes);
 	}
 
 	private static void addStatement(DTGraph<String,String> graph, Statement stmt, boolean newObject, Map<Resource, DTNode<String,String>> iMap) {

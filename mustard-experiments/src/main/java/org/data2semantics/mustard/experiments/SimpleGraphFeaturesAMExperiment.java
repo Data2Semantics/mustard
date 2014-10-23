@@ -122,33 +122,6 @@ public class SimpleGraphFeaturesAMExperiment {
 
 		boolean depthTimesTwo = true;
 
-		
-		ds.createSubSet(11, 0.01, 0, 3);
-		Set<Statement> stmts = RDFUtils.getStatements4Depth(tripleStore, ds.getRDFData().getInstances(), 3, false);
-		
-		List<Statement> stmts2 = new ArrayList<Statement>(stmts);
-		
-		System.out.println("Total statements: " + stmts.size());
-		
-		int tot = 0;
-		
-		long tic = System.currentTimeMillis();
-		List<DTNode<String,String>> instanceNodes = new ArrayList<DTNode<String,String>>();
-		DTGraph<String,String> graph = RDFUtils.statements2Graph(stmts, RDFUtils.REGULAR_LITERALS, ds.getRDFData().getInstances(), instanceNodes, true);
-		long toc = System.currentTimeMillis();
-		
-		System.out.println("Set iteration time: " + (toc - tic));
-		
-		
-		tot = 0;
-		tic = System.currentTimeMillis();
-	    instanceNodes = new ArrayList<DTNode<String,String>>();
-		graph = RDFUtils.statements2GraphList(stmts2, RDFUtils.REGULAR_LITERALS, ds.getRDFData().getInstances(), instanceNodes, true);
-		toc = System.currentTimeMillis();
-		
-		System.out.println("List iteration time: " + (toc - tic));
-
-
 		Map<Long, Map<Boolean, Map<Integer,Pair<SingleDTGraph, List<Double>>>>> cache = createDataSetCache(ds, seedsDataset, fraction, minClassSize, maxNumClasses, depths, inference);
 		tripleStore = null;
 		
@@ -570,17 +543,17 @@ public class SimpleGraphFeaturesAMExperiment {
 					SingleDTGraph data = p.getFirst();
 					target = p.getSecond();
 
-					List<DTGraph<String,String>> graphs = RDFUtils.getSubGraphs(data.getGraph(), data.getInstances(), d);
+					GraphList<DTGraph<String,String>> graphs = RDFUtils.getSubGraphs(data.getGraph(), data.getInstances(), d);
 
 					double avgNodes = 0;
 					double avgLinks = 0;
 
-					for (DTGraph<String,String> g : graphs){
+					for (DTGraph<String,String> g : graphs.getGraphs()){
 						avgNodes += g.nodes().size();
 						avgLinks += g.links().size();
 					}
-					avgNodes /= graphs.size();
-					avgLinks /= graphs.size();
+					avgNodes /= graphs.numInstances();
+					avgLinks /= graphs.numInstances();
 
 					System.out.println("Avg # nodes: " + avgNodes + " , avg # links: " + avgLinks);
 
@@ -595,7 +568,7 @@ public class SimpleGraphFeaturesAMExperiment {
 					}
 		
 					//resTable.newRow(kernels.get(0).getLabel() + "_" + inf);
-					SimpleGraphFeatureVectorKernelExperiment<GraphList<DTGraph<String,String>>> exp2 = new SimpleGraphFeatureVectorKernelExperiment<GraphList<DTGraph<String,String>>>(kernels, new GraphList<DTGraph<String,String>>(graphs), target, svmParms, seeds, evalFuncs);
+					SimpleGraphFeatureVectorKernelExperiment<GraphList<DTGraph<String,String>>> exp2 = new SimpleGraphFeatureVectorKernelExperiment<GraphList<DTGraph<String,String>>>(kernels, graphs, target, svmParms, seeds, evalFuncs);
 
 					//System.out.println(kernels.get(0).getLabel());
 					exp2.run();
@@ -640,16 +613,16 @@ public class SimpleGraphFeaturesAMExperiment {
 					}
 					
 					Pair<SingleDTGraph, List<Double>> p = cache.get(seed).get(inf).get(depth);
-					List<DTGraph<String,String>> graphs = RDFUtils.getSubGraphs(p.getFirst().getGraph(), p.getFirst().getInstances(), depth);
+					GraphList<DTGraph<String,String>> graphs = RDFUtils.getSubGraphs(p.getFirst().getGraph(), p.getFirst().getInstances(), depth);
 					
 					double v = 0;
 					double e = 0;
-					for (DTGraph<String,String> graph : graphs) {
+					for (DTGraph<String,String> graph : graphs.getGraphs()) {
 						v += graph.nodes().size();
 						e += graph.links().size();
 					}
-					v /= graphs.size();
-					e /= graphs.size();
+					v /= graphs.numInstances();
+					e /= graphs.numInstances();
 					
 					v += stats.get(inf).get(depth).getFirst();
 					e += stats.get(inf).get(depth).getSecond();
@@ -685,12 +658,12 @@ public class SimpleGraphFeaturesAMExperiment {
 					stmts.removeAll(new HashSet<Statement>(data.getRDFData().getBlackList()));
 					System.out.println("# Statements: " + stmts.size() + ", after blackList");
 					System.out.println("Building Graph...");
-					List<DTNode<String,String>> instanceNodes = new ArrayList<DTNode<String,String>>();
-					DTGraph<String,String> graph = RDFUtils.statements2Graph(stmts, RDFUtils.REGULAR_LITERALS, data.getRDFData().getInstances(), instanceNodes, true);
-					SingleDTGraph g = new SingleDTGraph(graph, instanceNodes);
-					System.out.println("Built Graph with " + graph.nodes().size() + ", and " + graph.links().size() + " links");
+					
+					SingleDTGraph graph = RDFUtils.statements2Graph(stmts, RDFUtils.REGULAR_LITERALS, data.getRDFData().getInstances(), true);
+					
+					System.out.println("Built Graph with " + graph.getGraph().nodes().size() + ", and " + graph.getGraph().links().size() + " links");
 
-					cache.get(seed).get(inf).put(depth, new Pair<SingleDTGraph,List<Double>>(g, new ArrayList<Double>(data.getTarget())));
+					cache.get(seed).get(inf).put(depth, new Pair<SingleDTGraph,List<Double>>(graph, new ArrayList<Double>(data.getTarget())));
 				}
 			}
 		}

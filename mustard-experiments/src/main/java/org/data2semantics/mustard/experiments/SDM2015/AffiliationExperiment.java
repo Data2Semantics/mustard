@@ -251,19 +251,7 @@ public class AffiliationExperiment {
 				DTGraph<String,String> graph = RDFUtils.statements2Graph(st, RDFUtils.REGULAR_LITERALS);
 				List<DTNode<String,String>> instanceNodes = RDFUtils.findInstances(graph, ds.getRDFData().getInstances());
 				graph = RDFUtils.simplifyInstanceNodeLabels(graph, instanceNodes);
-				List<DTGraph<String,String>> graphs = RDFUtils.getSubGraphs(graph, instanceNodes, d);
-
-				double avgNodes = 0;
-				double avgLinks = 0;
-
-				for (DTGraph<String,String> g : graphs){
-					avgNodes += g.nodes().size();
-					avgLinks += g.links().size();
-				}
-				avgNodes /= graphs.size();
-				avgLinks /= graphs.size();
-
-				System.out.println("Avg # nodes: " + avgNodes + " , avg # links: " + avgLinks);
+				GraphList<DTGraph<String,String>> graphs = RDFUtils.getSubGraphs(graph, instanceNodes, d);
 
 				List<WLSubTreeKernel> kernels = new ArrayList<WLSubTreeKernel>();
 
@@ -278,7 +266,7 @@ public class AffiliationExperiment {
 				}
 
 				//resTable.newRow(kernels.get(0).getLabel() + "_" + inf);
-				SimpleGraphKernelExperiment<GraphList<DTGraph<String,String>>> exp2 = new SimpleGraphKernelExperiment<GraphList<DTGraph<String,String>>>(kernels, new GraphList<DTGraph<String,String>>(graphs), target, svmParms, seeds, evalFuncs);
+				SimpleGraphKernelExperiment<GraphList<DTGraph<String,String>>> exp2 = new SimpleGraphKernelExperiment<GraphList<DTGraph<String,String>>>(kernels, graphs, target, svmParms, seeds, evalFuncs);
 
 				//System.out.println(kernels.get(0).getLabel());
 				exp2.run();
@@ -304,19 +292,7 @@ public class AffiliationExperiment {
 				DTGraph<String,String> graph = RDFUtils.statements2Graph(st, RDFUtils.REGULAR_LITERALS);
 				List<DTNode<String,String>> instanceNodes = RDFUtils.findInstances(graph, ds.getRDFData().getInstances());
 				graph = RDFUtils.simplifyInstanceNodeLabels(graph, instanceNodes);
-				List<DTGraph<String,String>> graphs = RDFUtils.getSubGraphs(graph, instanceNodes, d);
-
-				double avgNodes = 0;
-				double avgLinks = 0;
-
-				for (DTGraph<String,String> g : graphs){
-					avgNodes += g.nodes().size();
-					avgLinks += g.links().size();
-				}
-				avgNodes /= graphs.size();
-				avgLinks /= graphs.size();
-
-				System.out.println("Avg # nodes: " + avgNodes + " , avg # links: " + avgLinks);
+				GraphList<DTGraph<String,String>> graphs = RDFUtils.getSubGraphs(graph, instanceNodes, d);
 
 				List<WalkCountKernel> kernels = new ArrayList<WalkCountKernel>();
 
@@ -331,7 +307,7 @@ public class AffiliationExperiment {
 				}
 
 				//resTable.newRow(kernels.get(0).getLabel() + "_" + inf);
-				SimpleGraphKernelExperiment<GraphList<DTGraph<String,String>>> exp2 = new SimpleGraphKernelExperiment<GraphList<DTGraph<String,String>>>(kernels, new GraphList<DTGraph<String,String>>(graphs), target, svmParms, seeds, evalFuncs);
+				SimpleGraphKernelExperiment<GraphList<DTGraph<String,String>>> exp2 = new SimpleGraphKernelExperiment<GraphList<DTGraph<String,String>>>(kernels, graphs, target, svmParms, seeds, evalFuncs);
 
 				//System.out.println(kernels.get(0).getLabel());
 				exp2.run();
@@ -363,16 +339,16 @@ public class AffiliationExperiment {
 				DTGraph<String,String> graph = RDFUtils.statements2Graph(st, RDFUtils.REGULAR_LITERALS);
 				List<DTNode<String,String>> instanceNodes = RDFUtils.findInstances(graph, ds.getRDFData().getInstances());
 				graph = RDFUtils.simplifyInstanceNodeLabels(graph, instanceNodes);
-				List<DTGraph<String,String>> graphs = RDFUtils.getSubGraphs(graph, instanceNodes, depth);
+				GraphList<DTGraph<String,String>> graphs = RDFUtils.getSubGraphs(graph, instanceNodes, depth);
 
 				double v = 0;
 				double e = 0;
-				for (DTGraph<String,String> g : graphs) {
+				for (DTGraph<String,String> g : graphs.getGraphs()) {
 					v += g.nodes().size();
 					e += g.links().size();
 				}
-				v /= graphs.size();
-				e /= graphs.size();
+				v /= graphs.numInstances();
+				e /= graphs.numInstances();
 
 				stats.get(inf).put(depth, new Pair<Double,Double>(v,e));
 			}

@@ -1,9 +1,6 @@
 package org.data2semantics.mustard.kernels.graphkernels.singledtgraph;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+
 
 import org.data2semantics.mustard.kernels.KernelUtils;
 import org.data2semantics.mustard.kernels.data.GraphList;
@@ -11,13 +8,9 @@ import org.data2semantics.mustard.kernels.data.SingleDTGraph;
 import org.data2semantics.mustard.kernels.graphkernels.FeatureVectorKernel;
 import org.data2semantics.mustard.kernels.graphkernels.GraphKernel;
 import org.data2semantics.mustard.kernels.graphkernels.graphlist.WalkCountKernel;
-import org.data2semantics.mustard.kernels.graphkernels.graphlist.WLSubTreeKernel;
 import org.data2semantics.mustard.learners.SparseVector;
 import org.data2semantics.mustard.rdf.RDFUtils;
 import org.nodes.DTGraph;
-import org.nodes.DTLink;
-import org.nodes.DTNode;
-import org.nodes.LightDTGraph;
 
 /**
  * This class implements a WL kernel directly on an RDF graph. The difference with a normal WL kernel is that subgraphs are not 
@@ -58,10 +51,9 @@ public class DTGraphGraphListWalkCountKernel implements GraphKernel<SingleDTGrap
 
 
 	public SparseVector[] computeFeatureVectors(SingleDTGraph data) {
-		List<DTGraph<String,String>> graphs = RDFUtils.getSubGraphs(data.getGraph(), data.getInstances(), depth);		
-		WalkCountKernel kernel = new WalkCountKernel(pathLength, normalize);	
-		
-		return kernel.computeFeatureVectors(new GraphList<DTGraph<String,String>>(graphs));	
+		GraphList<DTGraph<String,String>> graphs = RDFUtils.getSubGraphs(data.getGraph(), data.getInstances(), depth);		
+		WalkCountKernel kernel = new WalkCountKernel(pathLength, normalize);		
+		return kernel.computeFeatureVectors(graphs);	
 	}
 
 

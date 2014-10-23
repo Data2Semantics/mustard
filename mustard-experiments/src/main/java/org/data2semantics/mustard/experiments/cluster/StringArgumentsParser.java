@@ -3,7 +3,11 @@ package org.data2semantics.mustard.experiments.cluster;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.data2semantics.mustard.experiments.data.AIFBDataSet;
+import org.data2semantics.mustard.experiments.data.AMSubsetDataSet;
+import org.data2semantics.mustard.experiments.data.ClassificationDataSet;
 import org.data2semantics.mustard.kernels.data.SingleDTGraph;
+import org.data2semantics.mustard.kernels.graphkernels.FeatureVectorKernel;
 import org.data2semantics.mustard.kernels.graphkernels.GraphKernel;
 import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphGraphListWLSubTreeKernel;
 import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphGraphListWalkCountKernel;
@@ -12,20 +16,30 @@ import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphRoot
 import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphTreeWalkCountKernel;
 import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphTreeWLSubTreeKernel;
 import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphWLSubTreeKernel;
+import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphWalkCountKernel;
+import org.data2semantics.mustard.rdf.RDFDataSet;
+import org.data2semantics.mustard.rdf.RDFFileDataSet;
+import org.openrdf.rio.RDFFormat;
 
 public class StringArgumentsParser {
 	private String dataFile;
+	private String dataset;
 	private String kernel;
 	private String[] kernelParms;
 	private int depth;
+	private int subset;
 	private boolean inference;
 
 	public StringArgumentsParser(String[] args) {
 		kernelParms = new String[9];
-
+		subset = 0;
+		
 		for (int i = 0; i < args.length; i++) {
 			if (args[i].equals("-file")) {
 				dataFile = args[++i];
+			}
+			if (args[i].equals("-dataset")) {
+				dataset = args[++i];
 			}
 			if (args[i].equals("-kernel")) {
 				kernel = args[++i];
@@ -36,6 +50,9 @@ public class StringArgumentsParser {
 			}
 			if (args[i].equals("-depth")) {
 				depth = Integer.parseInt(args[++i]);
+			}
+			if (args[i].equals("-subset")) {
+				subset = Integer.parseInt(args[++i]);
 			}
 			if (args[i].equals("-inference")) {
 				inference = Boolean.parseBoolean(args[++i]);
@@ -65,12 +82,70 @@ public class StringArgumentsParser {
 		if (kernel.equals("GraphWalks")) {
 			return graphWalks(kernelParms);
 		}
+		if (kernel.equals("GraphWalksFast")) {
+			return graphWalksFast(kernelParms);
+		}
 		if (kernel.equals("GraphSubtrees")) {
 			return graphSubtrees(kernelParms);
+		}
+		if (kernel.equals("GraphSubtreesFast")) {
+			return graphSubtreesFast(kernelParms);
 		}
 		return null;
 	}
 
+	public List<? extends FeatureVectorKernel<SingleDTGraph>> graphFeatureVectorKernel() {
+		if (kernel.equals("GraphBoL")) {
+			return graphBagOfLabels(kernelParms);
+		}
+		if (kernel.equals("TreeBoL")) {
+			return treeBagOfLabels(kernelParms);
+		}
+		if (kernel.equals("TreeWalks")) {
+			return treeWalks(kernelParms);
+		}
+		if (kernel.equals("TreeSubtrees")) {
+			return treeSubtrees(kernelParms);
+		}
+		if (kernel.equals("TreeWalksRoot")) {
+			return treeWalksRoot(kernelParms);
+		}
+		if (kernel.equals("TreeSubtreesRoot")) {
+			return treeSubtreesRoot(kernelParms);
+		}
+		if (kernel.equals("GraphWalks")) {
+			return graphWalks(kernelParms);
+		}
+		if (kernel.equals("GraphWalksFast")) {
+			return graphWalksFast(kernelParms);
+		}
+		if (kernel.equals("GraphSubtrees")) {
+			return graphSubtrees(kernelParms);
+		}
+		if (kernel.equals("GraphSubtreesFast")) {
+			return graphSubtreesFast(kernelParms);
+		}
+		return null;
+	}
+
+	
+	public ClassificationDataSet createDataSet() {
+		if (dataset.equals("AIFB")) {
+			RDFDataSet tripleStore = new RDFFileDataSet(getDataFile(), RDFFormat.forFileName(getDataFile()));
+			ClassificationDataSet ds = new AIFBDataSet(tripleStore);
+			ds.create();
+			return ds;
+		}
+		if (dataset.equals("AM")) {
+			ClassificationDataSet ds = new AMSubsetDataSet(getDataFile());
+			ds.create();
+			return ds;
+		}
+		
+		return null;
+
+	}
+	
 	
 
 	public String getSaveFileString() {
@@ -97,7 +172,9 @@ public class StringArgumentsParser {
 		return depth;
 	}
 
-
+	public int getSubset() {
+		return subset;
+	}
 
 	public boolean isInference() {
 		return inference;
@@ -206,12 +283,37 @@ public class StringArgumentsParser {
 		return kernels;
 	}
 	
+	/**
+	 * -kernel GraphWalksFast
+	 * -kernelParm1 maxWalkLength (int)
+	 * -kernelParm2 depth (int)
+	 * 
+	 * @return
+	 */
+	public static List<DTGraphWalkCountKernel> graphWalksFast(String[] parms) {
+		List<DTGraphWalkCountKernel> kernels = new ArrayList<DTGraphWalkCountKernel>();
+		int[] pathLengths = new int[1];
+
+		if (parms[0].startsWith("[")) {
+			pathLengths = parseIntArray(parms[0]);
+		} else {
+			pathLengths[0] = Integer.parseInt(parms[0]); 
+		}
+		int depth = Integer.parseInt(parms[1]);
+		for (int p : pathLengths) {
+			kernels.add(new DTGraphWalkCountKernel(p, depth, true));
+
+		}
+		return kernels;
+	}
+	
 
 	/**
 	 * -kernel TreeSubtrees
 	 * -kernelParm1 numIterations (int)
 	 * -kernelParm2 depth (int)
 	 * -kernelParm3 trackPrevNBH (boolean)
+	 * -kernelParm4 reverse (boolean)
 	 * 
 	 * @return
 	 */
@@ -225,9 +327,10 @@ public class StringArgumentsParser {
 			pathLengths[0] = Integer.parseInt(parms[0]); 
 		}
 		int depth = Integer.parseInt(parms[1]);
-		boolean trackPrev = Boolean.parseBoolean(parms[2]);
+		boolean trackPrev = parms[2] == null ? false : Boolean.parseBoolean(parms[2]);
+		boolean reverse = parms[3] == null ? true : Boolean.parseBoolean(parms[3]);
 		for (int p : pathLengths) {
-			kernels.add(new DTGraphTreeWLSubTreeKernel(p, depth, true, false, trackPrev, true));
+			kernels.add(new DTGraphTreeWLSubTreeKernel(p, depth, reverse, false, trackPrev, true));
 
 		}
 		return kernels;
@@ -260,6 +363,7 @@ public class StringArgumentsParser {
 	 * -kernelParm1 numIterations (int)
 	 * -kernelParm2 depth (int)
 	 * -kernelParm3 trackPrevNBH (boolean)
+	 * -kernelParm4 reverse (boolean)
 	 * 
 	 * @return
 	 */
@@ -273,9 +377,38 @@ public class StringArgumentsParser {
 			pathLengths[0] = Integer.parseInt(parms[0]); 
 		}
 		int depth = Integer.parseInt(parms[1]);
-		boolean trackPrev = Boolean.parseBoolean(parms[2]);
+		boolean trackPrev = parms[2] == null ? false : Boolean.parseBoolean(parms[2]);
+		boolean reverse = parms[3] == null ? true : Boolean.parseBoolean(parms[3]);
 		for (int p : pathLengths) {
-			kernels.add(new DTGraphGraphListWLSubTreeKernel(p, depth, true, trackPrev, true));
+			kernels.add(new DTGraphGraphListWLSubTreeKernel(p, depth, reverse, trackPrev, true));
+
+		}
+		return kernels;
+	}
+	
+	/**
+	 * -kernel GraphSubtreesFast
+	 * -kernelParm1 numIterations (int)
+	 * -kernelParm2 depth (int)
+	 * -kernelParm3 trackPrevNBH (boolean)
+	 * -kernelParm4 reverse (boolean)
+	 * 
+	 * @return
+	 */
+	public static List<DTGraphWLSubTreeKernel> graphSubtreesFast(String[] parms) {
+		List<DTGraphWLSubTreeKernel> kernels = new ArrayList<DTGraphWLSubTreeKernel>();
+		int[] pathLengths = new int[1];
+
+		if (parms[0].startsWith("[")) {
+			pathLengths = parseIntArray(parms[0]);
+		} else {
+			pathLengths[0] = Integer.parseInt(parms[0]); 
+		}
+		int depth = Integer.parseInt(parms[1]);
+		boolean trackPrev = parms[2] == null ? false : Boolean.parseBoolean(parms[2]);
+		boolean reverse = parms[3] == null ? true : Boolean.parseBoolean(parms[3]);
+		for (int p : pathLengths) {
+			kernels.add(new DTGraphWLSubTreeKernel(p, depth, reverse, trackPrev, true));
 
 		}
 		return kernels;

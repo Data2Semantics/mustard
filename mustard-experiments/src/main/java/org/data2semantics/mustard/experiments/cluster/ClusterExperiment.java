@@ -10,14 +10,17 @@ import java.util.Set;
 import org.data2semantics.mustard.experiments.data.AIFBDataSet;
 import org.data2semantics.mustard.experiments.data.ClassificationDataSet;
 import org.data2semantics.mustard.experiments.utils.Result;
+import org.data2semantics.mustard.experiments.utils.SimpleGraphFeatureVectorKernelExperiment;
 import org.data2semantics.mustard.experiments.utils.SimpleGraphKernelExperiment;
 import org.data2semantics.mustard.kernels.data.RDFData;
 import org.data2semantics.mustard.kernels.data.SingleDTGraph;
+import org.data2semantics.mustard.kernels.graphkernels.FeatureVectorKernel;
 import org.data2semantics.mustard.kernels.graphkernels.GraphKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFTreeWalkCountKernel;
 import org.data2semantics.mustard.learners.evaluation.Accuracy;
 import org.data2semantics.mustard.learners.evaluation.EvaluationFunction;
 import org.data2semantics.mustard.learners.evaluation.F1;
+import org.data2semantics.mustard.learners.liblinear.LibLINEARParameters;
 import org.data2semantics.mustard.learners.libsvm.LibSVMParameters;
 import org.data2semantics.mustard.rdf.RDFDataSet;
 import org.data2semantics.mustard.rdf.RDFFileDataSet;
@@ -33,49 +36,62 @@ public class ClusterExperiment {
 		StringArgumentsParser parser = new StringArgumentsParser(args);
 
 		// Build them dataset
-		RDFDataSet tripleStore = new RDFFileDataSet(parser.getDataFile(), RDFFormat.forFileName(parser.getDataFile()));
-		ClassificationDataSet ds = new AIFBDataSet(tripleStore);
-		ds.create();
-
-		//Setup the SVM	
-		double[] cs = {1,10,100,1000};
-		LibSVMParameters svmParms = new LibSVMParameters(LibSVMParameters.C_SVC, cs);
-		svmParms.setNumFolds(10);
-
+		ClassificationDataSet ds = parser.createDataSet();
+		Set<Statement> stmts = RDFUtils.getStatements4Depth(ds.getRDFData().getDataset(), ds.getRDFData().getInstances(), parser.getDepth(), parser.isInference());
+		stmts.removeAll(new HashSet<Statement>(ds.getRDFData().getBlackList()));
+		SingleDTGraph graph = RDFUtils.statements2Graph(stmts, RDFUtils.REGULAR_LITERALS, ds.getRDFData().getInstances(), true);
+		
 		// Eval funcs
 		List<EvaluationFunction> evalFuncs = new ArrayList<EvaluationFunction>();
 		evalFuncs.add(new Accuracy());
 		evalFuncs.add(new F1());
-
-		long[] seeds = {11,21,31,41,51,61,71,81,91,101};
-
-		// Create SingleDTGraph
-		Set<Statement> stmts = RDFUtils.getStatements4Depth(ds.getRDFData().getDataset(), ds.getRDFData().getInstances(), parser.getDepth(), parser.isInference());
-		stmts.removeAll(new HashSet<Statement>(ds.getRDFData().getBlackList()));
-		List<DTNode<String,String>> instanceNodes = new ArrayList<DTNode<String,String>>();
-		DTGraph<String,String> graph = RDFUtils.statements2Graph(stmts, RDFUtils.REGULAR_LITERALS, ds.getRDFData().getInstances(), instanceNodes, true);
-
-		List<? extends GraphKernel<SingleDTGraph>> kernels = parser.graphKernel();
+		double[] cs = {1,10,100,1000};
 		
-		SimpleGraphKernelExperiment<SingleDTGraph> exp = new SimpleGraphKernelExperiment<SingleDTGraph>(kernels, new SingleDTGraph(graph, instanceNodes), ds.getTarget(), svmParms, seeds, evalFuncs);
+		List<Result> results = null;
+		
+		if (parser.getSubset() == 0) { // if we are not dealing with subsets, we do LibSVM
+			//Setup the SVM	
+			LibSVMParameters svmParms = new LibSVMParameters(LibSVMParameters.C_SVC, cs);
+			svmParms.setNumFolds(10);
+			long[] seeds = {11,21,31,41,51,61,71,81,91,101};
 
-		System.out.println("Running: " + parser.getSaveFileString());
-		exp.run();
+		
+			List<? extends GraphKernel<SingleDTGraph>> kernels = parser.graphKernel();
+			SimpleGraphKernelExperiment<SingleDTGraph> exp = new SimpleGraphKernelExperiment<SingleDTGraph>(kernels, graph, ds.getTarget(), svmParms, seeds, evalFuncs);
 
+			System.out.println("Running: " + parser.getSaveFileString());
+			exp.run();
+			results = exp.getResults();
+
+		} else { // LibLINEAR
+			//Setup the SVM	
+			LibLINEARParameters svmParms = new LibLINEARParameters(LibLINEARParameters.SVC_DUAL, cs);
+			svmParms.setNumFolds(5);
+			long[] seeds = {11};
+
+			List<? extends FeatureVectorKernel<SingleDTGraph>> kernels = parser.graphFeatureVectorKernel();
+			SimpleGraphFeatureVectorKernelExperiment<SingleDTGraph> exp = new SimpleGraphFeatureVectorKernelExperiment<SingleDTGraph>(kernels, graph, ds.getTarget(), svmParms, seeds, evalFuncs);
+
+			System.out.println("Running: " + parser.getSaveFileString());
+			exp.run();
+			results = exp.getResults();
+		}
+		
+		
 		try {
-			FileWriter fw = new FileWriter(parser.getSaveFileString() + ".result");
+			FileWriter fw = new FileWriter(parser.getSaveFileString()+ "_" + parser.getSubset() + ".result");
 
-			fw.write(parser.getSaveFileString() + ":" + 1);
+			fw.write(parser.getSaveFileString() + ":" + parser.getSubset());
 			fw.write("\n");
-			System.out.println(parser.getSaveFileString() + ":" + 1);
-			for (Result res : exp.getResults()) {
+			System.out.println(parser.getSaveFileString() + ":" + parser.getSubset());
+			for (Result res : results) {
 				System.out.println(res);
 				fw.write(res.toString());
 				fw.write("\n");
 			}
 			fw.close();
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		} 
 	}
 }

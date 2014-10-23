@@ -1,9 +1,5 @@
 package org.data2semantics.mustard.kernels.graphkernels.singledtgraph;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import org.data2semantics.mustard.kernels.KernelUtils;
 import org.data2semantics.mustard.kernels.data.GraphList;
@@ -13,13 +9,7 @@ import org.data2semantics.mustard.kernels.graphkernels.GraphKernel;
 import org.data2semantics.mustard.kernels.graphkernels.graphlist.WLSubTreeKernel;
 import org.data2semantics.mustard.learners.SparseVector;
 import org.data2semantics.mustard.rdf.RDFUtils;
-import org.data2semantics.mustard.weisfeilerlehman.MapLabel;
-import org.data2semantics.mustard.weisfeilerlehman.WeisfeilerLehmanDTGraphMapLabelIterator;
-import org.data2semantics.mustard.weisfeilerlehman.WeisfeilerLehmanIterator;
 import org.nodes.DTGraph;
-import org.nodes.DTLink;
-import org.nodes.DTNode;
-import org.nodes.LightDTGraph;
 
 public class DTGraphGraphListWLSubTreeKernel implements GraphKernel<SingleDTGraph>, FeatureVectorKernel<SingleDTGraph> {
 	private int depth;
@@ -56,10 +46,9 @@ public class DTGraphGraphListWLSubTreeKernel implements GraphKernel<SingleDTGrap
 	}
 
 	public SparseVector[] computeFeatureVectors(SingleDTGraph data) {
-		List<DTGraph<String,String>> graphs = RDFUtils.getSubGraphs(data.getGraph(), data.getInstances(), depth);		
-		WLSubTreeKernel kernel = new WLSubTreeKernel(iterations, reverse, trackPrevNBH, normalize);	
-		
-		return kernel.computeFeatureVectors(new GraphList<DTGraph<String,String>>(graphs));	
+		GraphList<DTGraph<String,String>> graphs = RDFUtils.getSubGraphs(data.getGraph(), data.getInstances(), depth);		
+		WLSubTreeKernel kernel = new WLSubTreeKernel(iterations, reverse, trackPrevNBH, normalize);		
+		return kernel.computeFeatureVectors(graphs);	
 	}
 
 

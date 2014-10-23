@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.data2semantics.mustard.kernels.data.SingleDTGraph;
 import org.data2semantics.mustard.rdf.RDFDataSet;
 import org.data2semantics.mustard.rdf.RDFUtils;
 import org.data2semantics.platform.annotation.In;
@@ -61,8 +62,9 @@ public class RDFDataModule {
 		if (instances == null) { // No instances supplied, then we do not create instanceNodes
 			graph = RDFUtils.statements2Graph(stmts, RDFUtils.REGULAR_LITERALS);
 		} else {
-			instanceNodes = new ArrayList<DTNode<String,String>>();
-			graph = RDFUtils.statements2Graph(stmts, RDFUtils.REGULAR_LITERALS, instances, instanceNodes, false);
+			SingleDTGraph g = RDFUtils.statements2Graph(stmts, RDFUtils.REGULAR_LITERALS, instances, false);
+			graph = g.getGraph();
+			instanceNodes = g.getInstances();
 		}
 		return graph;
 	}

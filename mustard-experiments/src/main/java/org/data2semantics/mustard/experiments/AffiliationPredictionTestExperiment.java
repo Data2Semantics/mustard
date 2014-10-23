@@ -141,7 +141,7 @@ public class AffiliationPredictionTestExperiment {
 				DTGraph<String,String> graph = RDFUtils.statements2Graph(st, RDFUtils.REGULAR_LITERALS);
 				List<DTNode<String,String>> instanceNodes = RDFUtils.findInstances(graph, instances);
 				graph = RDFUtils.simplifyInstanceNodeLabels(graph, instanceNodes);
-				List<DTGraph<String,String>> graphs = RDFUtils.getSubGraphs(graph, instanceNodes, d);
+				GraphList<DTGraph<String,String>> graphs = RDFUtils.getSubGraphs(graph, instanceNodes, d);
 
 				List<PathCountKernelMkII> kernelsMG = new ArrayList<PathCountKernelMkII>();
 
@@ -151,7 +151,7 @@ public class AffiliationPredictionTestExperiment {
 				}
 
 				resTable.newRow(kernelsMG.get(0).getLabel() + "_" + inf);
-				SimpleGraphKernelExperiment<GraphList<DTGraph<String,String>>> exp2 = new SimpleGraphKernelExperiment<GraphList<DTGraph<String,String>>>(kernelsMG, new GraphList<DTGraph<String,String>>(graphs), target, svmParms, seeds, evalFuncs);
+				SimpleGraphKernelExperiment<GraphList<DTGraph<String,String>>> exp2 = new SimpleGraphKernelExperiment<GraphList<DTGraph<String,String>>>(kernelsMG, graphs, target, svmParms, seeds, evalFuncs);
 
 				System.out.println(kernelsMG.get(0).getLabel());
 				exp2.run();
