@@ -28,7 +28,7 @@ public class SubSetCreator {
 		long[] seeds = {1,2,3,4,5,6,7,8,9,10};
 		double fraction = 0.01;
 		int minSize = 0;
-		int maxClasses = 18;
+		int maxClasses = 15;
 
 		RDFDataSet tripleStore = new RDFFileDataSet(AM_FOLDER, RDFFormat.TURTLE);
 		LargeClassificationDataSet ds = new AMDataSet(tripleStore, 10, 0.01, 5, 4, true);
@@ -44,12 +44,12 @@ public class SubSetCreator {
 				System.out.println("# Statements: " + stmts.size() + ", after blackList");
 
 
-				File dir = new File("datasets/AMsubset_" + seed + inf);
+				File dir = new File("datasets/AMsubset" + seed + inf);
 				dir.mkdirs();
 
-				File file = new File("datasets/AMsubset_" + seed + inf, "subset.ttl");
-				File instFile = new File("datasets/AMsubset_" + seed + inf, "instances.txt");
-				File targetFile = new File("datasets/AMsubset_" + seed + inf, "target.txt");
+				File file = new File("datasets/AMsubset" + seed + inf, "subset.ttl");
+				File instFile = new File("datasets/AMsubset" + seed + inf, "instances.txt");
+				File targetFile = new File("datasets/AMsubset" + seed + inf, "target.txt");
 				
 				try {
 					RDFWriter writer = Rio.createWriter(RDFFormat.TURTLE, new FileWriter(file));

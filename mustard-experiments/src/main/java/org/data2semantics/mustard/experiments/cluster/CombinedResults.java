@@ -39,6 +39,12 @@ public class CombinedResults {
 
 				while (readLine != null) {
 					results.add(new Result(readLine));
+					if (results.get(results.size()-1).getLabel().equals("Accuracy")) {
+						results.get(results.size()-1).setHigherIsBetter(true);
+					}
+					if (results.get(results.size()-1).getLabel().equals("F1")) {
+						results.get(results.size()-1).setHigherIsBetter(true);
+					}
 					readLine = read.readLine();
 				}
 				read.close();		
@@ -80,11 +86,10 @@ public class CombinedResults {
 	 */
 	public static void main(String[] args) {
 		CombinedResults res = new CombinedResults();
-		res.readDirectory(".");
-		System.out.println(res.generateTable());
-
+		res.readDirectory("aff_results");
+		ResultsTable table = res.generateTable();
+		table.addCompResults(table.getBestResults());
+		table.setSignificanceTest(ResultsTable.SigTest.PAIRED_TTEST);
+		System.out.println(table);
 	}
-
-
-
 }
