@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -13,10 +14,10 @@ import org.data2semantics.mustard.experiments.utils.Result;
 import org.data2semantics.mustard.experiments.utils.ResultsTable;
 
 public class CombinedResults {
-	private Map<String, Map<Integer, List<Result>>> combinedMap;
+	private Map<String, Map<String, Map<Integer, List<Result>>>> combinedMap;
 
 	public CombinedResults() {
-		combinedMap = new TreeMap<String, Map<Integer, List<Result>>>();
+		combinedMap = new TreeMap<String, Map<String, Map<Integer, List<Result>>>>();
 	}
 
 	public void readDirectory(String dir) {
@@ -26,24 +27,31 @@ public class CombinedResults {
 			for (File file : fileDir.listFiles(new ResultsFilter())) {
 				BufferedReader read = new BufferedReader(new FileReader(file));
 				String readLine = read.readLine();
-				List<Result> results = new ArrayList<Result>();
 				String id = readLine.split(":")[0];
 				Integer seed = Integer.parseInt(readLine.split(":")[1]);
 
 				if (!combinedMap.containsKey(id)) {
-					combinedMap.put(id, new TreeMap<Integer,List<Result>>());
+					combinedMap.put(id, new TreeMap<String, Map<Integer,List<Result>>>());
 				}
-				combinedMap.get(id).put(seed, results);
-
 				readLine = read.readLine();
 
 				while (readLine != null) {
-					results.add(new Result(readLine));
-					if (results.get(results.size()-1).getLabel().equals("Accuracy")) {
-						results.get(results.size()-1).setHigherIsBetter(true);
+					Result res = new Result(readLine);
+
+					if (!combinedMap.get(id).containsKey(res.getLabel())) {
+						combinedMap.get(id).put(res.getLabel(), new TreeMap<Integer, List<Result>>());
 					}
-					if (results.get(results.size()-1).getLabel().equals("F1")) {
-						results.get(results.size()-1).setHigherIsBetter(true);
+					if (!combinedMap.get(id).get(res.getLabel()).containsKey(seed)) {
+						combinedMap.get(id).get(res.getLabel()).put(seed, new ArrayList<Result>());
+					}
+					List<Result> results = combinedMap.get(id).get(res.getLabel()).get(seed);
+					results.add(res);
+		
+					if (res.getLabel().equals("Accuracy")) {
+						res.setHigherIsBetter(true);
+					}
+					if (res.getLabel().equals("F1")) {
+						res.setHigherIsBetter(true);
 					}
 					readLine = read.readLine();
 				}
@@ -54,18 +62,37 @@ public class CombinedResults {
 		}
 	}
 
-	public ResultsTable generateTable() {
-		ResultsTable table = new ResultsTable();
-
+	public Map<String, ResultsTable> generateTables(int splits) {
+		Map<String, ResultsTable> tables = new TreeMap<String, ResultsTable>();
+		
 		for (String id : combinedMap.keySet()) {
+			String[] idSplits = id.split("_");
+			String tableId = "";
+			for (int i = (idSplits.length - splits); i < idSplits.length; i++) {
+				tableId += idSplits[i];
+			}
+			
+			if (!tables.containsKey(tableId)) {
+				tables.put(tableId, new ResultsTable());
+			}
+			ResultsTable table = tables.get(tableId);
+			
 			table.newRow(id);
-			for (int seed : combinedMap.get(id).keySet()) {
-				for (Result res : combinedMap.get(id).get(seed)) {
-					table.addResult(res);
+			for (String label : combinedMap.get(id).keySet()) {
+				Result res = null;
+				for (int seed : combinedMap.get(id).get(label).keySet()) {
+					for (Result result : combinedMap.get(id).get(label).get(seed)) {
+						if (res == null) {
+							res = result;
+							table.addResult(res);
+						} else {
+							res.addResult(result);
+						}
+					}
 				}
 			}
 		}
-		return table;
+		return tables;
 	}
 
 	class ResultsFilter implements FileFilter {
@@ -86,10 +113,20 @@ public class CombinedResults {
 	 */
 	public static void main(String[] args) {
 		CombinedResults res = new CombinedResults();
-		res.readDirectory("aff_results");
-		ResultsTable table = res.generateTable();
-		table.addCompResults(table.getBestResults());
-		table.setSignificanceTest(ResultsTable.SigTest.PAIRED_TTEST);
-		System.out.println(table);
+		res.readDirectory("am_results_30");
+		Map<String, ResultsTable> tables = res.generateTables(2);
+		
+		List<Result> overallBest = new ArrayList<Result>();
+		
+		for (String key : tables.keySet()) {
+			overallBest = tables.get(key).getBestResults(overallBest); // update overall best results
+		}
+		
+		for (String key : tables.keySet()) {
+			tables.get(key).addCompResults(overallBest); // add overall best results
+			tables.get(key).addCompResults(tables.get(key).getBestResults()); // add local best results
+			//tables.get(key).setSignificanceTest(ResultsTable.SigTest.PAIRED_TTEST);
+			System.out.println(tables.get(key));
+		}
 	}
 }

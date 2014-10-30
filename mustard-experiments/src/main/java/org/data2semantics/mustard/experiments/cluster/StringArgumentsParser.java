@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.data2semantics.mustard.experiments.data.AIFBDataSet;
-import org.data2semantics.mustard.experiments.data.AMSubsetDataSet;
+import org.data2semantics.mustard.experiments.data.SubsetDataSet;
 import org.data2semantics.mustard.experiments.data.ClassificationDataSet;
 import org.data2semantics.mustard.kernels.data.SingleDTGraph;
 import org.data2semantics.mustard.kernels.graphkernels.FeatureVectorKernel;
@@ -29,10 +29,12 @@ public class StringArgumentsParser {
 	private int depth;
 	private int subset;
 	private boolean inference;
+	private int numHubs;
 
 	public StringArgumentsParser(String[] args) {
 		kernelParms = new String[9];
 		subset = 0;
+		numHubs = 0;
 		
 		for (int i = 0; i < args.length; i++) {
 			if (args[i].equals("-file")) {
@@ -56,6 +58,9 @@ public class StringArgumentsParser {
 			}
 			if (args[i].equals("-inference")) {
 				inference = Boolean.parseBoolean(args[++i]);
+			}
+			if (args[i].equals("-numHubs")) {
+				numHubs = Integer.parseInt(args[++i]);
 			}
 		}
 	}
@@ -136,8 +141,8 @@ public class StringArgumentsParser {
 			ds.create();
 			return ds;
 		}
-		if (dataset.equals("AM")) {
-			ClassificationDataSet ds = new AMSubsetDataSet(getDataFile());
+		if (dataset.equals("AM") || dataset.equals("BGS")) {
+			ClassificationDataSet ds = new SubsetDataSet(getDataFile());
 			ds.create();
 			return ds;
 		}
@@ -160,6 +165,8 @@ public class StringArgumentsParser {
 			}
 		}
 		sb.append("_");
+		sb.append(numHubs);
+		sb.append("_");
 		sb.append(depth);
 		sb.append("_");
 		sb.append(inference);
@@ -180,13 +187,14 @@ public class StringArgumentsParser {
 		return inference;
 	}
 
-
-
 	public String getDataFile() {
 		return dataFile;
 	}
 
-
+	public int getNumHubs() {
+		return numHubs;
+	}
+	
 
 	/**
 	 * -kernel GraphBoL

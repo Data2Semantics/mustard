@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.data2semantics.mustard.experiments.data.AMDataSet;
+import org.data2semantics.mustard.experiments.data.BGSDataSet;
 import org.data2semantics.mustard.experiments.data.LargeClassificationDataSet;
 import org.data2semantics.mustard.rdf.RDFDataSet;
 import org.data2semantics.mustard.rdf.RDFFileDataSet;
@@ -19,6 +20,7 @@ import org.openrdf.rio.Rio;
 
 public class SubSetCreator {
 	private static final String AM_FOLDER =  "C:\\Users\\Gerben\\Dropbox\\AM_data";
+	private static final String BGS_FOLDER =  "C:\\Users\\Gerben\\Dropbox\\data_bgs_ac_uk_ALL";
 
 	/**
 	 * @param args
@@ -26,30 +28,35 @@ public class SubSetCreator {
 	public static void main(String[] args) {
 		boolean[] inference = {false, true};
 		long[] seeds = {1,2,3,4,5,6,7,8,9,10};
-		double fraction = 0.01;
+		double fraction = 0.1;
 		int minSize = 0;
-		int maxClasses = 15;
-
-		RDFDataSet tripleStore = new RDFFileDataSet(AM_FOLDER, RDFFormat.TURTLE);
-		LargeClassificationDataSet ds = new AMDataSet(tripleStore, 10, 0.01, 5, 4, true);
+		int maxClasses = 3;
+		int depth = 3;
+		
+		String saveDir = "datasets/BGSsubset";
+		String loadDir = BGS_FOLDER;
+		RDFFormat format = RDFFormat.NTRIPLES;
+		
+		RDFDataSet tripleStore = new RDFFileDataSet(loadDir, format);
+		LargeClassificationDataSet ds = new BGSDataSet(tripleStore, "http://data.bgs.ac.uk/ref/Lexicon/hasTheme", 10, 0.05, 5, 3);
 
 		for (long seed : seeds) {
 			for (boolean inf : inference) {
 				ds.createSubSet(seed, fraction, minSize, maxClasses);
 
 				System.out.println("Getting Statements...");
-				Set<Statement> stmts = RDFUtils.getStatements4Depth(tripleStore, ds.getRDFData().getInstances(), 3, inf);
+				Set<Statement> stmts = RDFUtils.getStatements4Depth(tripleStore, ds.getRDFData().getInstances(), depth, inf);
 				System.out.println("# Statements: " + stmts.size());
 				stmts.removeAll(new HashSet<Statement>(ds.getRDFData().getBlackList()));
 				System.out.println("# Statements: " + stmts.size() + ", after blackList");
 
 
-				File dir = new File("datasets/AMsubset" + seed + inf);
+				File dir = new File(saveDir + seed + inf);
 				dir.mkdirs();
 
-				File file = new File("datasets/AMsubset" + seed + inf, "subset.ttl");
-				File instFile = new File("datasets/AMsubset" + seed + inf, "instances.txt");
-				File targetFile = new File("datasets/AMsubset" + seed + inf, "target.txt");
+				File file = new File(saveDir + seed + inf, "subset.ttl");
+				File instFile = new File(saveDir + seed + inf, "instances.txt");
+				File targetFile = new File(saveDir + seed + inf, "target.txt");
 				
 				try {
 					RDFWriter writer = Rio.createWriter(RDFFormat.TURTLE, new FileWriter(file));

@@ -22,16 +22,20 @@ public class RDFTreeWLSubTreeKernel implements GraphKernel<RDFData>, FeatureVect
 	private SingleDTGraph graph;
 
 	public RDFTreeWLSubTreeKernel(int iterations, int depth, boolean inference, boolean normalize) {
-		this(iterations, depth, inference, false, false, normalize);
+		this(iterations, depth, inference, false, false, false, normalize);
 	}
-
+	
 	public RDFTreeWLSubTreeKernel(int iterations, int depth, boolean inference, boolean reverse, boolean iterationWeighting, boolean normalize) {
+		this(iterations, depth, inference, reverse, iterationWeighting, false, normalize);
+	}
+	
+	public RDFTreeWLSubTreeKernel(int iterations, int depth, boolean inference, boolean reverse, boolean iterationWeighting, boolean trackPrevNBH, boolean normalize) {
 		super();
-		this.label = "RDF_Tree_WL_Kernel_" + depth + "_" + iterations + "_" + inference + "_" + reverse + "_" + iterationWeighting + "_" + normalize;
+		this.label = "RDF_Tree_WL_Kernel_" + depth + "_" + iterations + "_" + inference + "_" + reverse + "_" + iterationWeighting + "_" + trackPrevNBH + "_" + normalize;
 		this.depth = depth;
 		this.inference = inference;
 
-		kernel = new DTGraphTreeWLSubTreeKernel(iterations, depth, reverse, iterationWeighting, normalize);
+		kernel = new DTGraphTreeWLSubTreeKernel(iterations, depth, reverse, iterationWeighting, trackPrevNBH, normalize);
 	}
 
 	public String getLabel() {

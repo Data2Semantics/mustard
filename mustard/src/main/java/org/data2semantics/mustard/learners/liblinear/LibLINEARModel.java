@@ -1,10 +1,12 @@
 package org.data2semantics.mustard.learners.liblinear;
+import org.data2semantics.mustard.kernels.Kernel;
+
 import de.bwaldvogel.liblinear.Model;
 
 
 public class LibLINEARModel {
 	private Model model;
-	private String kernelSetting;
+	private Kernel kernelSetting;
 	
 	LibLINEARModel(Model model) {
 		this.model = model;
@@ -14,11 +16,11 @@ public class LibLINEARModel {
 		return model;
 	}
 	
-	public String getKernelSetting() {
+	public Kernel getKernelSetting() {
 		return kernelSetting;
 	}
 
-	public void setKernelSetting(String kernelSetting) {
+	public void setKernelSetting(Kernel kernelSetting) {
 		this.kernelSetting = kernelSetting;
 	}
 	

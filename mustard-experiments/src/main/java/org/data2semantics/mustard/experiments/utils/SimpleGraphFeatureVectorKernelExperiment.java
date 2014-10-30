@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import org.data2semantics.mustard.kernels.Kernel;
 import org.data2semantics.mustard.kernels.KernelUtils;
 import org.data2semantics.mustard.kernels.data.GraphData;
 import org.data2semantics.mustard.kernels.graphkernels.FeatureVectorKernel;
@@ -52,13 +53,13 @@ public class SimpleGraphFeatureVectorKernelExperiment<D extends GraphData> exten
 		List<Double> tempLabels = new ArrayList<Double>();
 		tempLabels.addAll(labels);
 
-		Map<String, SparseVector[]> fvs = new HashMap<String, SparseVector[]>();
+		Map<Kernel, SparseVector[]> fvs = new HashMap<Kernel, SparseVector[]>();
 
 		tic = System.currentTimeMillis();	
 		System.out.println("Computing FVs...");	
 		for (FeatureVectorKernel<D> kernel : kernels) {
 			SparseVector[] fv = kernel.computeFeatureVectors(data);
-			fvs.put(kernel.getLabel(), fv);
+			fvs.put(kernel, fv);
 		}
 		toc = System.currentTimeMillis();
 
@@ -66,7 +67,7 @@ public class SimpleGraphFeatureVectorKernelExperiment<D extends GraphData> exten
 
 		System.out.println("Performing CV...");
 		for (int j = 0; j < seeds.length; j++) {
-			for (String k : fvs.keySet()) {
+			for (Kernel k : fvs.keySet()) {
 				List<SparseVector> tempFV = Arrays.asList(fvs.get(k));
 				Collections.shuffle(tempFV, new Random(seeds[j]));
 				fvs.put(k, tempFV.toArray(new SparseVector[0]));

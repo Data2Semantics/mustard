@@ -23,7 +23,7 @@ public class RDFWLSubTreeHubRemovalKernel implements GraphKernel<RDFData>, Featu
 	private boolean inference;
 	private Map<String, Integer> hubMap;
 	private DTGraphWLSubTreeKernel kernel;
-	private DTGraph<String,String> graph;
+	private SingleDTGraph graph;
 	private List<DTNode<String,String>> instanceNodes;
 
 	public RDFWLSubTreeHubRemovalKernel(int iterations, int depth, boolean inference, Map<String, Integer> hubMap, boolean normalize) {
@@ -32,7 +32,7 @@ public class RDFWLSubTreeHubRemovalKernel implements GraphKernel<RDFData>, Featu
 
 	public RDFWLSubTreeHubRemovalKernel(int iterations, int depth, boolean inference, Map<String, Integer> hubMap, boolean reverse, boolean iterationWeighting, boolean normalize) {
 		super();
-		this.label = "RDF_WL_Kernel_" + depth + "_" + iterations + "_" + inference + "_" + hubMap.size() + "_" + reverse + "_" + iterationWeighting + "_" + normalize;
+		this.label = "RDF_WL_HubRemoval_Kernel_" + depth + "_" + iterations + "_" + inference + "_" + hubMap.size() + "_" + reverse + "_" + iterationWeighting + "_" + normalize;
 		this.depth = depth;
 		this.inference = inference;
 		this.hubMap = hubMap;
@@ -50,22 +50,18 @@ public class RDFWLSubTreeHubRemovalKernel implements GraphKernel<RDFData>, Featu
 
 	public SparseVector[] computeFeatureVectors(RDFData data) {
 		init(data.getDataset(), data.getInstances(), data.getBlackList());
-		return kernel.computeFeatureVectors(new SingleDTGraph(graph, instanceNodes));
+		return kernel.computeFeatureVectors(graph);
 	}
 
 	public double[][] compute(RDFData data) {
 		init(data.getDataset(), data.getInstances(), data.getBlackList());
-		return kernel.compute(new SingleDTGraph(graph, instanceNodes));
+		return kernel.compute(graph);
 	}
 
 	private void init(RDFDataSet dataset, List<Resource> instances, List<Statement> blackList) {
-		Set<Statement> stmts = RDFUtils.getStatements4Depth(dataset, instances, depth + 1, inference);
+		Set<Statement> stmts = RDFUtils.getStatements4Depth(dataset, instances, depth, inference);
 		stmts.removeAll(blackList);
-		removeHubs(RDFUtils.statements2Graph(stmts, RDFUtils.REGULAR_LITERALS), instances);
-	}
-
-	private void removeHubs(DTGraph<String,String> oldGraph, List<Resource> instances) {
-		instanceNodes = RDFUtils.findInstances(oldGraph, instances);
-		graph = RDFUtils.removeHubs(oldGraph, instanceNodes, hubMap);		
+		graph = RDFUtils.statements2Graph(stmts, RDFUtils.REGULAR_LITERALS, instances, false);
+		graph = RDFUtils.removeHubs(graph, hubMap);	
 	}
 }

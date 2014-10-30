@@ -16,13 +16,13 @@ import org.openrdf.model.Statement;
 import org.openrdf.model.Value;
 import org.openrdf.rio.RDFFormat;
 
-public class AMSubsetDataSet implements ClassificationDataSet {
+public class SubsetDataSet implements ClassificationDataSet {
 	private RDFDataSet tripleStore;
 	private List<Resource> instances;
 	private List<Double> target;
 	private RDFData rdfData;
 
-	public AMSubsetDataSet(String dir) {
+	public SubsetDataSet(String dir) {
 		tripleStore = new RDFFileDataSet(dir + "/subset.ttl", RDFFormat.TURTLE);
 		instances = new ArrayList<Resource>();
 		target = new ArrayList<Double>();
@@ -32,8 +32,8 @@ public class AMSubsetDataSet implements ClassificationDataSet {
 
 			String line = instReader.readLine();
 			while (line != null) {
-				instReader.readLine();
 				instances.add(tripleStore.createURI(line));
+				line = instReader.readLine();
 			}
 			instReader.close();
 			
@@ -41,8 +41,8 @@ public class AMSubsetDataSet implements ClassificationDataSet {
 
 			line = targetReader.readLine();
 			while (line != null) {
-				instReader.readLine();
 				target.add(Double.parseDouble(line));
+				line = targetReader.readLine();
 			}
 			targetReader.close();
 		} catch (Exception e) {

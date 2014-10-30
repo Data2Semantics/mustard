@@ -1,5 +1,6 @@
 package org.data2semantics.mustard.learners.libsvm;
 
+import org.data2semantics.mustard.kernels.Kernel;
 
 /**
  * Very simple wrapper for the svm_model class, this just stores the model.
@@ -10,7 +11,7 @@ package org.data2semantics.mustard.learners.libsvm;
  */
 public class LibSVMModel {
 	private svm_model model;
-	private String kernelSetting;
+	private Kernel kernelSetting;
 	
 	LibSVMModel(svm_model model) {
 		this.model = model;
@@ -20,11 +21,11 @@ public class LibSVMModel {
 		return model;
 	}
 
-	public String getKernelSetting() {
+	public Kernel getKernelSetting() {
 		return kernelSetting;
 	}
 
-	public void setKernelSetting(String kernelSetting) {
+	public void setKernelSetting(Kernel kernelSetting) {
 		this.kernelSetting = kernelSetting;
 	}
 	

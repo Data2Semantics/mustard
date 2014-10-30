@@ -160,17 +160,18 @@ public class RDFUtils {
 		return hubMap;
 	}
 
-	// TODO refactor to SingleDTGraph return type
-	public static DTGraph<String,String> removeHubs(DTGraph<String,String> oldGraph, List<DTNode<String,String>> instanceNodes, Map<String, Integer> hubMap) {
+	public static SingleDTGraph removeHubs(SingleDTGraph oldGraph, Map<String, Integer> hubMap) {
 		DTGraph<String,String> graph = new LightDTGraph<String,String>();
+		List<DTNode<String,String>> newInstanceNodes = new ArrayList<DTNode<String,String>>();
 		Set<DTLink<String,String>> toRemoveLinks = new HashSet<DTLink<String,String>>();
 
 		Map<DTNode<String,String>,Integer> iNodeMap = new HashMap<DTNode<String,String>,Integer>();	
-		for (int i = 0; i < instanceNodes.size(); i++) {
-			iNodeMap.put(instanceNodes.get(i), i);
+		for (int i = 0; i < oldGraph.getInstances().size(); i++) {
+			iNodeMap.put(oldGraph.getInstances().get(i), i);
+			newInstanceNodes.add(null);
 		}	
 
-		for (DTNode<String,String> node : oldGraph.nodes()) {
+		for (DTNode<String,String> node : oldGraph.getGraph().nodes()) {
 			String newLabel = null;
 			int lowestDepth = 0;
 			DTLink<String,String> remLink = null;
@@ -195,7 +196,7 @@ public class RDFUtils {
 			}
 			DTNode<String,String> newN = graph.add(newLabel);
 			if (iNodeMap.containsKey(node)) { // We also need to replace the instance nodes with new instance nodes in the simplified graph
-				instanceNodes.set(iNodeMap.get(node), newN);
+				newInstanceNodes.set(iNodeMap.get(node), newN);
 			}
 
 			if (remLink != null ) {
@@ -203,7 +204,7 @@ public class RDFUtils {
 			}
 		}
 
-		for(DTLink<String,String> link : oldGraph.links()) {
+		for(DTLink<String,String> link : oldGraph.getGraph().links()) {
 			int a = link.from().index();
 			int b = link.to().index();
 
@@ -211,7 +212,7 @@ public class RDFUtils {
 				graph.nodes().get(a).connect(graph.nodes().get(b), link.tag());
 			}
 		}
-		return graph;
+		return new SingleDTGraph(graph, newInstanceNodes);
 	}
 
 

@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.data2semantics.mustard.kernels.Kernel;
 import org.data2semantics.mustard.learners.Prediction;
 import org.data2semantics.mustard.learners.SparseVector;
 import org.data2semantics.mustard.learners.libsvm.LibSVM;
@@ -26,11 +27,10 @@ import de.bwaldvogel.liblinear.Problem;
  *
  */
 public class LibLINEAR {
-	private static final String DEFAULT_FV = "supplied fvs";
-	
-	public static LibLINEARModel trainLinearModelWithMultipleFeatureVectors(Map<String, SparseVector[]> featureVectors, double[] target, LibLINEARParameters params) {
-		Map<String, Problem> probs = new HashMap<String, Problem>();
-		for (String k : featureVectors.keySet()) {
+
+	public static LibLINEARModel trainLinearModelWithMultipleFeatureVectors(Map<Kernel, SparseVector[]> featureVectors, double[] target, LibLINEARParameters params) {
+		Map<Kernel, Problem> probs = new HashMap<Kernel, Problem>();
+		for (Kernel k : featureVectors.keySet()) {
 			probs.put(k, createLinearProblem(featureVectors.get(k), target, params.getBias()));
 		}
 		return trainLinearModel(probs, params);
@@ -38,20 +38,20 @@ public class LibLINEAR {
 	
 	public static LibLINEARModel trainLinearModel(SparseVector[] featureVectors, double[] target, LibLINEARParameters params) {
 		Problem prob = createLinearProblem(featureVectors, target, params.getBias());
-		Map<String, Problem> dummy = new HashMap<String,Problem>();
-		dummy.put(DEFAULT_FV, prob);
+		Map<Kernel, Problem> dummy = new HashMap<Kernel,Problem>();
+		dummy.put(null, prob);
 		
 		return trainLinearModel(dummy, params);
 	}
 
 	
 	private static LibLINEARModel trainLinearModel(Problem prob, LibLINEARParameters params) {
-		Map<String, Problem> dummy = new HashMap<String,Problem>();
-		dummy.put(DEFAULT_FV, prob);		
+		Map<Kernel, Problem> dummy = new HashMap<Kernel,Problem>();
+		dummy.put(null, prob);		
 		return trainLinearModel(dummy, params);
 	}
 	
-	private static LibLINEARModel trainLinearModel(Map<String, Problem> probs, LibLINEARParameters params) {
+	private static LibLINEARModel trainLinearModel(Map<Kernel, Problem> probs, LibLINEARParameters params) {
 		if (!params.isVerbose()) {
 			Linear.disableDebugOutput();
 		}
@@ -65,9 +65,9 @@ public class LibLINEAR {
 		Parameter linearParams = params.getParamsCopy();
 		
 		double score = 0, bestScore = 0, bestC = 0, bestP = 0;
-		String bestSetting = null;
+		Kernel bestSetting = null;
 
-		for (String setting : probs.keySet()) {
+		for (Kernel setting : probs.keySet()) {
 			if (bestSetting == null) { // Initialize best setting
 				bestSetting = setting;
 			}
@@ -114,7 +114,12 @@ public class LibLINEAR {
 		LibLINEARModel model = new LibLINEARModel(Linear.train(probs.get(bestSetting), linearParams));
 		model.setKernelSetting(bestSetting);
 		
-		System.out.println("Trained Linear SVM for " + bestSetting + ", with C: " + bestC + " and P: " + bestP);
+		String label = "default kernel";
+		if (bestSetting != null) {
+			label = bestSetting.getLabel();
+		} 		
+		
+		System.out.println("Trained Linear SVM for " + label + ", with C: " + bestC + " and P: " + bestP);
 
 		double avg = 0;
 		for (Feature[] v : probs.get(bestSetting).x) {
@@ -127,9 +132,9 @@ public class LibLINEAR {
 		return model;
 	}
 
-	public static Prediction[] testLinearModelWithMultiFeatureVectors(LibLINEARModel model, Map<String, SparseVector[]> testVectors) {
-		Map<String, Feature[][]> problems = new HashMap<String, Feature[][]>();
-		for (String k : testVectors.keySet()) {
+	public static Prediction[] testLinearModelWithMultiFeatureVectors(LibLINEARModel model, Map<Kernel, SparseVector[]> testVectors) {
+		Map<Kernel, Feature[][]> problems = new HashMap<Kernel, Feature[][]>();
+		for (Kernel k : testVectors.keySet()) {
 			problems.put(k, createTestProblem(testVectors.get(k), model.getModel().getNrFeature(), model.getModel().getBias()));
 		}
 		return testLinearModel(model, problems);
@@ -137,13 +142,13 @@ public class LibLINEAR {
 	
 
 	public static Prediction[] testLinearModel(LibLINEARModel model, SparseVector[] testVectors) {
-		Map<String, Feature[][]> dummy = new HashMap<String, Feature[][]>();
-		dummy.put(DEFAULT_FV, createTestProblem(testVectors, model.getModel().getNrFeature(), model.getModel().getBias()));
+		Map<Kernel, Feature[][]> dummy = new HashMap<Kernel, Feature[][]>();
+		dummy.put(null, createTestProblem(testVectors, model.getModel().getNrFeature(), model.getModel().getBias()));
 		return testLinearModel(model, dummy);
 	}
 
 
-	private static Prediction[] testLinearModel(LibLINEARModel model, Map<String, Feature[][]> problems) {
+	private static Prediction[] testLinearModel(LibLINEARModel model, Map<Kernel, Feature[][]> problems) {
 		Feature[][] problem = problems.get(model.getKernelSetting());		
 		return testLinearModel(model, problem);
 	}
@@ -158,13 +163,13 @@ public class LibLINEAR {
 		return pred;
 	}
 	
-	public static Prediction[] crossValidateWithMultipleFeatureVectors(Map<String,SparseVector[]> featureVectors, double[] target, LibLINEARParameters params, int numberOfFolds) {
+	public static Prediction[] crossValidateWithMultipleFeatureVectors(Map<Kernel,SparseVector[]> featureVectors, double[] target, LibLINEARParameters params, int numberOfFolds) {
 		Prediction[] pred = new Prediction[target.length];
 	
 		for (int fold = 1; fold <= numberOfFolds; fold++) {
-			Map<String, Problem> trainPs = new HashMap<String, Problem>();
-			Map<String, Feature[][]> testPs = new HashMap<String, Feature[][]>();
-			for (String k : featureVectors.keySet()) {
+			Map<Kernel, Problem> trainPs = new HashMap<Kernel, Problem>();
+			Map<Kernel, Feature[][]> testPs = new HashMap<Kernel, Feature[][]>();
+			for (Kernel k : featureVectors.keySet()) {
 				Problem p = createLinearProblem(featureVectors.get(k), target, params.getBias());
 				trainPs.put(k, createProblemTrainFold(p, numberOfFolds, fold));
 				testPs.put(k, createProblemTestFold(p, numberOfFolds, fold));
@@ -201,11 +206,11 @@ public class LibLINEAR {
 	}
 	
 	
-	public static Prediction[] trainTestSplit(Map<String, SparseVector[]> featureVectors, double[] target, LibLINEARParameters params, float splitFraction) {
-		Map<String, Problem> trainPs    = new HashMap<String, Problem>();
-		Map<String, Feature[][]> testPs = new HashMap<String, Feature[][]>();
+	public static Prediction[] trainTestSplit(Map<Kernel, SparseVector[]> featureVectors, double[] target, LibLINEARParameters params, float splitFraction) {
+		Map<Kernel, Problem> trainPs    = new HashMap<Kernel, Problem>();
+		Map<Kernel, Feature[][]> testPs = new HashMap<Kernel, Feature[][]>();
 		
-		for (String k : featureVectors.keySet()) {
+		for (Kernel k : featureVectors.keySet()) {
 			Problem p = createLinearProblem(featureVectors.get(k), target, params.getBias());
 			trainPs.put(k, createProblemTrainSplit(p, splitFraction));	
 			testPs.put(k, createProblemTestSplit(p, splitFraction).x);

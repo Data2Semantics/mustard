@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.data2semantics.mustard.learners.Prediction;
 import org.data2semantics.mustard.learners.SparseVector;
+import org.data2semantics.mustard.kernels.Kernel;
 
 
 /**
@@ -18,9 +19,6 @@ import org.data2semantics.mustard.learners.SparseVector;
  *
  */
 public class LibSVM {
-	private static final String DEFAULT_FV = "supplied fvs";
-	private static final String DEFAULT_KERNEL = "supplied kernel";
-	
 	
 	/*
 	public static final int ACCURACY = 1;
@@ -38,9 +36,9 @@ public class LibSVM {
 	 * @param params
 	 * @return
 	 */
-	public static LibSVMModel trainSVMModelWithMultipleFeatureVectors(Map<String, SparseVector[]> featureVectors, double[] target, LibSVMParameters params) {
-		Map<String, svm_problem> probs = new HashMap<String, svm_problem>();
-		for (String k : featureVectors.keySet()) {
+	public static LibSVMModel trainSVMModelWithMultipleFeatureVectors(Map<Kernel, SparseVector[]> featureVectors, double[] target, LibSVMParameters params) {
+		Map<Kernel, svm_problem> probs = new HashMap<Kernel, svm_problem>();
+		for (Kernel k : featureVectors.keySet()) {
 			probs.put(k, createSVMProblem(featureVectors.get(k), target));
 		}
 		return trainSVMModel(probs, target, params);		
@@ -55,9 +53,9 @@ public class LibSVM {
 	 * @param params
 	 * @return
 	 */
-	public static LibSVMModel trainSVMModelWithMultipleKernels(Map<String, double[][]> kernels, double[] target, LibSVMParameters params) {
-		Map<String, svm_problem> probs = new HashMap<String, svm_problem>();
-		for (String k : kernels.keySet()) {
+	public static LibSVMModel trainSVMModelWithMultipleKernels(Map<Kernel, double[][]> kernels, double[] target, LibSVMParameters params) {
+		Map<Kernel, svm_problem> probs = new HashMap<Kernel, svm_problem>();
+		for (Kernel k : kernels.keySet()) {
 			probs.put(k, createSVMProblem(kernels.get(k), target));
 		}
 		return trainSVMModel(probs, target, params);		
@@ -78,8 +76,8 @@ public class LibSVM {
 	 */
 	public static LibSVMModel trainSVMModel(SparseVector[] featureVectors, double[] target, LibSVMParameters params) {
 		svm_problem svmProb = createSVMProblem(featureVectors, target);
-		Map<String, svm_problem> dummy = new HashMap<String, svm_problem>();
-		dummy.put(DEFAULT_FV, svmProb);
+		Map<Kernel, svm_problem> dummy = new HashMap<Kernel, svm_problem>();
+		dummy.put(null, svmProb);
 		return trainSVMModel(dummy, target, params);
 	}
 
@@ -92,20 +90,20 @@ public class LibSVM {
 	 * 
 	 * @param kernel, a symmetric kernel matrix
 	 * @param target, an array of labels the same length of the height/width of the kernel matrix
-	 * @param params, a LibSVMParameters object, supplying the parameters for the SVM, not that this must be set to the precomputed kernel setting
+	 * @param params, a LibSVMParameters object, supplying the parameters for the SVM, note that this must be set to the precomputed kernel setting
 	 * 
 	 * @return a trained LibSVMModel
 	 *
 	 */
 	public static LibSVMModel trainSVMModel(double[][] kernel, double[] target, LibSVMParameters params) {
 		svm_problem svmProb = createSVMProblem(kernel, target);
-		Map<String, svm_problem> dummy = new HashMap<String, svm_problem>();
-		dummy.put(DEFAULT_KERNEL, svmProb);
+		Map<Kernel, svm_problem> dummy = new HashMap<Kernel, svm_problem>();
+		dummy.put(null, svmProb);
 		return trainSVMModel(dummy, target, params);
 
 	}
 
-	private static LibSVMModel trainSVMModel(Map<String, svm_problem> svmProbs, double[] target, LibSVMParameters params) {	
+	private static LibSVMModel trainSVMModel(Map<Kernel, svm_problem> svmProbs, double[] target, LibSVMParameters params) {	
 		if (!params.isVerbose()) {
 			setNoOutput();
 		}
@@ -114,10 +112,10 @@ public class LibSVM {
 
 
 		double score = 0, bestScore = 0, bestC = 0, bestP = 0;
-		String bestSetting = null;
+		Kernel bestSetting = null;
 
 		// kernel/featurevectors selection
-		for (String setting : svmProbs.keySet()) {
+		for (Kernel setting : svmProbs.keySet()) {
 			if (bestSetting == null) {
 				bestSetting = setting;
 			}
@@ -155,8 +153,13 @@ public class LibSVM {
 		svmParams.p = bestP;
 		LibSVMModel model = new LibSVMModel(svm.svm_train(svmProbs.get(bestSetting), svmParams));
 		model.setKernelSetting(bestSetting);
-	
-		System.out.println("Trained SVM for " + bestSetting + ", with C: " + bestC + " and P: " + bestP);
+		
+		String label = "default kernel";
+		if (bestSetting != null) {
+			label = bestSetting.getLabel();
+		} 
+		
+		System.out.println("Trained SVM for " + label + ", with C: " + bestC + " and P: " + bestP);
 		return model;
 	}
 
@@ -169,9 +172,9 @@ public class LibSVM {
 	 * @param fvs
 	 * @return
 	 */
-	public static Prediction[] testSVMModelWithMultipleFeatureVectors(LibSVMModel model, Map<String,SparseVector[]> fvs) {
-		Map<String, svm_node[][]> probs = new HashMap<String, svm_node[][]>();
-		for (String k : fvs.keySet()) {
+	public static Prediction[] testSVMModelWithMultipleFeatureVectors(LibSVMModel model, Map<Kernel,SparseVector[]> fvs) {
+		Map<Kernel, svm_node[][]> probs = new HashMap<Kernel, svm_node[][]>();
+		for (Kernel k : fvs.keySet()) {
 			probs.put(k, createTestProblem(fvs.get(k)));
 		}	
 		return testSVMModel(model, probs);
@@ -185,9 +188,9 @@ public class LibSVM {
 	 * @param kernels
 	 * @return
 	 */
-	public static Prediction[] testSVMModelWithMultipleKernels(LibSVMModel model, Map<String,double[][]> kernels) {
-		Map<String, svm_node[][]> probs = new HashMap<String, svm_node[][]>();
-		for (String k : kernels.keySet()) {
+	public static Prediction[] testSVMModelWithMultipleKernels(LibSVMModel model, Map<Kernel,double[][]> kernels) {
+		Map<Kernel, svm_node[][]> probs = new HashMap<Kernel, svm_node[][]>();
+		for (Kernel k : kernels.keySet()) {
 			probs.put(k, createTestProblem(kernels.get(k)));
 		}	
 		return testSVMModel(model, probs);
@@ -202,8 +205,8 @@ public class LibSVM {
 	 * @return
 	 */
 	public static Prediction[] testSVMModel(LibSVMModel model, SparseVector[] testVectors) {
-		Map<String, svm_node[][]> dummy = new HashMap<String, svm_node[][]>();
-		dummy.put(DEFAULT_FV, createTestProblem(testVectors));
+		Map<Kernel, svm_node[][]> dummy = new HashMap<Kernel, svm_node[][]>();
+		dummy.put(null, createTestProblem(testVectors));
 		return testSVMModel(model, dummy);
 	}
 
@@ -216,13 +219,13 @@ public class LibSVM {
 	 * @return An array of LibSVMPrediction's 
 	 */
 	public static Prediction[] testSVMModel(LibSVMModel model, double[][] kernel) {
-		Map<String, svm_node[][]> dummy = new HashMap<String, svm_node[][]>();
-		dummy.put(DEFAULT_KERNEL, createTestProblem(kernel));
+		Map<Kernel, svm_node[][]> dummy = new HashMap<Kernel, svm_node[][]>();
+		dummy.put(null, createTestProblem(kernel));
 		return testSVMModel(model, dummy);
 	}
 
 
-	private static Prediction[] testSVMModel(LibSVMModel model, Map<String, svm_node[][]> testNodesMap) {
+	private static Prediction[] testSVMModel(LibSVMModel model, Map<Kernel, svm_node[][]> testNodesMap) {
 		svm_node[][] testNodes = testNodesMap.get(model.getKernelSetting());
 		Prediction[] pred = new Prediction[testNodes.length];	
 		
@@ -243,13 +246,13 @@ public class LibSVM {
 	 * @param numberOfFolds
 	 * @return
 	 */
-	public static Prediction[] crossValidateWithMultipleFeatureVectors(Map<String,SparseVector[]> fvs, double[] target, LibSVMParameters params,  int numberOfFolds) {
+	public static Prediction[] crossValidateWithMultipleFeatureVectors(Map<Kernel,SparseVector[]> fvs, double[] target, LibSVMParameters params,  int numberOfFolds) {
 		Prediction[] pred = new Prediction[target.length];
 
 		for (int fold = 1; fold <= numberOfFolds; fold++) {
-			Map<String, SparseVector[]> trainFVs = new HashMap<String,SparseVector[]>();
-			Map<String, SparseVector[]> testFVs = new HashMap<String,SparseVector[]>();
-			for (String k : fvs.keySet()) {
+			Map<Kernel, SparseVector[]> trainFVs = new HashMap<Kernel,SparseVector[]>();
+			Map<Kernel, SparseVector[]> testFVs = new HashMap<Kernel,SparseVector[]>();
+			for (Kernel k : fvs.keySet()) {
 				trainFVs.put(k,  createFeatureVectorsTrainFold(fvs.get(k), numberOfFolds, fold));
 				testFVs.put(k, createFeatureVectorsTestFold(fvs.get(k), numberOfFolds, fold));
 			}
@@ -269,13 +272,13 @@ public class LibSVM {
 	 * @param numberOfFolds
 	 * @return
 	 */
-	public static Prediction[] crossValidateWithMultipleKernels(Map<String,double[][]> kernels, double[] target, LibSVMParameters params,  int numberOfFolds) {
+	public static Prediction[] crossValidateWithMultipleKernels(Map<Kernel,double[][]> kernels, double[] target, LibSVMParameters params,  int numberOfFolds) {
 		Prediction[] pred = new Prediction[target.length];
 
 		for (int fold = 1; fold <= numberOfFolds; fold++) {
-			Map<String, double[][]> trainKernels = new HashMap<String,double[][]>();
-			Map<String, double[][]> testKernels = new HashMap<String,double[][]>();
-			for (String k : kernels.keySet()) {
+			Map<Kernel, double[][]> trainKernels = new HashMap<Kernel,double[][]>();
+			Map<Kernel, double[][]> testKernels = new HashMap<Kernel,double[][]>();
+			for (Kernel k : kernels.keySet()) {
 				trainKernels.put(k,  createTrainFold(kernels.get(k), numberOfFolds, fold));
 				testKernels.put(k, createTestFold(kernels.get(k), numberOfFolds, fold));
 			}

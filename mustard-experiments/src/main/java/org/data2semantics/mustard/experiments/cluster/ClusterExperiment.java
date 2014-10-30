@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.data2semantics.mustard.experiments.data.AIFBDataSet;
@@ -39,23 +40,29 @@ public class ClusterExperiment {
 		ClassificationDataSet ds = parser.createDataSet();
 		Set<Statement> stmts = RDFUtils.getStatements4Depth(ds.getRDFData().getDataset(), ds.getRDFData().getInstances(), parser.getDepth(), parser.isInference());
 		stmts.removeAll(new HashSet<Statement>(ds.getRDFData().getBlackList()));
-		SingleDTGraph graph = RDFUtils.statements2Graph(stmts, RDFUtils.REGULAR_LITERALS, ds.getRDFData().getInstances(), true);
-		
+		SingleDTGraph graph = null;
+		graph = RDFUtils.statements2Graph(stmts, RDFUtils.REGULAR_LITERALS, ds.getRDFData().getInstances(), true);
+		if (parser.getNumHubs() > 0) {
+			List<DTNode<String,String>> hubs = RDFUtils.findSigDegreeHubs(stmts, ds.getRDFData().getInstances(), parser.getNumHubs());
+			Map<String, Integer> hubMap = RDFUtils.createHubMap(hubs, parser.getNumHubs());
+			graph = RDFUtils.removeHubs(graph, hubMap);
+		}
+
 		// Eval funcs
 		List<EvaluationFunction> evalFuncs = new ArrayList<EvaluationFunction>();
 		evalFuncs.add(new Accuracy());
 		evalFuncs.add(new F1());
 		double[] cs = {1,10,100,1000};
-		
+
 		List<Result> results = null;
-		
+
 		if (parser.getSubset() == 0) { // if we are not dealing with subsets, we do LibSVM
 			//Setup the SVM	
 			LibSVMParameters svmParms = new LibSVMParameters(LibSVMParameters.C_SVC, cs);
 			svmParms.setNumFolds(10);
 			long[] seeds = {11,21,31,41,51,61,71,81,91,101};
 
-		
+
 			List<? extends GraphKernel<SingleDTGraph>> kernels = parser.graphKernel();
 			SimpleGraphKernelExperiment<SingleDTGraph> exp = new SimpleGraphKernelExperiment<SingleDTGraph>(kernels, graph, ds.getTarget(), svmParms, seeds, evalFuncs);
 
@@ -76,8 +83,8 @@ public class ClusterExperiment {
 			exp.run();
 			results = exp.getResults();
 		}
-		
-		
+
+
 		try {
 			FileWriter fw = new FileWriter(parser.getSaveFileString()+ "_" + parser.getSubset() + ".result");
 

@@ -87,13 +87,13 @@ public class SimpleGraphFeaturesExperiment {
 
 
 
-		RDFDataSet tripleStore = new RDFFileDataSet(AIFB_FILE, RDFFormat.N3);
-		ClassificationDataSet ds = new AIFBDataSet(tripleStore);
-		ds.create();
-
-		//RDFDataSet tripleStore = new RDFFileDataSet("C:\\Users\\Gerben\\Dropbox\\data_bgs_ac_uk_ALL", RDFFormat.NTRIPLES);
-		//ClassificationDataSet ds = new BGSLithoDataSet(tripleStore);
+		//RDFDataSet tripleStore = new RDFFileDataSet(AIFB_FILE, RDFFormat.N3);
+		//ClassificationDataSet ds = new AIFBDataSet(tripleStore);
 		//ds.create();
+
+		RDFDataSet tripleStore = new RDFFileDataSet(BGS_FOLDER, RDFFormat.NTRIPLES);
+		ClassificationDataSet ds = new BGSLithoDataSet(tripleStore);
+		ds.create();
 
 		//createAffiliationPredictionDataSet();
 		//createGeoDataSet(1, 1, 10, "http://data.bgs.ac.uk/ref/Lexicon/hasLithogenesis");
@@ -130,7 +130,7 @@ public class SimpleGraphFeaturesExperiment {
 		int[] pathDepths = {0,1,2,3,4,5,6};
 		int[] iterationsWL = {0,1,2,3,4,5,6};
 
-		boolean depthTimesTwo = true;
+		boolean depthTimesTwo = false;
 
 
 
@@ -139,7 +139,7 @@ public class SimpleGraphFeaturesExperiment {
 
 		//computeGraphStatistics(tripleStore, ds, inference, depths);
 
-		/* The baseline experiment, BoW (or BoL if you prefer)
+		///* The baseline experiment, BoW (or BoL if you prefer)
 		for (boolean inf : inference) {
 			resTable.newRow("Baseline BoL: " + inf);		 
 			for (int d : depths) {
@@ -157,7 +157,7 @@ public class SimpleGraphFeaturesExperiment {
 		}
 		//*/
 
-		/* The baseline experiment, BoW (or BoL if you prefer) Tree variant
+		///* The baseline experiment, BoW (or BoL if you prefer) Tree variant
 		for (boolean inf : inference) {
 			resTable.newRow("Baseline BoL Tree: " + inf);		 
 			for (int d : depths) {
@@ -175,21 +175,14 @@ public class SimpleGraphFeaturesExperiment {
 		}
 		//*/
 
-		/* Path Count Root
+		///* Path Count Root
 		for (boolean inf : inference) {
 			resTable.newRow("Path Count through root: " + inf);		 
 			for (int d : depths) {
 
-				List<RDFRootPathCountKernel> kernels = new ArrayList<RDFRootPathCountKernel>();	
-
-				if (depthTimesTwo) {
-					kernels.add(new RDFRootPathCountKernel(d*2, d, true, inf, true));
-				} else {
-					for (int dd : iterationsWL) {
-						kernels.add(new RDFRootPathCountKernel(dd, d, true, inf, true));
-					}
-				}				
-
+				List<RDFRootWalkCountKernel> kernels = new ArrayList<RDFRootWalkCountKernel>();				
+				kernels.add(new RDFRootWalkCountKernel(d*2, inf, true));
+								
 				//Collections.shuffle(target);
 				SimpleGraphKernelExperiment<RDFData> exp = new SimpleGraphKernelExperiment<RDFData>(kernels, data, target, svmParms, seeds, evalFuncs);
 
@@ -202,20 +195,13 @@ public class SimpleGraphFeaturesExperiment {
 		}
 		//*/
 
-		/* WL Root
+		///* WL Root
 		for (boolean inf : inference) {
 			resTable.newRow("WL through root: " + inf);		 
 			for (int d : depths) {
 
-				List<RDFWLRootSubTreeKernel> kernels = new ArrayList<RDFWLRootSubTreeKernel>();	
-
-				if (depthTimesTwo) {
-					kernels.add(new RDFWLRootSubTreeKernel(d*2, d, inf, reverseWL, false, true));
-				} else {
-					for (int dd : iterationsWL) {
-						kernels.add(new RDFWLRootSubTreeKernel(dd, d, inf, reverseWL, false, true));
-					}
-				}
+				List<RDFRootWLSubTreeKernel> kernels = new ArrayList<RDFRootWLSubTreeKernel>();	
+				kernels.add(new RDFRootWLSubTreeKernel(d*2, inf, false, true));
 
 				//Collections.shuffle(target);
 				SimpleGraphKernelExperiment<RDFData> exp = new SimpleGraphKernelExperiment<RDFData>(kernels, data, target, svmParms, seeds, evalFuncs);
@@ -229,18 +215,18 @@ public class SimpleGraphFeaturesExperiment {
 		}
 		//*/
 
-		/* Path Count Tree
+		///* Path Count Tree
 		for (boolean inf : inference) {
 			resTable.newRow("Path Count Tree: " + inf);		 
 			for (int d : depths) {
 
-				List<RDFTreePathCountKernel> kernels = new ArrayList<RDFTreePathCountKernel>();	
+				List<RDFTreeWalkCountKernel> kernels = new ArrayList<RDFTreeWalkCountKernel>();	
 
 				if (depthTimesTwo) {
-					kernels.add(new RDFTreePathCountKernel(d*2, d, inf, true));
+					kernels.add(new RDFTreeWalkCountKernel(d*2, d, inf, true));
 				} else {
 					for (int dd : iterationsWL) {
-						kernels.add(new RDFTreePathCountKernel(dd, d, inf, true));
+						kernels.add(new RDFTreeWalkCountKernel(dd, d, inf, true));
 					}
 				}
 
@@ -256,7 +242,7 @@ public class SimpleGraphFeaturesExperiment {
 		}
 		//*/
 
-		/* WL Tree
+		///* WL Tree
 		for (boolean inf : inference) {
 			resTable.newRow("WL Tree: " + inf);		 
 			for (int d : depths) {
@@ -264,10 +250,10 @@ public class SimpleGraphFeaturesExperiment {
 				List<RDFTreeWLSubTreeKernel> kernels = new ArrayList<RDFTreeWLSubTreeKernel>();	
 
 				if (depthTimesTwo) {
-					kernels.add(new RDFTreeWLSubTreeKernel(d*2, d, inf, reverseWL, false, true));
+					kernels.add(new RDFTreeWLSubTreeKernel(d*2, d, inf, reverseWL, false, true, true));
 				} else {
 					for (int dd : iterationsWL) {
-						kernels.add(new RDFTreeWLSubTreeKernel(dd, d, inf, reverseWL, false, true));
+						kernels.add(new RDFTreeWLSubTreeKernel(dd, d, inf, reverseWL, false, true, true));
 					}
 				}
 
@@ -394,11 +380,11 @@ public class SimpleGraphFeaturesExperiment {
 				List<WLSubTreeKernel> kernels = new ArrayList<WLSubTreeKernel>();
 
 				if (depthTimesTwo) {
-					WLSubTreeKernel kernel = new WLSubTreeKernel(d*2, reverseWL, true);			
+					WLSubTreeKernel kernel = new WLSubTreeKernel(d*2, reverseWL, true, true);			
 					kernels.add(kernel);
 				} else {
 					for (int dd : iterationsWL) {
-						WLSubTreeKernel kernel = new WLSubTreeKernel(dd, reverseWL, true);			
+						WLSubTreeKernel kernel = new WLSubTreeKernel(dd, reverseWL, true, true);			
 						kernels.add(kernel);
 					}
 				}
@@ -471,7 +457,7 @@ public class SimpleGraphFeaturesExperiment {
 		resTable.addCompResults(resTable.getBestResults());
 		System.out.println(resTable);
 
-		/* Path Count full
+		///* Path Count full
 		for (boolean inf : inference) {
 			resTable.newRow("Path Count Full: " + inf);		
 			for (int d : depths) {
@@ -481,34 +467,34 @@ public class SimpleGraphFeaturesExperiment {
 				DTGraph<String,String> graph = RDFUtils.statements2Graph(st, RDFUtils.REGULAR_LITERALS);
 				List<DTNode<String,String>> instanceNodes = RDFUtils.findInstances(graph, ds.getRDFData().getInstances());
 				graph = RDFUtils.simplifyInstanceNodeLabels(graph, instanceNodes);
-				List<DTGraph<String,String>> graphs = RDFUtils.getSubGraphs(graph, instanceNodes, d);
+				GraphList<DTGraph<String,String>> graphs = RDFUtils.getSubGraphs(graph, instanceNodes, d);
 
 				double avgNodes = 0;
 				double avgLinks = 0;
 
-				for (DTGraph<String,String> g : graphs){
+				for (DTGraph<String,String> g : graphs.getGraphs()){
 					avgNodes += g.nodes().size();
 					avgLinks += g.links().size();
 				}
-				avgNodes /= graphs.size();
-				avgLinks /= graphs.size();
+				avgNodes /= graphs.numInstances();
+				avgLinks /= graphs.numInstances();
 
 				System.out.println("Avg # nodes: " + avgNodes + " , avg # links: " + avgLinks);
 
-				List<PathCountKernel> kernels = new ArrayList<PathCountKernel>();
+				List<WalkCountKernel> kernels = new ArrayList<WalkCountKernel>();
 
 				if (depthTimesTwo) {
-					PathCountKernel kernel = new PathCountKernel(d*2, true);			
+					WalkCountKernel kernel = new WalkCountKernel(d*2, true);			
 					kernels.add(kernel);
 				} else {
 					for (int dd : iterationsWL) {
-						PathCountKernel kernel = new PathCountKernel(dd, true);			
+						WalkCountKernel kernel = new WalkCountKernel(dd, true);			
 						kernels.add(kernel);
 					}
 				}
 
 				//resTable.newRow(kernels.get(0).getLabel() + "_" + inf);
-				SimpleGraphKernelExperiment<GraphList<DTGraph<String,String>>> exp2 = new SimpleGraphKernelExperiment<GraphList<DTGraph<String,String>>>(kernels, new GraphList<DTGraph<String,String>>(graphs), target, svmParms, seeds, evalFuncs);
+				SimpleGraphKernelExperiment<GraphList<DTGraph<String,String>>> exp2 = new SimpleGraphKernelExperiment<GraphList<DTGraph<String,String>>>(kernels, graphs, target, svmParms, seeds, evalFuncs);
 
 				//System.out.println(kernels.get(0).getLabel());
 				exp2.run();
