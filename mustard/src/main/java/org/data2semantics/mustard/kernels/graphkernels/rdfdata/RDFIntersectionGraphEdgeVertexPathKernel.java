@@ -46,12 +46,6 @@ public class RDFIntersectionGraphEdgeVertexPathKernel implements GraphKernel<RDF
 		this.normalize = normalize;
 		this.depth = depth;
 		this.inference = inference;
-
-		uri2int = new HashMap<Value, Integer>();
-		path2index = new HashMap<List<Integer>, Integer>();
-		index2path = new HashMap<Integer, List<Integer>>();
-		blackList = new HashSet<Statement>();
-		instances = new HashSet<Resource>();
 		this.pathLen = 2;
 
 		this.label = "IGP_" + depth + "_" + inference + "_" + normalize;
@@ -66,6 +60,12 @@ public class RDFIntersectionGraphEdgeVertexPathKernel implements GraphKernel<RDF
 	}
 
 	public SparseVector[] computeFeatureVectors(RDFData data) {
+		uri2int = new HashMap<Value, Integer>();
+		path2index = new HashMap<List<Integer>, Integer>();
+		index2path = new HashMap<Integer, List<Integer>>();
+		blackList = new HashSet<Statement>();
+		instances = new HashSet<Resource>();
+		
 		this.dataset = data.getDataset();	
 		this.blackList.addAll(data.getBlackList());
 		this.instances.addAll(data.getInstances());

@@ -28,6 +28,7 @@ import org.data2semantics.mustard.kernels.graphkernels.graphlist.WalkCountKernel
 import org.data2semantics.mustard.kernels.graphkernels.graphlist.PathCountKernelMkII;
 import org.data2semantics.mustard.kernels.graphkernels.graphlist.TreePathCountKernel;
 import org.data2semantics.mustard.kernels.graphkernels.graphlist.WLSubTreeKernel;
+import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFHubRemovalWrapperKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFWalkCountKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFIntersectionTreeEdgeVertexPathKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFRootWalkCountKernel;
@@ -35,7 +36,14 @@ import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFTreeWalkCountK
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFTreeWLSubTreeKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFRootWLSubTreeKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFWLSubTreeKernel;
+import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphGraphListWLSubTreeKernel;
+import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphGraphListWalkCountKernel;
+import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphRootWLSubTreeKernel;
+import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphRootWalkCountKernel;
+import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphTreeWLSubTreeKernel;
+import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphTreeWalkCountKernel;
 import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphWLSubTreeKernel;
+import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphWalkCountKernel;
 import org.data2semantics.mustard.learners.evaluation.Accuracy;
 import org.data2semantics.mustard.learners.evaluation.EvaluationFunction;
 import org.data2semantics.mustard.learners.evaluation.EvaluationUtils;
@@ -87,13 +95,13 @@ public class SimpleGraphFeaturesExperiment {
 
 
 
-		//RDFDataSet tripleStore = new RDFFileDataSet(AIFB_FILE, RDFFormat.N3);
-		//ClassificationDataSet ds = new AIFBDataSet(tripleStore);
-		//ds.create();
-
-		RDFDataSet tripleStore = new RDFFileDataSet(BGS_FOLDER, RDFFormat.NTRIPLES);
-		ClassificationDataSet ds = new BGSLithoDataSet(tripleStore);
+		RDFDataSet tripleStore = new RDFFileDataSet(AIFB_FILE, RDFFormat.N3);
+		ClassificationDataSet ds = new AIFBDataSet(tripleStore);
 		ds.create();
+
+		//RDFDataSet tripleStore = new RDFFileDataSet(BGS_FOLDER, RDFFormat.NTRIPLES);
+		//ClassificationDataSet ds = new BGSLithoDataSet(tripleStore);
+		//ds.create();
 
 		//createAffiliationPredictionDataSet();
 		//createGeoDataSet(1, 1, 10, "http://data.bgs.ac.uk/ref/Lexicon/hasLithogenesis");
@@ -124,14 +132,16 @@ public class SimpleGraphFeaturesExperiment {
 
 
 		boolean reverseWL = true; // WL should be in reverse mode, which means regular subtrees
-		boolean[] inference = {false,true};
+		boolean[] inference = {false, true};
 
-		int[] depths = {1,2,3};
+		int[] depths = {3};
 		int[] pathDepths = {0,1,2,3,4,5,6};
 		int[] iterationsWL = {0,1,2,3,4,5,6};
 
-		boolean depthTimesTwo = false;
+		boolean depthTimesTwo = true;
 
+		int minHubSize = 10;
+		int stepFactor = 5;
 
 
 		RDFData data = ds.getRDFData();
@@ -139,7 +149,7 @@ public class SimpleGraphFeaturesExperiment {
 
 		//computeGraphStatistics(tripleStore, ds, inference, depths);
 
-		///* The baseline experiment, BoW (or BoL if you prefer)
+		/* The baseline experiment, BoW (or BoL if you prefer)
 		for (boolean inf : inference) {
 			resTable.newRow("Baseline BoL: " + inf);		 
 			for (int d : depths) {
@@ -156,8 +166,26 @@ public class SimpleGraphFeaturesExperiment {
 			}
 		}
 		//*/
+		
+		/* The baseline experiment, BoW (or BoL if you prefer)
+		for (boolean inf : inference) {
+			resTable.newRow("Baseline BoL Hubs: " + inf);		 
+			for (int d : depths) {
+				List<RDFHubRemovalWrapperKernel<DTGraphWLSubTreeKernel>>kernelsBaseline = new ArrayList<RDFHubRemovalWrapperKernel<DTGraphWLSubTreeKernel>>();	
+				kernelsBaseline.add(new RDFHubRemovalWrapperKernel<DTGraphWLSubTreeKernel>(new DTGraphWLSubTreeKernel(0, d, reverseWL, false, true, true), d, inf, maxHubs, stepSize, true));
 
-		///* The baseline experiment, BoW (or BoL if you prefer) Tree variant
+				SimpleGraphKernelExperiment<RDFData> exp = new SimpleGraphKernelExperiment<RDFData>(kernelsBaseline, data, target, svmParms, seeds, evalFuncs);
+
+				exp.run();
+
+				for (Result res : exp.getResults()) {
+					resTable.addResult(res);
+				}
+			}
+		}
+		//*/
+
+		/* The baseline experiment, BoW (or BoL if you prefer) Tree variant
 		for (boolean inf : inference) {
 			resTable.newRow("Baseline BoL Tree: " + inf);		 
 			for (int d : depths) {
@@ -175,11 +203,28 @@ public class SimpleGraphFeaturesExperiment {
 		}
 		//*/
 
-		///* Path Count Root
+		///* The baseline experiment, BoW (or BoL if you prefer) Tree variant
+		for (boolean inf : inference) {
+			resTable.newRow("Baseline BoL Tree Hubs: " + inf);		 
+			for (int d : depths) {
+				List<RDFHubRemovalWrapperKernel<DTGraphTreeWLSubTreeKernel>>kernelsBaseline = new ArrayList<RDFHubRemovalWrapperKernel<DTGraphTreeWLSubTreeKernel>>();	
+				kernelsBaseline.add(new RDFHubRemovalWrapperKernel<DTGraphTreeWLSubTreeKernel>(new DTGraphTreeWLSubTreeKernel(0, d, reverseWL, false, true, true), d, inf, minHubSize, stepFactor, true));
+
+				SimpleGraphKernelExperiment<RDFData> exp = new SimpleGraphKernelExperiment<RDFData>(kernelsBaseline, data, target, svmParms, seeds, evalFuncs);
+
+				exp.run();
+
+				for (Result res : exp.getResults()) {
+					resTable.addResult(res);
+				}
+			}
+		}
+		//*/
+		
+		/* Path Count Root
 		for (boolean inf : inference) {
 			resTable.newRow("Path Count through root: " + inf);		 
 			for (int d : depths) {
-
 				List<RDFRootWalkCountKernel> kernels = new ArrayList<RDFRootWalkCountKernel>();				
 				kernels.add(new RDFRootWalkCountKernel(d*2, inf, true));
 								
@@ -194,8 +239,27 @@ public class SimpleGraphFeaturesExperiment {
 			}
 		}
 		//*/
+		
+		/* Path Count Root
+		for (boolean inf : inference) {
+			resTable.newRow("Path Count through root Hubs: " + inf);		 
+			for (int d : depths) {
+				List<RDFHubRemovalWrapperKernel<DTGraphRootWalkCountKernel>>kernels = new ArrayList<RDFHubRemovalWrapperKernel<DTGraphRootWalkCountKernel>>();	
+				kernels.add(new RDFHubRemovalWrapperKernel<DTGraphRootWalkCountKernel>(new DTGraphRootWalkCountKernel(d*2, true), d, inf, maxHubs, stepSize, true));
+						
+				//Collections.shuffle(target);
+				SimpleGraphKernelExperiment<RDFData> exp = new SimpleGraphKernelExperiment<RDFData>(kernels, data, target, svmParms, seeds, evalFuncs);
 
-		///* WL Root
+				exp.run();
+
+				for (Result res : exp.getResults()) {
+					resTable.addResult(res);
+				}
+			}
+		}
+		//*/
+
+		/* WL Root
 		for (boolean inf : inference) {
 			resTable.newRow("WL through root: " + inf);		 
 			for (int d : depths) {
@@ -214,8 +278,27 @@ public class SimpleGraphFeaturesExperiment {
 			}
 		}
 		//*/
+		
+		/* WL Root
+		for (boolean inf : inference) {
+			resTable.newRow("WL through root Hubs: " + inf);		 
+			for (int d : depths) {
+				List<RDFHubRemovalWrapperKernel<DTGraphRootWLSubTreeKernel>>kernels = new ArrayList<RDFHubRemovalWrapperKernel<DTGraphRootWLSubTreeKernel>>();	
+				kernels.add(new RDFHubRemovalWrapperKernel<DTGraphRootWLSubTreeKernel>(new DTGraphRootWLSubTreeKernel(d*2, true), d, inf, maxHubs, stepSize, true));
+	
+				//Collections.shuffle(target);
+				SimpleGraphKernelExperiment<RDFData> exp = new SimpleGraphKernelExperiment<RDFData>(kernels, data, target, svmParms, seeds, evalFuncs);
 
-		///* Path Count Tree
+				exp.run();
+
+				for (Result res : exp.getResults()) {
+					resTable.addResult(res);
+				}
+			}
+		}
+		//*/
+
+		/* Path Count Tree
 		for (boolean inf : inference) {
 			resTable.newRow("Path Count Tree: " + inf);		 
 			for (int d : depths) {
@@ -241,8 +324,34 @@ public class SimpleGraphFeaturesExperiment {
 			}
 		}
 		//*/
+		
+		///* Path Count Tree
+		for (boolean inf : inference) {
+			resTable.newRow("Path Count Tree Hubs: " + inf);		 
+			for (int d : depths) {
+				List<RDFHubRemovalWrapperKernel<DTGraphTreeWalkCountKernel>>kernels = new ArrayList<RDFHubRemovalWrapperKernel<DTGraphTreeWalkCountKernel>>();	
+		
+				if (depthTimesTwo) {
+					kernels.add(new RDFHubRemovalWrapperKernel<DTGraphTreeWalkCountKernel>(new DTGraphTreeWalkCountKernel(d*2, d, true), d, inf, minHubSize, stepFactor, true));
+				} else {
+					for (int dd : iterationsWL) {
+						kernels.add(new RDFHubRemovalWrapperKernel<DTGraphTreeWalkCountKernel>(new DTGraphTreeWalkCountKernel(dd, d, true), d, inf, minHubSize, stepFactor, true));
+					}
+				}
 
-		///* WL Tree
+				//Collections.shuffle(target);
+				SimpleGraphKernelExperiment<RDFData> exp = new SimpleGraphKernelExperiment<RDFData>(kernels, data, target, svmParms, seeds, evalFuncs);
+
+				exp.run();
+
+				for (Result res : exp.getResults()) {
+					resTable.addResult(res);
+				}
+			}
+		}
+		//*/
+
+		/* WL Tree
 		for (boolean inf : inference) {
 			resTable.newRow("WL Tree: " + inf);		 
 			for (int d : depths) {
@@ -258,6 +367,31 @@ public class SimpleGraphFeaturesExperiment {
 				}
 
 				//Collections.shuffle(target);
+				SimpleGraphKernelExperiment<RDFData> exp = new SimpleGraphKernelExperiment<RDFData>(kernels, data, target, svmParms, seeds, evalFuncs);
+
+				exp.run();
+
+				for (Result res : exp.getResults()) {
+					resTable.addResult(res);
+				}
+			}
+		}
+		//*/
+		
+		///* WL Tree
+		for (boolean inf : inference) {
+			resTable.newRow("WL Tree Hubs: " + inf);		 
+			for (int d : depths) {
+
+				List<RDFHubRemovalWrapperKernel<DTGraphTreeWLSubTreeKernel>>kernels = new ArrayList<RDFHubRemovalWrapperKernel<DTGraphTreeWLSubTreeKernel>>();	
+				
+				if (depthTimesTwo) {
+					kernels.add(new RDFHubRemovalWrapperKernel<DTGraphTreeWLSubTreeKernel>(new DTGraphTreeWLSubTreeKernel(d*2, d, true, false, true, true), d, inf, minHubSize, stepFactor, true));
+				} else {
+					for (int dd : iterationsWL) {
+						kernels.add(new RDFHubRemovalWrapperKernel<DTGraphTreeWLSubTreeKernel>(new DTGraphTreeWLSubTreeKernel(dd, d, true, false, true, true), d, inf, minHubSize, stepFactor, true));
+					}
+				}
 				SimpleGraphKernelExperiment<RDFData> exp = new SimpleGraphKernelExperiment<RDFData>(kernels, data, target, svmParms, seeds, evalFuncs);
 
 				exp.run();
@@ -297,6 +431,32 @@ public class SimpleGraphFeaturesExperiment {
 			}
 		}
 		//*/
+		
+		/* RDF Path Count 
+		for (boolean inf : inference) {
+			resTable.newRow("RDF Path Count hubs: " + inf);		 
+			for (int d : depths) {
+
+				List<RDFHubRemovalWrapperKernel<DTGraphWalkCountKernel>>kernels = new ArrayList<RDFHubRemovalWrapperKernel<DTGraphWalkCountKernel>>();	
+				
+				if (depthTimesTwo) {
+					kernels.add(new RDFHubRemovalWrapperKernel<DTGraphWalkCountKernel>(new DTGraphWalkCountKernel(d*2, d, true), d, inf, maxHubs, stepSize, true));
+				} else {
+					for (int dd : iterationsWL) {
+						kernels.add(new RDFHubRemovalWrapperKernel<DTGraphWalkCountKernel>(new DTGraphWalkCountKernel(dd, d, true), d, inf, maxHubs, stepSize, true));
+					}
+				}
+
+				SimpleGraphKernelExperiment<RDFData> exp = new SimpleGraphKernelExperiment<RDFData>(kernels, data, target, svmParms, seeds, evalFuncs);
+
+				exp.run();
+
+				for (Result res : exp.getResults()) {
+					resTable.addResult(res);
+				}
+			}
+		}
+		//*/
 
 		/* RDF WL 
 		for (boolean inf : inference) {
@@ -324,19 +484,45 @@ public class SimpleGraphFeaturesExperiment {
 			}
 		}
 		//*/
-
-		/* RDF WL 
+		
+		///* RDF WL 
 		for (boolean inf : inference) {
-			resTable.newRow("RDF WL: " + inf);		 
+			resTable.newRow("RDF WL Hubs: " + inf);		 
 			for (int d : depths) {
-
-				List<RDFWLSubTreeKernel> kernels = new ArrayList<RDFWLSubTreeKernel>();	
-
+				
+				List<RDFHubRemovalWrapperKernel<DTGraphWLSubTreeKernel>>kernels = new ArrayList<RDFHubRemovalWrapperKernel<DTGraphWLSubTreeKernel>>();	
+				
 				if (depthTimesTwo) {
-					kernels.add(new RDFWLSubTreeKernel(d*2, d, inf, false, false, true));
+					kernels.add(new RDFHubRemovalWrapperKernel<DTGraphWLSubTreeKernel>(new DTGraphWLSubTreeKernel(d*2, d, true, false, true, true), d, inf, minHubSize, stepFactor, true));
 				} else {
 					for (int dd : iterationsWL) {
-						kernels.add(new RDFWLSubTreeKernel(dd, d, inf, false, false, true));
+						kernels.add(new RDFHubRemovalWrapperKernel<DTGraphWLSubTreeKernel>(new DTGraphWLSubTreeKernel(dd, d, true, false, true, true), d, inf, minHubSize, stepFactor, true));
+					}
+				}
+
+				SimpleGraphKernelExperiment<RDFData> exp = new SimpleGraphKernelExperiment<RDFData>(kernels, data, target, svmParms, seeds, evalFuncs);
+
+				exp.run();
+
+				for (Result res : exp.getResults()) {
+					resTable.addResult(res);
+				}
+			}
+		}
+		//*/
+
+		///* WL with HubRemoval
+		for (boolean inf : inference) {
+			resTable.newRow("WL Hubs: " + inf);		 
+			for (int d : depths) {
+
+				List<RDFHubRemovalWrapperKernel<DTGraphGraphListWLSubTreeKernel>> kernels = new ArrayList<RDFHubRemovalWrapperKernel<DTGraphGraphListWLSubTreeKernel>>();	
+
+				if (depthTimesTwo) {
+					kernels.add(new RDFHubRemovalWrapperKernel<DTGraphGraphListWLSubTreeKernel>(new DTGraphGraphListWLSubTreeKernel(d*2, d, reverseWL, true, true), d, inf, minHubSize, stepFactor, true));
+				} else {
+					for (int dd : iterationsWL) {
+						kernels.add(new RDFHubRemovalWrapperKernel<DTGraphGraphListWLSubTreeKernel>(new DTGraphGraphListWLSubTreeKernel(dd, d, reverseWL, true, true), d, inf, minHubSize, stepFactor, true));
 					}
 				}
 
@@ -353,7 +539,7 @@ public class SimpleGraphFeaturesExperiment {
 		//*/
 
 
-		///* Regular WL
+		/* Regular WL
 		for (boolean inf : inference) {
 			resTable.newRow("Regular WL: " + inf);		
 			for (int d : depths) {
@@ -403,61 +589,38 @@ public class SimpleGraphFeaturesExperiment {
 		}
 		//*/
 
-		/* Regular WL
-				for (boolean inf : inference) {
-					resTable.newRow("Regular WL: " + inf);		
-					for (int d : depths) {
-
-						Set<Statement> st = RDFUtils.getStatements4Depth(tripleStore, ds.getRDFData().getInstances(), d, inf);
-						st.removeAll(ds.getRDFData().getBlackList());
-						DTGraph<String,String> graph = RDFUtils.statements2Graph(st, RDFUtils.REGULAR_LITERALS);
-						List<DTNode<String,String>> instanceNodes = RDFUtils.findInstances(graph, ds.getRDFData().getInstances());
-						graph = RDFUtils.simplifyInstanceNodeLabels(graph, instanceNodes);
-						List<DTGraph<String,String>> graphs = RDFUtils.getSubGraphs(graph, instanceNodes, d);
-
-						double avgNodes = 0;
-						double avgLinks = 0;
-
-						for (DTGraph<String,String> g : graphs){
-							avgNodes += g.nodes().size();
-							avgLinks += g.links().size();
-						}
-						avgNodes /= graphs.size();
-						avgLinks /= graphs.size();
-
-						System.out.println("Avg # nodes: " + avgNodes + " , avg # links: " + avgLinks);
-
-						List<WLSubTreeKernel> kernels = new ArrayList<WLSubTreeKernel>();
-
-						if (depthTimesTwo) {
-							WLSubTreeKernel kernel = new WLSubTreeKernel(d*2, false, true);			
-							kernels.add(kernel);
-						} else {
-							for (int dd : iterationsWL) {
-								WLSubTreeKernel kernel = new WLSubTreeKernel(dd, false, true);			
-								kernels.add(kernel);
-							}
-						}
-
-						//resTable.newRow(kernels.get(0).getLabel() + "_" + inf);
-						SimpleGraphKernelExperiment<GraphList<DTGraph<String,String>>> exp2 = new SimpleGraphKernelExperiment<GraphList<DTGraph<String,String>>>(kernels, new GraphList<DTGraph<String,String>>(graphs), target, svmParms, seeds, evalFuncs);
-
-						//System.out.println(kernels.get(0).getLabel());
-						exp2.run();
-
-						for (Result res : exp2.getResults()) {
-							resTable.addResult(res);
-						}
-						System.out.println(resTable);
-					}
-				}
-				//*/
-
-
 		resTable.addCompResults(resTable.getBestResults());
 		System.out.println(resTable);
 
-		///* Path Count full
+		/* Walk Count full with HubRemoval
+		for (boolean inf : inference) {
+			resTable.newRow("Walk Count full Hubs: " + inf);		 
+			for (int d : depths) {
+
+				List<RDFHubRemovalWrapperKernel<DTGraphGraphListWalkCountKernel>> kernels = new ArrayList<RDFHubRemovalWrapperKernel<DTGraphGraphListWalkCountKernel>>();	
+
+				if (depthTimesTwo) {
+					kernels.add(new RDFHubRemovalWrapperKernel<DTGraphGraphListWalkCountKernel>(new DTGraphGraphListWalkCountKernel(d*2, d, true), d, inf, maxHubs, stepSize, true));
+				} else {
+					for (int dd : iterationsWL) {
+						kernels.add(new RDFHubRemovalWrapperKernel<DTGraphGraphListWalkCountKernel>(new DTGraphGraphListWalkCountKernel(dd, d, true), d, inf, maxHubs, stepSize, true));
+					}
+				}
+
+				//Collections.shuffle(target);
+				SimpleGraphKernelExperiment<RDFData> exp = new SimpleGraphKernelExperiment<RDFData>(kernels, data, target, svmParms, seeds, evalFuncs);
+
+				exp.run();
+
+				for (Result res : exp.getResults()) {
+					resTable.addResult(res);
+				}
+			}
+		}
+		//*/
+		
+		
+		/* Path Count full
 		for (boolean inf : inference) {
 			resTable.newRow("Path Count Full: " + inf);		
 			for (int d : depths) {

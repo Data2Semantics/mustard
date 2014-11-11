@@ -17,7 +17,6 @@ import org.data2semantics.mustard.kernels.graphkernels.graphlist.WalkCountKernel
 import org.data2semantics.mustard.kernels.graphkernels.graphlist.PathCountKernelMkII;
 import org.data2semantics.mustard.kernels.graphkernels.graphlist.WLSubTreeKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFIntersectionTreeEdgeVertexPathKernel;
-import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFWLSubTreeHubRemovalKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFWLSubTreeKernel;
 import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphWLSubTreeKernel;
 import org.data2semantics.mustard.learners.evaluation.Accuracy;
@@ -29,6 +28,7 @@ import org.data2semantics.mustard.rdf.DataSetUtils;
 import org.data2semantics.mustard.rdf.RDFDataSet;
 import org.data2semantics.mustard.rdf.RDFFileDataSet;
 import org.data2semantics.mustard.rdf.RDFUtils;
+import org.data2semantics.mustard.util.HubUtils;
 import org.nodes.DTGraph;
 import org.nodes.DTNode;
 import org.openrdf.model.Resource;
@@ -65,7 +65,7 @@ public class AffiliationPredictionTestExperiment {
 		int maxHubs = 100;
 		List<Statement> all = dataset.getFullGraph();
 		all.removeAll(blackList);
-		List<DTNode<String,String>> hubs = RDFUtils.findSigDegreeHubs(new HashSet<Statement>(all), instances, maxHubs);	
+		List<DTNode<String,String>> hubs = HubUtils.findSigDegreeHubs(new HashSet<Statement>(all), instances, maxHubs);	
 		// ---
 
 

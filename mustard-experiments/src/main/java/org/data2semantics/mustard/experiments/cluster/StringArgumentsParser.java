@@ -11,6 +11,8 @@ import org.data2semantics.mustard.kernels.graphkernels.FeatureVectorKernel;
 import org.data2semantics.mustard.kernels.graphkernels.GraphKernel;
 import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphGraphListWLSubTreeKernel;
 import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphGraphListWalkCountKernel;
+import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphHubRemovalWrapperFeatureVectorKernel;
+import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphHubRemovalWrapperKernel;
 import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphRootWLSubTreeKernel;
 import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphRootWalkCountKernel;
 import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphTreeWalkCountKernel;
@@ -29,12 +31,14 @@ public class StringArgumentsParser {
 	private int depth;
 	private int subset;
 	private boolean inference;
-	private int numHubs;
+	private int minHubCount;
+	private int hubStepFactor;
 
 	public StringArgumentsParser(String[] args) {
 		kernelParms = new String[9];
 		subset = 0;
-		numHubs = 0;
+		minHubCount = 0;
+		hubStepFactor = 1;
 		
 		for (int i = 0; i < args.length; i++) {
 			if (args[i].equals("-file")) {
@@ -59,13 +63,30 @@ public class StringArgumentsParser {
 			if (args[i].equals("-inference")) {
 				inference = Boolean.parseBoolean(args[++i]);
 			}
-			if (args[i].equals("-numHubs")) {
-				numHubs = Integer.parseInt(args[++i]);
+			if (args[i].equals("-minHubs")) {
+				minHubCount = Integer.parseInt(args[++i]);
+			}
+			if (args[i].equals("-stepFactor")) {
+				hubStepFactor = Integer.parseInt(args[++i]);
 			}
 		}
 	}
 	
 	public List<? extends GraphKernel<SingleDTGraph>> graphKernel() {
+		if (minHubCount == 0) {
+			return graphKernelProxy();
+		} else {
+			List<? extends GraphKernel<SingleDTGraph>> kernels = graphKernelProxy();
+			List<DTGraphHubRemovalWrapperKernel<GraphKernel<SingleDTGraph>>> kernels2 = new ArrayList<DTGraphHubRemovalWrapperKernel<GraphKernel<SingleDTGraph>>>(kernels.size());
+			
+			for (GraphKernel<SingleDTGraph> kernel : kernels) {
+				kernels2.add(new DTGraphHubRemovalWrapperKernel<GraphKernel<SingleDTGraph>>(kernel, minHubCount, hubStepFactor, true));
+			}
+			return kernels2;
+		}
+	}
+	
+	public List<? extends GraphKernel<SingleDTGraph>> graphKernelProxy() {
 		if (kernel.equals("GraphBoL")) {
 			return graphBagOfLabels(kernelParms);
 		}
@@ -100,6 +121,20 @@ public class StringArgumentsParser {
 	}
 
 	public List<? extends FeatureVectorKernel<SingleDTGraph>> graphFeatureVectorKernel() {
+		if (minHubCount == 0) {
+			return graphFeatureVectorKernelProxy();
+		} else {
+			List<? extends FeatureVectorKernel<SingleDTGraph>> kernels = graphFeatureVectorKernelProxy();
+			List<DTGraphHubRemovalWrapperFeatureVectorKernel<FeatureVectorKernel<SingleDTGraph>>> kernels2 = new ArrayList<DTGraphHubRemovalWrapperFeatureVectorKernel<FeatureVectorKernel<SingleDTGraph>>>(kernels.size());
+			
+			for (FeatureVectorKernel<SingleDTGraph> kernel : kernels) {
+				kernels2.add(new DTGraphHubRemovalWrapperFeatureVectorKernel<FeatureVectorKernel<SingleDTGraph>>(kernel, minHubCount, hubStepFactor, true));
+			}
+			return kernels2;
+		}
+	}
+	
+	public List<? extends FeatureVectorKernel<SingleDTGraph>> graphFeatureVectorKernelProxy() {
 		if (kernel.equals("GraphBoL")) {
 			return graphBagOfLabels(kernelParms);
 		}
@@ -165,7 +200,9 @@ public class StringArgumentsParser {
 			}
 		}
 		sb.append("_");
-		sb.append(numHubs);
+		sb.append(minHubCount);
+		sb.append("_");
+		sb.append(hubStepFactor);
 		sb.append("_");
 		sb.append(depth);
 		sb.append("_");
@@ -189,10 +226,6 @@ public class StringArgumentsParser {
 
 	public String getDataFile() {
 		return dataFile;
-	}
-
-	public int getNumHubs() {
-		return numHubs;
 	}
 	
 

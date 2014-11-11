@@ -46,11 +46,6 @@ public class DTGraphWalkCountKernel implements GraphKernel<SingleDTGraph>, Featu
 	public DTGraphWalkCountKernel(int pathLength, int depth, boolean normalize) {
 		this.normalize = normalize;
 		this.label = "RDF_DT_Graph_PathCount_Kernel_" + pathLength + "_" + depth + "_" + normalize;
-
-		instanceVertices = new ArrayList<DTNode<PathStringMapLabel,PathStringMapLabel>>();
-		this.instanceVertexIndexMap = new HashMap<DTNode<PathStringMapLabel,PathStringMapLabel>, Map<DTNode<PathStringMapLabel,PathStringMapLabel>, Integer>>();
-		this.instanceEdgeIndexMap = new HashMap<DTNode<PathStringMapLabel,PathStringMapLabel>, Map<DTLink<PathStringMapLabel,PathStringMapLabel>, Integer>>();
-
 		this.depth = depth;
 		this.pathLength = pathLength;
 	}
@@ -69,6 +64,10 @@ public class DTGraphWalkCountKernel implements GraphKernel<SingleDTGraph>, Featu
 
 
 	public SparseVector[] computeFeatureVectors(SingleDTGraph data) {
+		instanceVertices = new ArrayList<DTNode<PathStringMapLabel,PathStringMapLabel>>();
+		this.instanceVertexIndexMap = new HashMap<DTNode<PathStringMapLabel,PathStringMapLabel>, Map<DTNode<PathStringMapLabel,PathStringMapLabel>, Integer>>();
+		this.instanceEdgeIndexMap = new HashMap<DTNode<PathStringMapLabel,PathStringMapLabel>, Map<DTLink<PathStringMapLabel,PathStringMapLabel>, Integer>>();
+		
 		pathDict  = new HashMap<String, Integer>();
 		labelDict = new HashMap<String, Integer>();
 		init(data.getGraph(), data.getInstances());

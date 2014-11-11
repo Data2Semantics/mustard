@@ -1,6 +1,7 @@
 package org.data2semantics.mustard.rdf;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -123,98 +124,7 @@ public class RDFUtils {
 	}
 
 
-	public static List<DTNode<String,String>> findSigDegreeHubs(Set<Statement> stmts, List<Resource> instances, int maxHubs) {
-		DTGraph<String,String> graph = RDFUtils.statements2Graph(stmts, RDFUtils.REGULAR_LITERALS);
-
-		Comparator<DTNode<String,String>> compSigDeg = new SlashBurn.SignatureComparator<String,String>();
-		MaxObserver<DTNode<String,String>> obsSigDeg = new MaxObserver<DTNode<String,String>>(maxHubs + instances.size(), compSigDeg);				
-		obsSigDeg.observe(graph.nodes());
-		List<DTNode<String,String>> sigDegreeHubs = new ArrayList<DTNode<String,String>>(obsSigDeg.elements());
-
-		// Remove hubs from list that are root nodes
-		List<DTNode<String,String>> rn = new ArrayList<DTNode<String,String>>();
-		Set<String> is = new HashSet<String>();
-		for (Resource r : instances) {
-			is.add(r.toString());
-		}
-		for (DTNode<String,String> n : graph.nodes()) {
-			if (is.contains(n.label())) {
-				rn.add(n);
-			}
-		}
-		sigDegreeHubs.removeAll(rn);
-		return sigDegreeHubs;
-	}
-
-	public static Map<String, Integer> createHubMap(List<DTNode<String,String>> hubs, int maxHubs) {
-		Map<String,Integer> hubMap = new HashMap<String,Integer>();		
-		for (int i = 0; i < hubs.size() && i < maxHubs; i++) {
-			org.nodes.util.Pair<Dir,String> sig = SlashBurn.primeSignature(hubs.get(i));
-
-			if (sig.first() == Dir.IN) {
-				hubMap.put(sig.second() + hubs.get(i).label(), i);	
-			} else {
-				hubMap.put(hubs.get(i).label() + sig.second(), i);
-			}	
-		}
-		return hubMap;
-	}
-
-	public static SingleDTGraph removeHubs(SingleDTGraph oldGraph, Map<String, Integer> hubMap) {
-		DTGraph<String,String> graph = new LightDTGraph<String,String>();
-		List<DTNode<String,String>> newInstanceNodes = new ArrayList<DTNode<String,String>>();
-		Set<DTLink<String,String>> toRemoveLinks = new HashSet<DTLink<String,String>>();
-
-		Map<DTNode<String,String>,Integer> iNodeMap = new HashMap<DTNode<String,String>,Integer>();	
-		for (int i = 0; i < oldGraph.getInstances().size(); i++) {
-			iNodeMap.put(oldGraph.getInstances().get(i), i);
-			newInstanceNodes.add(null);
-		}	
-
-		for (DTNode<String,String> node : oldGraph.getGraph().nodes()) {
-			String newLabel = null;
-			int lowestDepth = 0;
-			DTLink<String,String> remLink = null;
-			for (DTLink<String,String> inLink : node.linksIn()) {
-				String rel = inLink.from().label() + inLink.tag();
-				if (hubMap.containsKey(rel) && hubMap.get(rel) >= lowestDepth) {
-					newLabel = rel;
-					lowestDepth = hubMap.get(rel);
-					remLink = inLink;
-				}
-			}
-			for (DTLink<String,String> outLink : node.linksOut()) {
-				String rel = outLink.tag() + outLink.to().label();
-				if (hubMap.containsKey(rel) && hubMap.get(rel) >= lowestDepth) {
-					newLabel = rel;
-					lowestDepth = hubMap.get(rel);
-					remLink = outLink;
-				}
-			}
-			if (newLabel == null) {
-				newLabel = node.label();
-			}
-			DTNode<String,String> newN = graph.add(newLabel);
-			if (iNodeMap.containsKey(node)) { // We also need to replace the instance nodes with new instance nodes in the simplified graph
-				newInstanceNodes.set(iNodeMap.get(node), newN);
-			}
-
-			if (remLink != null ) {
-				toRemoveLinks.add(remLink);
-			}
-		}
-
-		for(DTLink<String,String> link : oldGraph.getGraph().links()) {
-			int a = link.from().index();
-			int b = link.to().index();
-
-			if (!toRemoveLinks.contains(link)) {
-				graph.nodes().get(a).connect(graph.nodes().get(b), link.tag());
-			}
-		}
-		return new SingleDTGraph(graph, newInstanceNodes);
-	}
-
+	
 
 	/**
 	 * find the instance nodes in a graph based on the list of instance Resource's

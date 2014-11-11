@@ -42,12 +42,7 @@ public class DTGraphRootWLSubTreeKernel implements GraphKernel<SingleDTGraph>, F
 
 
 	public DTGraphRootWLSubTreeKernel(int iterations, boolean iterationWeighting, boolean normalize) {
-		this.iterationWeighting = iterationWeighting;
-				
-		instanceVertices = new ArrayList<DTNode<MapLabel,MapLabel>>();
-		this.instanceVertexIndexMap = new HashMap<DTNode<MapLabel,MapLabel>, Map<DTNode<MapLabel,MapLabel>, Integer>>();
-		this.instanceEdgeIndexMap = new HashMap<DTNode<MapLabel,MapLabel>, Map<DTLink<MapLabel,MapLabel>, Integer>>();
-
+		this.iterationWeighting = iterationWeighting;			
 		this.depth = (int) Math.round(iterations / 2.0);
 		this.iterations = iterations;
 		this.label = "RDF_DT_Graph_WL_Root_Kernel_" + iterations + "_" + iterationWeighting + "_" + normalize;
@@ -71,6 +66,10 @@ public class DTGraphRootWLSubTreeKernel implements GraphKernel<SingleDTGraph>, F
 	}
 
 	public SparseVector[] computeFeatureVectors(SingleDTGraph data) {
+		instanceVertices = new ArrayList<DTNode<MapLabel,MapLabel>>();
+		this.instanceVertexIndexMap = new HashMap<DTNode<MapLabel,MapLabel>, Map<DTNode<MapLabel,MapLabel>, Integer>>();
+		this.instanceEdgeIndexMap = new HashMap<DTNode<MapLabel,MapLabel>, Map<DTLink<MapLabel,MapLabel>, Integer>>();		
+		
 		SparseVector[] featureVectors = new SparseVector[data.getInstances().size()];
 		for (int i = 0; i < featureVectors.length; i++) {
 			featureVectors[i] = new SparseVector();

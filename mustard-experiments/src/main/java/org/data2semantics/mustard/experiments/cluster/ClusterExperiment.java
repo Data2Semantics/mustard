@@ -26,6 +26,8 @@ import org.data2semantics.mustard.learners.libsvm.LibSVMParameters;
 import org.data2semantics.mustard.rdf.RDFDataSet;
 import org.data2semantics.mustard.rdf.RDFFileDataSet;
 import org.data2semantics.mustard.rdf.RDFUtils;
+import org.data2semantics.mustard.util.LabelTagPair;
+import org.data2semantics.mustard.util.HubUtils;
 import org.nodes.DTGraph;
 import org.nodes.DTNode;
 import org.openrdf.model.Statement;
@@ -42,11 +44,6 @@ public class ClusterExperiment {
 		stmts.removeAll(new HashSet<Statement>(ds.getRDFData().getBlackList()));
 		SingleDTGraph graph = null;
 		graph = RDFUtils.statements2Graph(stmts, RDFUtils.REGULAR_LITERALS, ds.getRDFData().getInstances(), true);
-		if (parser.getNumHubs() > 0) {
-			List<DTNode<String,String>> hubs = RDFUtils.findSigDegreeHubs(stmts, ds.getRDFData().getInstances(), parser.getNumHubs());
-			Map<String, Integer> hubMap = RDFUtils.createHubMap(hubs, parser.getNumHubs());
-			graph = RDFUtils.removeHubs(graph, hubMap);
-		}
 
 		// Eval funcs
 		List<EvaluationFunction> evalFuncs = new ArrayList<EvaluationFunction>();

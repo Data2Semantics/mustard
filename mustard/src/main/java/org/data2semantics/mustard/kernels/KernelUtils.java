@@ -86,6 +86,23 @@ public class KernelUtils {
 		}
 		return featureVectors;	
 	}
+	/**
+	 * Sum two kernel matrices
+	 * 
+	 * @param kernel1
+	 * @param kernel2
+	 * @return
+	 */
+	public static double[][] sum(double[][] kernel1, double[][] kernel2) {
+		double[][] kernel = new double[kernel1.length][kernel1.length];
+				
+		for (int i = 0; i < kernel1.length; i++) {
+			for (int j = i; j < kernel1[i].length; j++) {
+				kernel[i][j] = kernel1[i][j] + kernel2[i][j];
+			}
+		}
+		return kernel;
+	}
 	
 	/**
 	 * Normalize a kernel matrix.

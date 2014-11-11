@@ -8,6 +8,7 @@ import org.data2semantics.mustard.kernels.data.RDFData;
 import org.data2semantics.mustard.kernels.data.SingleDTGraph;
 import org.data2semantics.mustard.kernels.graphkernels.FeatureVectorKernel;
 import org.data2semantics.mustard.kernels.graphkernels.GraphKernel;
+import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphHubRemovalWrapperFeatureVectorKernel;
 import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphWLSubTreeKernel;
 import org.data2semantics.mustard.learners.SparseVector;
 import org.data2semantics.mustard.rdf.RDFDataSet;
@@ -17,27 +18,19 @@ import org.nodes.DTNode;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 
-public class RDFWLSubTreeHubRemovalKernel implements GraphKernel<RDFData>, FeatureVectorKernel<RDFData> {
+public class RDFHubRemovalWrapperKernel<K extends GraphKernel<SingleDTGraph> & FeatureVectorKernel<SingleDTGraph>> implements GraphKernel<RDFData>, FeatureVectorKernel<RDFData> {
 	private int depth;
 	private String label;
 	private boolean inference;
-	private Map<String, Integer> hubMap;
-	private DTGraphWLSubTreeKernel kernel;
+	private DTGraphHubRemovalWrapperFeatureVectorKernel<K> kernel2;
 	private SingleDTGraph graph;
-	private List<DTNode<String,String>> instanceNodes;
 
-	public RDFWLSubTreeHubRemovalKernel(int iterations, int depth, boolean inference, Map<String, Integer> hubMap, boolean normalize) {
-		this(iterations, depth, inference, hubMap, false, false, normalize);
-	}
-
-	public RDFWLSubTreeHubRemovalKernel(int iterations, int depth, boolean inference, Map<String, Integer> hubMap, boolean reverse, boolean iterationWeighting, boolean normalize) {
+	public RDFHubRemovalWrapperKernel(K kernel, int depth, boolean inference, int maxHubs, int stepSize, boolean normalize) {
 		super();
-		this.label = "RDF_WL_HubRemoval_Kernel_" + depth + "_" + iterations + "_" + inference + "_" + hubMap.size() + "_" + reverse + "_" + iterationWeighting + "_" + normalize;
 		this.depth = depth;
 		this.inference = inference;
-		this.hubMap = hubMap;
-
-		kernel = new DTGraphWLSubTreeKernel(iterations, depth, reverse, iterationWeighting, normalize);
+		this.label = "RDF_HubRemoval_Wrapper_Kernel_" + kernel.getLabel() + "_" + depth + "_" + inference + "_" + maxHubs + "_" + stepSize + "_" + normalize;
+		kernel2 = new DTGraphHubRemovalWrapperFeatureVectorKernel<K>(kernel, maxHubs, stepSize, normalize);
 	}
 
 	public String getLabel() {
@@ -45,23 +38,22 @@ public class RDFWLSubTreeHubRemovalKernel implements GraphKernel<RDFData>, Featu
 	}
 
 	public void setNormalize(boolean normalize) {
-		kernel.setNormalize(normalize);
+		kernel2.setNormalize(normalize);
 	}
 
 	public SparseVector[] computeFeatureVectors(RDFData data) {
 		init(data.getDataset(), data.getInstances(), data.getBlackList());
-		return kernel.computeFeatureVectors(graph);
+		return kernel2.computeFeatureVectors(graph);
 	}
 
 	public double[][] compute(RDFData data) {
 		init(data.getDataset(), data.getInstances(), data.getBlackList());
-		return kernel.compute(graph);
+		return kernel2.compute(graph);
 	}
 
 	private void init(RDFDataSet dataset, List<Resource> instances, List<Statement> blackList) {
 		Set<Statement> stmts = RDFUtils.getStatements4Depth(dataset, instances, depth, inference);
 		stmts.removeAll(blackList);
-		graph = RDFUtils.statements2Graph(stmts, RDFUtils.REGULAR_LITERALS, instances, false);
-		graph = RDFUtils.removeHubs(graph, hubMap);	
+		graph = RDFUtils.statements2Graph(stmts, RDFUtils.REGULAR_LITERALS, instances, true);
 	}
 }
