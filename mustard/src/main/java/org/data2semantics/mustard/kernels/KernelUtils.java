@@ -1,5 +1,6 @@
 package org.data2semantics.mustard.kernels;
 
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Random;
@@ -15,7 +16,7 @@ import org.data2semantics.mustard.learners.SparseVector;
  */
 public class KernelUtils {
 	public static final String ROOTID = "ROOT1337"; // Special root label used in some kernels
-	
+
 	/**
 	 * Shuffle a kernel matrix with seed to initialize the Random object
 	 * 
@@ -31,7 +32,7 @@ public class KernelUtils {
 		Collections.shuffle(Arrays.asList(kernelDouble), new Random(seed));
 		return convert2DoublePrimitives(kernelDouble);
 	}
-	
+
 	/**
 	 * Convert an array of SparseVectors to a kernel matrix, by computing the dot product of all the SparseVectors
 	 * 
@@ -40,7 +41,7 @@ public class KernelUtils {
 	 */
 	public static double[][] featureVectors2Kernel(SparseVector[] featureVectors) {
 		double[][] kernel = initMatrix(featureVectors.length, featureVectors.length);
-	
+
 		for (int i = 0; i < featureVectors.length; i++) {
 			for (int j = i; j < featureVectors.length; j++) {
 				kernel[i][j] = featureVectors[i].dot(featureVectors[j]);
@@ -49,7 +50,7 @@ public class KernelUtils {
 		}
 		return kernel;
 	}
-	
+
 	/**
 	 * Convert an array of SparseVectors to binary SparseVectors, i.e. only 0 or 1 values.
 	 * 
@@ -66,7 +67,7 @@ public class KernelUtils {
 		}
 		return featureVectors;
 	}
-	
+
 	/**
 	 * Normalize an array of SparseVectors
 	 * 
@@ -78,7 +79,7 @@ public class KernelUtils {
 		for (int i = 0; i < featureVectors.length; i++) {
 			norm = Math.sqrt(featureVectors[i].dot(featureVectors[i]));
 			norm = (norm == 0) ? 1 : norm; // In case we have 0-vector
-					
+
 			for (int index : featureVectors[i].getIndices()) {
 				featureVectors[i].setValue(index, featureVectors[i].getValue(index) / norm);
 			}
@@ -95,7 +96,7 @@ public class KernelUtils {
 	 */
 	public static double[][] sum(double[][] kernel1, double[][] kernel2) {
 		double[][] kernel = new double[kernel1.length][kernel1.length];
-				
+
 		for (int i = 0; i < kernel1.length; i++) {
 			for (int j = i; j < kernel1[i].length; j++) {
 				kernel[i][j] = kernel1[i][j] + kernel2[i][j];
@@ -103,7 +104,7 @@ public class KernelUtils {
 		}
 		return kernel;
 	}
-	
+
 	/**
 	 * Normalize a kernel matrix.
 	 * 
@@ -112,11 +113,11 @@ public class KernelUtils {
 	 */
 	public static double[][] normalize(double[][] kernel) {
 		double[] ss = new double[kernel.length];
-		
+
 		for (int i = 0; i < ss.length; i++) {
 			ss[i] = kernel[i][i];
 		}
-			
+
 		for (int i = 0; i < kernel.length; i++) {
 			for (int j = i; j < kernel[i].length; j++) {
 				kernel[i][j] /= Math.sqrt(ss[i] * ss[j]);
@@ -125,7 +126,7 @@ public class KernelUtils {
 		}
 		return kernel;
 	}
-	
+
 	/**
 	 * Normalize an asymmetric train-test kernel matrix
 	 * 
@@ -142,7 +143,7 @@ public class KernelUtils {
 		}
 		return kernel;
 	}
-	
+
 	/**
 	 * create a 2d array of doubles with the sizeRows and sizeColumns dimensions.
 	 * 
@@ -157,7 +158,7 @@ public class KernelUtils {
 		}
 		return kernel;
 	}
-	
+
 	/**
 	 * Compute the dot product between two feature vectors represented as double arrays
 	 * 
@@ -173,12 +174,30 @@ public class KernelUtils {
 		}	
 		return sum;
 	}
-	
-	
+
+	/**
+	 * Use the feature vectors to compute a kernel matrix.
+	 * 
+	 * @param graphs
+	 * @param featureVectors
+	 * @param kernel
+	 * @param iteration
+	 */
+	public static double[][] computeKernelMatrix(SparseVector[] featureVectors, double[][] kernel) {
+		for (int i = 0; i < featureVectors.length; i++) {
+			for (int j = i; j < featureVectors.length; j++) {
+				kernel[i][j] += featureVectors[i].dot(featureVectors[j]);
+				kernel[j][i] = kernel[i][j];
+			}
+		}
+		return kernel;
+	}
+
+
 	// Privates 	
 	private static Double[][] convert2DoubleObjects(double[][] kernel) {
 		Double[][] kernelDouble = new Double[kernel.length][kernel[0].length];
-		
+
 		for (int i = 0; i < kernel.length; i++) {
 			for (int j = 0; j < kernel[i].length; j++) {
 				kernelDouble[i][j] = new Double(kernel[i][j]);
@@ -186,10 +205,10 @@ public class KernelUtils {
 		}
 		return kernelDouble;
 	}
-	
+
 	private static double[][] convert2DoublePrimitives(Double[][] kernelDouble) {
 		double[][] kernel = new double[kernelDouble.length][kernelDouble[0].length];
-		
+
 		for (int i = 0; i < kernelDouble.length; i++) {
 			for (int j = 0; j < kernelDouble[i].length; j++) {
 				kernel[i][j] = kernelDouble[i][j].doubleValue();
@@ -198,6 +217,26 @@ public class KernelUtils {
 		return kernel;
 	}
 
-	
-	
+	public static String createLabel(Kernel kernel) {
+		StringBuilder sb = new StringBuilder();
+
+		sb.append(kernel.getClass().getSimpleName());
+
+		for (Field field : kernel.getClass().getDeclaredFields()) {
+			if (field.getType().isPrimitive()) {
+				field.setAccessible(true);
+				sb.append("_");
+				sb.append(field.getName());
+				sb.append("=");
+				try {
+					sb.append(field.get(kernel).toString());
+				} catch (IllegalArgumentException e) {
+					throw new RuntimeException(e);
+				} catch (IllegalAccessException e) {
+					throw new RuntimeException(e);
+				}
+			}
+		}
+		return sb.toString();
+	}
 }

@@ -4,6 +4,7 @@ package org.data2semantics.mustard.kernels.graphkernels.rdfdata;
 import java.util.List;
 import java.util.Set;
 
+import org.data2semantics.mustard.kernels.KernelUtils;
 import org.data2semantics.mustard.kernels.data.RDFData;
 import org.data2semantics.mustard.kernels.data.SingleDTGraph;
 import org.data2semantics.mustard.kernels.graphkernels.GraphKernel;
@@ -15,14 +16,12 @@ import org.openrdf.model.Statement;
 
 public class RDFIntersectionPartialSubTreeKernel implements GraphKernel<RDFData> {
 	private int depth;
-	private String label;
 	private boolean inference;
 	private DTGraphIntersectionPartialSubTreeKernel kernel;
 	private SingleDTGraph graph;
 
 	public RDFIntersectionPartialSubTreeKernel(int depth, double discountFactor, boolean inference, boolean normalize) {
 		super();
-		this.label = "RDF_IPST_Kernel_" + depth + "_" + discountFactor + "_" + inference + "_" + normalize;
 		this.depth = depth;
 		this.inference = inference;
 
@@ -30,7 +29,7 @@ public class RDFIntersectionPartialSubTreeKernel implements GraphKernel<RDFData>
 	}
 
 	public String getLabel() {
-		return label;
+		return KernelUtils.createLabel(this);		
 	}
 
 	public void setNormalize(boolean normalize) {

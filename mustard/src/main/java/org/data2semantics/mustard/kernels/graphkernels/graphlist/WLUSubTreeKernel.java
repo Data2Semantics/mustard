@@ -29,8 +29,7 @@ import org.nodes.UNode;
  *
  */
 public class WLUSubTreeKernel implements GraphKernel<GraphList<UGraph<String>>>, FeatureVectorKernel<GraphList<UGraph<String>>> {
-	private int iterations = 2;
-	protected String label;
+	private int iterations;
 	protected boolean normalize;
 
 	/**
@@ -42,18 +41,16 @@ public class WLUSubTreeKernel implements GraphKernel<GraphList<UGraph<String>>>,
 	public WLUSubTreeKernel(int iterations, boolean normalize) {
 		this.normalize = normalize;
 		this.iterations = iterations;
-		this.label = "WL Undirected SubTree Kernel, it=" + iterations;
 	}	
 
 	public WLUSubTreeKernel(int iterations) {
 		this(iterations, true);
 	}
 
-
 	public String getLabel() {
-		return label;
+		return KernelUtils.createLabel(this);		
 	}
-
+	
 	public void setNormalize(boolean normalize) {
 		this.normalize = normalize;
 	}
@@ -88,7 +85,7 @@ public class WLUSubTreeKernel implements GraphKernel<GraphList<UGraph<String>>>,
 
 	public double[][] compute(GraphList<UGraph<String>> data) {
 		double[][] kernel = KernelUtils.initMatrix(data.getGraphs().size(), data.getGraphs().size());
-		computeKernelMatrix(computeFeatureVectors(data), kernel);				
+		kernel = KernelUtils.computeKernelMatrix(computeFeatureVectors(data), kernel);				
 		return kernel;
 	}
 
@@ -112,26 +109,6 @@ public class WLUSubTreeKernel implements GraphKernel<GraphList<UGraph<String>>>,
 			for (UNode<StringLabel> vertex : graphs.get(i).nodes()) {
 				index = Integer.parseInt(vertex.label().toString());	
 				featureVectors[i].setValue(index, featureVectors[i].getValue(index) + weight);
-			}
-		}
-	}
-
-
-
-	/**
-	 * Use the feature vectors to compute a kernel matrix.
-	 * 
-	 * @param graphs
-	 * @param featureVectors
-	 * @param kernel
-	 * @param iteration
-	 */
-	private void computeKernelMatrix(SparseVector[] featureVectors, double[][] kernel) {
-		for (int i = 0; i < featureVectors.length; i++) {
-			for (int j = i; j < featureVectors.length; j++) {
-				kernel[i][j] += featureVectors[i].dot(featureVectors[j]);
-				//kernel[i][j] += dotProduct(featureVectors[i], featureVectors[j]) * (((double) iteration) / ((double) this.iterations+1));
-				kernel[j][i] = kernel[i][j];
 			}
 		}
 	}

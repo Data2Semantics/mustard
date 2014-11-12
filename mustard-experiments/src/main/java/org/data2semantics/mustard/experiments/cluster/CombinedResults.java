@@ -113,8 +113,8 @@ public class CombinedResults {
 	 */
 	public static void main(String[] args) {
 		CombinedResults res = new CombinedResults();
-		res.readDirectory("bgs_results");
-		Map<String, ResultsTable> tables = res.generateTables(3);
+		res.readDirectory("am_results");
+		Map<String, ResultsTable> tables = res.generateTables(2);
 		
 		List<Result> overallBest = new ArrayList<Result>();
 		

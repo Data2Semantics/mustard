@@ -1,5 +1,6 @@
 package org.data2semantics.mustard.kernels.graphkernels.singledtgraph;
 
+import org.data2semantics.mustard.kernels.KernelUtils;
 import org.nodes.DNode;
 
 /**
@@ -14,9 +15,11 @@ public class DTGraphIntersectionPartialSubTreeKernel extends
 
 	public DTGraphIntersectionPartialSubTreeKernel(int depth, double discountFactor, boolean normalize) {
 		super(depth, discountFactor, normalize);
-		this.label = "RDF Intersection Partial SubTree Kernel_" + depth + "_" + discountFactor + "_" + normalize;;
 	}
 
+	public String getLabel() {
+		return KernelUtils.createLabel(this);		
+	}
 	
 	protected double subTreeScore(DNode<String> currentVertex, double discountFactor) {
 		// Base case of recursion

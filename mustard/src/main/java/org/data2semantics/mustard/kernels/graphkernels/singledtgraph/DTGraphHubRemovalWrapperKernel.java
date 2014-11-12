@@ -20,14 +20,12 @@ import org.nodes.DTGraph;
 import org.nodes.DTNode;
 
 public class DTGraphHubRemovalWrapperKernel<K extends GraphKernel<SingleDTGraph>> implements GraphKernel<SingleDTGraph> {
-	private String label;
 	private boolean normalize;
 	private int minHubSize;
 	private int stepFactor;
 	private K kernel;
 
 	public DTGraphHubRemovalWrapperKernel(K kernel, int minHubSize, int stepFactor, boolean normalize) {
-		this.label = "DT_Graph_HubRemoval_Wrapper_" + kernel.getLabel() + "_" + minHubSize + "_" + stepFactor + "_" + normalize;
 		this.normalize = normalize;
 		this.minHubSize = minHubSize;
 		this.stepFactor = stepFactor;
@@ -35,11 +33,7 @@ public class DTGraphHubRemovalWrapperKernel<K extends GraphKernel<SingleDTGraph>
 	}
 
 	public String getLabel() {
-		return label;
-	}
-
-	public void add2Label(String add) {
-		this.label += add;
+		return KernelUtils.createLabel(this) +"_"+ kernel.getLabel();		
 	}
 
 	public void setNormalize(boolean normalize) {

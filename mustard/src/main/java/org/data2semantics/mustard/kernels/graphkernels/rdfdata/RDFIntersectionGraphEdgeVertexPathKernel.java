@@ -37,7 +37,6 @@ public class RDFIntersectionGraphEdgeVertexPathKernel implements GraphKernel<RDF
 	private Set<Statement> blackList;
 	private Set<Resource> instances;
 	private boolean normalize;
-	private String label;
 	protected int pathLen;
 	private Value rootValue;
 
@@ -47,12 +46,10 @@ public class RDFIntersectionGraphEdgeVertexPathKernel implements GraphKernel<RDF
 		this.depth = depth;
 		this.inference = inference;
 		this.pathLen = 2;
-
-		this.label = "IGP_" + depth + "_" + inference + "_" + normalize;
 	}
 
 	public String getLabel() {
-		return label;
+		return KernelUtils.createLabel(this);		
 	}
 
 	public void setNormalize(boolean normalize) {

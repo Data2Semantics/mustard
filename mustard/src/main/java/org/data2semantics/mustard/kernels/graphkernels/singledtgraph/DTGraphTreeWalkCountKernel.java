@@ -27,7 +27,6 @@ public class DTGraphTreeWalkCountKernel implements GraphKernel<SingleDTGraph>, F
 
 	private int pathLength;
 	private int depth;
-	private String label;
 	private boolean normalize;
 
 	private Map<String, Integer> pathDict;
@@ -37,18 +36,12 @@ public class DTGraphTreeWalkCountKernel implements GraphKernel<SingleDTGraph>, F
 
 	public DTGraphTreeWalkCountKernel(int pathLength, int depth, boolean normalize) {
 		this.normalize = normalize;
-		this.label = "RDF_DT_Graph_Tree_PathCount_Kernel_" + pathLength + "_" + depth + "_" + normalize;
-
 		this.pathLength = pathLength;
 		this.depth = depth;
 	}
 
 	public String getLabel() {
-		return label;
-	}
-
-	public void add2Label(String add) {
-		this.label += add;
+		return KernelUtils.createLabel(this);		
 	}
 
 	public void setNormalize(boolean normalize) {
@@ -126,7 +119,7 @@ public class DTGraphTreeWalkCountKernel implements GraphKernel<SingleDTGraph>, F
 	public double[][] compute(SingleDTGraph data) {
 		SparseVector[] featureVectors = computeFeatureVectors(data);
 		double[][] kernel = KernelUtils.initMatrix(data.getInstances().size(), data.getInstances().size());
-		computeKernelMatrix(featureVectors, kernel);
+		kernel = KernelUtils.computeKernelMatrix(featureVectors, kernel);
 		return kernel;
 	}
 
@@ -195,14 +188,5 @@ public class DTGraphTreeWalkCountKernel implements GraphKernel<SingleDTGraph>, F
 
 			newGraph.nodes().get(edge.from().index()).connect(newGraph.nodes().get(edge.to().index()), lab); // ?
 		}	
-	}
-
-	private void computeKernelMatrix(SparseVector[] featureVectors, double[][] kernel) {
-		for (int i = 0; i < featureVectors.length; i++) {
-			for (int j = i; j < featureVectors.length; j++) {
-				kernel[i][j] += featureVectors[i].dot(featureVectors[j]);
-				kernel[j][i] = kernel[i][j];
-			}
-		}
 	}
 }

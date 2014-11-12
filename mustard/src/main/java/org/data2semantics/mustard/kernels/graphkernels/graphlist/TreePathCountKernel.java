@@ -24,9 +24,9 @@ import org.nodes.LightDTGraph;
  * 
  * @author Gerben *
  */
+@Deprecated
 public class TreePathCountKernel implements GraphKernel<GraphList<DTGraph<String,String>>>, FeatureVectorKernel<GraphList<DTGraph<String,String>>> {
-	private int depth = 4;
-	protected String label;
+	private int depth;
 	protected boolean normalize;
 	private Map<String, Integer> pathDict;
 	private Map<String, Integer> labelDict;
@@ -41,15 +41,14 @@ public class TreePathCountKernel implements GraphKernel<GraphList<DTGraph<String
 	public TreePathCountKernel(int depth, boolean normalize) {
 		this.normalize = normalize;
 		this.depth = depth;
-		this.label = "TreePathCountKernel, depth=" + depth + "_" + normalize;
 	}	
 
-	public TreePathCountKernel(int iterations) {
-		this(iterations, true);
+	public TreePathCountKernel(int depth) {
+		this(depth, true);
 	}
 
 	public String getLabel() {
-		return label;
+		return KernelUtils.createLabel(this);		
 	}
 
 	public void setNormalize(boolean normalize) {

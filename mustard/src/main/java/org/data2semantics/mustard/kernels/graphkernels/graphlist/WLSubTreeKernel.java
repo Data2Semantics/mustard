@@ -24,8 +24,7 @@ import org.nodes.LightDTGraph;
  * @author Gerben *
  */
 public class WLSubTreeKernel implements GraphKernel<GraphList<DTGraph<String,String>>>, FeatureVectorKernel<GraphList<DTGraph<String,String>>> {
-	private int iterations = 2;
-	protected String label;
+	private int iterations;
 	protected boolean normalize;
 	private boolean reverse;
 	private boolean trackPrevNBH;
@@ -35,7 +34,6 @@ public class WLSubTreeKernel implements GraphKernel<GraphList<DTGraph<String,Str
 		this.trackPrevNBH = trackPrevNBH;
 		this.normalize = normalize;
 		this.iterations = iterations;
-		this.label = "WL SubTree Kernel, it=" + iterations + "_" + reverse + "_" + trackPrevNBH + "_" + normalize;
 	}
 
 	public WLSubTreeKernel(int iterations, boolean reverse, boolean normalize) {
@@ -60,7 +58,7 @@ public class WLSubTreeKernel implements GraphKernel<GraphList<DTGraph<String,Str
 
 
 	public String getLabel() {
-		return label;
+		return KernelUtils.createLabel(this);		
 	}
 
 	public void setNormalize(boolean normalize) {
@@ -97,7 +95,7 @@ public class WLSubTreeKernel implements GraphKernel<GraphList<DTGraph<String,Str
 
 	public double[][] compute(GraphList<DTGraph<String,String>> data) {
 		double[][] kernel = KernelUtils.initMatrix(data.getGraphs().size(), data.getGraphs().size());
-		computeKernelMatrix(computeFeatureVectors(data), kernel);				
+		kernel = KernelUtils.computeKernelMatrix(computeFeatureVectors(data), kernel);				
 		return kernel;
 	}
 
@@ -131,26 +129,6 @@ public class WLSubTreeKernel implements GraphKernel<GraphList<DTGraph<String,Str
 			}
 		}
 	}
-
-
-
-	/**
-	 * Use the feature vectors to compute a kernel matrix.
-	 * 
-	 * @param graphs
-	 * @param featureVectors
-	 * @param kernel
-	 * @param iteration
-	 */
-	private void computeKernelMatrix(SparseVector[] featureVectors, double[][] kernel) {
-		for (int i = 0; i < featureVectors.length; i++) {
-			for (int j = i; j < featureVectors.length; j++) {
-				kernel[i][j] += featureVectors[i].dot(featureVectors[j]);
-				kernel[j][i] = kernel[i][j];
-			}
-		}
-	}
-
 
 	private List<DTGraph<StringLabel,StringLabel>> copyGraphs(List<DTGraph<String,String>> oldGraphs) {
 		List<DTGraph<StringLabel,StringLabel>> newGraphs = new ArrayList<DTGraph<StringLabel,StringLabel>>();	

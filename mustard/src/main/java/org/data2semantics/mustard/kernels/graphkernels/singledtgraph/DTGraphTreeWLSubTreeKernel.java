@@ -39,7 +39,6 @@ public class DTGraphTreeWLSubTreeKernel implements GraphKernel<SingleDTGraph>, F
 
 	private int depth;
 	private int iterations;
-	private String label;
 	private boolean normalize;
 	private boolean reverse;
 	private boolean iterationWeighting;
@@ -49,7 +48,6 @@ public class DTGraphTreeWLSubTreeKernel implements GraphKernel<SingleDTGraph>, F
 		this.reverse = reverse;
 		this.iterationWeighting = iterationWeighting;
 		this.trackPrevNBH = trackPrevNBH;
-		this.label = "RDF_DT_Graph_Tree_WL_Kernel_" + iterations + "_" + depth + "_" + reverse + "_" + iterationWeighting + "_" + trackPrevNBH + "_" + normalize;
 		this.normalize = normalize;
 		this.depth = depth;
 		this.iterations = iterations;
@@ -66,19 +64,11 @@ public class DTGraphTreeWLSubTreeKernel implements GraphKernel<SingleDTGraph>, F
 	}
 
 	public String getLabel() {
-		return label;
+		return KernelUtils.createLabel(this);		
 	}
-
-	public void add2Label(String add) {
-		this.label += add;
-	}
-
+	
 	public void setNormalize(boolean normalize) {
 		this.normalize = normalize;
-	}
-
-	public void setReverse(boolean reverse) {
-		this.reverse = reverse;
 	}
 
 	public SparseVector[] computeFeatureVectors(SingleDTGraph data) {
@@ -124,7 +114,7 @@ public class DTGraphTreeWLSubTreeKernel implements GraphKernel<SingleDTGraph>, F
 	public double[][] compute(SingleDTGraph data) {
 		SparseVector[] featureVectors = computeFeatureVectors(data);
 		double[][] kernel = KernelUtils.initMatrix(data.getInstances().size(), data.getInstances().size());
-		computeKernelMatrix(featureVectors, kernel);
+		kernel = KernelUtils.computeKernelMatrix(featureVectors, kernel);
 		return kernel;
 	}
 
@@ -233,15 +223,6 @@ public class DTGraphTreeWLSubTreeKernel implements GraphKernel<SingleDTGraph>, F
 					index = Integer.parseInt(edge.getFirst().tag().get(edge.getSecond()).toString());
 					featureVectors[i].setValue(index, featureVectors[i].getValue(index) + weight);
 				}
-			}
-		}
-	}
-
-	private void computeKernelMatrix(SparseVector[] featureVectors, double[][] kernel) {
-		for (int i = 0; i < featureVectors.length; i++) {
-			for (int j = i; j < featureVectors.length; j++) {
-				kernel[i][j] += featureVectors[i].dot(featureVectors[j]);
-				kernel[j][i] = kernel[i][j];
 			}
 		}
 	}

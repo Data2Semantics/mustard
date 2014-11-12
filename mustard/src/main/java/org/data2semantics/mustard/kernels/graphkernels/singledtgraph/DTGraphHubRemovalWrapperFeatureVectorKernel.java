@@ -20,14 +20,12 @@ import org.nodes.DTGraph;
 import org.nodes.DTNode;
 
 public class DTGraphHubRemovalWrapperFeatureVectorKernel<K extends FeatureVectorKernel<SingleDTGraph>> implements GraphKernel<SingleDTGraph>, FeatureVectorKernel<SingleDTGraph> {
-	private String label;
 	private boolean normalize;
 	private int minHubSize;
 	private int stepFactor;
 	private K kernel;
 
 	public DTGraphHubRemovalWrapperFeatureVectorKernel(K kernel, int minHubSize, int stepFactor, boolean normalize) {
-		this.label = "DT_Graph_HubRemoval_Wrapper_" + kernel.getLabel() + "_" + minHubSize + "_" + stepFactor + "_" + normalize;
 		this.normalize = normalize;
 		this.minHubSize = minHubSize;
 		this.stepFactor = stepFactor;
@@ -35,11 +33,7 @@ public class DTGraphHubRemovalWrapperFeatureVectorKernel<K extends FeatureVector
 	}
 
 	public String getLabel() {
-		return label;
-	}
-
-	public void add2Label(String add) {
-		this.label += add;
+		return KernelUtils.createLabel(this) + "_" + kernel.getLabel();		
 	}
 
 	public void setNormalize(boolean normalize) {
@@ -81,16 +75,7 @@ public class DTGraphHubRemovalWrapperFeatureVectorKernel<K extends FeatureVector
 	public double[][] compute(SingleDTGraph data) {
 		SparseVector[] featureVectors = computeFeatureVectors(data);
 		double[][] kernel = KernelUtils.initMatrix(data.getInstances().size(), data.getInstances().size());
-		computeKernelMatrix(featureVectors, kernel);
+		kernel = KernelUtils.computeKernelMatrix(featureVectors, kernel);
 		return kernel;
-	}
-
-	private void computeKernelMatrix(SparseVector[] featureVectors, double[][] kernel) {
-		for (int i = 0; i < featureVectors.length; i++) {
-			for (int j = i; j < featureVectors.length; j++) {
-				kernel[i][j] += featureVectors[i].dot(featureVectors[j]);
-				kernel[j][i] = kernel[i][j];
-			}
-		}
 	}
 }

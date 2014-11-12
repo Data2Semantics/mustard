@@ -37,7 +37,6 @@ public class RDFIntersectionTreeEdgeVertexPathKernel implements GraphKernel<RDFD
 	private Set<Statement> blackList;
 	private Set<Resource> instances;
 	private boolean normalize;
-	private String label;
 	protected int pathLen;
 	private Value rootValue;
 	private boolean probabilities;
@@ -54,12 +53,10 @@ public class RDFIntersectionTreeEdgeVertexPathKernel implements GraphKernel<RDFD
 		this.probabilities = probabilities;
 
 		this.pathLen = 2;
-		
-		this.label = "IPT_" + depth + "_" + probabilities + "_" + inference + "_" + normalize;
 	}
 
 	public String getLabel() {
-		return label;
+		return KernelUtils.createLabel(this);		
 	}
 
 	public void setNormalize(boolean normalize) {

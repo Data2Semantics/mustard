@@ -28,7 +28,6 @@ import org.nodes.LightDTGraph;
 public class DTGraphIntersectionSubTreeKernel implements GraphKernel<SingleDTGraph> {
 	private int depth;
 	private double discountFactor;
-	protected String label;
 	protected boolean normalize;
 
 	public DTGraphIntersectionSubTreeKernel() {
@@ -37,23 +36,17 @@ public class DTGraphIntersectionSubTreeKernel implements GraphKernel<SingleDTGra
 
 	public DTGraphIntersectionSubTreeKernel(int depth, double discountFactor, boolean normalize) {
 		this.normalize = normalize;
-		this.label = "RDF Intersection SubTree Kernel_" + depth + "_" + discountFactor + "_" + normalize;
-
 		this.depth = depth;
 		this.discountFactor = discountFactor;
 	}
 
-
 	public String getLabel() {
-		return label;
+		return KernelUtils.createLabel(this);		
 	}
 
 	public void setNormalize(boolean normalize) {
 		this.normalize = normalize;
 	}
-
-	
-	
 
 	public double[][] compute(SingleDTGraph data) {
 		List<DTNode<String,String>> iNodes = data.getInstances();

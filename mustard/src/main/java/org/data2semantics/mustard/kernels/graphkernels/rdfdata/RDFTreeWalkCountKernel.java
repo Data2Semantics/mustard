@@ -3,6 +3,7 @@ package org.data2semantics.mustard.kernels.graphkernels.rdfdata;
 import java.util.List;
 import java.util.Set;
 
+import org.data2semantics.mustard.kernels.KernelUtils;
 import org.data2semantics.mustard.kernels.data.RDFData;
 import org.data2semantics.mustard.kernels.data.SingleDTGraph;
 import org.data2semantics.mustard.kernels.graphkernels.FeatureVectorKernel;
@@ -16,14 +17,12 @@ import org.openrdf.model.Statement;
 
 public class RDFTreeWalkCountKernel implements GraphKernel<RDFData>, FeatureVectorKernel<RDFData> {
 	private int depth;
-	private String label;
 	private boolean inference;
 	private DTGraphTreeWalkCountKernel kernel;
 	private SingleDTGraph graph;
 
 	public RDFTreeWalkCountKernel(int pathLength, int depth, boolean inference, boolean normalize) {
 		super();
-		this.label = "RDF_Tree_PathCount_Kernel_" + pathLength + "_" + depth + "_" + inference + "_" + normalize;
 		this.depth = depth;
 		this.inference = inference;
 
@@ -31,7 +30,7 @@ public class RDFTreeWalkCountKernel implements GraphKernel<RDFData>, FeatureVect
 	}
 
 	public String getLabel() {
-		return label;
+		return KernelUtils.createLabel(this);		
 	}
 
 	public void setNormalize(boolean normalize) {

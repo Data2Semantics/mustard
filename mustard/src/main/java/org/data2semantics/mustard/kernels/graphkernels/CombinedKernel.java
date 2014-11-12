@@ -15,21 +15,19 @@ import org.data2semantics.mustard.learners.SparseVector;
  */
 public class CombinedKernel<G extends GraphData> implements GraphKernel<G> {
 	private boolean normalize;
-	private String label;
 	private List<GraphKernel<G>> kernels;
 
 	public CombinedKernel(List<GraphKernel<G>> kernels, boolean normalize) {
 		this.kernels = kernels;
 		this.normalize = normalize;
-		this.label = "RDF Combined Kernel " + normalize;
-
-		for (GraphKernel<G> k : kernels) {
-			label += "_" + k.getLabel();
-		}
 	}
 
 	public String getLabel() {
-		return label;
+		String label = KernelUtils.createLabel(this);
+		for (GraphKernel<G> k : kernels) {
+			label += "_" + k.getLabel();
+		}
+		return label;	
 	}
 
 	public void setNormalize(boolean normalize) {

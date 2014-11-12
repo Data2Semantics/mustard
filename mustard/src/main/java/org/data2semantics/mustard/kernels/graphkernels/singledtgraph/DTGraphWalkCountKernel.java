@@ -16,11 +16,6 @@ import org.nodes.DTNode;
 import org.nodes.LightDTGraph;
 
 /**
- * This class implements a WL kernel directly on an RDF graph. The difference with a normal WL kernel is that subgraphs are not 
- * explicitly extracted. However we use the idea of subgraph implicitly by tracking for each vertex/edge the distance from an instance vertex.
- * For one thing, this leads to the fact that 1 black list is applied to the entire RDF graph, instead of 1 (small) blacklist per graph. 
- * 
- *
  * 
  * @author Gerben
  *
@@ -35,7 +30,6 @@ public class DTGraphWalkCountKernel implements GraphKernel<SingleDTGraph>, Featu
 
 	private int depth;
 	private int pathLength;
-	private String label;
 	private boolean normalize;
 
 	private Map<String, Integer> pathDict;
@@ -45,17 +39,12 @@ public class DTGraphWalkCountKernel implements GraphKernel<SingleDTGraph>, Featu
 
 	public DTGraphWalkCountKernel(int pathLength, int depth, boolean normalize) {
 		this.normalize = normalize;
-		this.label = "RDF_DT_Graph_PathCount_Kernel_" + pathLength + "_" + depth + "_" + normalize;
 		this.depth = depth;
 		this.pathLength = pathLength;
 	}
 
 	public String getLabel() {
-		return label;
-	}
-
-	public void add2Label(String add) {
-		this.label += add;
+		return KernelUtils.createLabel(this);		
 	}
 
 	public void setNormalize(boolean normalize) {
@@ -170,7 +159,7 @@ public class DTGraphWalkCountKernel implements GraphKernel<SingleDTGraph>, Featu
 	public double[][] compute(SingleDTGraph data) {
 		SparseVector[] featureVectors = computeFeatureVectors(data);
 		double[][] kernel = KernelUtils.initMatrix(data.getInstances().size(), data.getInstances().size());
-		computeKernelMatrix(featureVectors, kernel);
+		kernel = KernelUtils.computeKernelMatrix(featureVectors, kernel);
 		return kernel;
 	}
 
@@ -293,15 +282,6 @@ public class DTGraphWalkCountKernel implements GraphKernel<SingleDTGraph>, Featu
 					index = pathDict.get(path);
 					featureVectors[i].setValue(index, featureVectors[i].getValue(index) + 1.0);
 				}
-			}
-		}
-	}
-
-	private void computeKernelMatrix(SparseVector[] featureVectors, double[][] kernel) {
-		for (int i = 0; i < featureVectors.length; i++) {
-			for (int j = i; j < featureVectors.length; j++) {
-				kernel[i][j] += featureVectors[i].dot(featureVectors[j]);
-				kernel[j][i] = kernel[i][j];
 			}
 		}
 	}

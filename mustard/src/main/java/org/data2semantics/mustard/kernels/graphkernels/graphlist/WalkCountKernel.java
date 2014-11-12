@@ -25,8 +25,7 @@ import org.nodes.LightDTGraph;
  * @author Gerben *
  */
 public class WalkCountKernel implements GraphKernel<GraphList<DTGraph<String,String>>>, FeatureVectorKernel<GraphList<DTGraph<String,String>>> {
-	private int depth = 4;
-	protected String label;
+	private int depth;
 	protected boolean normalize;
 	private Map<String, Integer> pathDict;
 	private Map<String, Integer> labelDict;
@@ -41,15 +40,14 @@ public class WalkCountKernel implements GraphKernel<GraphList<DTGraph<String,Str
 	public WalkCountKernel(int depth, boolean normalize) {
 		this.normalize = normalize;
 		this.depth = depth;
-		this.label = "PathCountKernel, depth=" + depth + "_" + normalize;
 	}	
 
-	public WalkCountKernel(int iterations) {
-		this(iterations, true);
+	public WalkCountKernel(int depth) {
+		this(depth, true);
 	}
 
 	public String getLabel() {
-		return label;
+		return KernelUtils.createLabel(this);		
 	}
 
 	public void setNormalize(boolean normalize) {
@@ -88,26 +86,8 @@ public class WalkCountKernel implements GraphKernel<GraphList<DTGraph<String,Str
 
 	public double[][] compute(GraphList<DTGraph<String,String>> data) {
 		double[][] kernel = KernelUtils.initMatrix(data.getGraphs().size(), data.getGraphs().size());
-		computeKernelMatrix(computeFeatureVectors(data), kernel);				
+		kernel = KernelUtils.computeKernelMatrix(computeFeatureVectors(data), kernel);				
 		return kernel;
-	}
-
-
-	/**
-	 * Use the feature vectors to compute a kernel matrix.
-	 * 
-	 * @param graphs
-	 * @param featureVectors
-	 * @param kernel
-	 * @param iteration
-	 */
-	private void computeKernelMatrix(SparseVector[] featureVectors, double[][] kernel) {
-		for (int i = 0; i < featureVectors.length; i++) {
-			for (int j = i; j < featureVectors.length; j++) {
-				kernel[i][j] += featureVectors[i].dot(featureVectors[j]);
-				kernel[j][i] = kernel[i][j];
-			}
-		}
 	}
 
 	private void countPathRec(SparseVector fv, DTNode<String,String> vertex, String path, int depth) {

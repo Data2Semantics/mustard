@@ -14,7 +14,6 @@ import org.nodes.DTGraph;
 public class DTGraphGraphListWLSubTreeKernel implements GraphKernel<SingleDTGraph>, FeatureVectorKernel<SingleDTGraph> {
 	private int depth;
 	private int iterations;
-	private String label;
 	private boolean normalize;
 	private boolean reverse;
 	private boolean trackPrevNBH;
@@ -25,16 +24,10 @@ public class DTGraphGraphListWLSubTreeKernel implements GraphKernel<SingleDTGrap
 		this.depth = depth;
 		this.iterations = iterations;
 		this.normalize = normalize;
-		this.label = "RDF_DT_Graph_GraphList_WL_Kernel_" + iterations + "_" + depth + "_" + reverse + "_" + trackPrevNBH + "_" + normalize;
-
 	}
 
 	public String getLabel() {
-		return label;
-	}
-
-	public void add2Label(String add) {
-		this.label += add;
+		return KernelUtils.createLabel(this);		
 	}
 
 	public void setNormalize(boolean normalize) {
@@ -55,16 +48,7 @@ public class DTGraphGraphListWLSubTreeKernel implements GraphKernel<SingleDTGrap
 	public double[][] compute(SingleDTGraph data) {
 		SparseVector[] featureVectors = computeFeatureVectors(data);
 		double[][] kernel = KernelUtils.initMatrix(data.getInstances().size(), data.getInstances().size());
-		computeKernelMatrix(featureVectors, kernel);
+		kernel = KernelUtils.computeKernelMatrix(featureVectors, kernel);
 		return kernel;
-	}
-	
-	private void computeKernelMatrix(SparseVector[] featureVectors, double[][] kernel) {
-		for (int i = 0; i < featureVectors.length; i++) {
-			for (int j = i; j < featureVectors.length; j++) {
-				kernel[i][j] += featureVectors[i].dot(featureVectors[j]);
-				kernel[j][i] = kernel[i][j];
-			}
-		}
 	}
 }

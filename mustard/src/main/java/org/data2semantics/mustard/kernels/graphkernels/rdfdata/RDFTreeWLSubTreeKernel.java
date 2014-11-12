@@ -3,6 +3,7 @@ package org.data2semantics.mustard.kernels.graphkernels.rdfdata;
 import java.util.List;
 import java.util.Set;
 
+import org.data2semantics.mustard.kernels.KernelUtils;
 import org.data2semantics.mustard.kernels.data.RDFData;
 import org.data2semantics.mustard.kernels.data.SingleDTGraph;
 import org.data2semantics.mustard.kernels.graphkernels.FeatureVectorKernel;
@@ -16,7 +17,6 @@ import org.openrdf.model.Statement;
 
 public class RDFTreeWLSubTreeKernel implements GraphKernel<RDFData>, FeatureVectorKernel<RDFData> {
 	private int depth;
-	private String label;
 	private boolean inference;
 	private DTGraphTreeWLSubTreeKernel kernel;
 	private SingleDTGraph graph;
@@ -31,7 +31,6 @@ public class RDFTreeWLSubTreeKernel implements GraphKernel<RDFData>, FeatureVect
 	
 	public RDFTreeWLSubTreeKernel(int iterations, int depth, boolean inference, boolean reverse, boolean iterationWeighting, boolean trackPrevNBH, boolean normalize) {
 		super();
-		this.label = "RDF_Tree_WL_Kernel_" + depth + "_" + iterations + "_" + inference + "_" + reverse + "_" + iterationWeighting + "_" + trackPrevNBH + "_" + normalize;
 		this.depth = depth;
 		this.inference = inference;
 
@@ -39,7 +38,7 @@ public class RDFTreeWLSubTreeKernel implements GraphKernel<RDFData>, FeatureVect
 	}
 
 	public String getLabel() {
-		return label;
+		return KernelUtils.createLabel(this);		
 	}
 
 	public void setNormalize(boolean normalize) {

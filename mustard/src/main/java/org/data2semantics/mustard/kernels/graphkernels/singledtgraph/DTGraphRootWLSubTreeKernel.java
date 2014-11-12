@@ -36,7 +36,6 @@ public class DTGraphRootWLSubTreeKernel implements GraphKernel<SingleDTGraph>, F
 
 	private int depth;
 	private int iterations;
-	private String label;
 	private boolean normalize;
 	private boolean iterationWeighting;
 
@@ -45,7 +44,6 @@ public class DTGraphRootWLSubTreeKernel implements GraphKernel<SingleDTGraph>, F
 		this.iterationWeighting = iterationWeighting;			
 		this.depth = (int) Math.round(iterations / 2.0);
 		this.iterations = iterations;
-		this.label = "RDF_DT_Graph_WL_Root_Kernel_" + iterations + "_" + iterationWeighting + "_" + normalize;
 	}
 
 
@@ -54,11 +52,7 @@ public class DTGraphRootWLSubTreeKernel implements GraphKernel<SingleDTGraph>, F
 	}
 
 	public String getLabel() {
-		return label;
-	}
-
-	public void add2Label(String add) {
-		this.label += add;
+		return KernelUtils.createLabel(this);		
 	}
 
 	public void setNormalize(boolean normalize) {
@@ -108,7 +102,7 @@ public class DTGraphRootWLSubTreeKernel implements GraphKernel<SingleDTGraph>, F
 	public double[][] compute(SingleDTGraph data) {
 		SparseVector[] featureVectors = computeFeatureVectors(data);
 		double[][] kernel = KernelUtils.initMatrix(data.getInstances().size(), data.getInstances().size());
-		computeKernelMatrix(featureVectors, kernel);
+		kernel = KernelUtils.computeKernelMatrix(featureVectors, kernel);
 		return kernel;
 	}
 
@@ -213,15 +207,6 @@ public class DTGraphRootWLSubTreeKernel implements GraphKernel<SingleDTGraph>, F
 					index = Integer.parseInt(vertex.label().get(vertexIndexMap.get(vertex)).toString());
 					featureVectors[i].setValue(index, featureVectors[i].getValue(index) + weight);
 				}
-			}
-		}
-	}
-
-	private void computeKernelMatrix(SparseVector[] featureVectors, double[][] kernel) {
-		for (int i = 0; i < featureVectors.length; i++) {
-			for (int j = i; j < featureVectors.length; j++) {
-				kernel[i][j] += featureVectors[i].dot(featureVectors[j]);
-				kernel[j][i] = kernel[i][j];
 			}
 		}
 	}
