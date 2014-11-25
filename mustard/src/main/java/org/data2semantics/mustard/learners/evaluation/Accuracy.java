@@ -13,7 +13,7 @@ public class Accuracy implements EvaluationFunction, Serializable {
 				correct += 1;
 			}
 		}
-		return correct / ((double) target.length);	
+		return correct / (target.length);	
 	}
 
 	public boolean isBetter(double scoreA, double scoreB) {

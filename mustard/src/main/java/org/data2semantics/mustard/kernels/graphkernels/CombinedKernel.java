@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.data2semantics.mustard.kernels.KernelUtils;
 import org.data2semantics.mustard.kernels.data.GraphData;
-import org.data2semantics.mustard.learners.SparseVector;
 
 
 /**

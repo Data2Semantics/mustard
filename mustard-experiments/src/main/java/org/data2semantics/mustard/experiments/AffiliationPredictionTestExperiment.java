@@ -1,24 +1,15 @@
 package org.data2semantics.mustard.experiments;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 
 import org.data2semantics.mustard.experiments.utils.Result;
 import org.data2semantics.mustard.experiments.utils.ResultsTable;
 import org.data2semantics.mustard.experiments.utils.SimpleGraphKernelExperiment;
 import org.data2semantics.mustard.kernels.data.GraphList;
-import org.data2semantics.mustard.kernels.data.RDFData;
-import org.data2semantics.mustard.kernels.graphkernels.graphlist.WalkCountKernel;
 import org.data2semantics.mustard.kernels.graphkernels.graphlist.PathCountKernelMkII;
-import org.data2semantics.mustard.kernels.graphkernels.graphlist.WLSubTreeKernel;
-import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFIntersectionTreeEdgeVertexPathKernel;
-import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFWLSubTreeKernel;
-import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphWLSubTreeKernel;
 import org.data2semantics.mustard.learners.evaluation.Accuracy;
 import org.data2semantics.mustard.learners.evaluation.EvaluationFunction;
 import org.data2semantics.mustard.learners.evaluation.EvaluationUtils;

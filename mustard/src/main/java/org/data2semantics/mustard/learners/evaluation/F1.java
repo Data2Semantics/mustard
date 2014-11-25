@@ -41,7 +41,7 @@ public class F1 implements EvaluationFunction {
 			temp1 = 0;
 			temp2 = 0;
 		}	
-		return f1 / ((double) counts.size());
+		return f1 / (counts.size());
 	}
 
 	public boolean isBetter(double scoreA, double scoreB) {

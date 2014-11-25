@@ -1,6 +1,5 @@
 package org.data2semantics.mustard.kernels.graphkernels.singledtgraph;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

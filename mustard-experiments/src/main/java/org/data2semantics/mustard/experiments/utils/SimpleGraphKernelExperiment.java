@@ -42,6 +42,7 @@ public class SimpleGraphKernelExperiment<D extends GraphData> extends KernelExpe
 		results.add(compR);
 	}
 
+	@Override
 	public void run() {
 		long tic, toc;
 

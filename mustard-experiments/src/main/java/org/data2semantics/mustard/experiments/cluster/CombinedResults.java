@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.FileReader;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -113,8 +112,8 @@ public class CombinedResults {
 	 */
 	public static void main(String[] args) {
 		CombinedResults res = new CombinedResults();
-		res.readDirectory("am_results");
-		Map<String, ResultsTable> tables = res.generateTables(2);
+		res.readDirectory("am_results_opt");
+		Map<String, ResultsTable> tables = res.generateTables(0);
 		
 		List<Result> overallBest = new ArrayList<Result>();
 		

@@ -27,6 +27,7 @@ public class RDFSingleDataSet extends RDFDataSet
 		initialize();
 	}
 	
+	@Override
 	protected void initialize(){
 		try {
 			rdfRep = new SailRepository(new ForwardChainingRDFSInferencer(new MemoryStore()));
@@ -93,6 +94,7 @@ public class RDFSingleDataSet extends RDFDataSet
 	}
 	
 
+	@Override
 	public List<Statement> getFullGraph() 
 	{	
 		return getStatements(null, null, null, true);

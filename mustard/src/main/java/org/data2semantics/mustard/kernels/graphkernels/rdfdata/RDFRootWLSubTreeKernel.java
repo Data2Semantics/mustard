@@ -30,7 +30,7 @@ public class RDFRootWLSubTreeKernel implements GraphKernel<RDFData>, FeatureVect
 	}
 
 	public String getLabel() {
-		return KernelUtils.createLabel(this);		
+		return KernelUtils.createLabel(this) + "_" + kernel.getLabel();	
 	}
 
 	public void setNormalize(boolean normalize) {

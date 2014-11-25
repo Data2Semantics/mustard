@@ -22,16 +22,19 @@ public class RDFWLSubTreeKernelModule extends AbstractKernelModule<RDFData> {
 			super(new RDFWLSubTreeKernel(iterations, depth, inference, reverse, iterationWeighting, normalize), graphData);
 	}
 	
+	@Override
 	@Main
 	public double[][] compute() {
 		return super.compute();
 	}
 	
+	@Override
 	@Out(name="matrix")
 	public double[][] getMatrix() {
 		return super.getMatrix();
 	}
 
+	@Override
 	@Out(name="runtime")
 	public Long getRuntime() {
 		return super.getRuntime();

@@ -1,7 +1,6 @@
 package org.data2semantics.mustard.learners.evaluation;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

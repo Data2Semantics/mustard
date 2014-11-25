@@ -9,7 +9,7 @@ public class MeanAbsoluteError implements EvaluationFunction {
 		for (int i = 0; i < target.length; i++) {
 			error += Math.abs((target[i] - prediction[i].getLabel()));
 		}
-		return error / ((double) target.length);
+		return error / (target.length);
 	}
 
 	public boolean isBetter(double scoreA, double scoreB) {

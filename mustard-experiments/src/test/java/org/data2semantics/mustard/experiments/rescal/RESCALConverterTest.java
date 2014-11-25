@@ -1,7 +1,5 @@
 package org.data2semantics.mustard.experiments.rescal;
 
-import static org.junit.Assert.*;
-
 import org.data2semantics.mustard.experiments.rescal.RESCALConverter;
 import org.data2semantics.mustard.rdf.RDFDataSet;
 import org.data2semantics.mustard.rdf.RDFFileDataSet;

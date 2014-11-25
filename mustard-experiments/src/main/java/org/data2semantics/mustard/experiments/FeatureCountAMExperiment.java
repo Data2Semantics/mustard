@@ -2,46 +2,15 @@ package org.data2semantics.mustard.experiments;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
-import java.util.Set;
-
-import org.data2semantics.mustard.experiments.rescal.RESCALKernel;
-import org.data2semantics.mustard.experiments.utils.Result;
-import org.data2semantics.mustard.experiments.utils.ResultsTable;
-import org.data2semantics.mustard.experiments.utils.SimpleGraphFeatureVectorKernelExperiment;
-import org.data2semantics.mustard.kernels.data.GraphList;
 import org.data2semantics.mustard.kernels.data.RDFData;
-import org.data2semantics.mustard.kernels.graphkernels.CombinedKernel;
-import org.data2semantics.mustard.kernels.graphkernels.FeatureVectorKernel;
-import org.data2semantics.mustard.kernels.graphkernels.GraphKernel;
-import org.data2semantics.mustard.kernels.graphkernels.graphlist.WalkCountKernel;
-import org.data2semantics.mustard.kernels.graphkernels.graphlist.PathCountKernelMkII;
-import org.data2semantics.mustard.kernels.graphkernels.graphlist.TreePathCountKernel;
-import org.data2semantics.mustard.kernels.graphkernels.graphlist.WLSubTreeKernel;
-import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFWalkCountKernel;
-import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFIntersectionTreeEdgeVertexPathKernel;
-import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFRootWalkCountKernel;
-import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFTreeWalkCountKernel;
-import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFTreeWLSubTreeKernel;
-import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFRootWLSubTreeKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFWLSubTreeKernel;
 import org.data2semantics.mustard.learners.SparseVector;
-import org.data2semantics.mustard.learners.evaluation.Accuracy;
-import org.data2semantics.mustard.learners.evaluation.EvaluationFunction;
 import org.data2semantics.mustard.learners.evaluation.EvaluationUtils;
-import org.data2semantics.mustard.learners.evaluation.F1;
-import org.data2semantics.mustard.learners.liblinear.LibLINEARParameters;
-import org.data2semantics.mustard.learners.libsvm.LibSVMParameters;
 import org.data2semantics.mustard.rdf.DataSetUtils;
 import org.data2semantics.mustard.rdf.RDFDataSet;
 import org.data2semantics.mustard.rdf.RDFFileDataSet;
-import org.data2semantics.mustard.rdf.RDFUtils;
-import org.data2semantics.mustard.weisfeilerlehman.StringLabel;
-import org.nodes.DTGraph;
-import org.nodes.DTNode;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 import org.openrdf.model.Value;
@@ -85,12 +54,12 @@ public class FeatureCountAMExperiment {
 				for (SparseVector v : fv) {
 					avg += v.size();
 				}
-				avgNonZeroFeatures += (avg / ((double) fv.length));
+				avgNonZeroFeatures += (avg / (fv.length));
 			}
 			
-			avgInstances /= ((double) seedsDataset.length);
-			avgNumFeatures /= ((double) seedsDataset.length);
-			avgNonZeroFeatures /= ((double) seedsDataset.length);
+			avgInstances /= (seedsDataset.length);
+			avgNumFeatures /= (seedsDataset.length);
+			avgNonZeroFeatures /= (seedsDataset.length);
 			
 			System.out.println("# instances: " + avgInstances + ", # features: " + avgNumFeatures +  ", # non-zero features: " + avgNonZeroFeatures);
 		}

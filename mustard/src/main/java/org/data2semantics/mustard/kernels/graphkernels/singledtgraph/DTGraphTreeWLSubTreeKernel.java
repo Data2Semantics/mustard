@@ -91,14 +91,14 @@ public class DTGraphTreeWLSubTreeKernel implements GraphKernel<SingleDTGraph>, F
 
 		double weight = 1.0;
 		if (iterationWeighting) {
-			weight = Math.sqrt(1.0 / ((double) (iterations + 1)));
+			weight = Math.sqrt(1.0 / (iterations + 1));
 		}
 
 		computeFVs(rdfGraph, instanceVertices, weight, featureVectors, wl.getLabelDict().size()-1);
 
 		for (int i = 0; i < iterations; i++) {
 			if (iterationWeighting) {
-				weight = Math.sqrt((2.0 + i) / ((double) (iterations + 1)));
+				weight = Math.sqrt((2.0 + i) / (iterations + 1));
 			}
 			wl.wlIterate(gList);
 			computeFVs(rdfGraph, instanceVertices, weight, featureVectors, wl.getLabelDict().size()-1);

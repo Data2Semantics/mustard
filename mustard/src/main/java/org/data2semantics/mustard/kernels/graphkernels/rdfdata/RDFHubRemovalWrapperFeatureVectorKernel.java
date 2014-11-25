@@ -1,7 +1,6 @@
 package org.data2semantics.mustard.kernels.graphkernels.rdfdata;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.data2semantics.mustard.kernels.KernelUtils;
@@ -10,12 +9,9 @@ import org.data2semantics.mustard.kernels.data.SingleDTGraph;
 import org.data2semantics.mustard.kernels.graphkernels.FeatureVectorKernel;
 import org.data2semantics.mustard.kernels.graphkernels.GraphKernel;
 import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphHubRemovalWrapperFeatureVectorKernel;
-import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphWLSubTreeKernel;
 import org.data2semantics.mustard.learners.SparseVector;
 import org.data2semantics.mustard.rdf.RDFDataSet;
 import org.data2semantics.mustard.rdf.RDFUtils;
-import org.nodes.DTGraph;
-import org.nodes.DTNode;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 
@@ -24,12 +20,19 @@ public class RDFHubRemovalWrapperFeatureVectorKernel<K extends FeatureVectorKern
 	private boolean inference;
 	private DTGraphHubRemovalWrapperFeatureVectorKernel<K> kernel2;
 	private SingleDTGraph graph;
-
-	public RDFHubRemovalWrapperFeatureVectorKernel(K kernel, int depth, boolean inference, int maxHubs, int stepSize, boolean normalize) {
+	
+	public RDFHubRemovalWrapperFeatureVectorKernel(K kernel, int depth, boolean inference, int[] minHubSizes, boolean normalize) {
 		super();
 		this.depth = depth;
 		this.inference = inference;
-		kernel2 = new DTGraphHubRemovalWrapperFeatureVectorKernel<K>(kernel, maxHubs, stepSize, normalize);
+		kernel2 = new DTGraphHubRemovalWrapperFeatureVectorKernel<K>(kernel, minHubSizes, normalize);
+	}
+
+	public RDFHubRemovalWrapperFeatureVectorKernel(K kernel, int depth, boolean inference, int minHubSize, boolean normalize) {
+		super();
+		this.depth = depth;
+		this.inference = inference;
+		kernel2 = new DTGraphHubRemovalWrapperFeatureVectorKernel<K>(kernel, minHubSize, normalize);
 	}
 
 	public String getLabel() {

@@ -37,6 +37,7 @@ public class MapLabel {
 		return map.containsKey(key);
 	}
 
+	@Override
 	public String toString() {
 		return map.toString();
 	}

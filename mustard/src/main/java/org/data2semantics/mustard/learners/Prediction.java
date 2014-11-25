@@ -37,6 +37,7 @@ public class Prediction implements Comparable<Prediction> {
 		this.probability = probability;
 	}
 	
+	@Override
 	public String toString() {
 		return "Test index: " + index + ", " + label + ", " + decisionValue[0];
 	}

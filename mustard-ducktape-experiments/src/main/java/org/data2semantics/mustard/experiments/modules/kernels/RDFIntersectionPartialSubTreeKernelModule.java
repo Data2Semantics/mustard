@@ -21,16 +21,19 @@ public class RDFIntersectionPartialSubTreeKernelModule extends AbstractKernelMod
 		super(new RDFIntersectionPartialSubTreeKernel(depth, discountFactor, inference, normalize), graphData);
 	}
 	
+	@Override
 	@Main
 	public double[][] compute() {
 		return super.compute();
 	}
 	
+	@Override
 	@Out(name="matrix")
 	public double[][] getMatrix() {
 		return super.getMatrix();
 	}
 
+	@Override
 	@Out(name="runtime")
 	public Long getRuntime() {
 		return super.getRuntime();

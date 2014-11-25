@@ -17,10 +17,12 @@ public class DTGraphIntersectionPartialSubTreeKernel extends
 		super(depth, discountFactor, normalize);
 	}
 
+	@Override
 	public String getLabel() {
 		return KernelUtils.createLabel(this);		
 	}
 	
+	@Override
 	protected double subTreeScore(DNode<String> currentVertex, double discountFactor) {
 		// Base case of recursion
 		if (currentVertex.outDegree() == 0) {

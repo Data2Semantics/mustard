@@ -1,8 +1,6 @@
 package org.data2semantics.mustard.rdf;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -12,16 +10,10 @@ import java.util.Set;
 import org.data2semantics.mustard.kernels.KernelUtils;
 import org.data2semantics.mustard.kernels.data.GraphList;
 import org.data2semantics.mustard.kernels.data.SingleDTGraph;
-import org.data2semantics.mustard.weisfeilerlehman.StringLabel;
 import org.nodes.DTGraph;
 import org.nodes.DTLink;
 import org.nodes.DTNode;
 import org.nodes.LightDTGraph;
-import org.nodes.LightDTGraph;
-import org.nodes.MapDTGraph;
-import org.nodes.algorithms.SlashBurn;
-import org.nodes.util.MaxObserver;
-import org.nodes.util.Functions.Dir;
 import org.nodes.util.Pair;
 import org.openrdf.model.Literal;
 import org.openrdf.model.Resource;
@@ -191,7 +183,7 @@ public class RDFUtils {
 
 		DTNode<String, String> n2 = null;
 		if (stmt.getObject() instanceof Resource) {
-			n2 = iMap.get((Resource) stmt.getObject());
+			n2 = iMap.get(stmt.getObject());
 		}
 		if (n2 == null || newObject) {
 			n2 = graph.node(stmt.getObject().toString());

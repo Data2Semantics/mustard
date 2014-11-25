@@ -50,9 +50,10 @@ public class ResultsTable implements Serializable {
 	}
 
 	public String formatScore(double score) {
-		return Double.toString(((double) Math.round(score * Math.pow(10, digits))) / Math.pow(10, digits));
+		return Double.toString((Math.round(score * Math.pow(10, digits))) / Math.pow(10, digits));
 	}
 
+	@Override
 	public String toString() {
 		StringBuffer tableStr = new StringBuffer();		
 

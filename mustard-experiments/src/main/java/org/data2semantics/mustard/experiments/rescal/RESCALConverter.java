@@ -45,11 +45,11 @@ public class RESCALConverter {
 				entityMap.put(stmt.getSubject(), entityMap.size());
 			}
 			if (stmt.getObject() instanceof Resource) {
-				if (!entityMap.containsKey((Resource) stmt.getObject())) {
+				if (!entityMap.containsKey(stmt.getObject())) {
 					entityMap.put((Resource) stmt.getObject(), entityMap.size());
 				}
 				rowMap.get(relationMap.get(stmt.getPredicate())).add(entityMap.get(stmt.getSubject()));
-				colMap.get(relationMap.get(stmt.getPredicate())).add(entityMap.get((Resource) stmt.getObject()));
+				colMap.get(relationMap.get(stmt.getPredicate())).add(entityMap.get(stmt.getObject()));
 			} else { // Literal
 				if (!attributeMap.containsKey(stmt.getPredicate().toString() + stmt.getObject().toString() )) {
 					attributeMap.put(stmt.getPredicate().toString() + stmt.getObject().toString(), attributeMap.size());

@@ -30,6 +30,7 @@ public class StringLabel {
 		sb.delete(0, sb.length());
 	}
 	
+	@Override
 	public String toString() {
 		return sb.toString();
 	}

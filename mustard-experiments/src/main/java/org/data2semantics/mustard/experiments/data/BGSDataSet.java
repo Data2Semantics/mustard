@@ -1,7 +1,10 @@
 package org.data2semantics.mustard.experiments.data;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import org.data2semantics.mustard.kernels.data.RDFData;
@@ -22,8 +25,8 @@ public class BGSDataSet implements LargeClassificationDataSet {
 
 	private List<Double> target;
 	private RDFData rdfData;
-
-
+	
+	private boolean equalClassSizes = true;
 
 	public BGSDataSet(RDFDataSet tripleStore, String property, long seed, double fraction, int minClassSize, int maxNumClasses) {
 		this.tripleStore = tripleStore;
@@ -77,11 +80,45 @@ public class BGSDataSet implements LargeClassificationDataSet {
 		
 		EvaluationUtils.removeSmallClasses(instances, labels, minClassSize);
 		EvaluationUtils.keepLargestClasses(instances, labels, maxNumClasses);
+		
+		
 		blackList = DataSetUtils.createBlacklist(tripleStore, instances2, labels2);
-
+		target = EvaluationUtils.createTarget(labels);
+		
+		Map<Double,Double> counts = EvaluationUtils.computeClassCounts(target);
+		
+		if (equalClassSizes) {
+			Map<Double,Integer> newCounts = new HashMap<Double,Integer>();
+			
+			Collections.shuffle(instances, new Random(seed));
+			Collections.shuffle(labels, new Random(seed));
+			Collections.shuffle(target, new Random(seed));
+			
+			int smallest = instances.size();
+			for (double key : counts.keySet()) {
+				if (counts.get(key) < smallest) {
+					smallest = (int) Math.round(counts.get(key));
+				}
+				newCounts.put(key, 0);
+			}
+			
+			List<Resource> instances3 = new ArrayList<Resource>();
+			List<Value> labels3 = new ArrayList<Value>();
+			
+			for (int i = 0; i < instances.size(); i++) {
+				if (newCounts.get(target.get(i)) < smallest) {
+					newCounts.put(target.get(i), (Math.round(newCounts.get(target.get(i)))) + 1);
+					instances3.add(instances.get(i));
+					labels3.add(labels.get(i));
+				}			
+			}
+			instances = instances3;
+			labels = labels3;		
+		}
+		
 		rdfData = new RDFData(tripleStore, instances, blackList);
 		target = EvaluationUtils.createTarget(labels);
-
+		
 		System.out.println("Subset class count: " + EvaluationUtils.computeClassCounts(target));
 	}
 

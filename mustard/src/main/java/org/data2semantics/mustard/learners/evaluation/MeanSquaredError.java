@@ -9,7 +9,7 @@ public class MeanSquaredError implements EvaluationFunction {
 		for (int i = 0; i < target.length; i++) {
 			error += (target[i] - prediction[i].getLabel()) * (target[i] - prediction[i].getLabel());
 		}
-		return error / ((double) target.length);
+		return error / (target.length);
 	}
 
 	public boolean isBetter(double scoreA, double scoreB) {

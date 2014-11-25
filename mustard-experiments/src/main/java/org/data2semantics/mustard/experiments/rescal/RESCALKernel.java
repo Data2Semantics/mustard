@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.ProcessBuilder.Redirect;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -16,12 +15,9 @@ import org.data2semantics.mustard.kernels.data.RDFData;
 import org.data2semantics.mustard.kernels.graphkernels.FeatureVectorKernel;
 import org.data2semantics.mustard.kernels.graphkernels.GraphKernel;
 import org.data2semantics.mustard.learners.SparseVector;
-import org.data2semantics.mustard.rdf.RDFDataSet;
-import org.data2semantics.mustard.rdf.RDFFileDataSet;
 import org.data2semantics.mustard.rdf.RDFUtils;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
-import org.openrdf.rio.RDFFormat;
 
 public class RESCALKernel implements GraphKernel<RDFData>, FeatureVectorKernel<RDFData> {
 	public static final String PYTHON_EXE = "C:\\Users\\Gerben\\Dropbox\\D2S\\python_stuff\\WinPython-64bit-2.7.6.4\\python-2.7.6.amd64\\python.exe";

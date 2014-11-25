@@ -9,17 +9,13 @@ import java.util.Map;
 import java.util.Random;
 
 import org.data2semantics.mustard.kernels.Kernel;
-import org.data2semantics.mustard.kernels.KernelUtils;
 import org.data2semantics.mustard.kernels.data.GraphData;
 import org.data2semantics.mustard.kernels.graphkernels.FeatureVectorKernel;
-import org.data2semantics.mustard.kernels.graphkernels.GraphKernel;
 import org.data2semantics.mustard.learners.Prediction;
 import org.data2semantics.mustard.learners.SparseVector;
 import org.data2semantics.mustard.learners.evaluation.EvaluationFunction;
 import org.data2semantics.mustard.learners.liblinear.LibLINEAR;
 import org.data2semantics.mustard.learners.liblinear.LibLINEARParameters;
-import org.data2semantics.mustard.learners.libsvm.LibSVM;
-import org.data2semantics.mustard.learners.libsvm.LibSVMParameters;
 
 
 public class SimpleGraphFeatureVectorKernelExperiment<D extends GraphData> extends KernelExperiment<FeatureVectorKernel<D>> {
@@ -47,6 +43,7 @@ public class SimpleGraphFeatureVectorKernelExperiment<D extends GraphData> exten
 		results.add(compR);
 	}
 
+	@Override
 	public void run() {
 		long tic, toc;
 

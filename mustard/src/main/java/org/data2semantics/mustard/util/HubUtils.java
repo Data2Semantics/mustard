@@ -8,8 +8,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
-
 import org.data2semantics.mustard.kernels.data.SingleDTGraph;
 import org.data2semantics.mustard.rdf.RDFUtils;
 import org.nodes.DTGraph;
@@ -43,6 +41,19 @@ public class HubUtils {
 		public int compare(Map.Entry<?, V> o1, Map.Entry<?, V> o2) {
 			return o1.getValue().compareTo(o2.getValue());
 		}
+	}
+	
+	public static List<Integer> getHubSizes(List<Map.Entry<LabelTagPair<String,String>, Integer>> sortedHubEdges) {
+		Set<Integer> sizes = new HashSet<Integer>();
+		
+		for (Map.Entry<LabelTagPair<String,String>, Integer> e : sortedHubEdges) {
+			sizes.add(e.getValue());
+		}
+		
+		List<Integer> sizesList = new ArrayList<Integer>(sizes);
+		Collections.sort(sizesList);
+		Collections.reverse(sizesList);
+		return sizesList;
 	}
 
 	public static List<Map.Entry<LabelTagPair<String,String>, Integer>> sortHubMap(Map<LabelTagPair<String,String>, Integer> hubEdges) {

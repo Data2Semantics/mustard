@@ -5,7 +5,6 @@ import java.io.FileWriter;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.data2semantics.mustard.experiments.data.AMDataSet;
 import org.data2semantics.mustard.experiments.data.BGSDataSet;
 import org.data2semantics.mustard.experiments.data.LargeClassificationDataSet;
 import org.data2semantics.mustard.rdf.RDFDataSet;
@@ -14,10 +13,15 @@ import org.data2semantics.mustard.rdf.RDFUtils;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 import org.openrdf.rio.RDFFormat;
-import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFWriter;
 import org.openrdf.rio.Rio;
 
+/**
+ * Simple script to create subsets of a dataset. Configure in your IDE to use. This probably shouldn't be Java code ;)
+ * 
+ * @author Gerben
+ *
+ */
 public class SubSetCreator {
 	private static final String AM_FOLDER =  "C:\\Users\\Gerben\\Dropbox\\AM_data";
 	private static final String BGS_FOLDER =  "C:\\Users\\Gerben\\Dropbox\\data_bgs_ac_uk_ALL";
@@ -28,7 +32,7 @@ public class SubSetCreator {
 	public static void main(String[] args) {
 		boolean[] inference = {false, true};
 		long[] seeds = {1,2,3,4,5,6,7,8,9,10};
-		double fraction = 0.1;
+		double fraction = 1;
 		int minSize = 0;
 		int maxClasses = 3;
 		int depth = 3;

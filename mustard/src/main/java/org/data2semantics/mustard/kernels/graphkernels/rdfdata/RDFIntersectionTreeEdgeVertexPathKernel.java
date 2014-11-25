@@ -151,7 +151,7 @@ public class RDFIntersectionTreeEdgeVertexPathKernel implements GraphKernel<RDFD
 		
 		// Set the instance nodes to one identical rootValue node
 		Value obj = stmt.getObject();
-		if (obj instanceof Resource && instances.contains((Resource) obj)) {
+		if (obj instanceof Resource && instances.contains(obj)) {
 			obj = rootValue;
 		}
 		

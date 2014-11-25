@@ -435,7 +435,7 @@ public class LibSVM {
 				correct += 1;
 			}
 		}
-		return correct / ((double) target.length);		
+		return correct / (target.length);		
 	}
 
 	/**
@@ -460,7 +460,7 @@ public class LibSVM {
 			acc += (accTemp / target.length);
 			accTemp = 0;
 		}	
-		return acc / ((double) targetCounts.size());
+		return acc / (targetCounts.size());
 	}
 
 
@@ -491,7 +491,7 @@ public class LibSVM {
 			temp1 = 0;
 			temp2 = 0;
 		}	
-		return f1 / ((double) targetCounts.size());
+		return f1 / (targetCounts.size());
 	}
 
 	/**
@@ -508,7 +508,7 @@ public class LibSVM {
 		for (int i = 0; i < target.length; i++) {
 			error += (target[i] - prediction[i]) * (target[i] - prediction[i]);
 		}
-		return error / ((double) target.length);
+		return error / (target.length);
 	}
 
 	/**
@@ -525,7 +525,7 @@ public class LibSVM {
 		for (int i = 0; i < target.length; i++) {
 			error += Math.abs(target[i] - prediction[i]);
 		}
-		return error / ((double) target.length);
+		return error / (target.length);
 	}
 
 
@@ -608,7 +608,7 @@ public class LibSVM {
 				precision += 1;
 			}
 		}
-		return precision / (double) at;
+		return precision / at;
 	}
 
 	/**
@@ -785,7 +785,7 @@ public class LibSVM {
 
 	private static double[][] createTrainFold(double[][] kernel, int numberOfFolds, int fold) {
 		int foldStart = Math.round((kernel.length / ((float) numberOfFolds)) * ((float) fold - 1));
-		int foldEnd   = Math.round((kernel.length / ((float) numberOfFolds)) * ((float) fold));
+		int foldEnd   = Math.round((kernel.length / ((float) numberOfFolds)) * (fold));
 		int foldLength = (foldEnd-foldStart);
 
 		double[][] trainKernel = new double[kernel.length - foldLength][kernel.length - foldLength];
@@ -819,7 +819,7 @@ public class LibSVM {
 
 	private static double[][] createTestFold(double[][] kernel, int numberOfFolds, int fold) {
 		int foldStart = Math.round((kernel.length / ((float) numberOfFolds)) * ((float) fold - 1));
-		int foldEnd   = Math.round((kernel.length / ((float) numberOfFolds)) * ((float) fold));
+		int foldEnd   = Math.round((kernel.length / ((float) numberOfFolds)) * (fold));
 		int foldLength = (foldEnd-foldStart);
 
 		double[][] testKernel = new double[foldEnd - foldStart][kernel.length - foldLength];
@@ -838,7 +838,7 @@ public class LibSVM {
 
 	static double[] createTargetTrainFold(double[] target, int numberOfFolds, int fold) {
 		int foldStart = Math.round((target.length / ((float) numberOfFolds)) * ((float) fold - 1));
-		int foldEnd   = Math.round((target.length / ((float) numberOfFolds)) * ((float) fold));
+		int foldEnd   = Math.round((target.length / ((float) numberOfFolds)) * (fold));
 		int foldLength = (foldEnd-foldStart);
 
 		double[] trainTargets = new double[target.length - foldLength];
@@ -854,7 +854,7 @@ public class LibSVM {
 
 	static SparseVector[] createFeatureVectorsTrainFold(SparseVector[] featureVectors, int numberOfFolds, int fold) {
 		int foldStart = Math.round((featureVectors.length / ((float) numberOfFolds)) * ((float) fold - 1));
-		int foldEnd   = Math.round((featureVectors.length / ((float) numberOfFolds)) * ((float) fold));
+		int foldEnd   = Math.round((featureVectors.length / ((float) numberOfFolds)) * (fold));
 		int foldLength = (foldEnd-foldStart);
 
 		SparseVector[] trainFV = new SparseVector[featureVectors.length - foldLength];
@@ -870,7 +870,7 @@ public class LibSVM {
 
 	static SparseVector[] createFeatureVectorsTestFold(SparseVector[] featureVectors, int numberOfFolds, int fold) {
 		int foldStart = Math.round((featureVectors.length / ((float) numberOfFolds)) * ((float) fold - 1));
-		int foldEnd   = Math.round((featureVectors.length / ((float) numberOfFolds)) * ((float) fold));
+		int foldEnd   = Math.round((featureVectors.length / ((float) numberOfFolds)) * (fold));
 		int foldLength = (foldEnd-foldStart);
 
 		SparseVector[] testFV = new SparseVector[foldLength];
@@ -884,7 +884,7 @@ public class LibSVM {
 
 	static Prediction[] addFold2Prediction(Prediction[] foldPred, Prediction[] pred, int numberOfFolds, int fold) {
 		int foldStart = Math.round((pred.length / ((float) numberOfFolds)) * ((float) fold - 1));
-		int foldEnd   = Math.round((pred.length / ((float) numberOfFolds)) * ((float) fold));
+		int foldEnd   = Math.round((pred.length / ((float) numberOfFolds)) * (fold));
 
 		for (int i = foldStart; i < foldEnd; i++) {
 			pred[i] = foldPred[i - foldStart];

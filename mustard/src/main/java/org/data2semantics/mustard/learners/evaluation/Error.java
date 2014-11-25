@@ -11,7 +11,7 @@ public class Error implements EvaluationFunction {
 				correct += 1;
 			}
 		}
-		return 1 - (correct / ((double) target.length));	
+		return 1 - (correct / (target.length));	
 	}
 
 	public boolean isBetter(double scoreA, double scoreB) {

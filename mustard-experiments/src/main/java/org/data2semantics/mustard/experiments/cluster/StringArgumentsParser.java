@@ -32,14 +32,14 @@ public class StringArgumentsParser {
 	private int subset;
 	private boolean inference;
 	private int minHubCount;
-	private int hubStepFactor;
+	private int[] minHubCounts;
+
 
 	public StringArgumentsParser(String[] args) {
 		kernelParms = new String[9];
 		subset = 0;
 		minHubCount = 0;
-		hubStepFactor = 1;
-		
+
 		for (int i = 0; i < args.length; i++) {
 			if (args[i].equals("-file")) {
 				dataFile = args[++i];
@@ -64,28 +64,35 @@ public class StringArgumentsParser {
 				inference = Boolean.parseBoolean(args[++i]);
 			}
 			if (args[i].equals("-minHubs")) {
-				minHubCount = Integer.parseInt(args[++i]);
-			}
-			if (args[i].equals("-stepFactor")) {
-				hubStepFactor = Integer.parseInt(args[++i]);
+				String t = args[++i];
+
+				if (t.startsWith("[")) {
+					minHubCounts = parseIntArray(t);
+				} else {
+					minHubCount = Integer.parseInt(t); 
+				}
 			}
 		}
 	}
-	
+
 	public List<? extends GraphKernel<SingleDTGraph>> graphKernel() {
-		if (minHubCount == 0) {
+		if (minHubCount == 0 && minHubCounts == null) {
 			return graphKernelProxy();
 		} else {
 			List<? extends GraphKernel<SingleDTGraph>> kernels = graphKernelProxy();
 			List<DTGraphHubRemovalWrapperKernel<GraphKernel<SingleDTGraph>>> kernels2 = new ArrayList<DTGraphHubRemovalWrapperKernel<GraphKernel<SingleDTGraph>>>(kernels.size());
-			
+
 			for (GraphKernel<SingleDTGraph> kernel : kernels) {
-				kernels2.add(new DTGraphHubRemovalWrapperKernel<GraphKernel<SingleDTGraph>>(kernel, minHubCount, hubStepFactor, true));
+				if (minHubCounts != null) {
+					kernels2.add(new DTGraphHubRemovalWrapperKernel<GraphKernel<SingleDTGraph>>(kernel, minHubCounts, true));
+				} else {
+					kernels2.add(new DTGraphHubRemovalWrapperKernel<GraphKernel<SingleDTGraph>>(kernel, minHubCount, true));
+				}
 			}
 			return kernels2;
 		}
 	}
-	
+
 	public List<? extends GraphKernel<SingleDTGraph>> graphKernelProxy() {
 		if (kernel.equals("GraphBoL")) {
 			return graphBagOfLabels(kernelParms);
@@ -121,19 +128,23 @@ public class StringArgumentsParser {
 	}
 
 	public List<? extends FeatureVectorKernel<SingleDTGraph>> graphFeatureVectorKernel() {
-		if (minHubCount == 0) {
+		if (minHubCount == 0 && minHubCounts == null) {
 			return graphFeatureVectorKernelProxy();
 		} else {
 			List<? extends FeatureVectorKernel<SingleDTGraph>> kernels = graphFeatureVectorKernelProxy();
 			List<DTGraphHubRemovalWrapperFeatureVectorKernel<FeatureVectorKernel<SingleDTGraph>>> kernels2 = new ArrayList<DTGraphHubRemovalWrapperFeatureVectorKernel<FeatureVectorKernel<SingleDTGraph>>>(kernels.size());
-			
+
 			for (FeatureVectorKernel<SingleDTGraph> kernel : kernels) {
-				kernels2.add(new DTGraphHubRemovalWrapperFeatureVectorKernel<FeatureVectorKernel<SingleDTGraph>>(kernel, minHubCount, hubStepFactor, true));
+				if (minHubCounts != null) {
+					kernels2.add(new DTGraphHubRemovalWrapperFeatureVectorKernel<FeatureVectorKernel<SingleDTGraph>>(kernel, minHubCounts, true));
+				} else {
+					kernels2.add(new DTGraphHubRemovalWrapperFeatureVectorKernel<FeatureVectorKernel<SingleDTGraph>>(kernel, minHubCount, true));
+				}
 			}
 			return kernels2;
 		}
 	}
-	
+
 	public List<? extends FeatureVectorKernel<SingleDTGraph>> graphFeatureVectorKernelProxy() {
 		if (kernel.equals("GraphBoL")) {
 			return graphBagOfLabels(kernelParms);
@@ -168,7 +179,7 @@ public class StringArgumentsParser {
 		return null;
 	}
 
-	
+
 	public ClassificationDataSet createDataSet() {
 		if (dataset.equals("AIFB")) {
 			RDFDataSet tripleStore = new RDFFileDataSet(getDataFile(), RDFFormat.forFileName(getDataFile()));
@@ -181,12 +192,12 @@ public class StringArgumentsParser {
 			ds.create();
 			return ds;
 		}
-		
+
 		return null;
 
 	}
-	
-	
+
+
 
 	public String getSaveFileString() {
 		StringBuilder sb = new StringBuilder();
@@ -201,8 +212,6 @@ public class StringArgumentsParser {
 		}
 		sb.append("_");
 		sb.append(minHubCount);
-		sb.append("_");
-		sb.append(hubStepFactor);
 		sb.append("_");
 		sb.append(depth);
 		sb.append("_");
@@ -227,7 +236,7 @@ public class StringArgumentsParser {
 	public String getDataFile() {
 		return dataFile;
 	}
-	
+
 
 	/**
 	 * -kernel GraphBoL
@@ -278,7 +287,7 @@ public class StringArgumentsParser {
 		}
 		return kernels;
 	}
-	
+
 	/**
 	 * -kernel TreeWalksRoot
 	 * -kernelParm1 maxWalkLength (int)
@@ -299,7 +308,7 @@ public class StringArgumentsParser {
 		}
 		return kernels;
 	}
-	
+
 	/**
 	 * -kernel GraphWalks
 	 * -kernelParm1 maxWalkLength (int)
@@ -323,7 +332,7 @@ public class StringArgumentsParser {
 		}
 		return kernels;
 	}
-	
+
 	/**
 	 * -kernel GraphWalksFast
 	 * -kernelParm1 maxWalkLength (int)
@@ -347,7 +356,7 @@ public class StringArgumentsParser {
 		}
 		return kernels;
 	}
-	
+
 
 	/**
 	 * -kernel TreeSubtrees
@@ -376,7 +385,7 @@ public class StringArgumentsParser {
 		}
 		return kernels;
 	}
-	
+
 	/**
 	 * -kernel TreeSubtreesRoot
 	 * -kernelParm1 numIterations (int)
@@ -426,7 +435,7 @@ public class StringArgumentsParser {
 		}
 		return kernels;
 	}
-	
+
 	/**
 	 * -kernel GraphSubtreesFast
 	 * -kernelParm1 numIterations (int)
@@ -454,7 +463,7 @@ public class StringArgumentsParser {
 		}
 		return kernels;
 	}
-	
+
 	private static int[] parseIntArray(String input) {
 		input = input.replace("[", "");
 		input = input.replace("]", "");

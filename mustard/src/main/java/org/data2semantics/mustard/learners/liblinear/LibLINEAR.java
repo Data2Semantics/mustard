@@ -228,7 +228,7 @@ public class LibLINEAR {
 	}
 
 	public static double[] splitTestTarget(double[] target, double splitFraction) {
-		int foldStart = Math.round((float) target.length * (float) splitFraction); 
+		int foldStart = Math.round(target.length * (float) splitFraction); 
 		int foldEnd   = target.length;
 
 		return Arrays.copyOfRange(target, foldStart, foldEnd);
@@ -316,7 +316,7 @@ public class LibLINEAR {
 
 	private static Problem createProblemTrainSplit(Problem problem, float splitFrac) {
 		int foldStart = 0; 
-		int foldEnd   = Math.round(((float) problem.l) * splitFrac);
+		int foldEnd   = Math.round((problem.l) * splitFrac);
 
 		Problem prob = new Problem();
 		prob.y = Arrays.copyOfRange(problem.y, foldStart, foldEnd);
@@ -328,7 +328,7 @@ public class LibLINEAR {
 	}
 
 	private static Problem createProblemTestSplit(Problem problem, float splitFrac) {
-		int foldStart = Math.round(((float) problem.l) * splitFrac); 
+		int foldStart = Math.round((problem.l) * splitFrac); 
 		int foldEnd   = problem.l;
 
 		Problem prob = new Problem();
@@ -343,7 +343,7 @@ public class LibLINEAR {
 
 	private static Problem createProblemTrainFold(Problem problem, int numberOfFolds, int fold) {
 		int foldStart = Math.round((problem.x.length / ((float) numberOfFolds)) * ((float) fold - 1));
-		int foldEnd   = Math.round((problem.x.length / ((float) numberOfFolds)) * ((float) fold));
+		int foldEnd   = Math.round((problem.x.length / ((float) numberOfFolds)) * (fold));
 		int foldLength = (foldEnd-foldStart);
 
 		Problem prob = new Problem();
@@ -367,7 +367,7 @@ public class LibLINEAR {
 
 	static Feature[][] createProblemTestFold(Problem problem, int numberOfFolds, int fold) {
 		int foldStart = Math.round((problem.x.length / ((float) numberOfFolds)) * ((float) fold - 1));
-		int foldEnd   = Math.round((problem.x.length / ((float) numberOfFolds)) * ((float) fold));
+		int foldEnd   = Math.round((problem.x.length / ((float) numberOfFolds)) * (fold));
 		int foldLength = (foldEnd-foldStart);
 
 		Feature[][] testP = new FeatureNode[foldLength][];
@@ -380,7 +380,7 @@ public class LibLINEAR {
 
 	static Prediction[] addFold2Prediction(Prediction[] foldPred, Prediction[] pred, int numberOfFolds, int fold) {
 		int foldStart = Math.round((pred.length / ((float) numberOfFolds)) * ((float) fold - 1));
-		int foldEnd   = Math.round((pred.length / ((float) numberOfFolds)) * ((float) fold));
+		int foldEnd   = Math.round((pred.length / ((float) numberOfFolds)) * (fold));
 
 		for (int i = foldStart; i < foldEnd; i++) {
 			pred[i] = foldPred[i - foldStart];
