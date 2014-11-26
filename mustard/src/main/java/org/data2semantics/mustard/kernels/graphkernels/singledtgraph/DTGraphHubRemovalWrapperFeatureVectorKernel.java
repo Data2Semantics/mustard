@@ -19,8 +19,7 @@ public class DTGraphHubRemovalWrapperFeatureVectorKernel<K extends FeatureVector
 	private int[] minHubSizes;
 	private K kernel;
 	
-	private double[] fractions = {0.01, 0.025, 0.05, 0.10, 1.1};
-	
+
 	public DTGraphHubRemovalWrapperFeatureVectorKernel(K kernel, int[] minHubSizes, boolean normalize) {
 		this.normalize = normalize;
 		this.minHubSizes = minHubSizes;

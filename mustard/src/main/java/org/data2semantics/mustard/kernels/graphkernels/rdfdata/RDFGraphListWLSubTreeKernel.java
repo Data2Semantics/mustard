@@ -25,12 +25,12 @@ public class RDFGraphListWLSubTreeKernel implements GraphKernel<RDFData>, Featur
 		this(iterations, depth, inference, false, false, normalize);
 	}
 
-	public RDFGraphListWLSubTreeKernel(int iterations, int depth, boolean inference, boolean reverse, boolean iterationWeighting, boolean normalize) {
+	public RDFGraphListWLSubTreeKernel(int iterations, int depth, boolean inference, boolean reverse, boolean trackPrevNBH, boolean normalize) {
 		super();
 		this.depth = depth;
 		this.inference = inference;
 
-		kernel = new DTGraphGraphListWLSubTreeKernel(iterations, depth, reverse, iterationWeighting, normalize);
+		kernel = new DTGraphGraphListWLSubTreeKernel(iterations, depth, reverse, trackPrevNBH, normalize);
 	}
 
 	public String getLabel() {
