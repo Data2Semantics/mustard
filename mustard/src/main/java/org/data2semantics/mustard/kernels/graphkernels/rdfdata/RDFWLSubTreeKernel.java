@@ -3,6 +3,7 @@ package org.data2semantics.mustard.kernels.graphkernels.rdfdata;
 import java.util.List;
 import java.util.Set;
 
+import org.data2semantics.mustard.kernels.ComputationTimeTracker;
 import org.data2semantics.mustard.kernels.KernelUtils;
 import org.data2semantics.mustard.kernels.data.RDFData;
 import org.data2semantics.mustard.kernels.data.SingleDTGraph;
@@ -15,7 +16,7 @@ import org.data2semantics.mustard.rdf.RDFUtils;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 
-public class RDFWLSubTreeKernel implements GraphKernel<RDFData>, FeatureVectorKernel<RDFData> {
+public class RDFWLSubTreeKernel implements GraphKernel<RDFData>, FeatureVectorKernel<RDFData>, ComputationTimeTracker {
 	private int depth;
 	private boolean inference;
 	private DTGraphWLSubTreeKernel kernel;
@@ -59,5 +60,11 @@ public class RDFWLSubTreeKernel implements GraphKernel<RDFData>, FeatureVectorKe
 		Set<Statement> stmts = RDFUtils.getStatements4Depth(dataset, instances, depth, inference);
 		stmts.removeAll(blackList);
 		graph = RDFUtils.statements2Graph(stmts, RDFUtils.REGULAR_LITERALS, instances, true);
-	}	
+	}
+
+	public long getComputationTime() {
+		return kernel.getComputationTime();
+	}
+	
+	
 }

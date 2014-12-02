@@ -1,6 +1,7 @@
 package org.data2semantics.mustard.kernels.graphkernels.singledtgraph;
 
 
+import org.data2semantics.mustard.kernels.ComputationTimeTracker;
 import org.data2semantics.mustard.kernels.KernelUtils;
 import org.data2semantics.mustard.kernels.data.GraphList;
 import org.data2semantics.mustard.kernels.data.SingleDTGraph;
@@ -11,12 +12,13 @@ import org.data2semantics.mustard.learners.SparseVector;
 import org.data2semantics.mustard.rdf.RDFUtils;
 import org.nodes.DTGraph;
 
-public class DTGraphGraphListWLSubTreeKernel implements GraphKernel<SingleDTGraph>, FeatureVectorKernel<SingleDTGraph> {
+public class DTGraphGraphListWLSubTreeKernel implements GraphKernel<SingleDTGraph>, FeatureVectorKernel<SingleDTGraph>, ComputationTimeTracker {
 	private int depth;
 	private int iterations;
 	private boolean normalize;
 	private boolean reverse;
 	private boolean trackPrevNBH;
+	private long compTime;
 
 	public DTGraphGraphListWLSubTreeKernel(int iterations, int depth, boolean reverse, boolean trackPrevNBH, boolean normalize) {
 		this.reverse = reverse;
@@ -34,14 +36,17 @@ public class DTGraphGraphListWLSubTreeKernel implements GraphKernel<SingleDTGrap
 		this.normalize = normalize;
 	}
 
-	public void setReverse(boolean reverse) {
-		this.reverse = reverse;
+	public long getComputationTime() {
+		return compTime;
 	}
 
 	public SparseVector[] computeFeatureVectors(SingleDTGraph data) {
+		long tic = System.currentTimeMillis();
 		GraphList<DTGraph<String,String>> graphs = RDFUtils.getSubGraphs(data.getGraph(), data.getInstances(), depth);		
-		WLSubTreeKernel kernel = new WLSubTreeKernel(iterations, reverse, trackPrevNBH, normalize);		
-		return kernel.computeFeatureVectors(graphs);	
+		WLSubTreeKernel kernel = new WLSubTreeKernel(iterations, reverse, trackPrevNBH, normalize);	
+		SparseVector[] ret =  kernel.computeFeatureVectors(graphs);
+		compTime = System.currentTimeMillis() - tic;
+		return ret;
 	}
 
 

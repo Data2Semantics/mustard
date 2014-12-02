@@ -112,8 +112,8 @@ public class CombinedResults {
 	 */
 	public static void main(String[] args) {
 		CombinedResults res = new CombinedResults();
-		res.readDirectory("am_results_opt");
-		Map<String, ResultsTable> tables = res.generateTables(0);
+		res.readDirectory("am_results_5pct");
+		Map<String, ResultsTable> tables = res.generateTables(2);
 		
 		List<Result> overallBest = new ArrayList<Result>();
 		
@@ -125,6 +125,7 @@ public class CombinedResults {
 			tables.get(key).addCompResults(overallBest); // add overall best results
 			tables.get(key).addCompResults(tables.get(key).getBestResults()); // add local best results
 			tables.get(key).setSignificanceTest(ResultsTable.SigTest.PAIRED_TTEST);
+			tables.get(key).setDigits(3);
 			System.out.println(tables.get(key));
 		}
 	}

@@ -5,6 +5,7 @@ import java.io.FileWriter;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.data2semantics.mustard.experiments.data.AMDataSet;
 import org.data2semantics.mustard.experiments.data.BGSDataSet;
 import org.data2semantics.mustard.experiments.data.LargeClassificationDataSet;
 import org.data2semantics.mustard.rdf.RDFDataSet;
@@ -32,18 +33,29 @@ public class SubSetCreator {
 	public static void main(String[] args) {
 		boolean[] inference = {false, true};
 		long[] seeds = {1,2,3,4,5,6,7,8,9,10};
-		double fraction = 1;
+		double fraction = 0.05;
 		int minSize = 0;
-		int maxClasses = 3;
+		int maxClasses = 200;
 		int depth = 3;
 		
+		/*
 		String saveDir = "datasets/BGSsubset";
 		String loadDir = BGS_FOLDER;
 		RDFFormat format = RDFFormat.NTRIPLES;
+		*/
+	
+		String saveDir = "datasets/AMsubset";
+		String loadDir = AM_FOLDER;
+		RDFFormat format = RDFFormat.TURTLE;
+	
 		
 		RDFDataSet tripleStore = new RDFFileDataSet(loadDir, format);
-		LargeClassificationDataSet ds = new BGSDataSet(tripleStore, "http://data.bgs.ac.uk/ref/Lexicon/hasTheme", 10, 0.05, 5, 3);
 
+		//LargeClassificationDataSet ds = new BGSDataSet(tripleStore, "http://data.bgs.ac.uk/ref/Lexicon/hasTheme", 10, 0.05, 5, 3);
+
+		LargeClassificationDataSet ds = new AMDataSet(tripleStore,  10, 0.05, 5, 3, true);
+
+		
 		for (long seed : seeds) {
 			for (boolean inf : inference) {
 				ds.createSubSet(seed, fraction, minSize, maxClasses);

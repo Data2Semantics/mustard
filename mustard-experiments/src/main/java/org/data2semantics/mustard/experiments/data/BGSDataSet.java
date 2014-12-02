@@ -26,7 +26,7 @@ public class BGSDataSet implements LargeClassificationDataSet {
 	private List<Double> target;
 	private RDFData rdfData;
 	
-	private boolean equalClassSizes = true;
+	private boolean equalClassSizes = false;
 
 	public BGSDataSet(RDFDataSet tripleStore, String property, long seed, double fraction, int minClassSize, int maxNumClasses) {
 		this.tripleStore = tripleStore;

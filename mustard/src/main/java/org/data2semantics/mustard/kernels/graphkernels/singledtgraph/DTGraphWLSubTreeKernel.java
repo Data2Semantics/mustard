@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.data2semantics.mustard.kernels.ComputationTimeTracker;
 import org.data2semantics.mustard.kernels.KernelUtils;
 import org.data2semantics.mustard.kernels.data.SingleDTGraph;
 import org.data2semantics.mustard.kernels.graphkernels.FeatureVectorKernel;
@@ -28,7 +29,7 @@ import org.nodes.LightDTGraph;
  * @author Gerben
  *
  */
-public class DTGraphWLSubTreeKernel implements GraphKernel<SingleDTGraph>, FeatureVectorKernel<SingleDTGraph> {
+public class DTGraphWLSubTreeKernel implements GraphKernel<SingleDTGraph>, FeatureVectorKernel<SingleDTGraph>, ComputationTimeTracker {
 
 	private Map<DTNode<MapLabel,MapLabel>, Map<DTNode<MapLabel,MapLabel>, Integer>> instanceVertexIndexMap;
 	private Map<DTNode<MapLabel,MapLabel>, Map<DTLink<MapLabel,MapLabel>, Integer>> instanceEdgeIndexMap;
@@ -42,6 +43,8 @@ public class DTGraphWLSubTreeKernel implements GraphKernel<SingleDTGraph>, Featu
 	private boolean reverse;
 	private boolean iterationWeighting;
 	private boolean trackPrevNBH;
+	
+	private long compTime;
 
 	public DTGraphWLSubTreeKernel(int iterations, int depth, boolean reverse, boolean iterationWeighting, boolean trackPrevNBH, boolean normalize) {
 		this.reverse = reverse;
@@ -69,8 +72,17 @@ public class DTGraphWLSubTreeKernel implements GraphKernel<SingleDTGraph>, Featu
 	public void setNormalize(boolean normalize) {
 		this.normalize = normalize;
 	}
+	
+	
+
+	public long getComputationTime() {
+		return compTime;
+	}
+
 
 	public SparseVector[] computeFeatureVectors(SingleDTGraph data) {
+		long tic = System.currentTimeMillis();
+		
 		this.instanceVertices = new ArrayList<DTNode<MapLabel,MapLabel>>();
 		this.instanceVertexIndexMap = new HashMap<DTNode<MapLabel,MapLabel>, Map<DTNode<MapLabel,MapLabel>, Integer>>();
 		this.instanceEdgeIndexMap = new HashMap<DTNode<MapLabel,MapLabel>, Map<DTLink<MapLabel,MapLabel>, Integer>>();
@@ -106,6 +118,7 @@ public class DTGraphWLSubTreeKernel implements GraphKernel<SingleDTGraph>, Featu
 			featureVectors = KernelUtils.normalize(featureVectors);
 		}
 
+		compTime = System.currentTimeMillis() - tic;
 		return featureVectors;
 	}
 
