@@ -80,9 +80,7 @@ public class DTGraphWLSubTreeKernel implements GraphKernel<SingleDTGraph>, Featu
 	}
 
 
-	public SparseVector[] computeFeatureVectors(SingleDTGraph data) {
-		long tic = System.currentTimeMillis();
-		
+	public SparseVector[] computeFeatureVectors(SingleDTGraph data) {		
 		this.instanceVertices = new ArrayList<DTNode<MapLabel,MapLabel>>();
 		this.instanceVertexIndexMap = new HashMap<DTNode<MapLabel,MapLabel>, Map<DTNode<MapLabel,MapLabel>, Integer>>();
 		this.instanceEdgeIndexMap = new HashMap<DTNode<MapLabel,MapLabel>, Map<DTLink<MapLabel,MapLabel>, Integer>>();
@@ -97,6 +95,8 @@ public class DTGraphWLSubTreeKernel implements GraphKernel<SingleDTGraph>, Featu
 
 		List<DTGraph<MapLabel,MapLabel>> gList = new ArrayList<DTGraph<MapLabel,MapLabel>>();
 		gList.add(rdfGraph);
+		
+		long tic = System.currentTimeMillis();
 		
 		wl.wlInitialize(gList);
 
@@ -114,11 +114,12 @@ public class DTGraphWLSubTreeKernel implements GraphKernel<SingleDTGraph>, Featu
 			wl.wlIterate(gList);
 			computeFVs(rdfGraph, instanceVertices, weight, featureVectors, wl.getLabelDict().size()-1);
 		}
+		
+		compTime = System.currentTimeMillis() - tic;
+		
 		if (this.normalize) {
 			featureVectors = KernelUtils.normalize(featureVectors);
 		}
-
-		compTime = System.currentTimeMillis() - tic;
 		return featureVectors;
 	}
 

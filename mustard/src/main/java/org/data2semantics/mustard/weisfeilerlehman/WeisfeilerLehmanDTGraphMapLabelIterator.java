@@ -36,7 +36,9 @@ public class WeisfeilerLehmanDTGraphMapLabelIterator extends WeisfeilerLehmanIte
 						lab = Integer.toString(labelDict.size());
 						labelDict.put(oldLab, lab);
 					}
-					node.label().put(k, new StringBuilder(lab));
+					node.label().clear(k);
+					node.label().get(k).append(lab);
+					//node.label().put(k, new StringBuilder(lab));
 				}
 			}
 			for (DTLink<MapLabel,MapLabel> link : graph.links()) {
@@ -48,7 +50,9 @@ public class WeisfeilerLehmanDTGraphMapLabelIterator extends WeisfeilerLehmanIte
 						lab = Integer.toString(labelDict.size());
 						labelDict.put(oldLab, lab);
 					}
-					link.tag().put(k, new StringBuilder(lab));
+					link.tag().clear(k);
+					link.tag().get(k).append(lab);
+					//link.tag().put(k, new StringBuilder(lab));
 				}
 			}
 		}
@@ -159,9 +163,8 @@ public class WeisfeilerLehmanDTGraphMapLabelIterator extends WeisfeilerLehmanIte
 			}
 		}
 
-		for (DTGraph<MapLabel,MapLabel> graph :graphs) {
-			String label;
-
+		String label;
+		for (DTGraph<MapLabel,MapLabel> graph : graphs) {		
 			for (DTLink<MapLabel,MapLabel> edge : graph.links()) {						
 				for (int i : edge.tag().keySet()) {
 					if (trackPrevNBH) {
@@ -179,7 +182,9 @@ public class WeisfeilerLehmanDTGraphMapLabelIterator extends WeisfeilerLehmanIte
 							label = Integer.toString(labelDict.size());
 							labelDict.put(edge.tag().get(i).toString(), label);				
 						}
-						edge.tag().put(i, new StringBuilder(label));
+						edge.tag().clear(i);
+						edge.tag().get(i).append(label);
+						//edge.tag().put(i, new StringBuilder(label));
 					}
 				}
 			}
@@ -205,7 +210,9 @@ public class WeisfeilerLehmanDTGraphMapLabelIterator extends WeisfeilerLehmanIte
 							label = Integer.toString(labelDict.size());
 							labelDict.put(vertex.label().get(i).toString(), label);
 						}
-						vertex.label().put(i, new StringBuilder(label));
+						vertex.label().clear(i);
+						vertex.label().get(i).append(label);
+						//vertex.label().put(i, new StringBuilder(label));
 					}
 				}
 			}

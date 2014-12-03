@@ -10,7 +10,6 @@ import org.nodes.DTGraph;
 import org.nodes.DTLink;
 import org.nodes.DTNode;
 
-
 public class WeisfeilerLehmanDTGraphIterator extends WeisfeilerLehmanIterator<DTGraph<StringLabel,StringLabel>> {
 	private boolean reverse;
 	private boolean trackPrevNBH;
@@ -18,7 +17,6 @@ public class WeisfeilerLehmanDTGraphIterator extends WeisfeilerLehmanIterator<DT
 	public WeisfeilerLehmanDTGraphIterator(boolean reverse) {
 		this(reverse, false);
 	}
-
 
 	public WeisfeilerLehmanDTGraphIterator(boolean reverse, boolean trackPrevNBH) {
 		super();

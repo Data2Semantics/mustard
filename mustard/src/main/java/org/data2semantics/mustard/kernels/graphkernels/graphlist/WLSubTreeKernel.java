@@ -90,12 +90,11 @@ public class WLSubTreeKernel implements GraphKernel<GraphList<DTGraph<String,Str
 			computeFVs(graphs, featureVectors, 1.0, wl.getLabelDict().size()-1);
 		}
 
+		compTime = System.currentTimeMillis() - tic;
+		
 		if (normalize) {
 			featureVectors = KernelUtils.normalize(featureVectors);
 		}
-		
-		compTime = System.currentTimeMillis() - tic;
-		
 		return featureVectors;
 	}
 

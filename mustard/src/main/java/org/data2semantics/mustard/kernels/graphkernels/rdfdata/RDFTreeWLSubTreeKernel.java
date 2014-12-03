@@ -3,6 +3,7 @@ package org.data2semantics.mustard.kernels.graphkernels.rdfdata;
 import java.util.List;
 import java.util.Set;
 
+import org.data2semantics.mustard.kernels.ComputationTimeTracker;
 import org.data2semantics.mustard.kernels.KernelUtils;
 import org.data2semantics.mustard.kernels.data.RDFData;
 import org.data2semantics.mustard.kernels.data.SingleDTGraph;
@@ -15,7 +16,7 @@ import org.data2semantics.mustard.rdf.RDFUtils;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 
-public class RDFTreeWLSubTreeKernel implements GraphKernel<RDFData>, FeatureVectorKernel<RDFData> {
+public class RDFTreeWLSubTreeKernel implements GraphKernel<RDFData>, FeatureVectorKernel<RDFData>, ComputationTimeTracker {
 	private int depth;
 	private boolean inference;
 	private DTGraphTreeWLSubTreeKernel kernel;
@@ -24,11 +25,11 @@ public class RDFTreeWLSubTreeKernel implements GraphKernel<RDFData>, FeatureVect
 	public RDFTreeWLSubTreeKernel(int iterations, int depth, boolean inference, boolean normalize) {
 		this(iterations, depth, inference, false, false, false, normalize);
 	}
-	
+
 	public RDFTreeWLSubTreeKernel(int iterations, int depth, boolean inference, boolean reverse, boolean iterationWeighting, boolean normalize) {
 		this(iterations, depth, inference, reverse, iterationWeighting, false, normalize);
 	}
-	
+
 	public RDFTreeWLSubTreeKernel(int iterations, int depth, boolean inference, boolean reverse, boolean iterationWeighting, boolean trackPrevNBH, boolean normalize) {
 		super();
 		this.depth = depth;
@@ -43,6 +44,10 @@ public class RDFTreeWLSubTreeKernel implements GraphKernel<RDFData>, FeatureVect
 
 	public void setNormalize(boolean normalize) {
 		kernel.setNormalize(normalize);
+	}
+
+	public long getComputationTime() {
+		return kernel.getComputationTime();
 	}
 
 	public SparseVector[] computeFeatureVectors(RDFData data) {

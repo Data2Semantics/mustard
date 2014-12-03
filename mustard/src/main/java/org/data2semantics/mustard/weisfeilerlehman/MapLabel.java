@@ -36,6 +36,10 @@ public class MapLabel {
 	public boolean containsKey(Integer key) {
 		return map.containsKey(key);
 	}
+	
+	public void clear(Integer key) {
+		map.get(key).delete(0, map.get(key).length());
+	}
 
 	@Override
 	public String toString() {

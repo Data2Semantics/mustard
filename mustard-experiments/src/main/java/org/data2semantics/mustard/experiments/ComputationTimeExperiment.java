@@ -1,9 +1,11 @@
 package org.data2semantics.mustard.experiments;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 
 import org.data2semantics.mustard.experiments.data.AIFBDataSet;
@@ -38,6 +40,7 @@ import org.data2semantics.mustard.rdf.RDFUtils;
 import org.data2semantics.mustard.util.Pair;
 import org.nodes.DTGraph;
 import org.nodes.DTNode;
+import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 import org.openrdf.rio.RDFFormat;
 
@@ -58,129 +61,174 @@ public class ComputationTimeExperiment {
 	 */
 	public static void main(String[] args) {
 
-		//RDFDataSet tripleStore = new RDFFileDataSet(AIFB_FILE, RDFFormat.N3);
-		//ClassificationDataSet ds = new AIFBDataSet(tripleStore);
+		RDFDataSet tripleStore = new RDFFileDataSet(AIFB_FILE, RDFFormat.N3);
+		ClassificationDataSet ds = new AIFBDataSet(tripleStore);
 
 		//RDFDataSet tripleStore = new RDFFileDataSet(BGS_FOLDER, RDFFormat.NTRIPLES);
 		//ClassificationDataSet ds = new BGSLithoDataSet(tripleStore);
-		
-		//RDFDataSet tripleStore = new RDFFileDataSet(BGS_FOLDER, RDFFormat.NTRIPLES);
-		//LargeClassificationDataSet ds = new BGSDataSet(tripleStore, "http://data.bgs.ac.uk/ref/Lexicon/hasTheme", 10, 0.02, 5, 3);
-		
-		RDFDataSet tripleStore = new RDFFileDataSet(AM_FOLDER, RDFFormat.TURTLE);
-		LargeClassificationDataSet ds = new AMDataSet(tripleStore, 10, 0.003, 5, 4, true);
 
 		ds.create();
-		
+
 		ResultsTable resTable = new ResultsTable();
 		resTable.setDigits(2);
 		resTable.setSignificanceTest(ResultsTable.SigTest.PAIRED_TTEST);
 		resTable.setpValue(0.05);
 		resTable.setShowStdDev(true);
 
-		long[] seeds = {11,21,31,41,51,61,71,81,91,101};
 
 
 		boolean reverseWL = true; // WL should be in reverse mode, which means regular subtrees
 		boolean trackPrevNBH = true; // We should not repeat vertices that get the same label after an iteration of WL (regular WL does this)
-		boolean[] inference = {false, true};
+		boolean[] inference = {true};
+		int[] depths = {3};
 
-		int[] depths = {2};
-		int[] pathDepths = {0,1,2,3,4,5,6};
-		int[] iterationsWL = {0,1,2,3,4,5,6};
+		double[] fractions = {0.33, 0.66, 1.0};
+		long[] seeds = {11,21,31,41,51};
 
-		boolean depthTimesTwo = true;
-
-		//int minHubSize = 2;
-		int stepFactor = 10;
-
-
-		int[] mhs = {10, 20, 40, 80, 1000000000};
 
 		RDFData data = ds.getRDFData();
-		List<Double> target = ds.getTarget();
-
-		//computeGraphStatistics(tripleStore, ds, inference, depths);
 
 
 		///* RDF WL 
-		for (boolean inf : inference) {
-			resTable.newRow("RDF WL: " + inf);		 
+		for (boolean inf : inference) {			 
 			for (int d : depths) {
+				for (double frac : fractions) {
+					resTable.newRow("RDF WL: " + inf);	
+					List<Result> tempRes = new ArrayList<Result>();
+					for (long seed : seeds) {
+						RDFData dataSub = createRandomSubset(data, frac, seed);
 
-				List<RDFWLSubTreeKernel> kernels = new ArrayList<RDFWLSubTreeKernel>();	
-				kernels.add(new RDFWLSubTreeKernel(d*2, d, inf, reverseWL, false, trackPrevNBH, true));
+						List<RDFWLSubTreeKernel> kernels = new ArrayList<RDFWLSubTreeKernel>();	
+						kernels.add(new RDFWLSubTreeKernel(d*2, d, inf, reverseWL, false, trackPrevNBH, true));
 
-				GraphFeatureVectorKernelComputationTimeExperiment<RDFData> exp = new GraphFeatureVectorKernelComputationTimeExperiment<RDFData>(kernels, data, seeds);
+						GraphFeatureVectorKernelComputationTimeExperiment<RDFData> exp = new GraphFeatureVectorKernelComputationTimeExperiment<RDFData>(kernels, dataSub, null);
 
-				exp.run();
+						exp.run();
 
-				for (Result res : exp.getResults()) {
-					resTable.addResult(res);
+						if (tempRes.isEmpty()) {
+							for (Result res : exp.getResults()) {
+								tempRes.add(res);
+							}
+						} else {
+							for (int i = 0; i < tempRes.size(); i++) {
+								tempRes.get(i).addResult(exp.getResults().get(i));
+							}
+						}
+					}
+					for (Result res : tempRes) {
+						resTable.addResult(res);
+					}
+				}
+			}
+		}
+		//*/
+
+		
+		///* Regular WL 
+		for (boolean inf : inference) {		 
+			for (int d : depths) {
+				for (double frac : fractions) {
+					resTable.newRow("Regular WL: " + inf);
+					List<Result> tempRes = new ArrayList<Result>();
+					for (long seed : seeds) {
+						RDFData dataSub = createRandomSubset(data, frac, seed);
+
+						List<RDFGraphListWLSubTreeKernel> kernels = new ArrayList<RDFGraphListWLSubTreeKernel>();	
+						kernels.add(new RDFGraphListWLSubTreeKernel(d*2, d, inf, reverseWL, trackPrevNBH, true));
+
+						GraphFeatureVectorKernelComputationTimeExperiment<RDFData> exp = new GraphFeatureVectorKernelComputationTimeExperiment<RDFData>(kernels, dataSub, null);
+
+						exp.run();
+
+						if (tempRes.isEmpty()) {
+							for (Result res : exp.getResults()) {
+								tempRes.add(res);
+							}
+						} else {
+							for (int i = 0; i < tempRes.size(); i++) {
+								tempRes.get(i).addResult(exp.getResults().get(i));
+							}
+						}
+					}
+					for (Result res : tempRes) {
+						resTable.addResult(res);
+					}
 				}
 			}
 		}
 		//*/
 		
-		
-
-		///* Regular WL 
-		for (boolean inf : inference) {
-			resTable.newRow("Regular WL: " + inf);		 
-			for (int d : depths) {
-
-				List<RDFGraphListWLSubTreeKernel> kernels = new ArrayList<RDFGraphListWLSubTreeKernel>();	
-				kernels.add(new RDFGraphListWLSubTreeKernel(d*2, d, inf, reverseWL, trackPrevNBH, true));
-
-				GraphFeatureVectorKernelComputationTimeExperiment<RDFData> exp = new GraphFeatureVectorKernelComputationTimeExperiment<RDFData>(kernels, data, seeds);
-
-				exp.run();
-
-				for (Result res : exp.getResults()) {
-					resTable.addResult(res);
-				}
-			}
-		}
-		//*/	
-		
 		///* RDF WL 
-		for (boolean inf : inference) {
-			resTable.newRow("RDF WL: " + inf);		 
+		for (boolean inf : inference) {	 
 			for (int d : depths) {
+				for (double frac : fractions) {
+					resTable.newRow("RDF WL: " + inf);	
+					List<Result> tempRes = new ArrayList<Result>();
+					for (long seed : seeds) {
+						RDFData dataSub = createRandomSubset(data, frac, seed);
 
-				List<RDFWLSubTreeKernel> kernels = new ArrayList<RDFWLSubTreeKernel>();	
-				kernels.add(new RDFWLSubTreeKernel(d*2, d, inf, reverseWL, false, trackPrevNBH, true));
+						List<RDFWLSubTreeKernel> kernels = new ArrayList<RDFWLSubTreeKernel>();	
+						kernels.add(new RDFWLSubTreeKernel(d*2, d, inf, reverseWL, false, trackPrevNBH, true));
 
-				GraphFeatureVectorKernelComputationTimeExperiment<RDFData> exp = new GraphFeatureVectorKernelComputationTimeExperiment<RDFData>(kernels, data, seeds);
+						GraphFeatureVectorKernelComputationTimeExperiment<RDFData> exp = new GraphFeatureVectorKernelComputationTimeExperiment<RDFData>(kernels, dataSub, null);
 
-				exp.run();
+						exp.run();
 
-				for (Result res : exp.getResults()) {
-					resTable.addResult(res);
+						if (tempRes.isEmpty()) {
+							for (Result res : exp.getResults()) {
+								tempRes.add(res);
+							}
+						} else {
+							for (int i = 0; i < tempRes.size(); i++) {
+								tempRes.get(i).addResult(exp.getResults().get(i));
+							}
+						}
+					}
+					for (Result res : tempRes) {
+						resTable.addResult(res);
+					}
 				}
 			}
 		}
 		//*/
+
 		
 		///* Regular WL 
-		for (boolean inf : inference) {
-			resTable.newRow("Regular WL: " + inf);		 
+		for (boolean inf : inference) {	 
 			for (int d : depths) {
+				for (double frac : fractions) {
+					resTable.newRow("RDF WL Tree: " + inf);	
+					List<Result> tempRes = new ArrayList<Result>();
+					for (long seed : seeds) {
+						RDFData dataSub = createRandomSubset(data, frac, seed);
 
-				List<RDFGraphListWLSubTreeKernel> kernels = new ArrayList<RDFGraphListWLSubTreeKernel>();	
-				kernels.add(new RDFGraphListWLSubTreeKernel(d*2, d, inf, reverseWL, trackPrevNBH, true));
+						List<RDFTreeWLSubTreeKernel> kernels = new ArrayList<RDFTreeWLSubTreeKernel>();	
+						kernels.add(new RDFTreeWLSubTreeKernel(d*2, d, inf, reverseWL, trackPrevNBH, true));
 
-				GraphFeatureVectorKernelComputationTimeExperiment<RDFData> exp = new GraphFeatureVectorKernelComputationTimeExperiment<RDFData>(kernels, data, seeds);
+						GraphFeatureVectorKernelComputationTimeExperiment<RDFData> exp = new GraphFeatureVectorKernelComputationTimeExperiment<RDFData>(kernels, dataSub, null);
 
-				exp.run();
+						exp.run();
 
-				for (Result res : exp.getResults()) {
-					resTable.addResult(res);
+						if (tempRes.isEmpty()) {
+							for (Result res : exp.getResults()) {
+								tempRes.add(res);
+							}
+						} else {
+							for (int i = 0; i < tempRes.size(); i++) {
+								tempRes.get(i).addResult(exp.getResults().get(i));
+							}
+						}
+					}
+					for (Result res : tempRes) {
+						resTable.addResult(res);
+					}
 				}
 			}
 		}
-		//*/	
+		//*/
 
+
+	
 		/* The baseline experiment, BoW (or BoL if you prefer)
 		for (boolean inf : inference) {
 			resTable.newRow("Baseline BoL: " + inf);		 
@@ -943,4 +991,12 @@ public class ComputationTimeExperiment {
 	//		System.out.println(EvaluationUtils.computeClassCounts(target));
 	//		
 	//	}
+
+	private static RDFData createRandomSubset(RDFData data, double fraction, long seed) {
+		List<Resource> i = data.getInstances();
+		Collections.shuffle(i, new Random(seed));
+
+		i = i.subList(0, (int) Math.round(fraction * i.size()));
+		return new RDFData(data.getDataset(), i, data.getBlackList());
+	}
 }
