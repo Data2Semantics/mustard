@@ -27,9 +27,12 @@ import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFTreeWLSubTreeK
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFTreeWalkCountKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFWLSubTreeKernel;
 import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphGraphListWLSubTreeKernel;
+import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphGraphListWalkCountKernel;
+import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphRootWalkCountKernel;
 import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphTreeWLSubTreeKernel;
 import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphTreeWalkCountKernel;
 import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphWLSubTreeKernel;
+import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphWalkCountKernel;
 import org.data2semantics.mustard.learners.evaluation.Accuracy;
 import org.data2semantics.mustard.learners.evaluation.EvaluationFunction;
 import org.data2semantics.mustard.learners.evaluation.F1;
@@ -49,764 +52,386 @@ public class ComputationTimeLargeExperiment {
 	private static String AM_FOLDER =  "C:\\Users\\Gerben\\Dropbox\\AM_data";
 	private static String ISWC_FOLDER = "datasets/";
 
-	//private static List<Resource> instances;
-	//private static List<Value> labels;
-	//private static List<Statement> blackList;
-	//private static List<Double> target;
-	//private static RDFDataSet dataset;
-
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
 
-		//RDFDataSet tripleStore = new RDFFileDataSet(AIFB_FILE, RDFFormat.N3);
-		//ClassificationDataSet ds = new AIFBDataSet(tripleStore);
+		RDFDataSet tripleStore = new RDFFileDataSet(BGS_FOLDER, RDFFormat.NTRIPLES);
+		LargeClassificationDataSet ds = new BGSDataSet(tripleStore, "http://data.bgs.ac.uk/ref/Lexicon/hasTheme", 10, 0.02, 5, 3);
 
-		//RDFDataSet tripleStore = new RDFFileDataSet(BGS_FOLDER, RDFFormat.NTRIPLES);
-		//ClassificationDataSet ds = new BGSLithoDataSet(tripleStore);
+		//RDFDataSet tripleStore = new RDFFileDataSet(AM_FOLDER, RDFFormat.TURTLE);
+		//LargeClassificationDataSet ds = new AMDataSet(tripleStore, 10, 0.003, 5, 4, true);
 
-		//RDFDataSet tripleStore = new RDFFileDataSet(BGS_FOLDER, RDFFormat.NTRIPLES);
-		//LargeClassificationDataSet ds = new BGSDataSet(tripleStore, "http://data.bgs.ac.uk/ref/Lexicon/hasTheme", 10, 0.02, 5, 3);
-
-		RDFDataSet tripleStore = new RDFFileDataSet(AM_FOLDER, RDFFormat.TURTLE);
-		LargeClassificationDataSet ds = new AMDataSet(tripleStore, 10, 0.003, 5, 4, true);
-
-		long[] seedsDataset = {1,2,3,4,5};
-		double fraction = 0.01;
+		long[] seedsDataset = {1,2,3};
+		double[] fractions = {0.01, 0.02, 0.03};
 		int minClassSize = 0;
 		int maxNumClasses = 100;
 		int[] depths = {3};
 		boolean[] inference = {true};
 
-		Map<Long, Map<Boolean, Map<Integer,Pair<SingleDTGraph, List<Double>>>>> cache = createDataSetCache(tripleStore, ds, seedsDataset, fraction, minClassSize, maxNumClasses, depths, inference);
-		tripleStore = null;
-
-		ResultsTable resTable = new ResultsTable();
-		resTable.setDigits(2);
-		resTable.setSignificanceTest(ResultsTable.SigTest.PAIRED_TTEST);
-		resTable.setpValue(0.05);
-		resTable.setShowStdDev(true);
-
-		long[] seeds = {11};
-
+	
 		boolean reverseWL = true; // WL should be in reverse mode, which means regular subtrees
 		boolean trackPrevNBH = true; // We should not repeat vertices that get the same label after an iteration of WL (regular WL does this)
 
-
-		///* RDF WL 
-		for (boolean inf : inference) {
-			resTable.newRow("RDF WL: " + inf);		 
-			for (int d : depths) {
-
-				List<Result> tempRes = new ArrayList<Result>();
-				for (long sDS : seedsDataset) {
-					Pair<SingleDTGraph, List<Double>> p = cache.get(sDS).get(inf).get(d);
-					SingleDTGraph data = p.getFirst();
-
-					List<DTGraphWLSubTreeKernel> kernels = new ArrayList<DTGraphWLSubTreeKernel>();	
-					kernels.add(new DTGraphWLSubTreeKernel(d*2, d, reverseWL, false, trackPrevNBH, true));
-
-					GraphFeatureVectorKernelComputationTimeExperiment<SingleDTGraph> exp = new GraphFeatureVectorKernelComputationTimeExperiment<SingleDTGraph>(kernels, data, seeds);
-
-					exp.run();
-					if (tempRes.isEmpty()) {
-						for (Result res : exp.getResults()) {
-							tempRes.add(res);
-						}
-					} else {
-						for (int i = 0; i < tempRes.size(); i++) {
-							tempRes.get(i).addResult(exp.getResults().get(i));
-						}
-					}
-				}
-
-				for (Result res : tempRes) {
-					resTable.addResult(res);
-				}
-			}
-		}
-		//*/
 		
-		///* Regular WL 
-		for (boolean inf : inference) {
-			resTable.newRow("Regular WL: " + inf);		 
-			for (int d : depths) {
-
-				List<Result> tempRes = new ArrayList<Result>();
-				for (long sDS : seedsDataset) {
-					Pair<SingleDTGraph, List<Double>> p = cache.get(sDS).get(inf).get(d);
-					SingleDTGraph data = p.getFirst();
-
-					List<DTGraphGraphListWLSubTreeKernel> kernels = new ArrayList<DTGraphGraphListWLSubTreeKernel>();	
-					kernels.add(new DTGraphGraphListWLSubTreeKernel(d*2, d, reverseWL, trackPrevNBH, true));
-
-					GraphFeatureVectorKernelComputationTimeExperiment<SingleDTGraph> exp = new GraphFeatureVectorKernelComputationTimeExperiment<SingleDTGraph>(kernels, data, seeds);
-
-					exp.run();
-					if (tempRes.isEmpty()) {
-						for (Result res : exp.getResults()) {
-							tempRes.add(res);
-						}
-					} else {
-						for (int i = 0; i < tempRes.size(); i++) {
-							tempRes.get(i).addResult(exp.getResults().get(i));
-						}
-					}
-				}
-
-				for (Result res : tempRes) {
-					resTable.addResult(res);
-				}
-			}
-		}
-		//*/
+		List<ResultsTable> tables = new ArrayList<ResultsTable>();
 		
-		///* RDF WL 
-		for (boolean inf : inference) {
-			resTable.newRow("RDF WL: " + inf);		 
-			for (int d : depths) {
-
-				List<Result> tempRes = new ArrayList<Result>();
-				for (long sDS : seedsDataset) {
-					Pair<SingleDTGraph, List<Double>> p = cache.get(sDS).get(inf).get(d);
-					SingleDTGraph data = p.getFirst();
-
-					List<DTGraphWLSubTreeKernel> kernels = new ArrayList<DTGraphWLSubTreeKernel>();	
-					kernels.add(new DTGraphWLSubTreeKernel(d*2, d, reverseWL, false, trackPrevNBH, true));
-
-					GraphFeatureVectorKernelComputationTimeExperiment<SingleDTGraph> exp = new GraphFeatureVectorKernelComputationTimeExperiment<SingleDTGraph>(kernels, data, seeds);
-
-					exp.run();
-					if (tempRes.isEmpty()) {
-						for (Result res : exp.getResults()) {
-							tempRes.add(res);
-						}
-					} else {
-						for (int i = 0; i < tempRes.size(); i++) {
-							tempRes.get(i).addResult(exp.getResults().get(i));
-						}
-					}
-				}
-
-				for (Result res : tempRes) {
-					resTable.addResult(res);
-				}
-			}
-		}
-		//*/
+		ResultsTable resTableBoLGraph = new ResultsTable();
+		resTableBoLGraph.setShowStdDev(true);		
+		tables.add(resTableBoLGraph);
 		
-		///* Regular WL 
-		for (boolean inf : inference) {
-			resTable.newRow("Regular WL: " + inf);		 
-			for (int d : depths) {
-
-				List<Result> tempRes = new ArrayList<Result>();
-				for (long sDS : seedsDataset) {
-					Pair<SingleDTGraph, List<Double>> p = cache.get(sDS).get(inf).get(d);
-					SingleDTGraph data = p.getFirst();
-
-					List<DTGraphGraphListWLSubTreeKernel> kernels = new ArrayList<DTGraphGraphListWLSubTreeKernel>();	
-					kernels.add(new DTGraphGraphListWLSubTreeKernel(d*2, d, reverseWL, trackPrevNBH, true));
-
-					GraphFeatureVectorKernelComputationTimeExperiment<SingleDTGraph> exp = new GraphFeatureVectorKernelComputationTimeExperiment<SingleDTGraph>(kernels, data, seeds);
-
-					exp.run();
-					if (tempRes.isEmpty()) {
-						for (Result res : exp.getResults()) {
-							tempRes.add(res);
-						}
-					} else {
-						for (int i = 0; i < tempRes.size(); i++) {
-							tempRes.get(i).addResult(exp.getResults().get(i));
-						}
-					}
-				}
-
-				for (Result res : tempRes) {
-					resTable.addResult(res);
-				}
-			}
-		}
-		//*/
-
-
+		ResultsTable resTableBoLTree = new ResultsTable();
+		resTableBoLTree.setShowStdDev(true);		
+		tables.add(resTableBoLTree);
 		
+		ResultsTable resTableRootWC = new ResultsTable();
+		resTableRootWC.setShowStdDev(true);		
+		tables.add(resTableRootWC);
+		
+		ResultsTable resTableWC = new ResultsTable();
+		resTableWC.setShowStdDev(true);		
+		tables.add(resTableWC);
+		
+		ResultsTable resTableRDFWC = new ResultsTable();
+		resTableRDFWC.setShowStdDev(true);		
+		tables.add(resTableRDFWC);
+		
+		ResultsTable resTableTreeWC = new ResultsTable();
+		resTableTreeWC.setShowStdDev(true);		
+		tables.add(resTableTreeWC);
+		
+		ResultsTable resTableWL = new ResultsTable();
+		resTableWL.setShowStdDev(true);		
+		tables.add(resTableWL);
+		
+		ResultsTable resTableRDFWL = new ResultsTable();
+		resTableRDFWL.setShowStdDev(true);		
+		tables.add(resTableRDFWL);
+		
+		ResultsTable resTableTreeWL = new ResultsTable();
+		resTableTreeWL.setShowStdDev(true);		
+		tables.add(resTableTreeWL);
 		
 
+		for (double fraction : fractions) {
+			Map<Long, Map<Boolean, Map<Integer,Pair<SingleDTGraph, List<Double>>>>> cache = createDataSetCache(tripleStore, ds, seedsDataset, fraction, minClassSize, maxNumClasses, depths, inference);
 
-		/* The baseline experiment, BoW (or BoL if you prefer)
-		for (boolean inf : inference) {
-			resTable.newRow("Baseline BoL: " + inf);		 
-			for (int d : depths) {
-				List<RDFWLSubTreeKernel> kernelsBaseline = new ArrayList<RDFWLSubTreeKernel>();	
-				kernelsBaseline.add(new RDFWLSubTreeKernel(0, d, inf, reverseWL, false, trackPrevNBH, true));
+			///* BoL Graph	
+			for (boolean inf : inference) {
+				resTableBoLGraph.newRow("BoL Graph: " + inf);		 
+				for (int d : depths) {
 
-				SimpleGraphKernelExperiment<RDFData> exp = new SimpleGraphKernelExperiment<RDFData>(kernelsBaseline, data, target, svmParms, seeds, evalFuncs);
+					List<Result> tempRes = new ArrayList<Result>();
+					for (long sDS : seedsDataset) {
+						Pair<SingleDTGraph, List<Double>> p = cache.get(sDS).get(inf).get(d);
+						SingleDTGraph data = p.getFirst();
 
-				exp.run();
+						List<DTGraphWLSubTreeKernel> kernels = new ArrayList<DTGraphWLSubTreeKernel>();	
+						kernels.add(new DTGraphWLSubTreeKernel(0, d, reverseWL, false, trackPrevNBH, true));
 
-				for (Result res : exp.getResults()) {
-					resTable.addResult(res);
-				}
-			}
-		}
-		//*/
+						GraphFeatureVectorKernelComputationTimeExperiment<SingleDTGraph> exp = new GraphFeatureVectorKernelComputationTimeExperiment<SingleDTGraph>(kernels, data, null);
 
-		/* The baseline experiment, BoW (or BoL if you prefer)
-		for (boolean inf : inference) {
-			resTable.newRow("Baseline BoL Hubs: " + inf);		 
-			for (int d : depths) {
-				List<RDFHubRemovalWrapperFeatureVectorKernel<DTGraphWLSubTreeKernel>>kernelsBaseline = new ArrayList<RDFHubRemovalWrapperFeatureVectorKernel<DTGraphWLSubTreeKernel>>();	
-
-				for (int minHubSize : mhs) {
-					kernelsBaseline.add(new RDFHubRemovalWrapperFeatureVectorKernel<DTGraphWLSubTreeKernel>(new DTGraphWLSubTreeKernel(0, d, reverseWL, false, trackPrevNBH, true), d, inf, minHubSize, true));
-				}
-				SimpleGraphKernelExperiment<RDFData> exp = new SimpleGraphKernelExperiment<RDFData>(kernelsBaseline, data, target, svmParms, seeds, evalFuncs);
-
-				exp.run();
-
-				for (Result res : exp.getResults()) {
-					resTable.addResult(res);
-				}
-			}
-		}
-		//*/
-
-		/* The baseline experiment, BoW (or BoL if you prefer) Tree variant
-		for (boolean inf : inference) {
-			resTable.newRow("Baseline BoL Tree: " + inf);		 
-			for (int d : depths) {
-				List<RDFTreeWLSubTreeKernel> kernelsBaseline = new ArrayList<RDFTreeWLSubTreeKernel>();	
-				kernelsBaseline.add(new RDFTreeWLSubTreeKernel(0, d, inf, reverseWL, false, trackPrevNBH, true));
-
-				SimpleGraphKernelExperiment<RDFData> exp = new SimpleGraphKernelExperiment<RDFData>(kernelsBaseline, data, target, svmParms, seeds, evalFuncs);
-
-				exp.run();
-
-				for (Result res : exp.getResults()) {
-					resTable.addResult(res);
-				}
-			}
-		}
-		//*/
-
-		/* The baseline experiment, BoW (or BoL if you prefer) Tree variant
-		for (boolean inf : inference) {
-			resTable.newRow("Baseline BoL Tree Hubs: " + inf);		 
-			for (int d : depths) {
-				List<RDFHubRemovalWrapperFeatureVectorKernel<DTGraphTreeWLSubTreeKernel>>kernelsBaseline = new ArrayList<RDFHubRemovalWrapperFeatureVectorKernel<DTGraphTreeWLSubTreeKernel>>();	
-				for (int minHubSize : mhs) {
-					kernelsBaseline.add(new RDFHubRemovalWrapperFeatureVectorKernel<DTGraphTreeWLSubTreeKernel>(new DTGraphTreeWLSubTreeKernel(0, d, reverseWL, false, trackPrevNBH, true), d, inf, minHubSize, true));
-				}
-				SimpleGraphKernelExperiment<RDFData> exp = new SimpleGraphKernelExperiment<RDFData>(kernelsBaseline, data, target, svmParms, seeds, evalFuncs);
-
-				exp.run();
-
-				for (Result res : exp.getResults()) {
-					resTable.addResult(res);
-				}
-			}
-		}
-		//*/
-
-		/* Path Count Root
-		for (boolean inf : inference) {
-			resTable.newRow("Path Count through root: " + inf);		 
-			for (int d : depths) {
-				List<RDFRootWalkCountKernel> kernels = new ArrayList<RDFRootWalkCountKernel>();				
-				kernels.add(new RDFRootWalkCountKernel(d*2, inf, true));
-
-				//Collections.shuffle(target);
-				SimpleGraphKernelExperiment<RDFData> exp = new SimpleGraphKernelExperiment<RDFData>(kernels, data, target, svmParms, seeds, evalFuncs);
-
-				exp.run();
-
-				for (Result res : exp.getResults()) {
-					resTable.addResult(res);
-				}
-			}
-		}
-		//*/
-
-		/* Path Count Root
-		for (boolean inf : inference) {
-			resTable.newRow("Path Count through root Hubs: " + inf);		 
-			for (int d : depths) {
-				List<RDFHubRemovalWrapperKernel<DTGraphRootWalkCountKernel>>kernels = new ArrayList<RDFHubRemovalWrapperKernel<DTGraphRootWalkCountKernel>>();	
-				kernels.add(new RDFHubRemovalWrapperKernel<DTGraphRootWalkCountKernel>(new DTGraphRootWalkCountKernel(d*2, true), d, inf, maxHubs, stepSize, true));
-
-				//Collections.shuffle(target);
-				SimpleGraphKernelExperiment<RDFData> exp = new SimpleGraphKernelExperiment<RDFData>(kernels, data, target, svmParms, seeds, evalFuncs);
-
-				exp.run();
-
-				for (Result res : exp.getResults()) {
-					resTable.addResult(res);
-				}
-			}
-		}
-		//*/
-
-		/* WL Root
-		for (boolean inf : inference) {
-			resTable.newRow("WL through root: " + inf);		 
-			for (int d : depths) {
-
-				List<RDFRootWLSubTreeKernel> kernels = new ArrayList<RDFRootWLSubTreeKernel>();	
-				kernels.add(new RDFRootWLSubTreeKernel(d*2, inf, false, true));
-
-				//Collections.shuffle(target);
-				SimpleGraphKernelExperiment<RDFData> exp = new SimpleGraphKernelExperiment<RDFData>(kernels, data, target, svmParms, seeds, evalFuncs);
-
-				exp.run();
-
-				for (Result res : exp.getResults()) {
-					resTable.addResult(res);
-				}
-			}
-		}
-		//*/
-
-		/* WL Root
-		for (boolean inf : inference) {
-			resTable.newRow("WL through root Hubs: " + inf);		 
-			for (int d : depths) {
-				List<RDFHubRemovalWrapperKernel<DTGraphRootWLSubTreeKernel>>kernels = new ArrayList<RDFHubRemovalWrapperKernel<DTGraphRootWLSubTreeKernel>>();	
-				kernels.add(new RDFHubRemovalWrapperKernel<DTGraphRootWLSubTreeKernel>(new DTGraphRootWLSubTreeKernel(d*2, true), d, inf, maxHubs, stepSize, true));
-
-				//Collections.shuffle(target);
-				SimpleGraphKernelExperiment<RDFData> exp = new SimpleGraphKernelExperiment<RDFData>(kernels, data, target, svmParms, seeds, evalFuncs);
-
-				exp.run();
-
-				for (Result res : exp.getResults()) {
-					resTable.addResult(res);
-				}
-			}
-		}
-		//*/
-
-		/* Path Count Tree
-		for (boolean inf : inference) {
-			resTable.newRow("Path Count Tree: " + inf);		 
-			for (int d : depths) {
-
-				List<RDFTreeWalkCountKernel> kernels = new ArrayList<RDFTreeWalkCountKernel>();	
-
-				if (depthTimesTwo) {
-					kernels.add(new RDFTreeWalkCountKernel(d*2, d, inf, true));
-				} else {
-					for (int dd : iterationsWL) {
-						kernels.add(new RDFTreeWalkCountKernel(dd, d, inf, true));
-					}
-				}
-
-				//Collections.shuffle(target);
-				SimpleGraphKernelExperiment<RDFData> exp = new SimpleGraphKernelExperiment<RDFData>(kernels, data, target, svmParms, seeds, evalFuncs);
-
-				exp.run();
-
-				for (Result res : exp.getResults()) {
-					resTable.addResult(res);
-				}
-			}
-		}
-		//*/
-
-		/* Path Count Tree
-		for (boolean inf : inference) {
-			resTable.newRow("Path Count Tree Hubs: " + inf);		 
-			for (int d : depths) {
-				List<RDFHubRemovalWrapperFeatureVectorKernel<DTGraphTreeWalkCountKernel>>kernels = new ArrayList<RDFHubRemovalWrapperFeatureVectorKernel<DTGraphTreeWalkCountKernel>>();	
-
-				if (depthTimesTwo) {
-					for (int minHubSize : mhs) {
-						kernels.add(new RDFHubRemovalWrapperFeatureVectorKernel<DTGraphTreeWalkCountKernel>(new DTGraphTreeWalkCountKernel(d*2, d, true), d, inf, minHubSize, true));
-					}
-				} else {
-					for (int dd : iterationsWL) {
-						for (int minHubSize : mhs) {
-							kernels.add(new RDFHubRemovalWrapperFeatureVectorKernel<DTGraphTreeWalkCountKernel>(new DTGraphTreeWalkCountKernel(dd, d, true), d, inf, minHubSize, true));
+						exp.run();
+						if (tempRes.isEmpty()) {
+							for (Result res : exp.getResults()) {
+								tempRes.add(res);
+							}
+						} else {
+							for (int i = 0; i < tempRes.size(); i++) {
+								tempRes.get(i).addResult(exp.getResults().get(i));
+							}
 						}
 					}
-				}
 
-				//Collections.shuffle(target);
-				SimpleGraphKernelExperiment<RDFData> exp = new SimpleGraphKernelExperiment<RDFData>(kernels, data, target, svmParms, seeds, evalFuncs);
-
-				exp.run();
-
-				for (Result res : exp.getResults()) {
-					resTable.addResult(res);
-				}
-			}
-		}
-		//*/
-
-		/* WL Tree
-		for (boolean inf : inference) {
-			resTable.newRow("WL Tree: " + inf);		 
-			for (int d : depths) {
-
-				List<RDFTreeWLSubTreeKernel> kernels = new ArrayList<RDFTreeWLSubTreeKernel>();	
-
-				if (depthTimesTwo) {
-					kernels.add(new RDFTreeWLSubTreeKernel(d*2, d, inf, reverseWL, false, trackPrevNBH, true));
-				} else {
-					for (int dd : iterationsWL) {
-						kernels.add(new RDFTreeWLSubTreeKernel(dd, d, inf, reverseWL, false, trackPrevNBH, true));
+					for (Result res : tempRes) {
+						resTableBoLGraph.addResult(res);
 					}
 				}
-
-				//Collections.shuffle(target);
-				SimpleGraphKernelExperiment<RDFData> exp = new SimpleGraphKernelExperiment<RDFData>(kernels, data, target, svmParms, seeds, evalFuncs);
-
-				exp.run();
-
-				for (Result res : exp.getResults()) {
-					resTable.addResult(res);
-				}
 			}
-		}
-		//*/
+			//*/
+			
+			///* BoL Tree	
+			for (boolean inf : inference) {
+				resTableBoLTree.newRow("BoL Tree: " + inf);		 
+				for (int d : depths) {
 
-		/* WL Tree
-		for (boolean inf : inference) {
-			resTable.newRow("WL Tree Hubs: " + inf);		 
-			for (int d : depths) {
+					List<Result> tempRes = new ArrayList<Result>();
+					for (long sDS : seedsDataset) {
+						Pair<SingleDTGraph, List<Double>> p = cache.get(sDS).get(inf).get(d);
+						SingleDTGraph data = p.getFirst();
 
-				List<RDFHubRemovalWrapperFeatureVectorKernel<DTGraphTreeWLSubTreeKernel>>kernels = new ArrayList<RDFHubRemovalWrapperFeatureVectorKernel<DTGraphTreeWLSubTreeKernel>>();	
+						List<DTGraphTreeWLSubTreeKernel> kernels = new ArrayList<DTGraphTreeWLSubTreeKernel>();	
+						kernels.add(new DTGraphTreeWLSubTreeKernel(0, d, reverseWL, false, trackPrevNBH, true));
 
-				if (depthTimesTwo) {
-					for (int minHubSize : mhs) {
-						kernels.add(new RDFHubRemovalWrapperFeatureVectorKernel<DTGraphTreeWLSubTreeKernel>(new DTGraphTreeWLSubTreeKernel(d*2, d, true, false, trackPrevNBH, true), d, inf, minHubSize, true));
-					}
-				} else {
-					for (int dd : iterationsWL) {
-						for (int minHubSize : mhs) {
-							kernels.add(new RDFHubRemovalWrapperFeatureVectorKernel<DTGraphTreeWLSubTreeKernel>(new DTGraphTreeWLSubTreeKernel(dd, d, true, false, trackPrevNBH, true), d, inf, minHubSize, true));
+						GraphFeatureVectorKernelComputationTimeExperiment<SingleDTGraph> exp = new GraphFeatureVectorKernelComputationTimeExperiment<SingleDTGraph>(kernels, data, null);
+
+						exp.run();
+						if (tempRes.isEmpty()) {
+							for (Result res : exp.getResults()) {
+								tempRes.add(res);
+							}
+						} else {
+							for (int i = 0; i < tempRes.size(); i++) {
+								tempRes.get(i).addResult(exp.getResults().get(i));
+							}
 						}
 					}
-				}
-				SimpleGraphKernelExperiment<RDFData> exp = new SimpleGraphKernelExperiment<RDFData>(kernels, data, target, svmParms, seeds, evalFuncs);
 
-				exp.run();
-
-				for (Result res : exp.getResults()) {
-					resTable.addResult(res);
-				}
-			}
-		}
-		//*/
-
-
-
-		/* RDF Path Count 
-		for (boolean inf : inference) {
-			resTable.newRow("RDF Path Count: " + inf);		 
-			for (int d : depths) {
-
-				List<RDFPathCountKernel> kernels = new ArrayList<RDFPathCountKernel>();	
-
-				if (depthTimesTwo) {
-					kernels.add(new RDFPathCountKernel(d*2, d, inf, true));
-				} else {
-					for (int dd : iterationsWL) {
-						kernels.add(new RDFPathCountKernel(dd, d, inf, true));
+					for (Result res : tempRes) {
+						resTableBoLTree.addResult(res);
 					}
 				}
-
-				//Collections.shuffle(target);
-				SimpleGraphKernelExperiment<RDFData> exp = new SimpleGraphKernelExperiment<RDFData>(kernels, data, target, svmParms, seeds, evalFuncs);
-
-				exp.run();
-
-				for (Result res : exp.getResults()) {
-					resTable.addResult(res);
-				}
 			}
-		}
-		//*/
+			//*/
+			
+			///* Root WC	
+			for (boolean inf : inference) {
+				resTableRootWC.newRow("Root WC: " + inf);		 
+				for (int d : depths) {
 
-		/* RDF Path Count 
-		for (boolean inf : inference) {
-			resTable.newRow("RDF Path Count hubs: " + inf);		 
-			for (int d : depths) {
+					List<Result> tempRes = new ArrayList<Result>();
+					for (long sDS : seedsDataset) {
+						Pair<SingleDTGraph, List<Double>> p = cache.get(sDS).get(inf).get(d);
+						SingleDTGraph data = p.getFirst();
 
-				List<RDFHubRemovalWrapperKernel<DTGraphWalkCountKernel>>kernels = new ArrayList<RDFHubRemovalWrapperKernel<DTGraphWalkCountKernel>>();	
+						List<DTGraphRootWalkCountKernel> kernels = new ArrayList<DTGraphRootWalkCountKernel>();	
+						kernels.add(new DTGraphRootWalkCountKernel(d*2, true));
 
-				if (depthTimesTwo) {
-					kernels.add(new RDFHubRemovalWrapperKernel<DTGraphWalkCountKernel>(new DTGraphWalkCountKernel(d*2, d, true), d, inf, maxHubs, stepSize, true));
-				} else {
-					for (int dd : iterationsWL) {
-						kernels.add(new RDFHubRemovalWrapperKernel<DTGraphWalkCountKernel>(new DTGraphWalkCountKernel(dd, d, true), d, inf, maxHubs, stepSize, true));
-					}
-				}
+						GraphFeatureVectorKernelComputationTimeExperiment<SingleDTGraph> exp = new GraphFeatureVectorKernelComputationTimeExperiment<SingleDTGraph>(kernels, data, null);
 
-				SimpleGraphKernelExperiment<RDFData> exp = new SimpleGraphKernelExperiment<RDFData>(kernels, data, target, svmParms, seeds, evalFuncs);
-
-				exp.run();
-
-				for (Result res : exp.getResults()) {
-					resTable.addResult(res);
-				}
-			}
-		}
-		//*/
-
-		/* RDF WL 
-		for (boolean inf : inference) {
-			resTable.newRow("RDF WL: " + inf);		 
-			for (int d : depths) {
-
-				List<RDFWLSubTreeKernel> kernels = new ArrayList<RDFWLSubTreeKernel>();	
-
-				if (depthTimesTwo) {
-					kernels.add(new RDFWLSubTreeKernel(d*2, d, inf, reverseWL, false, trackPrevNBH, true));
-				} else {
-					for (int dd : iterationsWL) {
-						kernels.add(new RDFWLSubTreeKernel(dd, d, inf, reverseWL, false, trackPrevNBH, true));
-					}
-				}
-
-				//Collections.shuffle(target);
-				SimpleGraphKernelExperiment<RDFData> exp = new SimpleGraphKernelExperiment<RDFData>(kernels, data, target, svmParms, seeds, evalFuncs);
-
-				exp.run();
-
-				for (Result res : exp.getResults()) {
-					resTable.addResult(res);
-				}
-			}
-		}
-		//*/
-
-		/* RDF WL 
-		for (boolean inf : inference) {
-			resTable.newRow("RDF WL Hubs: " + inf);		 
-			for (int d : depths) {
-
-				List<RDFHubRemovalWrapperFeatureVectorKernel<DTGraphWLSubTreeKernel>>kernels = new ArrayList<RDFHubRemovalWrapperFeatureVectorKernel<DTGraphWLSubTreeKernel>>();	
-
-				if (depthTimesTwo) {
-					for (int minHubSize : mhs) {
-						kernels.add(new RDFHubRemovalWrapperFeatureVectorKernel<DTGraphWLSubTreeKernel>(new DTGraphWLSubTreeKernel(d*2, d, true, false, trackPrevNBH, true), d, inf, minHubSize, true));
-					}
-				} else {
-					for (int dd : iterationsWL) {
-						for (int minHubSize : mhs) {
-							kernels.add(new RDFHubRemovalWrapperFeatureVectorKernel<DTGraphWLSubTreeKernel>(new DTGraphWLSubTreeKernel(dd, d, true, false, trackPrevNBH, true), d, inf, minHubSize, true));
+						exp.run();
+						if (tempRes.isEmpty()) {
+							for (Result res : exp.getResults()) {
+								tempRes.add(res);
+							}
+						} else {
+							for (int i = 0; i < tempRes.size(); i++) {
+								tempRes.get(i).addResult(exp.getResults().get(i));
+							}
 						}
 					}
-				}
 
-				SimpleGraphKernelExperiment<RDFData> exp = new SimpleGraphKernelExperiment<RDFData>(kernels, data, target, svmParms, seeds, evalFuncs);
-
-				exp.run();
-
-				for (Result res : exp.getResults()) {
-					resTable.addResult(res);
-				}
-			}
-		}
-		//*/
-
-
-		/* Regular WL 
-		for (boolean inf : inference) {
-			resTable.newRow("WL: " + inf);		 
-			for (int d : depths) {
-
-				List<RDFGraphListWLSubTreeKernel> kernels = new ArrayList<RDFGraphListWLSubTreeKernel>();	
-
-				if (depthTimesTwo) {
-					kernels.add(new RDFGraphListWLSubTreeKernel(d*2, d, inf, reverseWL, trackPrevNBH, true));
-				} else {
-					for (int dd : iterationsWL) {
-						kernels.add(new RDFGraphListWLSubTreeKernel(dd, d, inf, reverseWL, trackPrevNBH, true));
+					for (Result res : tempRes) {
+						resTableRootWC.addResult(res);
 					}
 				}
-
-				//Collections.shuffle(target);
-				SimpleGraphKernelExperiment<RDFData> exp = new SimpleGraphKernelExperiment<RDFData>(kernels, data, target, svmParms, seeds, evalFuncs);
-
-				exp.run();
-
-				for (Result res : exp.getResults()) {
-					resTable.addResult(res);
-				}
 			}
-		}
-		//*/
+			//*/
+			
+			///* WC	
+			for (boolean inf : inference) {
+				resTableWC.newRow("WC: " + inf);		 
+				for (int d : depths) {
 
-		/* WL with HubRemoval
-		for (boolean inf : inference) {
-			resTable.newRow("WL Hubs: " + inf);		 
-			for (int d : depths) {
+					List<Result> tempRes = new ArrayList<Result>();
+					for (long sDS : seedsDataset) {
+						Pair<SingleDTGraph, List<Double>> p = cache.get(sDS).get(inf).get(d);
+						SingleDTGraph data = p.getFirst();
 
-				List<RDFHubRemovalWrapperFeatureVectorKernel<DTGraphGraphListWLSubTreeKernel>> kernels = new ArrayList<RDFHubRemovalWrapperFeatureVectorKernel<DTGraphGraphListWLSubTreeKernel>>();	
+						List<DTGraphGraphListWalkCountKernel> kernels = new ArrayList<DTGraphGraphListWalkCountKernel>();	
+						kernels.add(new DTGraphGraphListWalkCountKernel(d*2, d, true));
 
-				if (depthTimesTwo) {
-					for (int minHubSize : mhs) {
-						kernels.add(new RDFHubRemovalWrapperFeatureVectorKernel<DTGraphGraphListWLSubTreeKernel>(new DTGraphGraphListWLSubTreeKernel(d*2, d, reverseWL, trackPrevNBH, true), d, inf, minHubSize, true));
-					}
-				} else {
-					for (int dd : iterationsWL) {
-						for (int minHubSize : mhs) {
-							kernels.add(new RDFHubRemovalWrapperFeatureVectorKernel<DTGraphGraphListWLSubTreeKernel>(new DTGraphGraphListWLSubTreeKernel(dd, d, reverseWL, trackPrevNBH, true), d, inf, minHubSize, true));
+						GraphFeatureVectorKernelComputationTimeExperiment<SingleDTGraph> exp = new GraphFeatureVectorKernelComputationTimeExperiment<SingleDTGraph>(kernels, data, null);
+
+						exp.run();
+						if (tempRes.isEmpty()) {
+							for (Result res : exp.getResults()) {
+								tempRes.add(res);
+							}
+						} else {
+							for (int i = 0; i < tempRes.size(); i++) {
+								tempRes.get(i).addResult(exp.getResults().get(i));
+							}
 						}
 					}
-				}
 
-				//Collections.shuffle(target);
-				SimpleGraphKernelExperiment<RDFData> exp = new SimpleGraphKernelExperiment<RDFData>(kernels, data, target, svmParms, seeds, evalFuncs);
-
-				exp.run();
-
-				for (Result res : exp.getResults()) {
-					resTable.addResult(res);
-				}
-			}
-		}
-		//*/
-
-
-		/* Regular WL
-		for (boolean inf : inference) {
-			resTable.newRow("Regular WL: " + inf);		
-			for (int d : depths) {
-
-				Set<Statement> st = RDFUtils.getStatements4Depth(tripleStore, ds.getRDFData().getInstances(), d, inf);
-				st.removeAll(ds.getRDFData().getBlackList());
-				DTGraph<String,String> graph = RDFUtils.statements2Graph(st, RDFUtils.REGULAR_LITERALS);
-				List<DTNode<String,String>> instanceNodes = RDFUtils.findInstances(graph, ds.getRDFData().getInstances());
-				graph = RDFUtils.simplifyInstanceNodeLabels(graph, instanceNodes);
-				GraphList<DTGraph<String,String>> graphs = RDFUtils.getSubGraphs(graph, instanceNodes, d);
-
-				double avgNodes = 0;
-				double avgLinks = 0;
-
-				for (DTGraph<String,String> g : graphs.getGraphs()){
-					avgNodes += g.nodes().size();
-					avgLinks += g.links().size();
-				}
-				avgNodes /= graphs.numInstances();
-				avgLinks /= graphs.numInstances();
-
-				System.out.println("Avg # nodes: " + avgNodes + " , avg # links: " + avgLinks);
-
-				List<WLSubTreeKernel> kernels = new ArrayList<WLSubTreeKernel>();
-
-				if (depthTimesTwo) {
-					WLSubTreeKernel kernel = new WLSubTreeKernel(d*2, reverseWL, true, true);			
-					kernels.add(kernel);
-				} else {
-					for (int dd : iterationsWL) {
-						WLSubTreeKernel kernel = new WLSubTreeKernel(dd, reverseWL, true, true);			
-						kernels.add(kernel);
+					for (Result res : tempRes) {
+						resTableWC.addResult(res);
 					}
 				}
-
-				//resTable.newRow(kernels.get(0).getLabel() + "_" + inf);
-				SimpleGraphKernelExperiment<GraphList<DTGraph<String,String>>> exp2 = new SimpleGraphKernelExperiment<GraphList<DTGraph<String,String>>>(kernels, graphs, target, svmParms, seeds, evalFuncs);
-
-				//System.out.println(kernels.get(0).getLabel());
-				exp2.run();
-
-				for (Result res : exp2.getResults()) {
-					resTable.addResult(res);
-				}
-				System.out.println(resTable);
 			}
-		}
-		//*/
+			//*/
+			
+			
+			///* RDF WC	
+			for (boolean inf : inference) {
+				resTableRDFWC.newRow("RDF WC: " + inf);		 
+				for (int d : depths) {
 
-		resTable.addCompResults(resTable.getBestResults());
-		System.out.println(resTable);
+					List<Result> tempRes = new ArrayList<Result>();
+					for (long sDS : seedsDataset) {
+						Pair<SingleDTGraph, List<Double>> p = cache.get(sDS).get(inf).get(d);
+						SingleDTGraph data = p.getFirst();
 
-		/* Walk Count full with HubRemoval
-		for (boolean inf : inference) {
-			resTable.newRow("Walk Count full Hubs: " + inf);		 
-			for (int d : depths) {
+						List<DTGraphWalkCountKernel> kernels = new ArrayList<DTGraphWalkCountKernel>();	
+						kernels.add(new DTGraphWalkCountKernel(d*2, d, true));
 
-				List<RDFHubRemovalWrapperKernel<DTGraphGraphListWalkCountKernel>> kernels = new ArrayList<RDFHubRemovalWrapperKernel<DTGraphGraphListWalkCountKernel>>();	
+						GraphFeatureVectorKernelComputationTimeExperiment<SingleDTGraph> exp = new GraphFeatureVectorKernelComputationTimeExperiment<SingleDTGraph>(kernels, data, null);
 
-				if (depthTimesTwo) {
-					kernels.add(new RDFHubRemovalWrapperKernel<DTGraphGraphListWalkCountKernel>(new DTGraphGraphListWalkCountKernel(d*2, d, true), d, inf, maxHubs, stepSize, true));
-				} else {
-					for (int dd : iterationsWL) {
-						kernels.add(new RDFHubRemovalWrapperKernel<DTGraphGraphListWalkCountKernel>(new DTGraphGraphListWalkCountKernel(dd, d, true), d, inf, maxHubs, stepSize, true));
+						exp.run();
+						if (tempRes.isEmpty()) {
+							for (Result res : exp.getResults()) {
+								tempRes.add(res);
+							}
+						} else {
+							for (int i = 0; i < tempRes.size(); i++) {
+								tempRes.get(i).addResult(exp.getResults().get(i));
+							}
+						}
+					}
+
+					for (Result res : tempRes) {
+						resTableRDFWC.addResult(res);
 					}
 				}
-
-				//Collections.shuffle(target);
-				SimpleGraphKernelExperiment<RDFData> exp = new SimpleGraphKernelExperiment<RDFData>(kernels, data, target, svmParms, seeds, evalFuncs);
-
-				exp.run();
-
-				for (Result res : exp.getResults()) {
-					resTable.addResult(res);
-				}
 			}
-		}
-		//*/
+			//*/
+			
+			///* Tree WC	
+			for (boolean inf : inference) {
+				resTableTreeWC.newRow("Tree WC: " + inf);		 
+				for (int d : depths) {
 
+					List<Result> tempRes = new ArrayList<Result>();
+					for (long sDS : seedsDataset) {
+						Pair<SingleDTGraph, List<Double>> p = cache.get(sDS).get(inf).get(d);
+						SingleDTGraph data = p.getFirst();
 
-		/* Path Count full
-		for (boolean inf : inference) {
-			resTable.newRow("Path Count Full: " + inf);		
-			for (int d : depths) {
+						List<DTGraphTreeWalkCountKernel> kernels = new ArrayList<DTGraphTreeWalkCountKernel>();	
+						kernels.add(new DTGraphTreeWalkCountKernel(d*2, d, true));
 
-				Set<Statement> st = RDFUtils.getStatements4Depth(tripleStore, ds.getRDFData().getInstances(), d, inf);
-				st.removeAll(ds.getRDFData().getBlackList());
-				DTGraph<String,String> graph = RDFUtils.statements2Graph(st, RDFUtils.REGULAR_LITERALS);
-				List<DTNode<String,String>> instanceNodes = RDFUtils.findInstances(graph, ds.getRDFData().getInstances());
-				graph = RDFUtils.simplifyInstanceNodeLabels(graph, instanceNodes);
-				GraphList<DTGraph<String,String>> graphs = RDFUtils.getSubGraphs(graph, instanceNodes, d);
+						GraphFeatureVectorKernelComputationTimeExperiment<SingleDTGraph> exp = new GraphFeatureVectorKernelComputationTimeExperiment<SingleDTGraph>(kernels, data, null);
 
-				double avgNodes = 0;
-				double avgLinks = 0;
+						exp.run();
+						if (tempRes.isEmpty()) {
+							for (Result res : exp.getResults()) {
+								tempRes.add(res);
+							}
+						} else {
+							for (int i = 0; i < tempRes.size(); i++) {
+								tempRes.get(i).addResult(exp.getResults().get(i));
+							}
+						}
+					}
 
-				for (DTGraph<String,String> g : graphs.getGraphs()){
-					avgNodes += g.nodes().size();
-					avgLinks += g.links().size();
-				}
-				avgNodes /= graphs.numInstances();
-				avgLinks /= graphs.numInstances();
-
-				System.out.println("Avg # nodes: " + avgNodes + " , avg # links: " + avgLinks);
-
-				List<WalkCountKernel> kernels = new ArrayList<WalkCountKernel>();
-
-				if (depthTimesTwo) {
-					WalkCountKernel kernel = new WalkCountKernel(d*2, true);			
-					kernels.add(kernel);
-				} else {
-					for (int dd : iterationsWL) {
-						WalkCountKernel kernel = new WalkCountKernel(dd, true);			
-						kernels.add(kernel);
+					for (Result res : tempRes) {
+						resTableTreeWC.addResult(res);
 					}
 				}
-
-				//resTable.newRow(kernels.get(0).getLabel() + "_" + inf);
-				SimpleGraphKernelExperiment<GraphList<DTGraph<String,String>>> exp2 = new SimpleGraphKernelExperiment<GraphList<DTGraph<String,String>>>(kernels, graphs, target, svmParms, seeds, evalFuncs);
-
-				//System.out.println(kernels.get(0).getLabel());
-				exp2.run();
-
-				for (Result res : exp2.getResults()) {
-					resTable.addResult(res);
-				}
-				System.out.println(resTable);
 			}
+			//*/
+			
+			
+			///* Regular WL 
+			for (boolean inf : inference) {
+				resTableWL.newRow("Regular WL: " + inf);		 
+				for (int d : depths) {
+
+					List<Result> tempRes = new ArrayList<Result>();
+					for (long sDS : seedsDataset) {
+						Pair<SingleDTGraph, List<Double>> p = cache.get(sDS).get(inf).get(d);
+						SingleDTGraph data = p.getFirst();
+
+						List<DTGraphGraphListWLSubTreeKernel> kernels = new ArrayList<DTGraphGraphListWLSubTreeKernel>();	
+						kernels.add(new DTGraphGraphListWLSubTreeKernel(d*2, d, reverseWL, trackPrevNBH, true));
+
+						GraphFeatureVectorKernelComputationTimeExperiment<SingleDTGraph> exp = new GraphFeatureVectorKernelComputationTimeExperiment<SingleDTGraph>(kernels, data, null);
+
+						exp.run();
+						if (tempRes.isEmpty()) {
+							for (Result res : exp.getResults()) {
+								tempRes.add(res);
+							}
+						} else {
+							for (int i = 0; i < tempRes.size(); i++) {
+								tempRes.get(i).addResult(exp.getResults().get(i));
+							}
+						}
+					}
+
+					for (Result res : tempRes) {
+						resTableWL.addResult(res);
+					}
+				}
+			}
+			//*/
+			
+			///* RDF WL		
+			for (boolean inf : inference) {
+				resTableRDFWL.newRow("RDF WL: " + inf);		 
+				for (int d : depths) {
+
+					List<Result> tempRes = new ArrayList<Result>();
+					for (long sDS : seedsDataset) {
+						Pair<SingleDTGraph, List<Double>> p = cache.get(sDS).get(inf).get(d);
+						SingleDTGraph data = p.getFirst();
+
+						List<DTGraphWLSubTreeKernel> kernels = new ArrayList<DTGraphWLSubTreeKernel>();	
+						kernels.add(new DTGraphWLSubTreeKernel(d*2, d, reverseWL, false, trackPrevNBH, true));
+
+						GraphFeatureVectorKernelComputationTimeExperiment<SingleDTGraph> exp = new GraphFeatureVectorKernelComputationTimeExperiment<SingleDTGraph>(kernels, data, null);
+
+						exp.run();
+						if (tempRes.isEmpty()) {
+							for (Result res : exp.getResults()) {
+								tempRes.add(res);
+							}
+						} else {
+							for (int i = 0; i < tempRes.size(); i++) {
+								tempRes.get(i).addResult(exp.getResults().get(i));
+							}
+						}
+					}
+
+					for (Result res : tempRes) {
+						resTableRDFWL.addResult(res);
+					}
+				}
+			}
+			//*/
+			
+			///* Tree WL		
+			for (boolean inf : inference) {
+				resTableTreeWL.newRow("Tree WL: " + inf);		 
+				for (int d : depths) {
+
+					List<Result> tempRes = new ArrayList<Result>();
+					for (long sDS : seedsDataset) {
+						Pair<SingleDTGraph, List<Double>> p = cache.get(sDS).get(inf).get(d);
+						SingleDTGraph data = p.getFirst();
+
+						List<DTGraphTreeWLSubTreeKernel> kernels = new ArrayList<DTGraphTreeWLSubTreeKernel>();	
+						kernels.add(new DTGraphTreeWLSubTreeKernel(d*2, d, reverseWL, false, trackPrevNBH, true));
+
+						GraphFeatureVectorKernelComputationTimeExperiment<SingleDTGraph> exp = new GraphFeatureVectorKernelComputationTimeExperiment<SingleDTGraph>(kernels, data, null);
+
+						exp.run();
+						if (tempRes.isEmpty()) {
+							for (Result res : exp.getResults()) {
+								tempRes.add(res);
+							}
+						} else {
+							for (int i = 0; i < tempRes.size(); i++) {
+								tempRes.get(i).addResult(exp.getResults().get(i));
+							}
+						}
+					}
+
+					for (Result res : tempRes) {
+						resTableTreeWL.addResult(res);
+					}
+				}
+			}
+			//*/
+
+
 		}
-		//*/
 
 
-
-		resTable.addCompResults(resTable.getBestResults());
-		System.out.println(resTable);
+		for (ResultsTable table : tables) {
+			System.out.println(table);
+		}		
 	}
 
 	private static void computeGraphStatistics(RDFDataSet tripleStore, ClassificationDataSet ds, boolean[] inference, int[] depths) {
