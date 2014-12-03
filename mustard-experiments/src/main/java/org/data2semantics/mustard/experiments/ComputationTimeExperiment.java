@@ -63,11 +63,11 @@ public class ComputationTimeExperiment {
 	 */
 	public static void main(String[] args) {
 
-		RDFDataSet tripleStore = new RDFFileDataSet(AIFB_FILE, RDFFormat.N3);
-		ClassificationDataSet ds = new AIFBDataSet(tripleStore);
+		//RDFDataSet tripleStore = new RDFFileDataSet(AIFB_FILE, RDFFormat.N3);
+		//ClassificationDataSet ds = new AIFBDataSet(tripleStore);
 
-		//RDFDataSet tripleStore = new RDFFileDataSet(BGS_FOLDER, RDFFormat.NTRIPLES);
-		//ClassificationDataSet ds = new BGSLithoDataSet(tripleStore);
+		RDFDataSet tripleStore = new RDFFileDataSet(BGS_FOLDER, RDFFormat.NTRIPLES);
+		ClassificationDataSet ds = new BGSLithoDataSet(tripleStore);
 
 		ds.create();
 
