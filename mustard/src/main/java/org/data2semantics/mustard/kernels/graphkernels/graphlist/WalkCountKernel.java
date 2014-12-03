@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.data2semantics.mustard.kernels.ComputationTimeTracker;
 import org.data2semantics.mustard.kernels.KernelUtils;
 import org.data2semantics.mustard.kernels.data.GraphList;
 import org.data2semantics.mustard.kernels.graphkernels.FeatureVectorKernel;
@@ -21,8 +22,9 @@ import org.nodes.LightDTGraph;
  * 
  * @author Gerben *
  */
-public class WalkCountKernel implements GraphKernel<GraphList<DTGraph<String,String>>>, FeatureVectorKernel<GraphList<DTGraph<String,String>>> {
+public class WalkCountKernel implements GraphKernel<GraphList<DTGraph<String,String>>>, FeatureVectorKernel<GraphList<DTGraph<String,String>>>, ComputationTimeTracker {
 	private int depth;
+	private long compTime;
 	protected boolean normalize;
 	private Map<String, Integer> pathDict;
 	private Map<String, Integer> labelDict;
@@ -51,6 +53,10 @@ public class WalkCountKernel implements GraphKernel<GraphList<DTGraph<String,Str
 		this.normalize = normalize;
 	}
 
+	public long getComputationTime() {
+		return compTime;
+	}
+
 	public SparseVector[] computeFeatureVectors(GraphList<DTGraph<String,String>> data) {
 		pathDict  = new HashMap<String,Integer>();
 		labelDict = new HashMap<String,Integer>();
@@ -60,11 +66,15 @@ public class WalkCountKernel implements GraphKernel<GraphList<DTGraph<String,Str
 		SparseVector[] featureVectors = new SparseVector[graphs.size()];
 		for (int i = 0; i < featureVectors.length; i++) {
 			featureVectors[i] = new SparseVector();
-
+		}
+		
+		long tic = System.currentTimeMillis();
+		
+		for (int i = 0; i < featureVectors.length; i++) {
 			for (DTNode<String,String> v : graphs.get(i).nodes()) {
 				countPathRec(featureVectors[i], v, "", depth);
 			}
-			
+
 			for (DTLink<String,String> e : graphs.get(i).links()) {
 				countPathRec(featureVectors[i], e, "", depth);
 			}
@@ -74,6 +84,8 @@ public class WalkCountKernel implements GraphKernel<GraphList<DTGraph<String,Str
 		for (SparseVector fv : featureVectors) {
 			fv.setLastIndex(pathDict.size()-1);
 		}
+		
+		compTime = System.currentTimeMillis() - tic;
 
 		if (normalize) {
 			featureVectors = KernelUtils.normalize(featureVectors);

@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.data2semantics.mustard.kernels.ComputationTimeTracker;
 import org.data2semantics.mustard.kernels.KernelUtils;
 import org.data2semantics.mustard.kernels.data.SingleDTGraph;
 import org.data2semantics.mustard.kernels.graphkernels.FeatureVectorKernel;
@@ -25,13 +26,14 @@ import org.nodes.LightDTGraph;
  * @author Gerben
  *
  */
-public class DTGraphRootWalkCountKernel implements GraphKernel<SingleDTGraph>, FeatureVectorKernel<SingleDTGraph> {
+public class DTGraphRootWalkCountKernel implements GraphKernel<SingleDTGraph>, FeatureVectorKernel<SingleDTGraph>, ComputationTimeTracker {
 
 	private DTGraph<String,String> rdfGraph;
 	private List<DTNode<String,String>> instanceVertices;
 
 	private int pathLength;
 	private boolean normalize;
+	private long compTime;
 
 	private Map<String, Integer> pathDict;
 	private Map<String, Integer> labelDict;
@@ -51,6 +53,11 @@ public class DTGraphRootWalkCountKernel implements GraphKernel<SingleDTGraph>, F
 		this.normalize = normalize;
 	}
 
+	
+
+	public long getComputationTime() {
+		return compTime;
+	}
 
 	public SparseVector[] computeFeatureVectors(SingleDTGraph data) {
 		pathDict  = new HashMap<String, Integer>();
@@ -61,8 +68,19 @@ public class DTGraphRootWalkCountKernel implements GraphKernel<SingleDTGraph>, F
 		SparseVector[] featureVectors = new SparseVector[data.numInstances()];
 		for (int i = 0; i < featureVectors.length; i++) {
 			featureVectors[i] = new SparseVector();
+		}
+		
+		long tic = System.currentTimeMillis();
+		for (int i = 0; i < featureVectors.length; i++) {
 			countPathRec(featureVectors[i], instanceVertices.get(i), "", pathLength);
 		}
+		
+		// Set the correct last index
+		for (SparseVector fv : featureVectors) {
+			fv.setLastIndex(pathDict.size()-1);
+		}
+		
+		compTime = System.currentTimeMillis() - tic;
 
 		if (this.normalize) {
 			featureVectors = KernelUtils.normalize(featureVectors);
@@ -75,7 +93,9 @@ public class DTGraphRootWalkCountKernel implements GraphKernel<SingleDTGraph>, F
 	public double[][] compute(SingleDTGraph data) {
 		SparseVector[] featureVectors = computeFeatureVectors(data);
 		double[][] kernel = KernelUtils.initMatrix(data.getInstances().size(), data.getInstances().size());
+		long tic = System.currentTimeMillis();
 		kernel = KernelUtils.computeKernelMatrix(featureVectors, kernel);
+		compTime += System.currentTimeMillis() - tic;
 		return kernel;
 	}
 

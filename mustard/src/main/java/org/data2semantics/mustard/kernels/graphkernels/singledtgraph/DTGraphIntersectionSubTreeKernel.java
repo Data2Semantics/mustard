@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import org.data2semantics.mustard.kernels.ComputationTimeTracker;
 import org.data2semantics.mustard.kernels.KernelUtils;
 import org.data2semantics.mustard.kernels.data.SingleDTGraph;
 import org.data2semantics.mustard.kernels.graphkernels.GraphKernel;
@@ -25,9 +26,10 @@ import org.nodes.LightDTGraph;
  * @author Gerben
  *
  */
-public class DTGraphIntersectionSubTreeKernel implements GraphKernel<SingleDTGraph> {
+public class DTGraphIntersectionSubTreeKernel implements GraphKernel<SingleDTGraph>, ComputationTimeTracker {
 	private int depth;
 	private double discountFactor;
+	private long compTime;
 	protected boolean normalize;
 
 	public DTGraphIntersectionSubTreeKernel() {
@@ -48,6 +50,10 @@ public class DTGraphIntersectionSubTreeKernel implements GraphKernel<SingleDTGra
 		this.normalize = normalize;
 	}
 
+	public long getComputationTime() {
+		return compTime;
+	}
+
 	public double[][] compute(SingleDTGraph data) {
 		List<DTNode<String,String>> iNodes = data.getInstances();
 		double[][] kernel = KernelUtils.initMatrix(iNodes.size(), iNodes.size());
@@ -55,6 +61,8 @@ public class DTGraphIntersectionSubTreeKernel implements GraphKernel<SingleDTGra
 			
 		DTGraph<String,String> newG = toIntGraph(data.getGraph(),iNodes);
 			
+		long tic = System.currentTimeMillis();
+		
 		for (int i = 0; i < iNodes.size(); i++) {
 			for (int j = i; j < iNodes.size(); j++) {
 				tree = computeIntersectionTree(newG, iNodes.get(i), iNodes.get(j));
@@ -62,6 +70,8 @@ public class DTGraphIntersectionSubTreeKernel implements GraphKernel<SingleDTGra
 				kernel[j][i] = kernel[i][j];
 			}
 		}
+		
+		compTime = System.currentTimeMillis() - tic;
 
 		if (normalize) {
 			return KernelUtils.normalize(kernel);

@@ -15,6 +15,7 @@ import org.data2semantics.mustard.experiments.data.BGSLithoDataSet;
 import org.data2semantics.mustard.experiments.data.ClassificationDataSet;
 import org.data2semantics.mustard.experiments.data.LargeClassificationDataSet;
 import org.data2semantics.mustard.experiments.utils.GraphFeatureVectorKernelComputationTimeExperiment;
+import org.data2semantics.mustard.experiments.utils.GraphKernelComputationTimeExperiment;
 import org.data2semantics.mustard.experiments.utils.Result;
 import org.data2semantics.mustard.experiments.utils.ResultsTable;
 import org.data2semantics.mustard.experiments.utils.SimpleGraphKernelExperiment;
@@ -23,6 +24,7 @@ import org.data2semantics.mustard.kernels.data.RDFData;
 import org.data2semantics.mustard.kernels.graphkernels.graphlist.WLSubTreeKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFGraphListWLSubTreeKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFHubRemovalWrapperFeatureVectorKernel;
+import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFIntersectionSubTreeKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFTreeWLSubTreeKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFTreeWalkCountKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFWLSubTreeKernel;
@@ -101,7 +103,7 @@ public class ComputationTimeExperiment {
 						List<RDFWLSubTreeKernel> kernels = new ArrayList<RDFWLSubTreeKernel>();	
 						kernels.add(new RDFWLSubTreeKernel(d*2, d, inf, reverseWL, false, trackPrevNBH, true));
 
-						GraphFeatureVectorKernelComputationTimeExperiment<RDFData> exp = new GraphFeatureVectorKernelComputationTimeExperiment<RDFData>(kernels, dataSub, null);
+						GraphKernelComputationTimeExperiment<RDFData> exp = new GraphKernelComputationTimeExperiment<RDFData>(kernels, dataSub, null);
 
 						exp.run();
 
@@ -136,7 +138,7 @@ public class ComputationTimeExperiment {
 						List<RDFGraphListWLSubTreeKernel> kernels = new ArrayList<RDFGraphListWLSubTreeKernel>();	
 						kernels.add(new RDFGraphListWLSubTreeKernel(d*2, d, inf, reverseWL, trackPrevNBH, true));
 
-						GraphFeatureVectorKernelComputationTimeExperiment<RDFData> exp = new GraphFeatureVectorKernelComputationTimeExperiment<RDFData>(kernels, dataSub, null);
+						GraphKernelComputationTimeExperiment<RDFData> exp = new GraphKernelComputationTimeExperiment<RDFData>(kernels, dataSub, null);
 
 						exp.run();
 
@@ -170,7 +172,7 @@ public class ComputationTimeExperiment {
 						List<RDFWLSubTreeKernel> kernels = new ArrayList<RDFWLSubTreeKernel>();	
 						kernels.add(new RDFWLSubTreeKernel(d*2, d, inf, reverseWL, false, trackPrevNBH, true));
 
-						GraphFeatureVectorKernelComputationTimeExperiment<RDFData> exp = new GraphFeatureVectorKernelComputationTimeExperiment<RDFData>(kernels, dataSub, null);
+						GraphKernelComputationTimeExperiment<RDFData> exp = new GraphKernelComputationTimeExperiment<RDFData>(kernels, dataSub, null);
 
 						exp.run();
 
@@ -193,7 +195,7 @@ public class ComputationTimeExperiment {
 		//*/
 
 		
-		///* Regular WL 
+		///* Tree WL 
 		for (boolean inf : inference) {	 
 			for (int d : depths) {
 				for (double frac : fractions) {
@@ -205,7 +207,7 @@ public class ComputationTimeExperiment {
 						List<RDFTreeWLSubTreeKernel> kernels = new ArrayList<RDFTreeWLSubTreeKernel>();	
 						kernels.add(new RDFTreeWLSubTreeKernel(d*2, d, inf, reverseWL, trackPrevNBH, true));
 
-						GraphFeatureVectorKernelComputationTimeExperiment<RDFData> exp = new GraphFeatureVectorKernelComputationTimeExperiment<RDFData>(kernels, dataSub, null);
+						GraphKernelComputationTimeExperiment<RDFData> exp = new GraphKernelComputationTimeExperiment<RDFData>(kernels, dataSub, null);
 
 						exp.run();
 
@@ -227,6 +229,40 @@ public class ComputationTimeExperiment {
 		}
 		//*/
 
+		
+		///*  IST
+		for (boolean inf : inference) {	 
+			for (int d : depths) {
+				for (double frac : fractions) {
+					resTable.newRow("IST: " + inf);	
+					List<Result> tempRes = new ArrayList<Result>();
+					for (long seed : seeds) {
+						RDFData dataSub = createRandomSubset(data, frac, seed);
+
+						List<RDFIntersectionSubTreeKernel> kernels = new ArrayList<RDFIntersectionSubTreeKernel>();	
+						kernels.add(new RDFIntersectionSubTreeKernel(d, 1, inf, true));
+
+						GraphKernelComputationTimeExperiment<RDFData> exp = new GraphKernelComputationTimeExperiment<RDFData>(kernels, dataSub, null);
+
+						exp.run();
+
+						if (tempRes.isEmpty()) {
+							for (Result res : exp.getResults()) {
+								tempRes.add(res);
+							}
+						} else {
+							for (int i = 0; i < tempRes.size(); i++) {
+								tempRes.get(i).addResult(exp.getResults().get(i));
+							}
+						}
+					}
+					for (Result res : tempRes) {
+						resTable.addResult(res);
+					}
+				}
+			}
+		}
+		//*/
 
 	
 		/* The baseline experiment, BoW (or BoL if you prefer)

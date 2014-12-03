@@ -3,6 +3,7 @@ package org.data2semantics.mustard.kernels.graphkernels.rdfdata;
 import java.util.List;
 import java.util.Set;
 
+import org.data2semantics.mustard.kernels.ComputationTimeTracker;
 import org.data2semantics.mustard.kernels.KernelUtils;
 import org.data2semantics.mustard.kernels.data.RDFData;
 import org.data2semantics.mustard.kernels.data.SingleDTGraph;
@@ -15,7 +16,7 @@ import org.data2semantics.mustard.rdf.RDFUtils;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 
-public class RDFTreeWalkCountKernel implements GraphKernel<RDFData>, FeatureVectorKernel<RDFData> {
+public class RDFTreeWalkCountKernel implements GraphKernel<RDFData>, FeatureVectorKernel<RDFData>, ComputationTimeTracker {
 	private int depth;
 	private boolean inference;
 	private DTGraphTreeWalkCountKernel kernel;
@@ -35,6 +36,10 @@ public class RDFTreeWalkCountKernel implements GraphKernel<RDFData>, FeatureVect
 
 	public void setNormalize(boolean normalize) {
 		kernel.setNormalize(normalize);
+	}
+
+	public long getComputationTime() {
+		return kernel.getComputationTime();
 	}
 
 	public SparseVector[] computeFeatureVectors(RDFData data) {

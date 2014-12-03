@@ -3,6 +3,7 @@ package org.data2semantics.mustard.kernels.graphkernels.rdfdata;
 import java.util.List;
 import java.util.Set;
 
+import org.data2semantics.mustard.kernels.ComputationTimeTracker;
 import org.data2semantics.mustard.kernels.KernelUtils;
 import org.data2semantics.mustard.kernels.data.RDFData;
 import org.data2semantics.mustard.kernels.data.SingleDTGraph;
@@ -13,7 +14,7 @@ import org.data2semantics.mustard.rdf.RDFUtils;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 
-public class RDFIntersectionSubTreeKernel implements GraphKernel<RDFData> {
+public class RDFIntersectionSubTreeKernel implements GraphKernel<RDFData>, ComputationTimeTracker {
 	private int depth;
 	private boolean inference;
 	private DTGraphIntersectionSubTreeKernel kernel;
@@ -33,6 +34,10 @@ public class RDFIntersectionSubTreeKernel implements GraphKernel<RDFData> {
 
 	public void setNormalize(boolean normalize) {
 		kernel.setNormalize(normalize);
+	}
+
+	public long getComputationTime() {
+		return kernel.getComputationTime();
 	}
 
 	public double[][] compute(RDFData data) {

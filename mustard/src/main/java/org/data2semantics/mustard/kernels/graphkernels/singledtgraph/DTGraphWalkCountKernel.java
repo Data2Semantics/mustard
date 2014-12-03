@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.data2semantics.mustard.kernels.ComputationTimeTracker;
 import org.data2semantics.mustard.kernels.KernelUtils;
 import org.data2semantics.mustard.kernels.data.SingleDTGraph;
 import org.data2semantics.mustard.kernels.graphkernels.FeatureVectorKernel;
@@ -20,7 +21,7 @@ import org.nodes.LightDTGraph;
  * @author Gerben
  *
  */
-public class DTGraphWalkCountKernel implements GraphKernel<SingleDTGraph>, FeatureVectorKernel<SingleDTGraph> {
+public class DTGraphWalkCountKernel implements GraphKernel<SingleDTGraph>, FeatureVectorKernel<SingleDTGraph>, ComputationTimeTracker {
 
 	private Map<DTNode<PathStringMapLabel,PathStringMapLabel>, Map<DTNode<PathStringMapLabel,PathStringMapLabel>, Integer>> instanceVertexIndexMap;
 	private Map<DTNode<PathStringMapLabel,PathStringMapLabel>, Map<DTLink<PathStringMapLabel,PathStringMapLabel>, Integer>> instanceEdgeIndexMap;
@@ -31,6 +32,7 @@ public class DTGraphWalkCountKernel implements GraphKernel<SingleDTGraph>, Featu
 	private int depth;
 	private int pathLength;
 	private boolean normalize;
+	private long compTime;
 
 	private Map<String, Integer> pathDict;
 	private Map<String, Integer> labelDict;
@@ -51,12 +53,15 @@ public class DTGraphWalkCountKernel implements GraphKernel<SingleDTGraph>, Featu
 		this.normalize = normalize;
 	}
 
+	public long getComputationTime() {
+		return compTime;
+	}
 
 	public SparseVector[] computeFeatureVectors(SingleDTGraph data) {
 		instanceVertices = new ArrayList<DTNode<PathStringMapLabel,PathStringMapLabel>>();
 		this.instanceVertexIndexMap = new HashMap<DTNode<PathStringMapLabel,PathStringMapLabel>, Map<DTNode<PathStringMapLabel,PathStringMapLabel>, Integer>>();
 		this.instanceEdgeIndexMap = new HashMap<DTNode<PathStringMapLabel,PathStringMapLabel>, Map<DTLink<PathStringMapLabel,PathStringMapLabel>, Integer>>();
-		
+
 		pathDict  = new HashMap<String, Integer>();
 		labelDict = new HashMap<String, Integer>();
 		init(data.getGraph(), data.getInstances());
@@ -67,6 +72,8 @@ public class DTGraphWalkCountKernel implements GraphKernel<SingleDTGraph>, Featu
 			featureVectors[i] = new SparseVector();
 		}
 
+		long tic = System.currentTimeMillis();
+		
 		// initial count
 		// Count paths
 		Integer index = null;
@@ -134,7 +141,7 @@ public class DTGraphWalkCountKernel implements GraphKernel<SingleDTGraph>, Featu
 			}
 			for (DTLink<PathStringMapLabel,PathStringMapLabel> e : rdfGraph.links()) {	
 				e.tag().setNewPaths();
-				
+
 				for (int d : e.tag().getPathsMap().keySet()) {
 					for (String path : e.tag().getPathsMap().get(d)) {
 						index = pathDict.get(path);
@@ -147,6 +154,8 @@ public class DTGraphWalkCountKernel implements GraphKernel<SingleDTGraph>, Featu
 			}		
 			computeFVs(rdfGraph, instanceVertices, featureVectors, pathDict.size()-1);
 		}
+		
+		compTime = System.currentTimeMillis() - tic;
 
 		if (this.normalize) {
 			featureVectors = KernelUtils.normalize(featureVectors);
@@ -159,7 +168,9 @@ public class DTGraphWalkCountKernel implements GraphKernel<SingleDTGraph>, Featu
 	public double[][] compute(SingleDTGraph data) {
 		SparseVector[] featureVectors = computeFeatureVectors(data);
 		double[][] kernel = KernelUtils.initMatrix(data.getInstances().size(), data.getInstances().size());
+		long tic = System.currentTimeMillis();
 		kernel = KernelUtils.computeKernelMatrix(featureVectors, kernel);
+		compTime += System.currentTimeMillis() - tic;
 		return kernel;
 	}
 

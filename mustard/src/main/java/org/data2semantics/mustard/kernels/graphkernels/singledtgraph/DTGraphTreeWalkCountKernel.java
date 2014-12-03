@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.data2semantics.mustard.kernels.ComputationTimeTracker;
 import org.data2semantics.mustard.kernels.KernelUtils;
 import org.data2semantics.mustard.kernels.data.SingleDTGraph;
 import org.data2semantics.mustard.kernels.graphkernels.FeatureVectorKernel;
@@ -20,7 +21,7 @@ import org.nodes.LightDTGraph;
  * @author Gerben
  *
  */
-public class DTGraphTreeWalkCountKernel implements GraphKernel<SingleDTGraph>, FeatureVectorKernel<SingleDTGraph> {
+public class DTGraphTreeWalkCountKernel implements GraphKernel<SingleDTGraph>, FeatureVectorKernel<SingleDTGraph>, ComputationTimeTracker {
 
 	private DTGraph<String,String> rdfGraph;
 	private List<DTNode<String,String>> instanceVertices;
@@ -28,6 +29,7 @@ public class DTGraphTreeWalkCountKernel implements GraphKernel<SingleDTGraph>, F
 	private int pathLength;
 	private int depth;
 	private boolean normalize;
+	private long compTime;
 
 	private Map<String, Integer> pathDict;
 	private Map<String, Integer> labelDict;
@@ -48,6 +50,9 @@ public class DTGraphTreeWalkCountKernel implements GraphKernel<SingleDTGraph>, F
 		this.normalize = normalize;
 	}
 
+	public long getComputationTime() {
+		return compTime;
+	}
 
 	public SparseVector[] computeFeatureVectors(SingleDTGraph data) {
 		pathDict  = new HashMap<String, Integer>();
@@ -56,31 +61,31 @@ public class DTGraphTreeWalkCountKernel implements GraphKernel<SingleDTGraph>, F
 
 		List<DTNode<String,String>> sf,nsf;
 		List<DTLink<String,String>> sflinks;
-		
-		
-		double avgLinks = 0;
-		
+
 		if (pathLength > depth * 2) { // cannot count paths longer than 2 times the depth (not a typical parameter scenario though).
 			pathLength = depth * 2;
 		}
 		
-		// Initialize and compute the featureVectors
 		SparseVector[] featureVectors = new SparseVector[data.numInstances()];
 		for (int i = 0; i < featureVectors.length; i++) {
 			featureVectors[i] = new SparseVector();
-			
+		}
+
+		long tic = System.currentTimeMillis();
+		
+		// Initialize and compute the featureVectors
+		for (int i = 0; i < featureVectors.length; i++) {
 			countPathRec(featureVectors[i], instanceVertices.get(i), "", pathLength);
-			
+
 			sf = new ArrayList<DTNode<String,String>>();
 			for (DTLink<String,String> e : instanceVertices.get(i).linksOut()) {
 				sf.add(e.to());
 				//sf.addAll(instanceVertices.get(i).out());
 			}
-			
+
 			sflinks = new ArrayList<DTLink<String,String>>();
 			sflinks.addAll(instanceVertices.get(i).linksOut());		
-			avgLinks += instanceVertices.get(i).linksOut().size();
-			
+	
 			int currentPL = pathLength-1;
 			for (int d = depth; d > 0; d--, currentPL = currentPL - 2) {
 				currentPL = Math.min((d * 2) - 1, currentPL);
@@ -89,12 +94,11 @@ public class DTGraphTreeWalkCountKernel implements GraphKernel<SingleDTGraph>, F
 				}
 				sflinks = new ArrayList<DTLink<String,String>>();
 				nsf = new ArrayList<DTNode<String,String>>();
-				
+
 				for (DTNode<String,String> n : sf) {
 					countPathRec(featureVectors[i], n, "", currentPL-1);
 					if (currentPL - 1 > 0) {
 						sflinks.addAll(n.linksOut());
-						avgLinks += n.linksOut().size();
 						for (DTLink<String,String> e : n.linksOut()) {
 							nsf.add(e.to());
 						}
@@ -103,10 +107,8 @@ public class DTGraphTreeWalkCountKernel implements GraphKernel<SingleDTGraph>, F
 				sf = nsf;
 			}		
 		}
-		
-		avgLinks /= data.numInstances();
-		
-		System.out.println("Avg # links: " + avgLinks);
+
+		compTime = System.currentTimeMillis() - tic;
 
 		if (this.normalize) {
 			featureVectors = KernelUtils.normalize(featureVectors);
@@ -119,7 +121,9 @@ public class DTGraphTreeWalkCountKernel implements GraphKernel<SingleDTGraph>, F
 	public double[][] compute(SingleDTGraph data) {
 		SparseVector[] featureVectors = computeFeatureVectors(data);
 		double[][] kernel = KernelUtils.initMatrix(data.getInstances().size(), data.getInstances().size());
+		long tic = System.currentTimeMillis();
 		kernel = KernelUtils.computeKernelMatrix(featureVectors, kernel);
+		compTime += System.currentTimeMillis() - tic;
 		return kernel;
 	}
 
