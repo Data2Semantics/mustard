@@ -3,6 +3,7 @@ package org.data2semantics.mustard.kernels.graphkernels.graphlist;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.data2semantics.mustard.kernels.ComputationTimeTracker;
 import org.data2semantics.mustard.kernels.KernelUtils;
 import org.data2semantics.mustard.kernels.data.GraphList;
 import org.data2semantics.mustard.kernels.graphkernels.FeatureVectorKernel;
@@ -22,11 +23,12 @@ import org.nodes.LightDTGraph;
  * 
  * @author Gerben *
  */
-public class WLSubTreeKernel implements GraphKernel<GraphList<DTGraph<String,String>>>, FeatureVectorKernel<GraphList<DTGraph<String,String>>> {
+public class WLSubTreeKernel implements GraphKernel<GraphList<DTGraph<String,String>>>, FeatureVectorKernel<GraphList<DTGraph<String,String>>>, ComputationTimeTracker {
 	private int iterations;
 	protected boolean normalize;
 	private boolean reverse;
 	private boolean trackPrevNBH;
+	private long compTime;
 
 	public WLSubTreeKernel(int iterations, boolean reverse, boolean trackPrevNBH, boolean normalize) {
 		this.reverse = reverse;
@@ -50,7 +52,7 @@ public class WLSubTreeKernel implements GraphKernel<GraphList<DTGraph<String,Str
 		this(iterations, false, false, normalize);
 	}	
 
-	
+
 	public WLSubTreeKernel(int iterations) {
 		this(iterations, true);
 	}
@@ -64,9 +66,9 @@ public class WLSubTreeKernel implements GraphKernel<GraphList<DTGraph<String,Str
 		this.normalize = normalize;
 	}
 
-	public void setReverse(boolean reverse) {
-		this.reverse = reverse;
-	}	
+	public long getComputationTime() {
+		return compTime;
+	}
 
 	public SparseVector[] computeFeatureVectors(GraphList<DTGraph<String,String>> data) {
 		List<DTGraph<StringLabel,StringLabel>> graphs = copyGraphs(data.getGraphs());
@@ -77,8 +79,10 @@ public class WLSubTreeKernel implements GraphKernel<GraphList<DTGraph<String,Str
 
 		WeisfeilerLehmanIterator<DTGraph<StringLabel,StringLabel>> wl = new WeisfeilerLehmanDTGraphIterator(reverse, trackPrevNBH);
 
-		wl.wlInitialize(graphs);
-
+		long tic = System.currentTimeMillis();
+		
+		wl.wlInitialize(graphs);	
+		
 		computeFVs(graphs, featureVectors, 1.0, wl.getLabelDict().size()-1);
 
 		for (int i = 0; i < this.iterations; i++) {
@@ -89,6 +93,9 @@ public class WLSubTreeKernel implements GraphKernel<GraphList<DTGraph<String,Str
 		if (normalize) {
 			featureVectors = KernelUtils.normalize(featureVectors);
 		}
+		
+		compTime = System.currentTimeMillis() - tic;
+		
 		return featureVectors;
 	}
 

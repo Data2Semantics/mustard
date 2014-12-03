@@ -97,7 +97,7 @@ public class DTGraphWLSubTreeKernel implements GraphKernel<SingleDTGraph>, Featu
 
 		List<DTGraph<MapLabel,MapLabel>> gList = new ArrayList<DTGraph<MapLabel,MapLabel>>();
 		gList.add(rdfGraph);
-
+		
 		wl.wlInitialize(gList);
 
 		double weight = 1.0;

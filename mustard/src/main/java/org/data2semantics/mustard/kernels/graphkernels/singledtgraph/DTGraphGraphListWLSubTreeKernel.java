@@ -43,6 +43,7 @@ public class DTGraphGraphListWLSubTreeKernel implements GraphKernel<SingleDTGrap
 	public SparseVector[] computeFeatureVectors(SingleDTGraph data) {
 		long tic = System.currentTimeMillis();
 		GraphList<DTGraph<String,String>> graphs = RDFUtils.getSubGraphs(data.getGraph(), data.getInstances(), depth);		
+		
 		WLSubTreeKernel kernel = new WLSubTreeKernel(iterations, reverse, trackPrevNBH, normalize);	
 		SparseVector[] ret =  kernel.computeFeatureVectors(graphs);
 		compTime = System.currentTimeMillis() - tic;
