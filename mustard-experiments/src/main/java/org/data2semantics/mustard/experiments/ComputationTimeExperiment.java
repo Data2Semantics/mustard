@@ -82,8 +82,8 @@ public class ComputationTimeExperiment {
 		boolean[] inference = {true};
 		int[] depths = {3};
 
-		double[] fractions = {0.33, 0.66, 1.0};
-		long[] seeds = {11,21,31,41,51};
+		double[] fractions = {0.2, 0.4, 0.6, 0.8, 1.0};
+		long[] seeds = {11,21,31,41,51,61,71,81,91,101};
 
 
 		RDFData data = ds.getRDFData();
