@@ -230,40 +230,6 @@ public class ComputationTimeExperiment {
 		}
 		//*/
 		
-		///* Regular Walk Count
-		for (boolean inf : inference) {			 
-			for (int d : depths) {
-				for (double frac : fractions) {
-					resTable.newRow("Regular Walk Count: " + inf);	
-					List<Result> tempRes = new ArrayList<Result>();
-					for (long seed : seeds) {
-						RDFData dataSub = createRandomSubset(data, frac, seed);
-
-						List<RDFGraphListWalkCountKernel> kernels = new ArrayList<RDFGraphListWalkCountKernel>();	
-						kernels.add(new RDFGraphListWalkCountKernel(d*2, d, inf, true));
-
-						GraphKernelComputationTimeExperiment<RDFData> exp = new GraphKernelComputationTimeExperiment<RDFData>(kernels, dataSub, null);
-
-						exp.run();
-
-						if (tempRes.isEmpty()) {
-							for (Result res : exp.getResults()) {
-								tempRes.add(res);
-							}
-						} else {
-							for (int i = 0; i < tempRes.size(); i++) {
-								tempRes.get(i).addResult(exp.getResults().get(i));
-							}
-						}
-					}
-					for (Result res : tempRes) {
-						resTable.addResult(res);
-					}
-				}
-			}
-		}
-		//*/
-		
 		
 		///* RDF Walk Count
 		for (boolean inf : inference) {			 
@@ -474,8 +440,46 @@ public class ComputationTimeExperiment {
 		//*/
 
 	
-	
+		resTable.addCompResults(resTable.getBestResults());
+		System.out.println(resTable);	
+		
+		
+		///* Regular Walk Count
+		for (boolean inf : inference) {			 
+			for (int d : depths) {
+				for (double frac : fractions) {
+					resTable.newRow("Regular Walk Count: " + inf);	
+					List<Result> tempRes = new ArrayList<Result>();
+					for (long seed : seeds) {
+						RDFData dataSub = createRandomSubset(data, frac, seed);
 
+						List<RDFGraphListWalkCountKernel> kernels = new ArrayList<RDFGraphListWalkCountKernel>();	
+						kernels.add(new RDFGraphListWalkCountKernel(d*2, d, inf, true));
+
+						GraphKernelComputationTimeExperiment<RDFData> exp = new GraphKernelComputationTimeExperiment<RDFData>(kernels, dataSub, null);
+
+						exp.run();
+
+						if (tempRes.isEmpty()) {
+							for (Result res : exp.getResults()) {
+								tempRes.add(res);
+							}
+						} else {
+							for (int i = 0; i < tempRes.size(); i++) {
+								tempRes.get(i).addResult(exp.getResults().get(i));
+							}
+						}
+					}
+					for (Result res : tempRes) {
+						resTable.addResult(res);
+					}
+				}
+			}
+			resTable.addCompResults(resTable.getBestResults());
+			System.out.println(resTable);
+		}
+		//*/
+		
 		resTable.addCompResults(resTable.getBestResults());
 		System.out.println(resTable);
 	}
