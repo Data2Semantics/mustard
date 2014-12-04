@@ -64,10 +64,10 @@ public class ComputationTimeLargeExperiment {
 		//LargeClassificationDataSet ds = new AMDataSet(tripleStore, 10, 0.003, 5, 4, true);
 
 		long[] seedsDataset = {1,2,3};
-		double[] fractions = {0.01, 0.02, 0.03};
+		double[] fractions = {0.1, 0.2, 0.3};
 		int minClassSize = 0;
 		int maxNumClasses = 100;
-		int[] depths = {3};
+		int[] depths = {2};
 		boolean[] inference = {true};
 
 	
@@ -218,41 +218,7 @@ public class ComputationTimeLargeExperiment {
 				}
 			}
 			//*/
-			
-			///* WC	
-			for (boolean inf : inference) {
-				resTableWC.newRow("WC: " + inf);		 
-				for (int d : depths) {
-
-					List<Result> tempRes = new ArrayList<Result>();
-					for (long sDS : seedsDataset) {
-						Pair<SingleDTGraph, List<Double>> p = cache.get(sDS).get(inf).get(d);
-						SingleDTGraph data = p.getFirst();
-
-						List<DTGraphGraphListWalkCountKernel> kernels = new ArrayList<DTGraphGraphListWalkCountKernel>();	
-						kernels.add(new DTGraphGraphListWalkCountKernel(d*2, d, true));
-
-						GraphFeatureVectorKernelComputationTimeExperiment<SingleDTGraph> exp = new GraphFeatureVectorKernelComputationTimeExperiment<SingleDTGraph>(kernels, data, null);
-
-						exp.run();
-						if (tempRes.isEmpty()) {
-							for (Result res : exp.getResults()) {
-								tempRes.add(res);
-							}
-						} else {
-							for (int i = 0; i < tempRes.size(); i++) {
-								tempRes.get(i).addResult(exp.getResults().get(i));
-							}
-						}
-					}
-
-					for (Result res : tempRes) {
-						resTableWC.addResult(res);
-					}
-				}
-			}
-			//*/
-			
+				
 			
 			///* RDF WC	
 			for (boolean inf : inference) {
@@ -431,7 +397,54 @@ public class ComputationTimeLargeExperiment {
 
 		for (ResultsTable table : tables) {
 			System.out.println(table);
-		}		
+		}
+		
+		for (double fraction : fractions) {
+			Map<Long, Map<Boolean, Map<Integer,Pair<SingleDTGraph, List<Double>>>>> cache = createDataSetCache(tripleStore, ds, seedsDataset, fraction, minClassSize, maxNumClasses, depths, inference);
+
+			///* WC	
+			for (boolean inf : inference) {
+				resTableWC.newRow("WC: " + inf);		 
+				for (int d : depths) {
+
+					List<Result> tempRes = new ArrayList<Result>();
+					for (long sDS : seedsDataset) {
+						Pair<SingleDTGraph, List<Double>> p = cache.get(sDS).get(inf).get(d);
+						SingleDTGraph data = p.getFirst();
+
+						List<DTGraphGraphListWalkCountKernel> kernels = new ArrayList<DTGraphGraphListWalkCountKernel>();	
+						kernels.add(new DTGraphGraphListWalkCountKernel(d*2, d, true));
+
+						GraphFeatureVectorKernelComputationTimeExperiment<SingleDTGraph> exp = new GraphFeatureVectorKernelComputationTimeExperiment<SingleDTGraph>(kernels, data, null);
+
+						exp.run();
+						if (tempRes.isEmpty()) {
+							for (Result res : exp.getResults()) {
+								tempRes.add(res);
+							}
+						} else {
+							for (int i = 0; i < tempRes.size(); i++) {
+								tempRes.get(i).addResult(exp.getResults().get(i));
+							}
+						}
+					}
+
+					for (Result res : tempRes) {
+						resTableWC.addResult(res);
+					}
+				}
+			}
+			//*/
+			
+			for (ResultsTable table : tables) {
+				System.out.println(table);
+			}
+		}
+
+
+		for (ResultsTable table : tables) {
+			System.out.println(table);
+		}
 	}
 
 	private static void computeGraphStatistics(RDFDataSet tripleStore, ClassificationDataSet ds, boolean[] inference, int[] depths) {
@@ -471,158 +484,7 @@ public class ComputationTimeLargeExperiment {
 		}
 	}
 
-	//	private static void createAffiliationPredictionDataSet() {
-	//		dataset = new RDFFileDataSet(AIFB_FILE, RDFFormat.N3);
-	//
-	//		List<Statement> stmts = dataset.getStatementsFromStrings(null, "http://swrc.ontoware.org/ontology#affiliation", null);
-	//
-	//		instances = new ArrayList<Resource>();
-	//		labels = new ArrayList<Value>();
-	//
-	//		for (Statement stmt : stmts) {
-	//			instances.add(stmt.getSubject());
-	//			labels.add(stmt.getObject());
-	//		}
-	//
-	//		EvaluationUtils.removeSmallClasses(instances, labels, 5);
-	//		blackList = DataSetUtils.createBlacklist(dataset, instances, labels);
-	//
-	//		target = EvaluationUtils.createTarget(labels);
-	//	}
-	//	
-	//	
-	//	private static void createGeoDataSet(long seed, double fraction, int minSize, String property) {
-	//		dataset = new RDFFileDataSet(BGS_FOLDER, RDFFormat.NTRIPLES);
-	//		
-	//		String majorityClass = "http://data.bgs.ac.uk/id/Lexicon/Class/LS";
-	//		Random rand = new Random(seed);
-	//
-	//		List<Statement> stmts = dataset.getStatementsFromStrings(null, "http://www.w3.org/2000/01/rdf-schema#isDefinedBy", "http://data.bgs.ac.uk/ref/Lexicon/NamedRockUnit");
-	//		System.out.println(dataset.getLabel());
-	//
-	//		System.out.println("Component Rock statements: " + stmts.size());
-	//		instances = new ArrayList<Resource>();
-	//		labels = new ArrayList<Value>();
-	//		blackList = new ArrayList<Statement>();
-	//
-	//		// http://data.bgs.ac.uk/ref/Lexicon/hasRockUnitRank
-	//		// http://data.bgs.ac.uk/ref/Lexicon/hasTheme
-	//
-	//		for(Statement stmt: stmts) {
-	//			List<Statement> stmts2 = dataset.getStatementsFromStrings(stmt.getSubject().toString(), property, null);
-	//
-	//			if (stmts2.size() > 1) {
-	//				System.out.println("more than 1 Class");
-	//			}
-	//
-	//			for (Statement stmt2 : stmts2) {
-	//
-	//				if (rand.nextDouble() <= fraction) {
-	//					instances.add(stmt2.getSubject());
-	//
-	//					labels.add(stmt2.getObject());
-	//					/*
-	//				if (stmt2.getObject().toString().equals(majorityClass)) {
-	//					labels.add(ds.createLiteral("pos"));
-	//				} else {
-	//					labels.add(ds.createLiteral("neg"));
-	//				}
-	//					 */
-	//				}
-	//			}
-	//		}
-	//
-	//
-	//		//capClassSize(50, seed);
-	//		EvaluationUtils.removeSmallClasses(instances, labels, minSize);
-	//		blackList = DataSetUtils.createBlacklist(dataset, instances, labels);
-	//		target = EvaluationUtils.createTarget(labels);
-	//	}
-	//
-	//	
-	//	private static void createCommitteeMemberPredictionDataSet() {
-	//		RDFFileDataSet testSetA = new RDFFileDataSet(ISWC_FOLDER + "iswc-2011-complete.rdf", RDFFormat.RDFXML);
-	//		//testSetA.addFile("datasets/eswc-2011-complete.rdf", RDFFormat.RDFXML);
-	//		//testSetA.addFile("datasets/eswc-2012-complete.rdf", RDFFormat.RDFXML);
-	//		//testSetA.addFile("datasets/eswc-2008-complete.rdf", RDFFormat.RDFXML);
-	//		//testSetA.addFile("datasets/eswc-2009-complete.rdf", RDFFormat.RDFXML);
-	//		//testSetA.addFile("datasets/iswc-2012-complete.rdf", RDFFormat.RDFXML);
-	//		//testSetA.addFile("datasets/iswc-2011-complete.rdf", RDFFormat.RDFXML);
-	//		testSetA.addFile(ISWC_FOLDER + "iswc-2010-complete.rdf", RDFFormat.RDFXML);
-	//		//testSetA.addFile("datasets/iswc-2009-complete.rdf", RDFFormat.RDFXML);
-	//		//testSetA.addFile("datasets/iswc-2008-complete.rdf", RDFFormat.RDFXML);
-	//
-	//		RDFFileDataSet testSetB = new RDFFileDataSet(ISWC_FOLDER + "iswc-2012-complete.rdf", RDFFormat.RDFXML);
-	//
-	//		instances = new ArrayList<Resource>();
-	//		List<Resource> instancesB = new ArrayList<Resource>();
-	//		labels = new ArrayList<Value>();
-	//		List<Statement> stmts = testSetA.getStatementsFromStrings(null, "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", "http://xmlns.com/foaf/0.1/Person");
-	//		for (Statement stmt : stmts) {
-	//			instancesB.add(stmt.getSubject()); 
-	//		}	
-	//
-	//		int pos = 0, neg = 0;
-	//		for (Resource instance : instancesB) {
-	//			if (!testSetB.getStatements(instance, null, null).isEmpty()) {
-	//				instances.add(instance);
-	//				if (testSetB.getStatementsFromStrings(instance.toString(), "http://data.semanticweb.org/ns/swc/ontology#holdsRole", "http://data.semanticweb.org/conference/iswc/2012/pc-member/research", false).size() > 0) {
-	//					labels.add(testSetA.createLiteral("true"));
-	//					pos++;
-	//				} else {
-	//					labels.add(testSetA.createLiteral("false"));
-	//					neg++;
-	//				}
-	//			}
-	//		}
-	//
-	//		dataset = testSetA;		
-	//		blackList = new ArrayList<Statement>();
-	//		target = EvaluationUtils.createTarget(labels);
-	//
-	//		System.out.println("Pos and Neg: " + pos + " " + neg);
-	//		System.out.println("Baseline acc: " + Math.max(pos, neg) / ((double)pos+neg));
-	//	}
-	//	
-	//	private static void createAMDataSet(long seed, double fraction, int minSize) {
-	//		dataset = new RDFFileDataSet(AM_FOLDER, RDFFormat.TURTLE);
-	//		
-	//		Random rand = new Random(seed);
-	//
-	//		List<Statement> stmts = dataset.getStatementsFromStrings(null, "http://purl.org/collections/nl/am/objectCategory", null);
-	//		System.out.println(dataset.getLabel());
-	//
-	//		System.out.println("objects in AM: " + stmts.size());
-	//		
-	//		
-	//		instances = new ArrayList<Resource>();
-	//		labels = new ArrayList<Value>();
-	//		blackList = new ArrayList<Statement>();
-	//
-	//		for (Statement stmt : stmts) {
-	//			instances.add(stmt.getSubject());
-	//			labels.add(stmt.getObject());
-	//		}
-	//
-	////		
-	////		
-	//		blackList = DataSetUtils.createBlacklist(dataset, instances, labels);
-	//		System.out.println(EvaluationUtils.computeClassCounts(target));
-	//		
-	//		Collections.shuffle(instances, new Random(seed));
-	//		Collections.shuffle(labels, new Random(seed));
-	//		
-	//		instances = instances.subList(0, 200);
-	//		labels = labels.subList(0, 200);
-	//		
-	//		EvaluationUtils.removeSmallClasses(instances, labels, minSize);
-	//		target = EvaluationUtils.createTarget(labels);
-	//		
-	//		System.out.println("Subset: ");
-	//		System.out.println(EvaluationUtils.computeClassCounts(target));
-	//		
-	//	}
-
+	
 
 	private static Map<Long, Map<Boolean, Map<Integer,Pair<SingleDTGraph, List<Double>>>>> createDataSetCache(RDFDataSet tripleStore, LargeClassificationDataSet data, long[] seeds, double fraction, int minSize, int maxClasses, int[] depths, boolean[] inference) {
 		Map<Long, Map<Boolean, Map<Integer,Pair<SingleDTGraph, List<Double>>>>> cache = new HashMap<Long, Map<Boolean, Map<Integer,Pair<SingleDTGraph, List<Double>>>>>();

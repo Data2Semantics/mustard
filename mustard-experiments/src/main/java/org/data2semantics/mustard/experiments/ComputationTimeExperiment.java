@@ -66,11 +66,11 @@ public class ComputationTimeExperiment {
 	 */
 	public static void main(String[] args) {
 
-		//RDFDataSet tripleStore = new RDFFileDataSet(AIFB_FILE, RDFFormat.N3);
-		//ClassificationDataSet ds = new AIFBDataSet(tripleStore);
+		RDFDataSet tripleStore = new RDFFileDataSet(AIFB_FILE, RDFFormat.N3);
+		ClassificationDataSet ds = new AIFBDataSet(tripleStore);
 
-		RDFDataSet tripleStore = new RDFFileDataSet(BGS_FOLDER, RDFFormat.NTRIPLES);
-		ClassificationDataSet ds = new BGSLithoDataSet(tripleStore);
+		//RDFDataSet tripleStore = new RDFFileDataSet(BGS_FOLDER, RDFFormat.NTRIPLES);
+		//ClassificationDataSet ds = new BGSLithoDataSet(tripleStore);
 
 		ds.create();
 
@@ -87,7 +87,7 @@ public class ComputationTimeExperiment {
 		boolean[] inference = {true};
 		int[] depths = {3};
 
-		double[] fractions = {0.2, 0.4, 0.6, 0.8, 1.0};
+		double[] fractions = {0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0};
 		long[] seeds = {11,21,31,41,51,61,71,81,91,101};
 
 
