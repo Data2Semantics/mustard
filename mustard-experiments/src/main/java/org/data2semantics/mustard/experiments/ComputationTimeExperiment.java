@@ -128,7 +128,7 @@ public class ComputationTimeExperiment {
 		}
 		//*/
 		
-		///* BoL - Graph
+		/* BoL - Graph
 		for (boolean inf : inference) {			 
 			for (int d : depths) {
 				for (double frac : fractions) {
@@ -162,7 +162,7 @@ public class ComputationTimeExperiment {
 		}
 		//*/
 
-		///* BoL - Tree
+		/* BoL - Tree
 		for (boolean inf : inference) {			 
 			for (int d : depths) {
 				for (double frac : fractions) {
@@ -196,7 +196,7 @@ public class ComputationTimeExperiment {
 		}
 		//*/
 		
-		///* Root Walk Count
+		/* Root Walk Count
 		for (boolean inf : inference) {			 
 			for (int d : depths) {
 				for (double frac : fractions) {
@@ -231,7 +231,7 @@ public class ComputationTimeExperiment {
 		//*/
 		
 		
-		///* RDF Walk Count
+		/* RDF Walk Count
 		for (boolean inf : inference) {			 
 			for (int d : depths) {
 				for (double frac : fractions) {
@@ -265,7 +265,7 @@ public class ComputationTimeExperiment {
 		}
 		//*/
 		
-		///* RDF Tree Walk Count
+		/* RDF Tree Walk Count
 		for (boolean inf : inference) {			 
 			for (int d : depths) {
 				for (double frac : fractions) {
@@ -301,7 +301,7 @@ public class ComputationTimeExperiment {
 		
 		
 		
-		///* Regular WL 
+		/* Regular WL 
 		for (boolean inf : inference) {		 
 			for (int d : depths) {
 				for (double frac : fractions) {
@@ -335,7 +335,7 @@ public class ComputationTimeExperiment {
 		}
 		//*/
 		
-		///* RDF WL 
+		/* RDF WL 
 		for (boolean inf : inference) {	 
 			for (int d : depths) {
 				for (double frac : fractions) {
@@ -370,7 +370,7 @@ public class ComputationTimeExperiment {
 		//*/
 
 		
-		///* Tree WL 
+		/* Tree WL 
 		for (boolean inf : inference) {	 
 			for (int d : depths) {
 				for (double frac : fractions) {
@@ -405,7 +405,7 @@ public class ComputationTimeExperiment {
 		//*/
 
 		
-		///*  IST
+		/*  IST
 		for (boolean inf : inference) {	 
 			for (int d : depths) {
 				for (double frac : fractions) {
@@ -473,10 +473,11 @@ public class ComputationTimeExperiment {
 					for (Result res : tempRes) {
 						resTable.addResult(res);
 					}
+					
+					resTable.addCompResults(resTable.getBestResults());
+					System.out.println(resTable);
 				}
 			}
-			resTable.addCompResults(resTable.getBestResults());
-			System.out.println(resTable);
 		}
 		//*/
 		
