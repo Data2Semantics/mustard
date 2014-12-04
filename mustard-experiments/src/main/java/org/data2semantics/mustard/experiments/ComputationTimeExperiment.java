@@ -65,8 +65,14 @@ public class ComputationTimeExperiment {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-
-		RDFDataSet tripleStore = new RDFFileDataSet(AIFB_FILE, RDFFormat.N3);
+		String file = AIFB_FILE;
+		for (int i = 0; i < args.length; i++) {
+			if (args[i].equals("-file")) {
+				file = args[++i];
+			}
+		}		
+		
+		RDFDataSet tripleStore = new RDFFileDataSet(file, RDFFormat.N3);
 		ClassificationDataSet ds = new AIFBDataSet(tripleStore);
 
 		//RDFDataSet tripleStore = new RDFFileDataSet(BGS_FOLDER, RDFFormat.NTRIPLES);
@@ -88,7 +94,7 @@ public class ComputationTimeExperiment {
 		int[] depths = {3};
 
 		double[] fractions = {0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0};
-		long[] seeds = {11,21,31,41,51,61,71,81,91,101};
+		long[] seeds = {11,21,31,41,51};
 
 
 		RDFData data = ds.getRDFData();
@@ -128,7 +134,7 @@ public class ComputationTimeExperiment {
 		}
 		//*/
 		
-		/* BoL - Graph
+		///* BoL - Graph
 		for (boolean inf : inference) {			 
 			for (int d : depths) {
 				for (double frac : fractions) {
@@ -162,7 +168,7 @@ public class ComputationTimeExperiment {
 		}
 		//*/
 
-		/* BoL - Tree
+		///* BoL - Tree
 		for (boolean inf : inference) {			 
 			for (int d : depths) {
 				for (double frac : fractions) {
@@ -196,7 +202,7 @@ public class ComputationTimeExperiment {
 		}
 		//*/
 		
-		/* Root Walk Count
+		///* Root Walk Count
 		for (boolean inf : inference) {			 
 			for (int d : depths) {
 				for (double frac : fractions) {
@@ -231,7 +237,7 @@ public class ComputationTimeExperiment {
 		//*/
 		
 		
-		/* RDF Walk Count
+		///* RDF Walk Count
 		for (boolean inf : inference) {			 
 			for (int d : depths) {
 				for (double frac : fractions) {
@@ -265,7 +271,7 @@ public class ComputationTimeExperiment {
 		}
 		//*/
 		
-		/* RDF Tree Walk Count
+		///* RDF Tree Walk Count
 		for (boolean inf : inference) {			 
 			for (int d : depths) {
 				for (double frac : fractions) {
@@ -301,7 +307,7 @@ public class ComputationTimeExperiment {
 		
 		
 		
-		/* Regular WL 
+		///* Regular WL 
 		for (boolean inf : inference) {		 
 			for (int d : depths) {
 				for (double frac : fractions) {
@@ -335,7 +341,7 @@ public class ComputationTimeExperiment {
 		}
 		//*/
 		
-		/* RDF WL 
+		///* RDF WL 
 		for (boolean inf : inference) {	 
 			for (int d : depths) {
 				for (double frac : fractions) {
@@ -370,7 +376,7 @@ public class ComputationTimeExperiment {
 		//*/
 
 		
-		/* Tree WL 
+		///* Tree WL 
 		for (boolean inf : inference) {	 
 			for (int d : depths) {
 				for (double frac : fractions) {
@@ -405,7 +411,7 @@ public class ComputationTimeExperiment {
 		//*/
 
 		
-		/*  IST
+		///*  IST
 		for (boolean inf : inference) {	 
 			for (int d : depths) {
 				for (double frac : fractions) {

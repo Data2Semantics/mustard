@@ -56,18 +56,24 @@ public class ComputationTimeLargeExperiment {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-
-		RDFDataSet tripleStore = new RDFFileDataSet(BGS_FOLDER, RDFFormat.NTRIPLES);
+		String fileDir = BGS_FOLDER;
+		for (int i = 0; i < args.length; i++) {
+			if (args[i].equals("-dir")) {
+				fileDir = args[++i];
+			}
+		}
+	
+		RDFDataSet tripleStore = new RDFFileDataSet(fileDir, RDFFormat.NTRIPLES);
 		LargeClassificationDataSet ds = new BGSDataSet(tripleStore, "http://data.bgs.ac.uk/ref/Lexicon/hasTheme", 10, 0.02, 5, 3);
 
 		//RDFDataSet tripleStore = new RDFFileDataSet(AM_FOLDER, RDFFormat.TURTLE);
 		//LargeClassificationDataSet ds = new AMDataSet(tripleStore, 10, 0.003, 5, 4, true);
 
-		long[] seedsDataset = {1,2,3};
-		double[] fractions = {0.1, 0.2, 0.3};
+		long[] seedsDataset = {1,2,3,4,5};
+		double[] fractions = {0.02, 0.04, 0.06, 0.08, 0.1, 0.12, 0.14, 0.16, 0.18, 0.20};
 		int minClassSize = 0;
 		int maxNumClasses = 100;
-		int[] depths = {2};
+		int[] depths = {3};
 		boolean[] inference = {true};
 
 	
