@@ -27,7 +27,7 @@ public class MapLabel {
 
 
 	public MapLabel() {
-		this(3);
+		this(4);
 	}
 
 	public Set<Integer> keySet() {
@@ -35,6 +35,15 @@ public class MapLabel {
 	}
 
 	public void put(Integer key, StringBuilder value) {
+		if (key >= map.length) {
+			StringBuilder[] map2 = new StringBuilder[key+1]; 
+			for (int i = 0; i < map.length; i++) {
+				map2[i] = map[i];
+			}
+
+			map = map2;
+		}
+
 		if (map[key] == null) {
 			keySet.add(key);
 		}
