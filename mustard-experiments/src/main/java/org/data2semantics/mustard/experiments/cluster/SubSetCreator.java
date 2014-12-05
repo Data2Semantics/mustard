@@ -33,20 +33,22 @@ public class SubSetCreator {
 	public static void main(String[] args) {
 		boolean[] inference = {false, true};
 		long[] seeds = {1,2,3,4,5,6,7,8,9,10};
-		double fraction = 0.05;
+		double fraction = 0.02;
 		int minSize = 0;
-		int maxClasses = 200;
-		int depth = 3;
+		int maxClasses = 15;
+		int depth = 2;
 		
 		/*
 		String saveDir = "datasets/BGSsubset";
 		String loadDir = BGS_FOLDER;
 		RDFFormat format = RDFFormat.NTRIPLES;
-		*/
+		//*/
 	
+		///*
 		String saveDir = "datasets/AMsubset";
 		String loadDir = AM_FOLDER;
 		RDFFormat format = RDFFormat.TURTLE;
+		//*/
 	
 		
 		RDFDataSet tripleStore = new RDFFileDataSet(loadDir, format);

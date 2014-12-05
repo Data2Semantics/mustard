@@ -90,8 +90,30 @@ public class RDFUtils {
 		}
 		return new GraphList<DTGraph<String,String>>(subTrees);
 	}
+	
+	public static SingleDTGraph blankLabels(SingleDTGraph graph) {
+		Map<DTNode<String,String>, Integer> ns = new HashMap<DTNode<String,String>,Integer>();
+		DTGraph<String,String> newGraph = new LightDTGraph<String,String>();
+		List<DTNode<String,String>> newIN = new ArrayList<DTNode<String,String>>();
 
+		for (int i = 0; i < graph.getInstances().size(); i++) {
+			ns.put(graph.getInstances().get(i), i);
+			newIN.add(null);
+		}
 
+		for (DTNode<String,String> n : graph.getGraph().nodes()) {
+			if (ns.containsKey(n)) {
+				newIN.set(ns.get(n), newGraph.add(""));
+			} else {
+				newGraph.add("");
+			}
+		}
+		for (DTLink<String,String> l : graph.getGraph().links()) {
+			newGraph.nodes().get(l.from().index()).connect(newGraph.nodes().get(l.to().index()), "");
+		}
+		return new SingleDTGraph(newGraph, newIN);
+	}
+	
 
 	public static DTGraph<String,String> simplifyInstanceNodeLabels(DTGraph<String,String> oldGraph, List<DTNode<String,String>> instanceNodes) {
 		String rootLabel = KernelUtils.ROOTID;

@@ -17,10 +17,10 @@ public class ParamsCreator {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		String filePrefix = "AMsubset";
+		String filePrefix = "BGSsubset";
 		String[] subsets = {"1","2","3","4","5","6","7","8","9","10"};
 		String[] infs = {"false","true"};
-		int[] depths = {1,2};
+		int[] depths = {1,2,3};
 		String[] kernels = {"TreeBoL", "GraphBoL", "TreeWalksRoot", "TreeSubtreesRoot",
 				"GraphWalks", "GraphWalksFast", "TreeWalks",
 				"GraphSubtreesFast", "GraphSubtrees", "TreeSubtrees"};
@@ -29,7 +29,7 @@ public class ParamsCreator {
 			for (String inf : infs) {
 				for (int depth : depths) {
 					for (String kernel : kernels) {
-						KernelParms kps = new KernelParms(kernel, depth, false);
+						KernelParms kps = new KernelParms(kernel, depth, true);
 
 						for (String kp : kps) {
 							System.out.println("-file " + filePrefix + subset + inf + " -subset " + subset + " -inference " + inf + " -depth " + depth + " " + kp);

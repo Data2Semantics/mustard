@@ -30,9 +30,13 @@ public class ClusterExperiment {
 		ClassificationDataSet ds = parser.createDataSet();
 		Set<Statement> stmts = RDFUtils.getStatements4Depth(ds.getRDFData().getDataset(), ds.getRDFData().getInstances(), parser.getDepth(), parser.isInference());
 		stmts.removeAll(new HashSet<Statement>(ds.getRDFData().getBlackList()));
-		SingleDTGraph graph = null;
-		graph = RDFUtils.statements2Graph(stmts, RDFUtils.REGULAR_LITERALS, ds.getRDFData().getInstances(), true);
+		SingleDTGraph graph = RDFUtils.statements2Graph(stmts, RDFUtils.REGULAR_LITERALS, ds.getRDFData().getInstances(), true);
 
+		// Blank the labels if that parm is set
+		if (parser.isBlankLabels()) {
+			graph = RDFUtils.blankLabels(graph);
+		}
+		
 		// Eval funcs
 		List<EvaluationFunction> evalFuncs = new ArrayList<EvaluationFunction>();
 		evalFuncs.add(new Accuracy());

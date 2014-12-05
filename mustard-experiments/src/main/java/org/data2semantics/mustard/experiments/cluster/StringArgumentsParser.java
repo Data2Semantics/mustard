@@ -13,6 +13,7 @@ import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphGrap
 import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphGraphListWalkCountKernel;
 import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphHubRemovalWrapperFeatureVectorKernel;
 import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphHubRemovalWrapperKernel;
+import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphIntersectionSubTreeKernel;
 import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphRootWLSubTreeKernel;
 import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphRootWalkCountKernel;
 import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphTreeWalkCountKernel;
@@ -33,12 +34,16 @@ public class StringArgumentsParser {
 	private boolean inference;
 	private int minHubCount;
 	private int[] minHubCounts;
+	private boolean optHubs;
+	private boolean blankLabels;
 
 
 	public StringArgumentsParser(String[] args) {
 		kernelParms = new String[9];
 		subset = 0;
 		minHubCount = 0;
+		optHubs = true;
+		blankLabels = false;
 
 		for (int i = 0; i < args.length; i++) {
 			if (args[i].equals("-file")) {
@@ -72,6 +77,13 @@ public class StringArgumentsParser {
 					minHubCount = Integer.parseInt(t); 
 				}
 			}
+			if (args[i].equals("-optHubs")) {
+				optHubs = Boolean.parseBoolean(args[++i]);
+			}
+			if (args[i].equals("-blankLabels")) {
+				blankLabels = Boolean.parseBoolean(args[++i]);
+			}
+
 		}
 	}
 
@@ -84,7 +96,13 @@ public class StringArgumentsParser {
 
 			for (GraphKernel<SingleDTGraph> kernel : kernels) {
 				if (minHubCounts != null) {
-					kernels2.add(new DTGraphHubRemovalWrapperKernel<GraphKernel<SingleDTGraph>>(kernel, minHubCounts, true));
+					if (optHubs) {
+						for (int mhc : minHubCounts) {
+							kernels2.add(new DTGraphHubRemovalWrapperKernel<GraphKernel<SingleDTGraph>>(kernel, mhc, true));
+						}
+					} else {
+						kernels2.add(new DTGraphHubRemovalWrapperKernel<GraphKernel<SingleDTGraph>>(kernel, minHubCounts, true));
+					}
 				} else {
 					kernels2.add(new DTGraphHubRemovalWrapperKernel<GraphKernel<SingleDTGraph>>(kernel, minHubCount, true));
 				}
@@ -124,6 +142,9 @@ public class StringArgumentsParser {
 		if (kernel.equals("GraphSubtreesFast")) {
 			return graphSubtreesFast(kernelParms);
 		}
+		if (kernel.equals("IntersectionSubTree")) {
+			return intersectionSubTree(kernelParms);
+		}
 		return null;
 	}
 
@@ -136,7 +157,13 @@ public class StringArgumentsParser {
 
 			for (FeatureVectorKernel<SingleDTGraph> kernel : kernels) {
 				if (minHubCounts != null) {
-					kernels2.add(new DTGraphHubRemovalWrapperFeatureVectorKernel<FeatureVectorKernel<SingleDTGraph>>(kernel, minHubCounts, true));
+					if (optHubs) {
+						for (int mhc : minHubCounts) {
+							kernels2.add(new DTGraphHubRemovalWrapperFeatureVectorKernel<FeatureVectorKernel<SingleDTGraph>>(kernel, mhc, true));
+						}
+					} else {
+						kernels2.add(new DTGraphHubRemovalWrapperFeatureVectorKernel<FeatureVectorKernel<SingleDTGraph>>(kernel, minHubCounts, true));
+					}
 				} else {
 					kernels2.add(new DTGraphHubRemovalWrapperFeatureVectorKernel<FeatureVectorKernel<SingleDTGraph>>(kernel, minHubCount, true));
 				}
@@ -213,9 +240,13 @@ public class StringArgumentsParser {
 		sb.append("_");
 		sb.append(minHubCount);
 		sb.append("_");
+		sb.append(optHubs);
+		sb.append("_");
 		sb.append(depth);
 		sb.append("_");
 		sb.append(inference);
+		sb.append("_");
+		sb.append(blankLabels);
 
 		return sb.toString();
 	}
@@ -237,6 +268,9 @@ public class StringArgumentsParser {
 		return dataFile;
 	}
 
+	public boolean isBlankLabels() {
+		return blankLabels;
+	}
 
 	/**
 	 * -kernel GraphBoL
@@ -459,6 +493,31 @@ public class StringArgumentsParser {
 		boolean reverse = parms[3] == null ? true : Boolean.parseBoolean(parms[3]);
 		for (int p : pathLengths) {
 			kernels.add(new DTGraphWLSubTreeKernel(p, depth, reverse, trackPrev, true));
+
+		}
+		return kernels;
+	}
+
+	/**
+	 * -kernel IntersectionSubTree
+	 * -kernelParm1 discountFactor (double)
+	 * -kernelParm2 depth (int)
+	 * 
+	 * @return
+	 */
+	public static List<DTGraphIntersectionSubTreeKernel> intersectionSubTree(String[] parms) {
+		List<DTGraphIntersectionSubTreeKernel> kernels = new ArrayList<DTGraphIntersectionSubTreeKernel>();
+		double[] df = new double[1];
+
+		if (parms[0].startsWith("[")) {
+			df = parseDoubleArray(parms[0]);
+		} else {
+			df[0] = Double.parseDouble(parms[0]); 
+		}
+		int depth = Integer.parseInt(parms[1]);
+
+		for (double d : df) {
+			kernels.add(new DTGraphIntersectionSubTreeKernel(depth, d, true));
 
 		}
 		return kernels;

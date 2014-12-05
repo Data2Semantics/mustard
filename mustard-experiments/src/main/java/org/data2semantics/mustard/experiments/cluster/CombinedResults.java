@@ -112,7 +112,7 @@ public class CombinedResults {
 	 */
 	public static void main(String[] args) {
 		CombinedResults res = new CombinedResults();
-		res.readDirectory("am_results_5pct");
+		res.readDirectory("am_results_opt");
 		Map<String, ResultsTable> tables = res.generateTables(2);
 		
 		List<Result> overallBest = new ArrayList<Result>();
