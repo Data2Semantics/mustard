@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.data2semantics.mustard.experiments.data.AIFBDataSet;
+import org.data2semantics.mustard.experiments.data.BGSLithoDataSet;
 import org.data2semantics.mustard.experiments.data.SubsetDataSet;
 import org.data2semantics.mustard.experiments.data.ClassificationDataSet;
 import org.data2semantics.mustard.kernels.data.SingleDTGraph;
@@ -211,6 +212,12 @@ public class StringArgumentsParser {
 		if (dataset.equals("AIFB")) {
 			RDFDataSet tripleStore = new RDFFileDataSet(getDataFile(), RDFFormat.forFileName(getDataFile()));
 			ClassificationDataSet ds = new AIFBDataSet(tripleStore);
+			ds.create();
+			return ds;
+		}
+		if (dataset.equals("LITHO")) {
+			RDFDataSet tripleStore = new RDFFileDataSet(getDataFile(), RDFFormat.NTRIPLES);
+			ClassificationDataSet ds = new BGSLithoDataSet(tripleStore);
 			ds.create();
 			return ds;
 		}
