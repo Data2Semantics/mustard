@@ -16,10 +16,13 @@ import org.data2semantics.mustard.kernels.data.GraphList;
 import org.data2semantics.mustard.kernels.data.RDFData;
 import org.data2semantics.mustard.kernels.graphkernels.graphlist.WLSubTreeKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFGraphListWLSubTreeKernel;
+import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFGraphListWalkCountKernel;
+import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFGraphListWalkCountKernelMkII;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFHubRemovalWrapperFeatureVectorKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFTreeWLSubTreeKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFTreeWalkCountKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFWLSubTreeKernel;
+import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFWalkCountKernel;
 import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphGraphListWLSubTreeKernel;
 import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphTreeWLSubTreeKernel;
 import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphTreeWalkCountKernel;
@@ -110,7 +113,7 @@ public class SimpleGraphFeaturesExperiment {
 		boolean trackPrevNBH = true; // We should not repeat vertices that get the same label after an iteration of WL (regular WL does this)
 		boolean[] inference = {false, true};
 
-		int[] depths = {3};
+		int[] depths = {1,2};
 		int[] pathDepths = {0,1,2,3,4,5,6};
 		int[] iterationsWL = {0,1,2,3,4,5,6};
 
@@ -127,7 +130,7 @@ public class SimpleGraphFeaturesExperiment {
 
 		//computeGraphStatistics(tripleStore, ds, inference, depths);
 
-		///* The baseline experiment, BoW (or BoL if you prefer)
+		/* The baseline experiment, BoW (or BoL if you prefer)
 		for (boolean inf : inference) {
 			resTable.newRow("Baseline BoL: " + inf);		 
 			for (int d : depths) {
@@ -145,7 +148,7 @@ public class SimpleGraphFeaturesExperiment {
 		}
 		//*/
 
-		///* The baseline experiment, BoW (or BoL if you prefer)
+		/* The baseline experiment, BoW (or BoL if you prefer)
 		for (boolean inf : inference) {
 			resTable.newRow("Baseline BoL Hubs: " + inf);		 
 			for (int d : depths) {
@@ -165,7 +168,7 @@ public class SimpleGraphFeaturesExperiment {
 		}
 		//*/
 
-		///* The baseline experiment, BoW (or BoL if you prefer) Tree variant
+		/* The baseline experiment, BoW (or BoL if you prefer) Tree variant
 		for (boolean inf : inference) {
 			resTable.newRow("Baseline BoL Tree: " + inf);		 
 			for (int d : depths) {
@@ -183,7 +186,7 @@ public class SimpleGraphFeaturesExperiment {
 		}
 		//*/
 
-		///* The baseline experiment, BoW (or BoL if you prefer) Tree variant
+		/* The baseline experiment, BoW (or BoL if you prefer) Tree variant
 		for (boolean inf : inference) {
 			resTable.newRow("Baseline BoL Tree Hubs: " + inf);		 
 			for (int d : depths) {
@@ -279,7 +282,7 @@ public class SimpleGraphFeaturesExperiment {
 		}
 		//*/
 
-		///* Path Count Tree
+		/* Path Count Tree
 		for (boolean inf : inference) {
 			resTable.newRow("Path Count Tree: " + inf);		 
 			for (int d : depths) {
@@ -306,7 +309,7 @@ public class SimpleGraphFeaturesExperiment {
 		}
 		//*/
 
-		///* Path Count Tree
+		/* Path Count Tree
 		for (boolean inf : inference) {
 			resTable.newRow("Path Count Tree Hubs: " + inf);		 
 			for (int d : depths) {
@@ -336,7 +339,7 @@ public class SimpleGraphFeaturesExperiment {
 		}
 		//*/
 
-		///* WL Tree
+		/* WL Tree
 		for (boolean inf : inference) {
 			resTable.newRow("WL Tree: " + inf);		 
 			for (int d : depths) {
@@ -363,7 +366,7 @@ public class SimpleGraphFeaturesExperiment {
 		}
 		//*/
 
-		///* WL Tree
+		/* WL Tree
 		for (boolean inf : inference) {
 			resTable.newRow("WL Tree Hubs: " + inf);		 
 			for (int d : depths) {
@@ -447,7 +450,7 @@ public class SimpleGraphFeaturesExperiment {
 		}
 		//*/
 
-		///* RDF WL 
+		/* RDF WL 
 		for (boolean inf : inference) {
 			resTable.newRow("RDF WL: " + inf);		 
 			for (int d : depths) {
@@ -474,7 +477,7 @@ public class SimpleGraphFeaturesExperiment {
 		}
 		//*/
 
-		///* RDF WL 
+		/* RDF WL 
 		for (boolean inf : inference) {
 			resTable.newRow("RDF WL Hubs: " + inf);		 
 			for (int d : depths) {
@@ -505,7 +508,7 @@ public class SimpleGraphFeaturesExperiment {
 		//*/
 
 
-		///* Regular WL 
+		/* Regular WL 
 		for (boolean inf : inference) {
 			resTable.newRow("WL: " + inf);		 
 			for (int d : depths) {
@@ -532,7 +535,7 @@ public class SimpleGraphFeaturesExperiment {
 		}
 		//*/
 
-		///* WL with HubRemoval
+		/* WL with HubRemoval
 		for (boolean inf : inference) {
 			resTable.newRow("WL Hubs: " + inf);		 
 			for (int d : depths) {
@@ -564,6 +567,58 @@ public class SimpleGraphFeaturesExperiment {
 		//*/
 
 
+		for (boolean inf : inference) {
+			resTable.newRow("WC v1: " + inf);		 
+			for (int d : depths) {
+
+				List<RDFGraphListWalkCountKernel> kernels = new ArrayList<RDFGraphListWalkCountKernel>();	
+
+				if (depthTimesTwo) {
+					kernels.add(new RDFGraphListWalkCountKernel(d*2, d, inf, true));
+				} else {
+					for (int dd : iterationsWL) {
+						kernels.add(new RDFGraphListWalkCountKernel(dd, d, inf, true));
+					}
+				}
+
+				//Collections.shuffle(target);
+				SimpleGraphKernelExperiment<RDFData> exp = new SimpleGraphKernelExperiment<RDFData>(kernels, data, target, svmParms, seeds, evalFuncs);
+
+				exp.run();
+
+				for (Result res : exp.getResults()) {
+					resTable.addResult(res);
+				}
+			}
+		}
+		
+		for (boolean inf : inference) {
+			resTable.newRow("WC v2: " + inf);		 
+			for (int d : depths) {
+
+				List<RDFGraphListWalkCountKernelMkII> kernels = new ArrayList<RDFGraphListWalkCountKernelMkII>();	
+
+				if (depthTimesTwo) {
+					kernels.add(new RDFGraphListWalkCountKernelMkII(d*2, d, inf, true));
+				} else {
+					for (int dd : iterationsWL) {
+						kernels.add(new RDFGraphListWalkCountKernelMkII(dd, d, inf, true));
+					}
+				}
+
+				//Collections.shuffle(target);
+				SimpleGraphKernelExperiment<RDFData> exp = new SimpleGraphKernelExperiment<RDFData>(kernels, data, target, svmParms, seeds, evalFuncs);
+
+				exp.run();
+
+				for (Result res : exp.getResults()) {
+					resTable.addResult(res);
+				}
+			}
+		}
+		
+		
+		
 		/* Regular WL
 		for (boolean inf : inference) {
 			resTable.newRow("Regular WL: " + inf);		

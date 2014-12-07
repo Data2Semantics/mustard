@@ -9,7 +9,7 @@ import org.data2semantics.mustard.experiments.utils.Result;
 import org.data2semantics.mustard.experiments.utils.ResultsTable;
 import org.data2semantics.mustard.experiments.utils.SimpleGraphKernelExperiment;
 import org.data2semantics.mustard.kernels.data.GraphList;
-import org.data2semantics.mustard.kernels.graphkernels.graphlist.PathCountKernelMkII;
+import org.data2semantics.mustard.kernels.graphkernels.graphlist.WalkCountKernelMkII;
 import org.data2semantics.mustard.learners.evaluation.Accuracy;
 import org.data2semantics.mustard.learners.evaluation.EvaluationFunction;
 import org.data2semantics.mustard.learners.evaluation.EvaluationUtils;
@@ -134,10 +134,10 @@ public class AffiliationPredictionTestExperiment {
 				graph = RDFUtils.simplifyInstanceNodeLabels(graph, instanceNodes);
 				GraphList<DTGraph<String,String>> graphs = RDFUtils.getSubGraphs(graph, instanceNodes, d);
 
-				List<PathCountKernelMkII> kernelsMG = new ArrayList<PathCountKernelMkII>();
+				List<WalkCountKernelMkII> kernelsMG = new ArrayList<WalkCountKernelMkII>();
 
 				for (int dd : pathDepths) {
-					PathCountKernelMkII kernel = new PathCountKernelMkII(dd, true);			
+					WalkCountKernelMkII kernel = new WalkCountKernelMkII(dd, true);			
 					kernelsMG.add(kernel);
 				}
 

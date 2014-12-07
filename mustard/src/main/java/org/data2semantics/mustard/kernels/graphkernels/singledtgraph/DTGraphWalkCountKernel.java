@@ -73,7 +73,7 @@ public class DTGraphWalkCountKernel implements GraphKernel<SingleDTGraph>, Featu
 		}
 
 		long tic = System.currentTimeMillis();
-		
+
 		// initial count
 		// Count paths
 		Integer index = null;
@@ -154,7 +154,7 @@ public class DTGraphWalkCountKernel implements GraphKernel<SingleDTGraph>, Featu
 			}		
 			computeFVs(rdfGraph, instanceVertices, featureVectors, pathDict.size()-1);
 		}
-		
+
 		compTime = System.currentTimeMillis() - tic;
 
 		if (this.normalize) {
@@ -301,7 +301,7 @@ public class DTGraphWalkCountKernel implements GraphKernel<SingleDTGraph>, Featu
 		private String label;
 		private Map<Integer, List<String>> pathsMap;
 		private Map<Integer, List<String>> newPathsMap;
-
+	
 		public PathStringMapLabel(String label) {
 			this.label = label;
 			pathsMap = new HashMap<Integer, List<String>>();
@@ -320,13 +320,15 @@ public class DTGraphWalkCountKernel implements GraphKernel<SingleDTGraph>, Featu
 
 		public void addPaths(List<String> paths2, int depth) {
 			for (String path : paths2) {
-				newPathsMap.get(depth).add(label + path);			}
+				newPathsMap.get(depth).add(label + path);			
+			}
 		}
 
 		public void setNewPaths() {
 			for (int d : pathsMap.keySet()) {
 				pathsMap.put(d, newPathsMap.get(d));
-				newPathsMap.put(d, new ArrayList<String>());
+				newPathsMap.get(d).clear(); // clearing to save some GC
+				//newPathsMap.put(d, new ArrayList<String>());
 			}
 		}
 	}

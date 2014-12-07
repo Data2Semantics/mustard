@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.data2semantics.mustard.kernels.ComputationTimeTracker;
 import org.data2semantics.mustard.kernels.KernelUtils;
 import org.data2semantics.mustard.kernels.data.GraphList;
 import org.data2semantics.mustard.kernels.graphkernels.FeatureVectorKernel;
@@ -21,10 +22,10 @@ import org.nodes.LightDTGraph;
  * 
  * @author Gerben *
  */
-@Deprecated
-public class PathCountKernelMkII implements GraphKernel<GraphList<DTGraph<String,String>>>, FeatureVectorKernel<GraphList<DTGraph<String,String>>> {
+public class WalkCountKernelMkII implements GraphKernel<GraphList<DTGraph<String,String>>>, FeatureVectorKernel<GraphList<DTGraph<String,String>>>, ComputationTimeTracker {
 	private int depth;
 	protected boolean normalize;
+	private long compTime;
 	private Map<String, Integer> pathDict;
 	private Map<String, Integer> labelDict;
 
@@ -35,12 +36,12 @@ public class PathCountKernelMkII implements GraphKernel<GraphList<DTGraph<String
 	 * @param iterations
 	 * @param normalize
 	 */
-	public PathCountKernelMkII(int depth, boolean normalize) {
+	public WalkCountKernelMkII(int depth, boolean normalize) {
 		this.normalize = normalize;
 		this.depth = depth;
 	}	
 
-	public PathCountKernelMkII(int depth) {
+	public WalkCountKernelMkII(int depth) {
 		this(depth, true);
 	}
 
@@ -52,20 +53,27 @@ public class PathCountKernelMkII implements GraphKernel<GraphList<DTGraph<String
 		this.normalize = normalize;
 	}
 
+	public long getComputationTime() {
+		return compTime;
+	}
+
 	public SparseVector[] computeFeatureVectors(GraphList<DTGraph<String,String>> data) {
 		pathDict  = new HashMap<String,Integer>();
 		labelDict = new HashMap<String,Integer>();
-		
+
 		List<DTGraph<PathStringLabel,PathStringLabel>> graphs = copyGraphs(data.getGraphs());
 
 		// Initialize and compute the featureVectors
 		SparseVector[] featureVectors = new SparseVector[graphs.size()];
 		for (int i = 0; i < featureVectors.length; i++) {
 			featureVectors[i] = new SparseVector();
+		}
 
+		long tic = System.currentTimeMillis();
+
+		for (int i = 0; i < featureVectors.length; i++) {
 			// initial count
 			// Count paths
-			
 			Integer index = null;
 			for (DTNode<PathStringLabel,PathStringLabel> v : graphs.get(i).nodes()) {
 				for (String path : v.label().getPaths()) {
@@ -89,8 +97,8 @@ public class PathCountKernelMkII implements GraphKernel<GraphList<DTGraph<String
 					featureVectors[i].setValue(index, featureVectors[i].getValue(index) + 1);
 				}
 			}
-			
-	
+
+
 			// loop to create longer and longer paths
 			for (int j = 0; j < depth; j++) {
 
@@ -140,6 +148,8 @@ public class PathCountKernelMkII implements GraphKernel<GraphList<DTGraph<String
 			fv.setLastIndex(pathDict.size()-1);
 		}
 
+		compTime = System.currentTimeMillis() - tic;
+
 		if (normalize) {
 			featureVectors = KernelUtils.normalize(featureVectors);
 		}
@@ -148,28 +158,9 @@ public class PathCountKernelMkII implements GraphKernel<GraphList<DTGraph<String
 
 	public double[][] compute(GraphList<DTGraph<String,String>> data) {
 		double[][] kernel = KernelUtils.initMatrix(data.getGraphs().size(), data.getGraphs().size());
-		computeKernelMatrix(computeFeatureVectors(data), kernel);				
+		KernelUtils.computeKernelMatrix(computeFeatureVectors(data), kernel);				
 		return kernel;
 	}
-
-
-	/**
-	 * Use the feature vectors to compute a kernel matrix.
-	 * 
-	 * @param graphs
-	 * @param featureVectors
-	 * @param kernel
-	 * @param iteration
-	 */
-	private void computeKernelMatrix(SparseVector[] featureVectors, double[][] kernel) {
-		for (int i = 0; i < featureVectors.length; i++) {
-			for (int j = i; j < featureVectors.length; j++) {
-				kernel[i][j] += featureVectors[i].dot(featureVectors[j]);
-				kernel[j][i] = kernel[i][j];
-			}
-		}
-	}
-
 
 	private List<DTGraph<PathStringLabel,PathStringLabel>> copyGraphs(List<DTGraph<String,String>> oldGraphs) {
 		List<DTGraph<PathStringLabel,PathStringLabel>> newGraphs = new ArrayList<DTGraph<PathStringLabel,PathStringLabel>>();	
@@ -216,13 +207,16 @@ public class PathCountKernelMkII implements GraphKernel<GraphList<DTGraph<String
 
 		public void addPaths(List<String> paths2) {
 			for (String path : paths2) {
-				newPaths.add(label + path);			}
+				newPaths.add(label + path);			
+			}
 		}
 
 		public void setNewPaths() {
-			//if (!newPaths.isEmpty()) {
-				paths = newPaths;
-				newPaths = new ArrayList<String>();
+			//if (!newPaths.isEmpty()) { // If we add a check on emptiness of newPaths, than we get behavior similar to standard WL. 
+			//Without the check, paths will be empty in the next iteration so the same paths will not be propagated again
+			paths.clear();
+			paths.addAll(newPaths);
+			newPaths.clear(); // clearing instead of new to save some GC
 			//}					
 		}
 	}

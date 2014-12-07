@@ -24,6 +24,7 @@ import org.data2semantics.mustard.kernels.data.RDFData;
 import org.data2semantics.mustard.kernels.graphkernels.graphlist.WLSubTreeKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFGraphListWLSubTreeKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFGraphListWalkCountKernel;
+import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFGraphListWalkCountKernelMkII;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFHubRemovalWrapperFeatureVectorKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFIntersectionSubTreeKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFRootWalkCountKernel;
@@ -91,7 +92,7 @@ public class ComputationTimeExperiment {
 		boolean reverseWL = true; // WL should be in reverse mode, which means regular subtrees
 		boolean trackPrevNBH = true; // We should not repeat vertices that get the same label after an iteration of WL (regular WL does this)
 		boolean[] inference = {true};
-		int[] depths = {3};
+		int[] depths = {2};
 
 		double[] fractions = {0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0};
 		long[] seeds = {11,21,31,41,51};
@@ -134,7 +135,7 @@ public class ComputationTimeExperiment {
 		}
 		//*/
 		
-		///* BoL - Graph
+		/* BoL - Graph
 		for (boolean inf : inference) {			 
 			for (int d : depths) {
 				for (double frac : fractions) {
@@ -168,7 +169,7 @@ public class ComputationTimeExperiment {
 		}
 		//*/
 
-		///* BoL - Tree
+		/* BoL - Tree
 		for (boolean inf : inference) {			 
 			for (int d : depths) {
 				for (double frac : fractions) {
@@ -202,7 +203,7 @@ public class ComputationTimeExperiment {
 		}
 		//*/
 		
-		///* Root Walk Count
+		/* Root Walk Count
 		for (boolean inf : inference) {			 
 			for (int d : depths) {
 				for (double frac : fractions) {
@@ -237,7 +238,7 @@ public class ComputationTimeExperiment {
 		//*/
 		
 		
-		///* RDF Walk Count
+		/* RDF Walk Count
 		for (boolean inf : inference) {			 
 			for (int d : depths) {
 				for (double frac : fractions) {
@@ -271,7 +272,7 @@ public class ComputationTimeExperiment {
 		}
 		//*/
 		
-		///* RDF Tree Walk Count
+		/* RDF Tree Walk Count
 		for (boolean inf : inference) {			 
 			for (int d : depths) {
 				for (double frac : fractions) {
@@ -307,7 +308,7 @@ public class ComputationTimeExperiment {
 		
 		
 		
-		///* Regular WL 
+		/* Regular WL 
 		for (boolean inf : inference) {		 
 			for (int d : depths) {
 				for (double frac : fractions) {
@@ -341,7 +342,7 @@ public class ComputationTimeExperiment {
 		}
 		//*/
 		
-		///* RDF WL 
+		/* RDF WL 
 		for (boolean inf : inference) {	 
 			for (int d : depths) {
 				for (double frac : fractions) {
@@ -376,7 +377,7 @@ public class ComputationTimeExperiment {
 		//*/
 
 		
-		///* Tree WL 
+		/* Tree WL 
 		for (boolean inf : inference) {	 
 			for (int d : depths) {
 				for (double frac : fractions) {
@@ -411,7 +412,7 @@ public class ComputationTimeExperiment {
 		//*/
 
 		
-		///*  IST
+		/*  IST
 		for (boolean inf : inference) {	 
 			for (int d : depths) {
 				for (double frac : fractions) {
@@ -449,8 +450,76 @@ public class ComputationTimeExperiment {
 		resTable.addCompResults(resTable.getBestResults());
 		System.out.println(resTable);	
 		
+		//*/ Regular WC mkII
+		for (boolean inf : inference) {			 
+			for (int d : depths) {
+				for (double frac : fractions) {
+					resTable.newRow("Regular Walk Count MkII: " + inf);	
+					List<Result> tempRes = new ArrayList<Result>();
+					for (long seed : seeds) {
+						RDFData dataSub = createRandomSubset(data, frac, seed);
+
+						List<RDFGraphListWalkCountKernelMkII> kernels = new ArrayList<RDFGraphListWalkCountKernelMkII>();	
+						kernels.add(new RDFGraphListWalkCountKernelMkII(d*2, d, inf, true));
+
+						GraphKernelComputationTimeExperiment<RDFData> exp = new GraphKernelComputationTimeExperiment<RDFData>(kernels, dataSub, null);
+
+						exp.run();
+
+						if (tempRes.isEmpty()) {
+							for (Result res : exp.getResults()) {
+								tempRes.add(res);
+							}
+						} else {
+							for (int i = 0; i < tempRes.size(); i++) {
+								tempRes.get(i).addResult(exp.getResults().get(i));
+							}
+						}
+					}
+					for (Result res : tempRes) {
+						resTable.addResult(res);
+					}
+					
+					resTable.addCompResults(resTable.getBestResults());
+					System.out.println(resTable);
+					
+					
+					resTable.newRow("Regular Walk Count: " + inf);	
+					tempRes = new ArrayList<Result>();
+					for (long seed : seeds) {
+						RDFData dataSub = createRandomSubset(data, frac, seed);
+
+						List<RDFGraphListWalkCountKernel> kernels = new ArrayList<RDFGraphListWalkCountKernel>();	
+						kernels.add(new RDFGraphListWalkCountKernel(d*2, d, inf, true));
+
+						GraphKernelComputationTimeExperiment<RDFData> exp = new GraphKernelComputationTimeExperiment<RDFData>(kernels, dataSub, null);
+
+						exp.run();
+
+						if (tempRes.isEmpty()) {
+							for (Result res : exp.getResults()) {
+								tempRes.add(res);
+							}
+						} else {
+							for (int i = 0; i < tempRes.size(); i++) {
+								tempRes.get(i).addResult(exp.getResults().get(i));
+							}
+						}
+					}
+					for (Result res : tempRes) {
+						resTable.addResult(res);
+					}
+					
+					resTable.addCompResults(resTable.getBestResults());
+					System.out.println(resTable);
+				}
+			}
+		}
+		//*/
 		
-		///* Regular Walk Count
+		
+		
+		/* Regular Walk Count
 		for (boolean inf : inference) {			 
 			for (int d : depths) {
 				for (double frac : fractions) {
