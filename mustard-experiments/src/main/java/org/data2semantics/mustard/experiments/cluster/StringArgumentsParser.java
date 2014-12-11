@@ -14,6 +14,7 @@ import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphGrap
 import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphGraphListWalkCountKernel;
 import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphHubRemovalWrapperFeatureVectorKernel;
 import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphHubRemovalWrapperKernel;
+import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphIntersectionPartialSubTreeKernel;
 import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphIntersectionSubTreeKernel;
 import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphRootWLSubTreeKernel;
 import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphRootWalkCountKernel;
@@ -145,6 +146,9 @@ public class StringArgumentsParser {
 		}
 		if (kernel.equals("IntersectionSubTree")) {
 			return intersectionSubTree(kernelParms);
+		}
+		if (kernel.equals("IntersectionPartialSubTree")) {
+			return intersectionPartialSubTree(kernelParms);
 		}
 		return null;
 	}
@@ -525,6 +529,31 @@ public class StringArgumentsParser {
 
 		for (double d : df) {
 			kernels.add(new DTGraphIntersectionSubTreeKernel(depth, d, true));
+
+		}
+		return kernels;
+	}
+	
+	/**
+	 * -kernel IntersectionPartialSubTree
+	 * -kernelParm1 discountFactor (double)
+	 * -kernelParm2 depth (int)
+	 * 
+	 * @return
+	 */
+	public static List<DTGraphIntersectionPartialSubTreeKernel> intersectionPartialSubTree(String[] parms) {
+		List<DTGraphIntersectionPartialSubTreeKernel> kernels = new ArrayList<DTGraphIntersectionPartialSubTreeKernel>();
+		double[] df = new double[1];
+
+		if (parms[0].startsWith("[")) {
+			df = parseDoubleArray(parms[0]);
+		} else {
+			df[0] = Double.parseDouble(parms[0]); 
+		}
+		int depth = Integer.parseInt(parms[1]);
+
+		for (double d : df) {
+			kernels.add(new DTGraphIntersectionPartialSubTreeKernel(depth, d, true));
 
 		}
 		return kernels;

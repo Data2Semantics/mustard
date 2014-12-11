@@ -112,7 +112,8 @@ public class CombinedResults {
 	 */
 	public static void main(String[] args) {
 		CombinedResults res = new CombinedResults();
-		res.readDirectory("C:\\Users\\Gerben\\Dropbox\\D2S\\workspace_TeX\\JWS\\results_litho_hubs");
+
+		res.readDirectory("C:\\Users\\Gerben\\Dropbox\\D2S\\workspace_TeX\\JWS\\results_litho");
 		Map<String, ResultsTable> tables = res.generateTables(3);
 		
 		List<Result> overallBest = new ArrayList<Result>();

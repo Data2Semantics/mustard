@@ -20,7 +20,7 @@ public class ParamsCreator {
 		String filePrefix = "BGSsubset";
 		String[] subsets = {"1","2","3","4","5","6","7","8","9","10"};
 		String[] infs = {"false","true"};
-		int[] depths = {1,2,3};
+		int[] depths = {1,2};
 		String[] kernels = {"TreeBoL", "GraphBoL", "TreeWalksRoot", "TreeSubtreesRoot",
 				"GraphWalks", "GraphWalksFast", "TreeWalks",
 				"GraphSubtreesFast", "GraphSubtrees", "TreeSubtrees"};

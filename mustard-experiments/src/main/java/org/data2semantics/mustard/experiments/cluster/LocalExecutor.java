@@ -6,8 +6,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LocalExecutor {
-	private static final String parmsFile = "C:\\Users\\Gerben\\git\\mustard\\mustard-experiments\\aff_parms.txt";
-	private static final String prefix = "-dataset AIFB -file datasets/aifb-fixed_complete.n3";
+	private static final String parmsFile = "../ipst_parms.txt";
+	//private static final String parmsFile = "../aff_parms_non_opt_2.txt";
+	//private static final String prefix = "-dataset AIFB -optHubs true -minHubs [10,20,40,80,10000000] -file ../datasets/aifb-fixed_complete.n3";
+	private static final String prefix = "-dataset LITHO -file C:\\Users\\Gerben\\Dropbox\\data_bgs_ac_uk_ALL";
+	//private static final String prefix = "-dataset BGS";
+	private static final int numThreads = 2;
 	
 	/**
 	 * @param args
@@ -28,7 +32,7 @@ public class LocalExecutor {
 		}
 
 		
-		SimpleScheduler sched = new SimpleScheduler(4);
+		SimpleScheduler sched = new SimpleScheduler(numThreads);
 		
 		for (int i = 0; i < lines.size(); ) {
 			String fullStr = prefix + " " + lines.get(i);
@@ -77,7 +81,7 @@ public class LocalExecutor {
 				if (jobs[i] == null || !jobs[i].isAlive()) {
 					jobs[i] = job;
 					job.setDaemon(false);
-					job.run();
+					job.start();
 					break;
 				}
 			}
