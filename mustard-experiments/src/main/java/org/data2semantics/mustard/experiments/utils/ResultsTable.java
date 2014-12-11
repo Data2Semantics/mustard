@@ -3,7 +3,10 @@ package org.data2semantics.mustard.experiments.utils;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.math3.stat.inference.MannWhitneyUTest;
 import org.apache.commons.math3.stat.inference.TTest;
@@ -16,6 +19,7 @@ public class ResultsTable implements Serializable {
 	private List<String> rowLabels;
 	private List<Result> compRes;
 	private boolean showStdDev;
+	private boolean latex;
 	private double pValue;
 	private int digits;
 
@@ -28,6 +32,7 @@ public class ResultsTable implements Serializable {
 		compRes = new ArrayList<Result>();
 		significanceTest = SigTest.TTEST;
 		showStdDev = false;
+		latex = false;
 		pValue = 0.05;
 		digits = 2;
 	}
@@ -50,13 +55,29 @@ public class ResultsTable implements Serializable {
 	}
 
 	public String formatScore(double score) {
-		return Double.toString((Math.round(score * Math.pow(10, digits))) / Math.pow(10, digits));
+		return String.format("%1." + digits + "f", score);
+		// Double.toString((Math.round(score * Math.pow(10, digits))) / Math.pow(10, digits))
 	}
 
 	@Override
 	public String toString() {
 		StringBuffer tableStr = new StringBuffer();		
 
+		Map<String, Integer> compCount = new HashMap<String,Integer>();
+		
+		for (Result comp : compRes) {
+			if (!compCount.containsKey(comp.getLabel())) {
+				compCount.put(comp.getLabel(), 1);
+			} else {
+				compCount.put(comp.getLabel(), compCount.get(comp.getLabel())+1);
+			}
+		}
+		List<Integer> counts = new ArrayList<Integer>(compCount.values());
+		Collections.sort(counts);
+		
+		int maxTests = counts.get(counts.size()-1);
+		
+		
 		if(table.size() > 0) {
 
 			List<Result> row1 = table.get(0);
@@ -74,23 +95,55 @@ public class ResultsTable implements Serializable {
 
 					signif = "";
 					int j = 0;
+					int suc = 0;
 					for (Result comp : compRes) {
 						j++;
 						if (comp.getLabel().equals(res.getLabel())) {
 							if (comp.getScores().length > 1 && !signifTest(comp.getScores(), res.getScores())) {
 								signif += "^"+j;
+								suc++;
+							} else {
+								signif += "  ";
 							}
 						}
 					}
 
-					tableStr.append(formatScore(res.getScore()) + signif);
-					
-					if (showStdDev) {
-						tableStr.append("("+formatScore(res.getStdDev())+")");	
+					if (latex) {
+						tableStr.append(" & ");
 					}
 					
+					if (latex) {
+						if (suc == maxTests) {
+							tableStr.append("$\\textbf{" + formatScore(res.getScore()));
+						}
+						else if (suc == maxTests-1 && suc != 0) {
+							tableStr.append("$\\textit{" + formatScore(res.getScore()));
+						} else if (suc != 0){
+							tableStr.append("$\\textrm{" + formatScore(res.getScore()) + signif);
+						} else {
+							tableStr.append("$\\textrm{" + formatScore(res.getScore()));
+						}
+						
+						if (showStdDev) {
+							tableStr.append("("+formatScore(res.getStdDev())+")");	
+						}		
+						tableStr.append("}$");
+						
+						
+					} else {				
+						tableStr.append(formatScore(res.getScore()) + signif);
+						if (showStdDev) {
+							tableStr.append("("+formatScore(res.getStdDev())+")");	
+						}
+					}
+									
 					tableStr.append(" \t ");
 				}
+				
+				if (latex) {
+					tableStr.append(" \\\\ ");
+				}
+				
 				tableStr.append(rowLabels.get(i));
 				tableStr.append("\n");
 			}
@@ -175,6 +228,10 @@ public class ResultsTable implements Serializable {
 		this.showStdDev = showStdDev;
 	}
 	
+	public void setLatex(boolean latex) {
+		this.latex = latex;
+	}
+
 	public void setSignificanceTest(SigTest significanceTest) {
 		this.significanceTest = significanceTest;
 	}

@@ -112,8 +112,8 @@ public class CombinedResults {
 	 */
 	public static void main(String[] args) {
 		CombinedResults res = new CombinedResults();
-		res.readDirectory("am_results_opt");
-		Map<String, ResultsTable> tables = res.generateTables(2);
+		res.readDirectory("C:\\Users\\Gerben\\Dropbox\\D2S\\workspace_TeX\\JWS\\results_litho_hubs");
+		Map<String, ResultsTable> tables = res.generateTables(3);
 		
 		List<Result> overallBest = new ArrayList<Result>();
 		
@@ -125,7 +125,9 @@ public class CombinedResults {
 			tables.get(key).addCompResults(overallBest); // add overall best results
 			tables.get(key).addCompResults(tables.get(key).getBestResults()); // add local best results
 			tables.get(key).setSignificanceTest(ResultsTable.SigTest.PAIRED_TTEST);
-			tables.get(key).setDigits(3);
+			tables.get(key).setDigits(2);
+			tables.get(key).setShowStdDev(true);
+			tables.get(key).setLatex(true);
 			System.out.println(tables.get(key));
 		}
 	}
