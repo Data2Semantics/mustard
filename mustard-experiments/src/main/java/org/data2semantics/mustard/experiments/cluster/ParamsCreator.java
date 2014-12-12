@@ -17,19 +17,19 @@ public class ParamsCreator {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		String filePrefix = "BGSsubset";
+		String filePrefix = "../datasets/AMsubset";
 		String[] subsets = {"1","2","3","4","5","6","7","8","9","10"};
 		String[] infs = {"false","true"};
 		int[] depths = {1,2};
 		String[] kernels = {"TreeBoL", "GraphBoL", "TreeWalksRoot", "TreeSubtreesRoot",
-				"GraphWalks", "GraphWalksFast", "TreeWalks",
-				"GraphSubtreesFast", "GraphSubtrees", "TreeSubtrees"};
+				 "GraphWalksFast", "TreeWalks",
+				"GraphSubtreesFast", "GraphSubtrees", "TreeSubtrees"}; // "GraphWalks",
 
 		for (String subset : subsets) {
 			for (String inf : infs) {
 				for (int depth : depths) {
 					for (String kernel : kernels) {
-						KernelParms kps = new KernelParms(kernel, depth, true);
+						KernelParms kps = new KernelParms(kernel, depth, false);
 
 						for (String kp : kps) {
 							System.out.println("-file " + filePrefix + subset + inf + " -subset " + subset + " -inference " + inf + " -depth " + depth + " " + kp);
@@ -71,9 +71,9 @@ public class ParamsCreator {
 				settings.add("-kernel " + kernel + " -kernelParm1 " + getIts(depth) + " -kernelParm2 " + depth);
 			}
 			else {
-				settings.add("-kernel " + kernel + " -kernelParm1 " + getIts(depth) + " -kernelParm2 " + depth + " -kernelParm3 false -kernelParm4 false");
-				settings.add("-kernel " + kernel + " -kernelParm1 " + getIts(depth) + " -kernelParm2 " + depth + " -kernelParm3 false -kernelParm4 true");
-				settings.add("-kernel " + kernel + " -kernelParm1 " + getIts(depth) + " -kernelParm2 " + depth + " -kernelParm3 true -kernelParm4 false");
+				//settings.add("-kernel " + kernel + " -kernelParm1 " + getIts(depth) + " -kernelParm2 " + depth + " -kernelParm3 false -kernelParm4 false");
+				//settings.add("-kernel " + kernel + " -kernelParm1 " + getIts(depth) + " -kernelParm2 " + depth + " -kernelParm3 false -kernelParm4 true");
+				//settings.add("-kernel " + kernel + " -kernelParm1 " + getIts(depth) + " -kernelParm2 " + depth + " -kernelParm3 true -kernelParm4 false");
 				settings.add("-kernel " + kernel + " -kernelParm1 " + getIts(depth) + " -kernelParm2 " + depth + " -kernelParm3 true -kernelParm4 true");
 			}
 			it = settings.iterator();
