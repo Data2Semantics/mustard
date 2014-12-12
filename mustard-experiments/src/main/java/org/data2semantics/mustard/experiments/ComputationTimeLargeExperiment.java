@@ -490,6 +490,10 @@ public class ComputationTimeLargeExperiment {
 				}
 			}
 			//*/
+			
+			for (ResultsTable table : tables) {
+				System.out.println(table);
+			}
 
 			
 			

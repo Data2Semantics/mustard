@@ -75,7 +75,7 @@ public class ResultsTable implements Serializable {
 		List<Integer> counts = new ArrayList<Integer>(compCount.values());
 		Collections.sort(counts);
 		
-		int maxTests = counts.get(counts.size()-1);
+		int maxTests = counts.isEmpty() ? 0 : counts.get(counts.size()-1);
 		
 		
 		if(table.size() > 0) {
