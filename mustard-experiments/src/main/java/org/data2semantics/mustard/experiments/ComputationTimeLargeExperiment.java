@@ -28,9 +28,11 @@ import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFTreeWalkCountK
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFWLSubTreeKernel;
 import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphGraphListWLSubTreeKernel;
 import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphGraphListWalkCountKernel;
+import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphGraphListWalkCountKernelMkII;
 import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphRootWalkCountKernel;
 import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphTreeWLSubTreeKernel;
 import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphTreeWalkCountKernel;
+import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphTreeWalkCountKernelMkII;
 import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphWLSubTreeKernel;
 import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphWalkCountKernel;
 import org.data2semantics.mustard.learners.evaluation.Accuracy;
@@ -93,15 +95,15 @@ public class ComputationTimeLargeExperiment {
 		
 		ResultsTable resTableRootWC = new ResultsTable();
 		resTableRootWC.setShowStdDev(true);		
-		tables.add(resTableRootWC);
-		
-		ResultsTable resTableWC = new ResultsTable();
-		resTableWC.setShowStdDev(true);		
-		tables.add(resTableWC);
+		tables.add(resTableRootWC);	
 		
 		ResultsTable resTableRDFWC = new ResultsTable();
 		resTableRDFWC.setShowStdDev(true);		
 		tables.add(resTableRDFWC);
+		
+		ResultsTable resTableTreeWCMkII = new ResultsTable();
+		resTableTreeWCMkII.setShowStdDev(true);		
+		tables.add(resTableTreeWCMkII);
 		
 		ResultsTable resTableTreeWC = new ResultsTable();
 		resTableTreeWC.setShowStdDev(true);		
@@ -260,6 +262,41 @@ public class ComputationTimeLargeExperiment {
 			}
 			//*/
 			
+			///* Tree WC MkII	
+			for (boolean inf : inference) {
+				resTableTreeWCMkII.newRow("Tree WC MkII: " + inf);		 
+				for (int d : depths) {
+
+					List<Result> tempRes = new ArrayList<Result>();
+					for (long sDS : seedsDataset) {
+						Pair<SingleDTGraph, List<Double>> p = cache.get(sDS).get(inf).get(d);
+						SingleDTGraph data = p.getFirst();
+
+						List<DTGraphTreeWalkCountKernelMkII> kernels = new ArrayList<DTGraphTreeWalkCountKernelMkII>();	
+						kernels.add(new DTGraphTreeWalkCountKernelMkII(d*2, d, true));
+
+						GraphFeatureVectorKernelComputationTimeExperiment<SingleDTGraph> exp = new GraphFeatureVectorKernelComputationTimeExperiment<SingleDTGraph>(kernels, data, null);
+
+						exp.run();
+						if (tempRes.isEmpty()) {
+							for (Result res : exp.getResults()) {
+								tempRes.add(res);
+							}
+						} else {
+							for (int i = 0; i < tempRes.size(); i++) {
+								tempRes.get(i).addResult(exp.getResults().get(i));
+							}
+						}
+					}
+
+					for (Result res : tempRes) {
+						resTableTreeWCMkII.addResult(res);
+					}
+				}
+			}
+			//*/
+
+			
 			///* Tree WC	
 			for (boolean inf : inference) {
 				resTableTreeWC.newRow("Tree WC: " + inf);		 
@@ -405,9 +442,57 @@ public class ComputationTimeLargeExperiment {
 			System.out.println(table);
 		}
 		
+		
+		ResultsTable resTableWCMkII = new ResultsTable();
+		resTableWCMkII.setShowStdDev(true);		
+		tables.add(resTableWCMkII);
+	
+		
+		ResultsTable resTableWC = new ResultsTable();
+		resTableWC.setShowStdDev(true);		
+		tables.add(resTableWC);
+	
+		
+		
 		for (double fraction : fractions) {
 			Map<Long, Map<Boolean, Map<Integer,Pair<SingleDTGraph, List<Double>>>>> cache = createDataSetCache(tripleStore, ds, seedsDataset, fraction, minClassSize, maxNumClasses, depths, inference);
 
+			///* WC	mk2
+			for (boolean inf : inference) {
+				resTableWCMkII.newRow("WC mkII: " + inf);		 
+				for (int d : depths) {
+
+					List<Result> tempRes = new ArrayList<Result>();
+					for (long sDS : seedsDataset) {
+						Pair<SingleDTGraph, List<Double>> p = cache.get(sDS).get(inf).get(d);
+						SingleDTGraph data = p.getFirst();
+
+						List<DTGraphGraphListWalkCountKernelMkII> kernels = new ArrayList<DTGraphGraphListWalkCountKernelMkII>();	
+						kernels.add(new DTGraphGraphListWalkCountKernelMkII(d*2, d, true));
+
+						GraphFeatureVectorKernelComputationTimeExperiment<SingleDTGraph> exp = new GraphFeatureVectorKernelComputationTimeExperiment<SingleDTGraph>(kernels, data, null);
+
+						exp.run();
+						if (tempRes.isEmpty()) {
+							for (Result res : exp.getResults()) {
+								tempRes.add(res);
+							}
+						} else {
+							for (int i = 0; i < tempRes.size(); i++) {
+								tempRes.get(i).addResult(exp.getResults().get(i));
+							}
+						}
+					}
+
+					for (Result res : tempRes) {
+						resTableWCMkII.addResult(res);
+					}
+				}
+			}
+			//*/
+
+			
+			
 			///* WC	
 			for (boolean inf : inference) {
 				resTableWC.newRow("WC: " + inf);		 

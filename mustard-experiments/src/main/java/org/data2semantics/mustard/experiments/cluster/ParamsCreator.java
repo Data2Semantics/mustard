@@ -20,7 +20,7 @@ public class ParamsCreator {
 		String filePrefix = "BGSsubset";
 		String[] subsets = {"1","2","3","4","5","6","7","8","9","10"};
 		String[] infs = {"false","true"};
-		int[] depths = {1,2};
+		int[] depths = {1,2,3};
 		String[] kernels = {"TreeBoL", "GraphBoL", "TreeWalksRoot", "TreeSubtreesRoot",
 				"GraphWalks", "GraphWalksFast", "TreeWalks",
 				"GraphSubtreesFast", "GraphSubtrees", "TreeSubtrees"};
@@ -71,9 +71,9 @@ public class ParamsCreator {
 				settings.add("-kernel " + kernel + " -kernelParm1 " + getIts(depth) + " -kernelParm2 " + depth);
 			}
 			else {
-				settings.add("-kernel " + kernel + " -kernelParm1 " + getIts(depth) + " -kernelParm2 " + depth + " -kernelParm3 false -kernelParm4 false");
-				settings.add("-kernel " + kernel + " -kernelParm1 " + getIts(depth) + " -kernelParm2 " + depth + " -kernelParm3 false -kernelParm4 true");
-				settings.add("-kernel " + kernel + " -kernelParm1 " + getIts(depth) + " -kernelParm2 " + depth + " -kernelParm3 true -kernelParm4 false");
+				//settings.add("-kernel " + kernel + " -kernelParm1 " + getIts(depth) + " -kernelParm2 " + depth + " -kernelParm3 false -kernelParm4 false");
+				//settings.add("-kernel " + kernel + " -kernelParm1 " + getIts(depth) + " -kernelParm2 " + depth + " -kernelParm3 false -kernelParm4 true");
+				//settings.add("-kernel " + kernel + " -kernelParm1 " + getIts(depth) + " -kernelParm2 " + depth + " -kernelParm3 true -kernelParm4 false");
 				settings.add("-kernel " + kernel + " -kernelParm1 " + getIts(depth) + " -kernelParm2 " + depth + " -kernelParm3 true -kernelParm4 true");
 			}
 			it = settings.iterator();
