@@ -326,7 +326,8 @@ public class DTGraphWalkCountKernel implements GraphKernel<SingleDTGraph>, Featu
 
 		public void setNewPaths() {
 			for (int d : pathsMap.keySet()) {
-				pathsMap.put(d, newPathsMap.get(d));
+				pathsMap.get(d).clear();
+				pathsMap.get(d).addAll(newPathsMap.get(d));
 				newPathsMap.get(d).clear(); // clearing to save some GC
 				//newPathsMap.put(d, new ArrayList<String>());
 			}

@@ -8,12 +8,12 @@ import java.util.List;
 public class LocalExecutor {
 	//private static final String parmsFile = "../ipst_parms.txt";
 	//private static final String parmsFile = "../aff_parms_non_opt_2.txt";
-	private static final String parmsFile = "../am_parms.txt";
+	private static final String parmsFile = "../aff_parms_non_opt.txt";
 	//private static final String prefix = "-dataset AIFB -file ../datasets/aifb-fixed_complete.n3"; // -optHubs true -minHubs [10,20,40,80,10000000]
-	//private static final String prefix = "-dataset LITHO -file C:\\Users\\Gerben\\Dropbox\\data_bgs_ac_uk_ALL";
+	private static final String prefix = "-blankLabels true -dataset LITHO -file C:\\Users\\Gerben\\Dropbox\\data_bgs_ac_uk_ALL";
 	//private static final String prefix = "-dataset BGS";
-	private static final String prefix = "-dataset AM";
-	private static final int numThreads = 4;
+	//private static final String prefix = "-dataset AM";
+	private static final int numThreads = 3;
 	
 	/**
 	 * @param args

@@ -19,6 +19,7 @@ import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFGraphListWLSub
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFGraphListWalkCountKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFGraphListWalkCountKernelMkII;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFHubRemovalWrapperFeatureVectorKernel;
+import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFRootWalkCountKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFTreeWLSubTreeKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFTreeWalkCountKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFTreeWalkCountKernelMkII;
@@ -206,7 +207,7 @@ public class SimpleGraphFeaturesExperiment {
 		}
 		//*/
 
-		/* Path Count Root
+		///* Path Count Root
 		for (boolean inf : inference) {
 			resTable.newRow("Path Count through root: " + inf);		 
 			for (int d : depths) {
@@ -283,7 +284,7 @@ public class SimpleGraphFeaturesExperiment {
 		}
 		//*/
 
-		///* Path Count Tree
+		/* Path Count Tree
 		for (boolean inf : inference) {
 			resTable.newRow("Path Count Tree: " + inf);		 
 			for (int d : depths) {
@@ -309,8 +310,8 @@ public class SimpleGraphFeaturesExperiment {
 			}
 		}
 		//*/
-		
-		///* Path Count Tree
+
+		/* Path Count Tree
 				for (boolean inf : inference) {
 					resTable.newRow("Path Count Tree V2: " + inf);		 
 					for (int d : depths) {
@@ -426,18 +427,18 @@ public class SimpleGraphFeaturesExperiment {
 
 
 
-		/* RDF Path Count 
+		///* RDF Path Count 
 		for (boolean inf : inference) {
 			resTable.newRow("RDF Path Count: " + inf);		 
 			for (int d : depths) {
 
-				List<RDFPathCountKernel> kernels = new ArrayList<RDFPathCountKernel>();	
+				List<RDFWalkCountKernel> kernels = new ArrayList<RDFWalkCountKernel>();	
 
 				if (depthTimesTwo) {
-					kernels.add(new RDFPathCountKernel(d*2, d, inf, true));
+					kernels.add(new RDFWalkCountKernel(d*2, d, inf, true));
 				} else {
 					for (int dd : iterationsWL) {
-						kernels.add(new RDFPathCountKernel(dd, d, inf, true));
+						kernels.add(new RDFWalkCountKernel(dd, d, inf, true));
 					}
 				}
 
@@ -621,7 +622,7 @@ public class SimpleGraphFeaturesExperiment {
 			}
 		}
 		//*/
-		
+
 		/*
 		for (boolean inf : inference) {
 			resTable.newRow("WC v2: " + inf);		 
@@ -648,8 +649,8 @@ public class SimpleGraphFeaturesExperiment {
 			}
 		}
 		//*/
-		
-		
+
+
 		/* Regular WL
 		for (boolean inf : inference) {
 			resTable.newRow("Regular WL: " + inf);		

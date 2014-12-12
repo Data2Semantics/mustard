@@ -113,7 +113,9 @@ public class CombinedResults {
 	public static void main(String[] args) {
 		CombinedResults res = new CombinedResults();
 
-		res.readDirectory("C:\\Users\\Gerben\\Dropbox\\D2S\\workspace_TeX\\JWS\\results_litho");
+		res.readDirectory("aff_results_labelless");
+		
+		//res.readDirectory("C:\\Users\\Gerben\\Dropbox\\D2S\\workspace_TeX\\JWS\\results_aff_labelless");
 		Map<String, ResultsTable> tables = res.generateTables(3);
 		
 		List<Result> overallBest = new ArrayList<Result>();
@@ -128,7 +130,7 @@ public class CombinedResults {
 			tables.get(key).setSignificanceTest(ResultsTable.SigTest.PAIRED_TTEST);
 			tables.get(key).setDigits(2);
 			tables.get(key).setShowStdDev(true);
-			tables.get(key).setLatex(true);
+			//tables.get(key).setLatex(true);
 			System.out.println(tables.get(key));
 		}
 	}
