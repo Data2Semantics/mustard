@@ -17,16 +17,16 @@ public class ParamsCreator {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		String filePrefix = "../datasets/AMsubset";
+		String filePrefix = "AMsubset";
 		String[] subsets = {"1","2","3","4","5","6","7","8","9","10"};
 		String[] infs = {"false","true"};
 		int[] depths = {1,2};
-		String[] kernels = {"GraphWalksFast"}; // "GraphWalks",
-		/*
+		//String[] kernels = {"GraphWalksFast"}; // "GraphWalks",
+		///*
 		String[] kernels = {"TreeBoL", "GraphBoL", "TreeWalksRoot", "TreeSubtreesRoot",
-				 "GraphWalksFast", "TreeWalks",
-				"GraphSubtreesFast", "GraphSubtrees", "TreeSubtrees"}; // "GraphWalks",
-				*/
+				"GraphWalks", "GraphWalksFast", "TreeWalks",
+				"GraphSubtreesFast", "GraphSubtrees", "TreeSubtrees"}; // ,
+				//*/
 
 		for (String subset : subsets) {
 			for (String inf : infs) {
@@ -98,7 +98,7 @@ public class ParamsCreator {
 					return "[0,1,2,3,4,5,6]";
 				}
 			} else {
-				return Integer.toString(depth);
+				return Integer.toString(depth*2);
 			}
 			return null;
 		}

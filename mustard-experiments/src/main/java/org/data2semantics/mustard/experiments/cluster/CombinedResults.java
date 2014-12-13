@@ -113,7 +113,7 @@ public class CombinedResults {
 	public static void main(String[] args) {
 		CombinedResults res = new CombinedResults();
 
-		res.readDirectory("aff_results_labelless");
+		res.readDirectory("am_results_hubs");
 		
 		//res.readDirectory("C:\\Users\\Gerben\\Dropbox\\D2S\\workspace_TeX\\JWS\\results_aff_labelless");
 		Map<String, ResultsTable> tables = res.generateTables(3);
