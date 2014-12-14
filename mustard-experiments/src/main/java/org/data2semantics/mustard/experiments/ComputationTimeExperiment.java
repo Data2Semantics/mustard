@@ -95,8 +95,8 @@ public class ComputationTimeExperiment {
 		boolean[] inference = {true};
 		int[] depths = {3};
 
-		double[] fractions = {1.0}; // {0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0};
-		long[] seeds = {11,21,31,41,51};
+		double[] fractions = {1.0, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0};
+		long[] seeds = {11,21,31,41,51,61,71,81,91,101};
 
 
 		RDFData data = ds.getRDFData();
@@ -136,7 +136,7 @@ public class ComputationTimeExperiment {
 		}
 		//*/
 
-		/* BoL - Graph
+		///* BoL - Graph
 		for (boolean inf : inference) {			 
 			for (int d : depths) {
 				for (double frac : fractions) {
@@ -170,7 +170,7 @@ public class ComputationTimeExperiment {
 		}
 		//*/
 
-		/* BoL - Tree
+		///* BoL - Tree
 		for (boolean inf : inference) {			 
 			for (int d : depths) {
 				for (double frac : fractions) {
@@ -273,7 +273,7 @@ public class ComputationTimeExperiment {
 		}
 		//*/
 
-		/* RDF Tree Walk Count MkII
+		///* RDF Tree Walk Count MkII
 		for (boolean inf : inference) {			 
 			for (int d : depths) {
 				for (double frac : fractions) {
@@ -344,7 +344,7 @@ public class ComputationTimeExperiment {
 
 
 
-		/* Regular WL 
+		///* Regular WL 
 		for (boolean inf : inference) {		 
 			for (int d : depths) {
 				for (double frac : fractions) {
@@ -378,7 +378,7 @@ public class ComputationTimeExperiment {
 		}
 		//*/
 
-		/* RDF WL 
+		///* RDF WL 
 		for (boolean inf : inference) {	 
 			for (int d : depths) {
 				for (double frac : fractions) {
@@ -413,7 +413,7 @@ public class ComputationTimeExperiment {
 		//*/
 
 
-		/* Tree WL 
+		///* Tree WL 
 		for (boolean inf : inference) {	 
 			for (int d : depths) {
 				for (double frac : fractions) {
@@ -448,7 +448,7 @@ public class ComputationTimeExperiment {
 		//*/
 
 
-		/*  IST
+		///*  IST
 		for (boolean inf : inference) {	 
 			for (int d : depths) {
 				for (double frac : fractions) {
@@ -487,7 +487,7 @@ public class ComputationTimeExperiment {
 		//resTable.addCompResults(resTable.getBestResults());
 		System.out.println(resTable);	
 
-		/* Regular WC mkII
+		///* Regular WC mkII
 		for (boolean inf : inference) {			 
 			for (int d : depths) {
 				for (double frac : fractions) {

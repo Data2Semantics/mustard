@@ -503,7 +503,7 @@ public class StringArgumentsParser {
 		boolean trackPrev = parms[2] == null ? false : Boolean.parseBoolean(parms[2]);
 		boolean reverse = parms[3] == null ? true : Boolean.parseBoolean(parms[3]);
 		for (int p : pathLengths) {
-			kernels.add(new DTGraphWLSubTreeKernel(p, depth, reverse, trackPrev, true));
+			kernels.add(new DTGraphWLSubTreeKernel(p, depth, reverse, false, trackPrev, true));
 
 		}
 		return kernels;

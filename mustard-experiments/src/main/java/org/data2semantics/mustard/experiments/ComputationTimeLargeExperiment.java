@@ -71,7 +71,7 @@ public class ComputationTimeLargeExperiment {
 		//RDFDataSet tripleStore = new RDFFileDataSet(AM_FOLDER, RDFFormat.TURTLE);
 		//LargeClassificationDataSet ds = new AMDataSet(tripleStore, 10, 0.003, 5, 4, true);
 
-		long[] seedsDataset = {1,2,3,4,5};
+		long[] seedsDataset = {1,2,3,4,5,6,7,8,9,10};
 		double[] fractions = {0.02, 0.04, 0.06, 0.08, 0.1, 0.12, 0.14, 0.16, 0.18, 0.20};
 		int minClassSize = 0;
 		int maxNumClasses = 100;
@@ -297,7 +297,7 @@ public class ComputationTimeLargeExperiment {
 			//*/
 
 			
-			///* Tree WC	
+			/* Tree WC	
 			for (boolean inf : inference) {
 				resTableTreeWC.newRow("Tree WC: " + inf);		 
 				for (int d : depths) {

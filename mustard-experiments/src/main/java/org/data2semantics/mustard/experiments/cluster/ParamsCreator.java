@@ -21,8 +21,9 @@ public class ParamsCreator {
 		String[] subsets = {"1","2","3","4","5","6","7","8","9","10"};
 		String[] infs = {"false","true"};
 		int[] depths = {1,2};
-		//String[] kernels = {"GraphWalksFast"}; // "GraphWalks",
-		///*
+		boolean opt = false;
+		String[] kernels = {"GraphWalksFast"}; // "GraphWalks",
+		/*
 		String[] kernels = {"TreeBoL", "GraphBoL", "TreeWalksRoot", "TreeSubtreesRoot",
 				"GraphWalks", "GraphWalksFast", "TreeWalks",
 				"GraphSubtreesFast", "GraphSubtrees", "TreeSubtrees"}; // ,
@@ -32,7 +33,7 @@ public class ParamsCreator {
 			for (String inf : infs) {
 				for (int depth : depths) {
 					for (String kernel : kernels) {
-						KernelParms kps = new KernelParms(kernel, depth, false);
+						KernelParms kps = new KernelParms(kernel, depth, opt);
 
 						for (String kp : kps) {
 							System.out.println("-file " + filePrefix + subset + inf + " -subset " + subset + " -inference " + inf + " -depth " + depth + " " + kp);

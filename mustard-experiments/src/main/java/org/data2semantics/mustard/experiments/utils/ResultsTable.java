@@ -24,7 +24,7 @@ public class ResultsTable implements Serializable {
 	private int digits;
 
 	private SigTest significanceTest;
-	
+	private ResultsTable compareTable;
 	
 	public ResultsTable() {
 		table = new ArrayList<List<Result>>();
@@ -83,7 +83,8 @@ public class ResultsTable implements Serializable {
 			List<Result> row1 = table.get(0);
 
 			String signif = "";
-
+			String signif2 = "";
+			
 			for(Result res : row1) {
 				tableStr.append(res.getLabel());
 				tableStr.append(" \t ");
@@ -91,19 +92,33 @@ public class ResultsTable implements Serializable {
 			tableStr.append("\n");
 
 			for (int i = 0; i < table.size(); i++) {
-				for (Result res : table.get(i)) {
-
+				for (int j = 0; j < table.get(i).size(); j++) {
+				//for (Result res : table.get(i)) {
+					Result res = table.get(i).get(j);
 					signif = "";
-					int j = 0;
+					int k = 0;
 					int suc = 0;
 					for (Result comp : compRes) {
-						j++;
+						k++;
 						if (comp.getLabel().equals(res.getLabel())) {
 							if (comp.getScores().length > 1 && !signifTest(comp.getScores(), res.getScores())) {
-								signif += "^"+j;
+								signif += "^"+k;
 								suc++;
 							} else {
 								signif += "  ";
+							}
+						}
+					}
+					
+					if (compareTable != null) {
+						signif2 = "";
+						Result res2 = compareTable.table.get(i).get(j);
+						
+						if (res2.getScores().length > 1 && signifTest(res2.getScores(), res.getScores())){
+							if (res.getScore() > res2.getScore()) {
+								signif2 = "^+";
+							} else {
+								signif2 = "^-";
 							}
 						}
 					}
@@ -114,24 +129,25 @@ public class ResultsTable implements Serializable {
 					
 					if (latex) {
 						if (suc == maxTests) {
-							tableStr.append("$\\textbf{" + formatScore(res.getScore()));
+							tableStr.append("$\\textbf{" + formatScore(res.getScore()) + "}" + signif2 + "$");
 						}
 						else if (suc == maxTests-1 && suc != 0) {
-							tableStr.append("$\\textit{" + formatScore(res.getScore()));
+							tableStr.append("$\\textit{" + formatScore(res.getScore()) + "}" + signif2 + "$");
 						} else if (suc != 0){
-							tableStr.append("$\\textrm{" + formatScore(res.getScore()) + signif);
+							tableStr.append("$\\textrm{" + formatScore(res.getScore()) + "}" + signif2 + "$" + signif);
 						} else {
-							tableStr.append("$\\textrm{" + formatScore(res.getScore()));
+							tableStr.append("$\\textrm{" + formatScore(res.getScore()) + "}" + signif2 + "$");
 						}
+						//tableStr.append(signif2);
 						
 						if (showStdDev) {
 							tableStr.append("("+formatScore(res.getStdDev())+")");	
 						}		
-						tableStr.append("}$");
 						
 						
 					} else {				
 						tableStr.append(formatScore(res.getScore()) + signif);
+						tableStr.append(signif2);
 						if (showStdDev) {
 							tableStr.append("("+formatScore(res.getStdDev())+")");	
 						}
@@ -232,6 +248,10 @@ public class ResultsTable implements Serializable {
 		this.latex = latex;
 	}
 
+	public void setCompareTable(ResultsTable compTable) {
+		this.compareTable = compTable;
+	}
+	
 	public void setSignificanceTest(SigTest significanceTest) {
 		this.significanceTest = significanceTest;
 	}
