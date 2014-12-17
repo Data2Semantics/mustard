@@ -1,4 +1,4 @@
-package org.data2semantics.mustard.experiments;
+package org.data2semantics.mustard.experiments.JWS2015;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -48,11 +48,8 @@ import org.nodes.DTNode;
 import org.openrdf.model.Statement;
 import org.openrdf.rio.RDFFormat;
 
-public class ComputationTimeLargeExperiment {
-	private static String AIFB_FILE = "datasets/aifb-fixed_complete.n3";
+public class ThemeComputationTimeExperiment {
 	private static String BGS_FOLDER =  "C:\\Users\\Gerben\\Dropbox\\data_bgs_ac_uk_ALL";
-	private static String AM_FOLDER =  "C:\\Users\\Gerben\\Dropbox\\AM_data";
-	private static String ISWC_FOLDER = "datasets/";
 
 	/**
 	 * @param args
@@ -65,15 +62,11 @@ public class ComputationTimeLargeExperiment {
 			}
 		}
 	
-		//RDFDataSet tripleStore = new RDFFileDataSet(fileDir, RDFFormat.NTRIPLES);
-		//LargeClassificationDataSet ds = new BGSDataSet(tripleStore, "http://data.bgs.ac.uk/ref/Lexicon/hasTheme", 10, 0.02, 5, 3);
-
-		RDFDataSet tripleStore = new RDFFileDataSet(AM_FOLDER, RDFFormat.TURTLE);
-		LargeClassificationDataSet ds = new AMDataSet(tripleStore, 10, 0.003, 5, 4, true);
+		RDFDataSet tripleStore = new RDFFileDataSet(fileDir, RDFFormat.NTRIPLES);
+		LargeClassificationDataSet ds = new BGSDataSet(tripleStore, "http://data.bgs.ac.uk/ref/Lexicon/hasTheme", 10, 0.02, 5, 3);
 
 		long[] seedsDataset = {1,2,3,4,5,6,7,8,9,10};
-		//double[] fractions = {0.02, 0.04, 0.06, 0.08, 0.1, 0.12, 0.14, 0.16, 0.18, 0.20};
-		double[] fractions = {0.004, 0.008, 0.012, 0.016, 0.02};
+		double[] fractions = {0.02, 0.04, 0.06, 0.08, 0.1};
 		
 		int minClassSize = 0;
 		int maxNumClasses = 100;
@@ -106,11 +99,7 @@ public class ComputationTimeLargeExperiment {
 		ResultsTable resTableTreeWCMkII = new ResultsTable();
 		resTableTreeWCMkII.setShowStdDev(true);		
 		tables.add(resTableTreeWCMkII);
-		
-		ResultsTable resTableTreeWC = new ResultsTable();
-		resTableTreeWC.setShowStdDev(true);		
-		tables.add(resTableTreeWC);
-		
+			
 		ResultsTable resTableWL = new ResultsTable();
 		resTableWL.setShowStdDev(true);		
 		tables.add(resTableWL);
@@ -296,43 +285,7 @@ public class ComputationTimeLargeExperiment {
 					}
 				}
 			}
-			//*/
-
-			
-			/* Tree WC	
-			for (boolean inf : inference) {
-				resTableTreeWC.newRow("Tree WC: " + inf);		 
-				for (int d : depths) {
-
-					List<Result> tempRes = new ArrayList<Result>();
-					for (long sDS : seedsDataset) {
-						Pair<SingleDTGraph, List<Double>> p = cache.get(sDS).get(inf).get(d);
-						SingleDTGraph data = p.getFirst();
-
-						List<DTGraphTreeWalkCountKernel> kernels = new ArrayList<DTGraphTreeWalkCountKernel>();	
-						kernels.add(new DTGraphTreeWalkCountKernel(d*2, d, true));
-
-						GraphFeatureVectorKernelComputationTimeExperiment<SingleDTGraph> exp = new GraphFeatureVectorKernelComputationTimeExperiment<SingleDTGraph>(kernels, data, null);
-
-						exp.run();
-						if (tempRes.isEmpty()) {
-							for (Result res : exp.getResults()) {
-								tempRes.add(res);
-							}
-						} else {
-							for (int i = 0; i < tempRes.size(); i++) {
-								tempRes.get(i).addResult(exp.getResults().get(i));
-							}
-						}
-					}
-
-					for (Result res : tempRes) {
-						resTableTreeWC.addResult(res);
-					}
-				}
-			}
-			//*/
-			
+			//*/		
 			
 			///* Regular WL 
 			for (boolean inf : inference) {
@@ -448,12 +401,6 @@ public class ComputationTimeLargeExperiment {
 		ResultsTable resTableWCMkII = new ResultsTable();
 		resTableWCMkII.setShowStdDev(true);		
 		tables.add(resTableWCMkII);
-	
-		
-		ResultsTable resTableWC = new ResultsTable();
-		resTableWC.setShowStdDev(true);		
-		tables.add(resTableWC);
-	
 		
 		
 		for (double fraction : fractions) {
@@ -492,47 +439,7 @@ public class ComputationTimeLargeExperiment {
 				}
 			}
 			//*/
-			
-			for (ResultsTable table : tables) {
-				System.out.println(table);
-			}
-
-			
-			
-			///* WC	
-			for (boolean inf : inference) {
-				resTableWC.newRow("WC: " + inf);		 
-				for (int d : depths) {
-
-					List<Result> tempRes = new ArrayList<Result>();
-					for (long sDS : seedsDataset) {
-						Pair<SingleDTGraph, List<Double>> p = cache.get(sDS).get(inf).get(d);
-						SingleDTGraph data = p.getFirst();
-
-						List<DTGraphGraphListWalkCountKernel> kernels = new ArrayList<DTGraphGraphListWalkCountKernel>();	
-						kernels.add(new DTGraphGraphListWalkCountKernel(d*2, d, true));
-
-						GraphFeatureVectorKernelComputationTimeExperiment<SingleDTGraph> exp = new GraphFeatureVectorKernelComputationTimeExperiment<SingleDTGraph>(kernels, data, null);
-
-						exp.run();
-						if (tempRes.isEmpty()) {
-							for (Result res : exp.getResults()) {
-								tempRes.add(res);
-							}
-						} else {
-							for (int i = 0; i < tempRes.size(); i++) {
-								tempRes.get(i).addResult(exp.getResults().get(i));
-							}
-						}
-					}
-
-					for (Result res : tempRes) {
-						resTableWC.addResult(res);
-					}
-				}
-			}
-			//*/
-			
+							
 			for (ResultsTable table : tables) {
 				System.out.println(table);
 			}

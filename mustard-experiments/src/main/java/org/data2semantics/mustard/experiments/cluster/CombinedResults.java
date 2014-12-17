@@ -115,13 +115,15 @@ public class CombinedResults {
 
 		//res.readDirectory("am_results_hubs");
 		
-		res.readDirectory("C:\\Users\\Gerben\\Dropbox\\D2S\\workspace_TeX\\JWS\\results_am_hubs");
+		res.readDirectory("C:\\Users\\Gerben\\Dropbox\\D2S\\workspace_TeX\\JWS\\results_bgs_hubs");
 		Map<String, ResultsTable> tables = res.generateTables(3);
 		
 		CombinedResults res2 = new CombinedResults();
 		
-		res2.readDirectory("C:\\Users\\Gerben\\Dropbox\\D2S\\workspace_TeX\\JWS\\results_am");
+		res2.readDirectory("C:\\Users\\Gerben\\Dropbox\\D2S\\workspace_TeX\\JWS\\results_bgs");
+		//Map<String, ResultsTable> tables2 = null;
 		Map<String, ResultsTable> tables2 = res2.generateTables(3);
+		
 		
 		List<Result> overallBest = new ArrayList<Result>();
 		
@@ -136,6 +138,9 @@ public class CombinedResults {
 			tables.get(key).setDigits(2);
 			tables.get(key).setShowStdDev(true);
 			tables.get(key).setLatex(true);
+			//labelless hack
+			//String key2 = key.substring(0, key.length()-4) + "false";
+			
 			if (tables2 != null) {
 				tables.get(key).setCompareTable(tables2.get(key));
 			}

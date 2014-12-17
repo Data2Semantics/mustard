@@ -6,14 +6,31 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LocalExecutor {
-	//private static final String parmsFile = "../ipst_parms.txt";
-	//private static final String parmsFile = "../aff_parms_non_opt_2.txt";
-	private static final String parmsFile = "../aff_parms_non_opt.txt";
-	//private static final String prefix = "-dataset AIFB -file ../datasets/aifb-fixed_complete.n3"; // -optHubs true -minHubs [10,20,40,80,10000000]
-	private static final String prefix = "-blankLabels true -dataset LITHO -file C:\\Users\\Gerben\\Dropbox\\data_bgs_ac_uk_ALL";
+	// parameter settings file 
+	private static final String parmsFile = "src/main/java/org/data2semantics/mustard/experiments/JWS2015/parms_non_opt.txt";
+	
+	// regular affiliation prediction
+	private static final String prefix = "-dataset AIFB -file datasets/aifb-fixed_complete.n3";
+	
+	// affiliation prediction with hub removal
+	//private static final String prefix = "-optHubs true -minHubs [10,20,40,80,10000000] -dataset AIFB -file datasets/aifb-fixed_complete.n3";
+	
+	// affiliation prediction with blank labels
+	//private static final String prefix = "-blankLabels true -dataset AIFB -file datasets/aifb-fixed_complete.n3";
+		
+	// regular lithogenesis prediction
+	//private static final String prefix = "-dataset LITHO -file C:\\Users\\Gerben\\Dropbox\\data_bgs_ac_uk_ALL";
+	
+	// litho with hub removal
+	//private static final String prefix = "-optHubs true -minHubs [10,20,40,80,10000000] -dataset LITHO -file C:\\Users\\Gerben\\Dropbox\\data_bgs_ac_uk_ALL";
+	
+	// litho with blankLabels
+	//private static final String prefix = "-blankLabels true -dataset LITHO -file C:\\Users\\Gerben\\Dropbox\\data_bgs_ac_uk_ALL";
+		
+	// Other two experiments, require subsets created using SubSetCreator
 	//private static final String prefix = "-dataset BGS";
 	//private static final String prefix = "-dataset AM";
-	private static final int numThreads = 3;
+	private static final int numThreads = 4;
 	
 	/**
 	 * @param args

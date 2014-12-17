@@ -1,4 +1,4 @@
-package org.data2semantics.mustard.experiments;
+package org.data2semantics.mustard.experiments.JWS2015;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -51,34 +51,22 @@ import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 import org.openrdf.rio.RDFFormat;
 
-public class ComputationTimeExperiment {
-	private static String AIFB_FILE = "datasets/aifb-fixed_complete.n3";
+public class LithogenesisComputationTimeExperiment {
 	private static String BGS_FOLDER =  "C:\\Users\\Gerben\\Dropbox\\data_bgs_ac_uk_ALL";
-	private static String AM_FOLDER =  "C:\\Users\\Gerben\\Dropbox\\AM_data";
-	private static String ISWC_FOLDER = "datasets/";
-
-	//private static List<Resource> instances;
-	//private static List<Value> labels;
-	//private static List<Statement> blackList;
-	//private static List<Double> target;
-	//private static RDFDataSet dataset;
 
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		String file = AIFB_FILE;
+		String file = BGS_FOLDER;
 		for (int i = 0; i < args.length; i++) {
 			if (args[i].equals("-file")) {
 				file = args[++i];
 			}
 		}		
 
-		RDFDataSet tripleStore = new RDFFileDataSet(file, RDFFormat.N3);
-		ClassificationDataSet ds = new AIFBDataSet(tripleStore);
-
-		//RDFDataSet tripleStore = new RDFFileDataSet(BGS_FOLDER, RDFFormat.NTRIPLES);
-		//ClassificationDataSet ds = new BGSLithoDataSet(tripleStore);
+		RDFDataSet tripleStore = new RDFFileDataSet(BGS_FOLDER, RDFFormat.NTRIPLES);
+		ClassificationDataSet ds = new BGSLithoDataSet(tripleStore);
 
 		ds.create();
 
@@ -95,7 +83,7 @@ public class ComputationTimeExperiment {
 		boolean[] inference = {true};
 		int[] depths = {3};
 
-		double[] fractions = {1.0, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0};
+		double[] fractions = {0.2, 0.4, 0.6, 0.8, 1.0};
 		long[] seeds = {11,21,31,41,51,61,71,81,91,101};
 
 
@@ -308,42 +296,6 @@ public class ComputationTimeExperiment {
 		//*/
 
 
-		/* RDF Tree Walk Count
-		for (boolean inf : inference) {			 
-			for (int d : depths) {
-				for (double frac : fractions) {
-					resTable.newRow("RDF Tree Walk Count: " + inf);	
-					List<Result> tempRes = new ArrayList<Result>();
-					for (long seed : seeds) {
-						RDFData dataSub = createRandomSubset(data, frac, seed);
-
-						List<RDFTreeWalkCountKernel> kernels = new ArrayList<RDFTreeWalkCountKernel>();	
-						kernels.add(new RDFTreeWalkCountKernel(d*2, d, inf, true));
-
-						GraphKernelComputationTimeExperiment<RDFData> exp = new GraphKernelComputationTimeExperiment<RDFData>(kernels, dataSub, null);
-
-						exp.run();
-
-						if (tempRes.isEmpty()) {
-							for (Result res : exp.getResults()) {
-								tempRes.add(res);
-							}
-						} else {
-							for (int i = 0; i < tempRes.size(); i++) {
-								tempRes.get(i).addResult(exp.getResults().get(i));
-							}
-						}
-					}
-					for (Result res : tempRes) {
-						resTable.addResult(res);
-					}
-				}
-			}
-		}
-		//*/
-
-
-
 		///* Regular WL 
 		for (boolean inf : inference) {		 
 			for (int d : depths) {
@@ -487,8 +439,8 @@ public class ComputationTimeExperiment {
 		//resTable.addCompResults(resTable.getBestResults());
 		System.out.println(resTable);	
 
-		//
-		/* Regular WC mkII
+		
+		///* Regular WC mkII
 		for (boolean inf : inference) {			 
 			for (int d : depths) {
 				for (double frac : fractions) {
@@ -499,36 +451,6 @@ public class ComputationTimeExperiment {
 
 						List<RDFGraphListWalkCountKernelMkII> kernels = new ArrayList<RDFGraphListWalkCountKernelMkII>();	
 						kernels.add(new RDFGraphListWalkCountKernelMkII(d*2, d, inf, true));
-
-						GraphKernelComputationTimeExperiment<RDFData> exp = new GraphKernelComputationTimeExperiment<RDFData>(kernels, dataSub, null);
-
-						exp.run();
-
-						if (tempRes.isEmpty()) {
-							for (Result res : exp.getResults()) {
-								tempRes.add(res);
-							}
-						} else {
-							for (int i = 0; i < tempRes.size(); i++) {
-								tempRes.get(i).addResult(exp.getResults().get(i));
-							}
-						}
-					}
-					for (Result res : tempRes) {
-						resTable.addResult(res);
-					}
-
-					resTable.addCompResults(resTable.getBestResults());
-					System.out.println(resTable);
-
-
-					resTable.newRow("Regular Walk Count: " + inf);	
-					tempRes = new ArrayList<Result>();
-					for (long seed : seeds) {
-						RDFData dataSub = createRandomSubset(data, frac, seed);
-
-						List<RDFGraphListWalkCountKernel> kernels = new ArrayList<RDFGraphListWalkCountKernel>();	
-						kernels.add(new RDFGraphListWalkCountKernel(d*2, d, inf, true));
 
 						GraphKernelComputationTimeExperiment<RDFData> exp = new GraphKernelComputationTimeExperiment<RDFData>(kernels, dataSub, null);
 
