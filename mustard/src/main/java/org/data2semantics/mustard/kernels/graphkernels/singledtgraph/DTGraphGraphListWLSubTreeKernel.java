@@ -1,7 +1,10 @@
 package org.data2semantics.mustard.kernels.graphkernels.singledtgraph;
 
 
+import java.util.List;
+
 import org.data2semantics.mustard.kernels.ComputationTimeTracker;
+import org.data2semantics.mustard.kernels.FeatureInspector;
 import org.data2semantics.mustard.kernels.KernelUtils;
 import org.data2semantics.mustard.kernels.data.GraphList;
 import org.data2semantics.mustard.kernels.data.SingleDTGraph;
@@ -12,13 +15,14 @@ import org.data2semantics.mustard.learners.SparseVector;
 import org.data2semantics.mustard.rdf.RDFUtils;
 import org.nodes.DTGraph;
 
-public class DTGraphGraphListWLSubTreeKernel implements GraphKernel<SingleDTGraph>, FeatureVectorKernel<SingleDTGraph>, ComputationTimeTracker {
+public class DTGraphGraphListWLSubTreeKernel implements GraphKernel<SingleDTGraph>, FeatureVectorKernel<SingleDTGraph>, ComputationTimeTracker, FeatureInspector {
 	private int depth;
 	private int iterations;
 	private boolean normalize;
 	private boolean reverse;
 	private boolean trackPrevNBH;
 	private long compTime;
+	private WLSubTreeKernel kernel;
 
 	public DTGraphGraphListWLSubTreeKernel(int iterations, int depth, boolean reverse, boolean trackPrevNBH, boolean normalize) {
 		this.reverse = reverse;
@@ -26,6 +30,8 @@ public class DTGraphGraphListWLSubTreeKernel implements GraphKernel<SingleDTGrap
 		this.depth = depth;
 		this.iterations = iterations;
 		this.normalize = normalize;
+		
+		kernel = new WLSubTreeKernel(iterations, reverse, trackPrevNBH, normalize);	
 	}
 
 	public String getLabel() {
@@ -42,7 +48,6 @@ public class DTGraphGraphListWLSubTreeKernel implements GraphKernel<SingleDTGrap
 
 	public SparseVector[] computeFeatureVectors(SingleDTGraph data) {
 		GraphList<DTGraph<String,String>> graphs = RDFUtils.getSubGraphs(data.getGraph(), data.getInstances(), depth);				
-		WLSubTreeKernel kernel = new WLSubTreeKernel(iterations, reverse, trackPrevNBH, normalize);	
 		SparseVector[] ret =  kernel.computeFeatureVectors(graphs);
 		compTime = kernel.getComputationTime();
 		return ret;
@@ -57,4 +62,8 @@ public class DTGraphGraphListWLSubTreeKernel implements GraphKernel<SingleDTGrap
 		compTime += System.currentTimeMillis() - tic;
 		return kernel;
 	}
+
+	public List<String> getFeatureDescriptions(List<Integer> indicesSV) {
+		return kernel.getFeatureDescriptions(indicesSV);
+	}	
 }

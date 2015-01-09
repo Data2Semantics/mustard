@@ -35,6 +35,11 @@ public class WeisfeilerLehmanDTGraphIterator extends WeisfeilerLehmanIterator<DT
 				}
 				node.label().clear();
 				node.label().append(lab);
+				
+				if (trackPrevNBH) {
+					node.label().setPrevNBH("");
+				}
+				
 			}
 			for (DTLink<StringLabel,StringLabel> link : graph.links()) {
 				String lab = labelDict.get(link.tag().toString());
@@ -44,6 +49,10 @@ public class WeisfeilerLehmanDTGraphIterator extends WeisfeilerLehmanIterator<DT
 				}
 				link.tag().clear();
 				link.tag().append(lab);
+				
+				if (trackPrevNBH) {
+					link.tag().setPrevNBH("");
+				}
 			}
 		}
 	}

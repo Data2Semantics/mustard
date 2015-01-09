@@ -38,6 +38,11 @@ public class WeisfeilerLehmanDTGraphMapLabelIterator extends WeisfeilerLehmanIte
 					}
 					node.label().clear(k);
 					node.label().get(k).append(lab);
+					
+					if (trackPrevNBH) {
+						node.label().putPrevNBH(k, "");
+					}
+					
 					//node.label().put(k, new StringBuilder(lab));
 				}
 			}
@@ -52,6 +57,11 @@ public class WeisfeilerLehmanDTGraphMapLabelIterator extends WeisfeilerLehmanIte
 					}
 					link.tag().clear(k);
 					link.tag().get(k).append(lab);
+					
+					if (trackPrevNBH) {
+						link.tag().putPrevNBH(k, "");
+					}		
+					
 					//link.tag().put(k, new StringBuilder(lab));
 				}
 			}
