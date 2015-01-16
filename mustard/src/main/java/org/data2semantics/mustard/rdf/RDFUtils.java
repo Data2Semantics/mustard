@@ -1,8 +1,10 @@
 package org.data2semantics.mustard.rdf;
 
+import java.text.BreakIterator;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -15,14 +17,23 @@ import org.nodes.DTLink;
 import org.nodes.DTNode;
 import org.nodes.LightDTGraph;
 import org.nodes.util.Pair;
+
 import org.openrdf.model.Literal;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
+import org.openrdf.model.Value;
+import org.openrdf.model.ValueFactory;
+import org.openrdf.model.impl.ValueFactoryImpl;
 
 public class RDFUtils {
+	// TODO replace these with an Enum
 	public static final int NO_LITERALS = 1;
 	public static final int REPEAT_LITERALS = 2;
 	public static final int REGULAR_LITERALS = 3;
+	public static final int REPEAT_SPLIT_LITERALS = 4;
+	public static final int REGULAR_SPLIT_LITERALS = 5;
+
+
 
 	public static GraphList<DTGraph<String,String>> getSubGraphs(DTGraph<String,String> graph, List<DTNode<String,String>> instances, int depth) {
 		List<DTGraph<String,String>> subGraphs = new ArrayList<DTGraph<String,String>>();
@@ -90,7 +101,7 @@ public class RDFUtils {
 		}
 		return new GraphList<DTGraph<String,String>>(subTrees);
 	}
-	
+
 	public static SingleDTGraph blankLabels(SingleDTGraph graph) {
 		Map<DTNode<String,String>, Integer> ns = new HashMap<DTNode<String,String>,Integer>();
 		DTGraph<String,String> newGraph = new LightDTGraph<String,String>();
@@ -113,7 +124,7 @@ public class RDFUtils {
 		}
 		return new SingleDTGraph(newGraph, newIN);
 	}
-	
+
 
 	public static DTGraph<String,String> simplifyInstanceNodeLabels(DTGraph<String,String> oldGraph, List<DTNode<String,String>> instanceNodes) {
 		String rootLabel = KernelUtils.ROOTID;
@@ -138,7 +149,7 @@ public class RDFUtils {
 	}
 
 
-	
+
 
 	/**
 	 * find the instance nodes in a graph based on the list of instance Resource's
@@ -167,56 +178,148 @@ public class RDFUtils {
 	public static SingleDTGraph statements2Graph(Set<Statement> stmts, int literalOption, List<Resource> instances, boolean simplifyInstanceNodes) {
 		List<DTNode<String,String>> instanceNodes = new ArrayList<DTNode<String,String>>();
 		DTGraph<String,String> graph = new LightDTGraph<String,String>();	
-		Map<Resource, DTNode<String,String>> iMap = new HashMap<Resource, DTNode<String,String>>();
+		Map<String, DTNode<String,String>> nodeMap = new HashMap<String, DTNode<String,String>>();
 
 		for (Resource instance : instances) {
 			if (simplifyInstanceNodes) {
-				iMap.put(instance, graph.add(KernelUtils.ROOTID));
+				nodeMap.put(instance.toString(), graph.add(KernelUtils.ROOTID));
 			} else {
-				iMap.put(instance, graph.add(instance.toString()));
+				nodeMap.put(instance.toString(), graph.add(instance.toString()));
 			}
-			instanceNodes.add(iMap.get(instance));
+			instanceNodes.add(nodeMap.get(instance.toString()));
 		}	
 
 		for (Statement s : stmts) {
 			if (s.getObject() instanceof Literal && literalOption != NO_LITERALS) {
 				if (literalOption == REGULAR_LITERALS) {
-					addStatement(graph, s, false, iMap);
+					addStatement(graph, s, false, false, nodeMap);
+				}
+				if (literalOption == REGULAR_SPLIT_LITERALS) {
+					addStatement(graph, s, false, true, nodeMap);
 				}
 				if (literalOption == REPEAT_LITERALS) {
-					addStatement(graph, s, true, iMap);
+					addStatement(graph, s, true, false, nodeMap);
+				}
+				if (literalOption == REPEAT_SPLIT_LITERALS) {
+					addStatement(graph, s, true, true, nodeMap);
 				}
 			} else if (!(s.getObject() instanceof Literal)){
-				addStatement(graph, s, false, iMap);
+				addStatement(graph, s, false, false, nodeMap);
 			}
 		}	
 		return new SingleDTGraph(graph, instanceNodes);
 	}
 
-	private static void addStatement(DTGraph<String,String> graph, Statement stmt, boolean newObject, Map<Resource, DTNode<String,String>> iMap) {
+	private static void addStatement(DTGraph<String,String> graph, Statement stmt, boolean newObject, boolean splitLiteral, Map<String, DTNode<String,String>> nodeMap) {
 
-		DTNode<String,String> n1 = iMap.get(stmt.getSubject());
+		DTNode<String,String> n1 = nodeMap.get(stmt.getSubject().toString());
 		if (n1 == null) {
-			n1 = graph.node(stmt.getSubject().toString());
-			if (n1 == null) {
-				n1 = graph.add(stmt.getSubject().toString());
-			}
+			n1 = graph.add(stmt.getSubject().toString());
+			nodeMap.put(stmt.getSubject().toString(), n1);
 		}
 
 		DTNode<String, String> n2 = null;
+		List<DTNode<String,String>> nodeList = new ArrayList<DTNode<String,String>>();
+
 		if (stmt.getObject() instanceof Resource) {
-			n2 = iMap.get(stmt.getObject());
-		}
-		if (n2 == null || newObject) {
-			n2 = graph.node(stmt.getObject().toString());
-			if (n2 == null || newObject) {
+			n2 = nodeMap.get(stmt.getObject().toString());
+			if (n2 == null) {
 				n2 = graph.add(stmt.getObject().toString());
-			}			
+				nodeMap.put(stmt.getObject().toString(), n2);
+			}
+			nodeList.add(n2);
+
+		} else { // Literal
+			if (splitLiteral) {
+				ValueFactory factory = ValueFactoryImpl.getInstance();
+				Literal orgLit = (Literal)stmt.getObject();
+				WordIterator wi = new WordIterator(orgLit.getLabel());
+
+				while (wi.hasNext()) {
+					String word = wi.next();
+					Literal lit;
+
+					// Retain the original datatype/language tag
+					if (orgLit.getDatatype() != null) {
+						lit = factory.createLiteral(word, orgLit.getDatatype());
+					} else if (orgLit.getLanguage() != null) {
+						lit = factory.createLiteral(word, orgLit.getLanguage());
+					} else {
+						lit = factory.createLiteral(word);
+					}
+
+					n2 = nodeMap.get(lit.toString());
+
+					if (n2 == null || newObject) {
+						n2 = graph.add(lit.toString());
+						nodeMap.put(lit.toString(), n2);
+					}
+					nodeList.add(n2);
+				}
+			} else {
+				n2 = nodeMap.get(stmt.getObject().toString()); // toString() should be different from stringValue()
+				if (n2 == null) {
+					n2 = graph.add(stmt.getObject().toString());
+					if (!newObject) {
+						nodeMap.put(stmt.getObject().toString(), n2);
+					}
+				}
+				nodeList.add(n2);
+			}
+		}
+		for (DTNode<String,String> n : nodeList) {
+			// Statements are unique, since they are in a Set, thus we have never seem this particular edge before, we know that.
+			n1.connect(n, stmt.getPredicate().toString());
+		}
+	}
+
+
+	/*
+	 * TODO replace this iterator with a more fancy text processing library, to at least do
+	 * - Stop word removal
+	 * - Stemming
+	 * - Better treatment of case, currently we change everything to lower case
+	 */
+	private static class WordIterator implements Iterator<String> {
+		private String text;
+		private BreakIterator wordIt;
+		private int start, end;
+
+		public WordIterator(String text) {
+			this.text = text;
+			this.wordIt = BreakIterator.getWordInstance();
+			this.wordIt.setText(text);
+			this.start = wordIt.first();
+			this.end = wordIt.next();		    
 		}
 
-		// Statements are unique, since they are in a Set, thus we have never seem this particular edge before, we know that.
-		n1.connect(n2, stmt.getPredicate().toString());
+		public boolean hasNext() {
+			while (end != BreakIterator.DONE) {
+				String word = text.substring(start,end);
+				if (Character.isLetterOrDigit(word.charAt(0))) { // if it is a word, break
+					break;
+				} else { // if not, scoot one over
+					start = end;
+					end = wordIt.next();
+				}
+			}
+			return end != BreakIterator.DONE;
+		}
+
+		public String next() {
+			String word = text.substring(start,end);
+			start = end;
+			end = wordIt.next();
+			return word.toLowerCase();
+
+		}
+
+		public void remove() {
+			throw new UnsupportedOperationException();
+		}
+
 	}
+
 
 
 	/**

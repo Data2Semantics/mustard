@@ -113,14 +113,15 @@ public class CombinedResults {
 	public static void main(String[] args) {
 		CombinedResults res = new CombinedResults();
 
-		//res.readDirectory("am_results_hubs");
+		res.readDirectory("aff_results_sub");
 		
-		res.readDirectory("C:\\Users\\Gerben\\Dropbox\\D2S\\workspace_TeX\\JWS\\results_bgs_hubs");
+		//res.readDirectory("C:\\Users\\Gerben\\Dropbox\\D2S\\workspace_TeX\\JWS\\results_bgs_hubs");
 		Map<String, ResultsTable> tables = res.generateTables(3);
 		
 		CombinedResults res2 = new CombinedResults();
 		
-		res2.readDirectory("C:\\Users\\Gerben\\Dropbox\\D2S\\workspace_TeX\\JWS\\results_bgs");
+		res2.readDirectory("aff_results_split_literals");
+		//res2.readDirectory("C:\\Users\\Gerben\\Dropbox\\D2S\\workspace_TeX\\JWS\\results_bgs");
 		//Map<String, ResultsTable> tables2 = null;
 		Map<String, ResultsTable> tables2 = res2.generateTables(3);
 		
@@ -137,7 +138,7 @@ public class CombinedResults {
 			tables.get(key).setSignificanceTest(ResultsTable.SigTest.PAIRED_TTEST);
 			tables.get(key).setDigits(2);
 			tables.get(key).setShowStdDev(true);
-			tables.get(key).setLatex(true);
+			//tables.get(key).setLatex(true);
 			//labelless hack
 			//String key2 = key.substring(0, key.length()-4) + "false";
 			

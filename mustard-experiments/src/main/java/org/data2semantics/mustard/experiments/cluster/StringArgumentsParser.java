@@ -38,6 +38,7 @@ public class StringArgumentsParser {
 	private int[] minHubCounts;
 	private boolean optHubs;
 	private boolean blankLabels;
+	private boolean splitLiterals;
 
 
 	public StringArgumentsParser(String[] args) {
@@ -46,6 +47,7 @@ public class StringArgumentsParser {
 		minHubCount = 0;
 		optHubs = true;
 		blankLabels = false;
+		splitLiterals = false;
 
 		for (int i = 0; i < args.length; i++) {
 			if (args[i].equals("-file")) {
@@ -84,6 +86,9 @@ public class StringArgumentsParser {
 			}
 			if (args[i].equals("-blankLabels")) {
 				blankLabels = Boolean.parseBoolean(args[++i]);
+			}
+			if (args[i].equals("-splitLiterals")) {
+				splitLiterals = Boolean.parseBoolean(args[++i]);
 			}
 
 		}
@@ -281,6 +286,10 @@ public class StringArgumentsParser {
 
 	public boolean isBlankLabels() {
 		return blankLabels;
+	}
+	
+	public boolean isSplitLiterals() {
+		return splitLiterals;
 	}
 
 	/**

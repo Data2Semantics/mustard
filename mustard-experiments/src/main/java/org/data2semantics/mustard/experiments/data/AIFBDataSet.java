@@ -1,7 +1,9 @@
 package org.data2semantics.mustard.experiments.data;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.data2semantics.mustard.kernels.data.RDFData;
 import org.data2semantics.mustard.learners.evaluation.EvaluationUtils;
@@ -35,7 +37,11 @@ public class AIFBDataSet implements ClassificationDataSet {
 		List<Statement> blackList = DataSetUtils.createBlacklist(tripleStore, instances, labels);
 		EvaluationUtils.removeSmallClasses(instances, labels, 5);
 		
-		target = EvaluationUtils.createTarget(labels);
+		Map<Value, Double> labelMap = new HashMap<Value,Double>();
+		target = EvaluationUtils.createTarget(labels, labelMap);
+		
+		System.out.println("Label mapping: " + labelMap);
+		
 		data = new RDFData(tripleStore, instances, blackList);
 	}
 
