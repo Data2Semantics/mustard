@@ -40,7 +40,9 @@ public class SteveExperiment {
 	public static void main(String[] args) {
 		// load all the RDF data
 		tripleStore = new RDFFileDataSet(STEVE_FOLDER, RDFFormat.RDFXML);
-		LargeClassificationDataSet ds = new SteveDataSet(tripleStore, 10, 0.01, 0, 1000);
+		LargeClassificationDataSet ds = new SteveDataSet(tripleStore, 10);
+		// create a subset
+		ds.create();
 
 		// Define evaluation functions
 		List<EvaluationFunction> evalFuncs = new ArrayList<EvaluationFunction>();
@@ -54,19 +56,23 @@ public class SteveExperiment {
 		resTable.setpValue(0.05);
 		resTable.setShowStdDev(true);
 
-		// Define experiment and SVM parameters
-		long[] seeds = { 11 };
-		// long[] seedsDataset = { 11, 21, 31, 41, 51, 61, 71, 81, 91, 101 };
-		long[] seedsDataset = { 11 };
-		// double[] cs = { 1, 10, 100, 1000 };
-		double[] cs = { 1 };
-
+		/*
+		 * LIBSVM parameters
+		 */
+		// the c parameter for the SVM. Higher values mean more training with
+		// chance of overtraining
+		double[] cs = { 1 }; // { 1, 10, 100, 1000 };
 		LibSVMParameters svmParms = new LibSVMParameters(LibSVMParameters.C_SVC, cs);
 		svmParms.setNumFolds(10);
 
-		double fraction = 0.01;
-		int minClassSize = 0;
-		int maxNumClasses = 10;
+		/*
+		 * Random generator seeds so the experiment is reproducible
+		 */
+		long[] seeds = { 11 };
+		// the seeds used for generating random subsets
+		long[] seedsDataset = { 11 }; // { 11, 21, 31, 41, 51, 61, 71, 81, 91,
+										// 101 };
+
 		// WL should be in reverse mode, which means regular subtrees
 		boolean reverseWL = true;
 		// We should not repeat vertices that get the same label after an
@@ -74,97 +80,60 @@ public class SteveExperiment {
 		boolean trackPrevNBH = true;
 		boolean normalize = true;
 		boolean iterationWeigthing = false;
-
-		boolean[] inferenceValues = { true };
+		// always use inference (although in our case it has no effect)
+		boolean inference = true;
 		int[] depths = { 1, 2, 3 };
 		int[] pathDepths = { 2, 4, 6 };
 		int[] iterationsWL = { 2, 4, 6 };
 		boolean depthTimesTwo = true;
 
-		/*
-		 * START Basic code needed to run once on all data
-		 */
-
-		int depth = 1;
-		boolean inference = true;
-		// Define kernel
-		List<RDFWLSubTreeKernel> kernelsOnce = new ArrayList<RDFWLSubTreeKernel>();
-		kernelsOnce.add(new RDFWLSubTreeKernel(depth * 2, depth, inference, reverseWL, iterationWeigthing,
-				trackPrevNBH, normalize));
-		// define experiment
-		ds.create();
-		target = ds.getTarget();
-		SimpleGraphKernelExperiment<RDFData> expOnce = new SimpleGraphKernelExperiment<RDFData>(kernelsOnce,
-				ds.getRDFData(), target, svmParms, seeds, evalFuncs);
-		// run exp
-		expOnce.run();
-		// add result to table
-		resTable.newRow("RDF WL. Inference: " + inference);
-		for (Result res : expOnce.getResults()) {
-			resTable.addResult(res);
-		}
-		// show results
-		resTable.addCompResults(resTable.getBestResults());
-		System.out.println(resTable);
-
-		/*
-		 * END Basic code needed to run once on all data
-		 */
-
 		// prepare a Map with all the subsets of the data we want to run our
 		// experiment on.
-		/*
-		 * TODO The Datasetcache function needs to be updated for our
-		 * experiment.
-		 */
 		Map<Long, Map<Boolean, Map<Integer, Pair<SingleDTGraph, List<Double>>>>> cache = createDataSetCache(ds,
-				seedsDataset, fraction, minClassSize, maxNumClasses, depths, inferenceValues);
+				seedsDataset, depths, inference);
 		// reset the triple store for memory reasons. All data needed is in the
 		// cache
 		tripleStore = null;
 
-		computeGraphStatistics(cache, seedsDataset, inferenceValues, depths);
+		computeGraphStatistics(cache, seedsDataset, inference, depths);
 
-		for (boolean inf : inferenceValues) { // for each inference value
-			resTable.newRow("RDF WL: " + inf);
-			for (int d : depths) { // for each depth
-				List<Result> tempRes = new ArrayList<Result>();
-				for (long sDS : seedsDataset) { // for each subset of the data
-					// get the data from the cash
-					Pair<SingleDTGraph, List<Double>> p = cache.get(sDS).get(inf).get(d);
-					// the graph without the prediction variable
-					SingleDTGraph data = p.getFirst();
-					// The values of the prediction variable
-					target = p.getSecond();
+		resTable.newRow("RDF WL. Inference: " + inference);
+		for (int depth : depths) { // for each depth
+			List<Result> tempRes = new ArrayList<Result>();
+			for (long sDS : seedsDataset) { // for each subset of the data
+				// get the data from the cash
+				Pair<SingleDTGraph, List<Double>> p = cache.get(sDS).get(inference).get(depth);
+				// the graph without the prediction variable
+				SingleDTGraph data = p.getFirst();
+				// The values of the prediction variable
+				target = p.getSecond();
 
-					// Define the kernel to use
-					List<RDFWLSubTreeKernel> kernels = new ArrayList<RDFWLSubTreeKernel>();
-					kernels.add(new RDFWLSubTreeKernel(depth * 2, depth, inference, reverseWL, iterationWeigthing,
-							trackPrevNBH, normalize));
+				// Define the kernel to use
+				List<RDFWLSubTreeKernel> kernels = new ArrayList<RDFWLSubTreeKernel>();
+				kernels.add(new RDFWLSubTreeKernel(depth * 2, depth, inference, reverseWL, iterationWeigthing,
+						trackPrevNBH, normalize));
 
-					// Run the experiment
-					// TODO This now uses the full data everytime, we need to
-					// make it work on a subset
-					SimpleGraphKernelExperiment<RDFData> exp = new SimpleGraphKernelExperiment<RDFData>(kernels,
-							ds.getRDFData(), target, svmParms, seeds, evalFuncs);
-					exp.run();
+				// Run the experiment
+				// TODO This now uses the full data everytime, we need to
+				// make it work on a subset
+				SimpleGraphKernelExperiment<RDFData> exp = new SimpleGraphKernelExperiment<RDFData>(kernels,
+						ds.getRDFData(), target, svmParms, seeds, evalFuncs);
+				exp.run();
 
-					if (tempRes.isEmpty()) {
-						for (Result res : exp.getResults()) {
-							tempRes.add(res);
-						}
-					} else {
-						for (int i = 0; i < tempRes.size(); i++) {
-							tempRes.get(i).addResult(exp.getResults().get(i));
-						}
+				if (tempRes.isEmpty()) {
+					for (Result res : exp.getResults()) {
+						tempRes.add(res);
+					}
+				} else {
+					for (int i = 0; i < tempRes.size(); i++) {
+						tempRes.get(i).addResult(exp.getResults().get(i));
 					}
 				}
-				for (Result res : tempRes) {
-					resTable.addResult(res);
-				}
+			}
+			for (Result res : tempRes) {
+				resTable.addResult(res);
 			}
 		}
-
 		resTable.addCompResults(resTable.getBestResults());
 		System.out.println(resTable);
 
@@ -172,38 +141,38 @@ public class SteveExperiment {
 
 	private static void computeGraphStatistics(
 			Map<Long, Map<Boolean, Map<Integer, Pair<SingleDTGraph, List<Double>>>>> cache, long[] seeds,
-			boolean[] inference, int[] depths) {
+			boolean inference, int[] depths) {
 		Map<Boolean, Map<Integer, Pair<Double, Double>>> stats = new HashMap<Boolean, Map<Integer, Pair<Double, Double>>>();
 
 		for (long seed : seeds) {
-			for (boolean inf : inference) {
-				if (!stats.containsKey(inf)) {
-					stats.put(inf, new HashMap<Integer, Pair<Double, Double>>());
-				}
-				for (int depth : depths) {
-					if (!stats.get(inf).containsKey(depth)) {
-						stats.get(inf).put(depth, new Pair<Double, Double>(0.0, 0.0));
-					}
 
-					Pair<SingleDTGraph, List<Double>> p = cache.get(seed).get(inf).get(depth);
-					GraphList<DTGraph<String, String>> graphs = RDFUtils.getSubGraphs(p.getFirst().getGraph(), p
-							.getFirst().getInstances(), depth);
-
-					double v = 0;
-					double e = 0;
-					for (DTGraph<String, String> graph : graphs.getGraphs()) {
-						v += graph.nodes().size();
-						e += graph.links().size();
-					}
-					v /= graphs.numInstances();
-					e /= graphs.numInstances();
-
-					v += stats.get(inf).get(depth).getFirst();
-					e += stats.get(inf).get(depth).getSecond();
-
-					stats.get(inf).put(depth, new Pair<Double, Double>(v, e));
-				}
+			if (!stats.containsKey(inference)) {
+				stats.put(inference, new HashMap<Integer, Pair<Double, Double>>());
 			}
+			for (int depth : depths) {
+				if (!stats.get(inference).containsKey(depth)) {
+					stats.get(inference).put(depth, new Pair<Double, Double>(0.0, 0.0));
+				}
+
+				Pair<SingleDTGraph, List<Double>> p = cache.get(seed).get(inference).get(depth);
+				GraphList<DTGraph<String, String>> graphs = RDFUtils.getSubGraphs(p.getFirst().getGraph(), p.getFirst()
+						.getInstances(), depth);
+
+				double v = 0;
+				double e = 0;
+				for (DTGraph<String, String> graph : graphs.getGraphs()) {
+					v += graph.nodes().size();
+					e += graph.links().size();
+				}
+				v /= graphs.numInstances();
+				e /= graphs.numInstances();
+
+				v += stats.get(inference).get(depth).getFirst();
+				e += stats.get(inference).get(depth).getSecond();
+
+				stats.get(inference).put(depth, new Pair<Double, Double>(v, e));
+			}
+
 		}
 
 		for (boolean k1 : stats.keySet()) {
@@ -216,36 +185,31 @@ public class SteveExperiment {
 	}
 
 	private static Map<Long, Map<Boolean, Map<Integer, Pair<SingleDTGraph, List<Double>>>>> createDataSetCache(
-			LargeClassificationDataSet data, long[] seeds, double fraction, int minSize, int maxClasses, int[] depths,
-			boolean[] inference) {
+			LargeClassificationDataSet data, long[] seeds, int[] depths, boolean inference) {
 		Map<Long, Map<Boolean, Map<Integer, Pair<SingleDTGraph, List<Double>>>>> cache = new HashMap<Long, Map<Boolean, Map<Integer, Pair<SingleDTGraph, List<Double>>>>>();
 
 		for (long seed : seeds) {
 			cache.put(seed, new HashMap<Boolean, Map<Integer, Pair<SingleDTGraph, List<Double>>>>());
-			data.createSubSet(seed, fraction, minSize, maxClasses);
+			data.createSubSet(seed, 0, 0, 0);
+			cache.get(seed).put(inference, new HashMap<Integer, Pair<SingleDTGraph, List<Double>>>());
 
-			for (boolean inf : inference) {
-				cache.get(seed).put(inf, new HashMap<Integer, Pair<SingleDTGraph, List<Double>>>());
+			for (int depth : depths) {
+				System.out.println("Getting Statements...");
+				Set<Statement> stmts = RDFUtils.getStatements4Depth(tripleStore, data.getRDFData().getInstances(),
+						depth, inference);
+				System.out.println("# Statements: " + stmts.size());
+				stmts.removeAll(new HashSet<Statement>(data.getRDFData().getBlackList()));
+				System.out.println("# Statements: " + stmts.size() + ", after blackList");
+				System.out.println("Building Graph...");
+				SingleDTGraph graph = RDFUtils.statements2Graph(stmts, RDFUtils.REGULAR_LITERALS, data.getRDFData()
+						.getInstances(), true);
+				System.out.println("Built Graph with " + graph.getGraph().nodes().size() + ", and "
+						+ graph.getGraph().links().size() + " links");
 
-				for (int depth : depths) {
-					System.out.println("Getting Statements...");
-					Set<Statement> stmts = RDFUtils.getStatements4Depth(tripleStore, data.getRDFData().getInstances(),
-							depth, inf);
-					System.out.println("# Statements: " + stmts.size());
-					stmts.removeAll(new HashSet<Statement>(data.getRDFData().getBlackList()));
-					System.out.println("# Statements: " + stmts.size() + ", after blackList");
-					System.out.println("Building Graph...");
-					SingleDTGraph graph = RDFUtils.statements2Graph(stmts, RDFUtils.REGULAR_LITERALS, data.getRDFData()
-							.getInstances(), true);
-					System.out.println("Built Graph with " + graph.getGraph().nodes().size() + ", and "
-							+ graph.getGraph().links().size() + " links");
-
-					cache.get(seed)
-							.get(inf)
-							.put(depth,
-									new Pair<SingleDTGraph, List<Double>>(graph,
-											new ArrayList<Double>(data.getTarget())));
-				}
+				cache.get(seed)
+						.get(inference)
+						.put(depth,
+								new Pair<SingleDTGraph, List<Double>>(graph, new ArrayList<Double>(data.getTarget())));
 			}
 		}
 		return cache;
