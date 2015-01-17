@@ -58,7 +58,7 @@ public class ThemeExperiment {
 		resTable.setShowStdDev(true);
 
 		long[] seeds = {11};
-		long[] seedsDataset = {11,21,31,41,51,61,71,81,91,101};
+		long[] seedsDataset = {11};// ,21,31,41,51,61,71,81,91,101};
 		double[] cs = {1, 10, 100, 1000};	
 
 		LibLINEARParameters svmParms = new LibLINEARParameters(LibLINEARParameters.SVC_DUAL, cs);
@@ -67,15 +67,15 @@ public class ThemeExperiment {
 
 		double fraction = 0.05;
 		int minClassSize = 0;
-		int maxNumClasses = 3;
+		int maxNumClasses = 2;
 
 
 		boolean reverseWL = true; // WL should be in reverse mode, which means regular subtrees
-		boolean[] inference = {false,true};
+		boolean[] inference = {false};
 
-		int[] depths = {1,2,3};
+		int[] depths = {1,2};
 		int[] pathDepths = {2,4,6};
-		int[] iterationsWL = {2,4,6};
+		//int[] iterationsWL = {2,4,6};
 
 		boolean depthTimesTwo = true;
 
@@ -84,7 +84,7 @@ public class ThemeExperiment {
 		Map<Long, Map<Boolean, Map<Integer,Pair<SingleDTGraph, List<Double>>>>> cache = createDataSetCache(ds, seedsDataset, fraction, minClassSize, maxNumClasses, depths, inference);
 		tripleStore = null;
 
-		computeGraphStatistics(cache, seedsDataset, inference, depths);
+		//computeGraphStatistics(cache, seedsDataset, inference, depths);
 
 		///* The baseline experiment, BoW (or BoL if you prefer)
 		for (boolean inf : inference) {
@@ -98,7 +98,7 @@ public class ThemeExperiment {
 
 
 					List<DTGraphWLSubTreeKernel> kernelsBaseline = new ArrayList<DTGraphWLSubTreeKernel>();	
-					kernelsBaseline.add(new DTGraphWLSubTreeKernel(0, d, reverseWL, false, true));
+					kernelsBaseline.add(new DTGraphWLSubTreeKernel(d*2, d, reverseWL, false, false, true));
 
 					//Collections.shuffle(target);
 					SimpleGraphFeatureVectorKernelExperiment<SingleDTGraph> exp = new SimpleGraphFeatureVectorKernelExperiment<SingleDTGraph>(kernelsBaseline, data, target, svmParms, seeds, evalFuncs);
@@ -124,7 +124,7 @@ public class ThemeExperiment {
 		
 		//*/
 		
-		///* The baseline experiment, BoW (or BoL if you prefer) Tree Variant
+		/* The baseline experiment, BoW (or BoL if you prefer) Tree Variant
 		for (boolean inf : inference) {
 			resTable.newRow("Baseline BoL Tree: " + inf);
 			for (int d : depths) {
@@ -162,7 +162,7 @@ public class ThemeExperiment {
 
 		//*/
 
-		///*
+		/*
 		for (boolean inf : inference) {
 			resTable.newRow("Path Count through root: " + inf);	
 			for (int d : depths) {
@@ -205,7 +205,7 @@ public class ThemeExperiment {
 
 		//*/
 
-		///*
+		/*
 		for (boolean inf : inference) {
 			resTable.newRow("WL through root: " + inf);
 			for (int d : depths) {
@@ -248,7 +248,7 @@ public class ThemeExperiment {
 
 		//*/
 
-		///*
+		/*
 		for (boolean inf : inference) {
 			resTable.newRow("Path Count Tree: " + inf);	
 
@@ -292,7 +292,7 @@ public class ThemeExperiment {
 
 		//*/
 
-		///*
+		/*
 		for (boolean inf : inference) {
 			resTable.newRow("WL Tree: " + inf);	
 
@@ -337,7 +337,7 @@ public class ThemeExperiment {
 		//*/
 
 
-		///* Regular WL
+		/* Regular WL
 		for (boolean inf : inference) {
 			resTable.newRow("Regular WL: " + inf);		
 			for (int d : depths) {
@@ -388,7 +388,7 @@ public class ThemeExperiment {
 		System.out.println(resTable);
 
 		
-		///* Path Count full
+		/* Path Count full
 		for (boolean inf : inference) {
 			resTable.newRow("Path Count Full: " + inf);		
 			for (int d : depths) {
