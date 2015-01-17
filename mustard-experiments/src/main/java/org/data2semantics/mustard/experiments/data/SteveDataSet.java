@@ -1,0 +1,89 @@
+package org.data2semantics.mustard.experiments.data;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
+import org.data2semantics.mustard.kernels.data.RDFData;
+import org.data2semantics.mustard.learners.evaluation.EvaluationUtils;
+import org.data2semantics.mustard.rdf.DataSetUtils;
+import org.data2semantics.mustard.rdf.RDFDataSet;
+import org.openrdf.model.Resource;
+import org.openrdf.model.Statement;
+import org.openrdf.model.Value;
+
+public class SteveDataSet implements LargeClassificationDataSet {
+	private RDFDataSet tripleStore;
+	private int minClassSize;
+	private long seed;
+	private double fraction;
+	private int maxNumClasses;
+	private boolean noMaterial;
+
+	private List<Double> target;
+	private RDFData rdfData;
+
+	public SteveDataSet(RDFDataSet tripleStore, long seed, double fraction, int minClassSize, int maxNumClasses) {
+		this.tripleStore = tripleStore;
+		this.minClassSize = minClassSize;
+		this.maxNumClasses = maxNumClasses;
+		this.seed = seed;
+		this.fraction = fraction;
+	}
+
+	public void create() {
+		createSubSet(seed, fraction, minClassSize, maxNumClasses);
+	}
+
+	public void createSubSet(long seed, double fraction, int minClassSize, int maxNumClasses) {
+
+		Random rand = new Random(seed);
+
+		List<Statement> stmts = tripleStore.getStatementsFromStrings(null,
+				"http://www.w3.org/ns/openannotation/core/hasReview", null);
+
+		System.out.println(tripleStore.getLabel() + " # objects: " + stmts.size());
+
+		List<Resource> instances2 = new ArrayList<Resource>();
+		List<Value> labels2 = new ArrayList<Value>();
+		List<Statement> blackList = new ArrayList<Statement>();
+
+		for (Statement stmt : stmts) {
+			instances2.add(stmt.getSubject());
+			labels2.add(stmt.getObject());
+		}
+
+		target = EvaluationUtils.createTarget(labels2);
+		System.out.println("# classes: " + EvaluationUtils.computeClassCounts(target).keySet().size());
+
+		blackList = DataSetUtils.createBlacklist(tripleStore, instances2, labels2);
+		EvaluationUtils.keepLargestClasses(instances2, labels2, maxNumClasses);
+
+		List<Resource> instances = new ArrayList<Resource>();
+		List<Value> labels = new ArrayList<Value>();
+
+		for (int i = 0; i < instances2.size(); i++) {
+			if (rand.nextDouble() < fraction) {
+				instances.add(instances2.get(i));
+				labels.add(labels2.get(i));
+			}
+		}
+
+		// EvaluationUtils.keepLargestClasses(instances, labels, maxNumClasses);
+		// EvaluationUtils.removeSmallClasses(instances, labels, minClassSize);
+
+		rdfData = new RDFData(tripleStore, instances, blackList);
+		target = EvaluationUtils.createTarget(labels);
+		System.out.println("Subset class count: " + EvaluationUtils.computeClassCounts(target));
+	}
+
+	public RDFData getRDFData() {
+		return rdfData;
+	}
+
+	public List<Double> getTarget() {
+
+		return target;
+	}
+
+}
