@@ -1,0 +1,6 @@
+
+*.prefs
+
+mustard-experiments/.project
+mustard-experiments/target/
+mustard/target/
