@@ -39,11 +39,11 @@ public class ExampleFeatureInspectionExperiment {
 		svmParms.setNumFolds(5);
 
 		boolean reverseWL = true; // WL should be in reverse mode, which means regular subtrees
-		boolean[] inference = {false,true};
+		boolean[] inference = {false};
 
-		int[] depths = {1,2,3};
+		int[] depths = {2};
 		
-		int maxFeatures = 100;
+		int maxFeatures = 10;
 		
 
 		RDFData data = ds.getRDFData();
