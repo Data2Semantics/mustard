@@ -24,6 +24,10 @@ public class LibLINEARModel {
 		this.kernelSetting = kernelSetting;
 	}
 	
+	public int[] getLabels() {
+		return model.getLabels();
+	}
+	
 	public WeightIndexPair[][] getFeatureWeights() {
 		int nrClass = model.getNrClass() == 2 ? 1 : model.getNrClass();
 		
@@ -34,6 +38,7 @@ public class LibLINEARModel {
 			weights[i] = new WeightIndexPair[model.getNrFeature()];
 		}
 		
+		// TODO remove the +1 for the index, but this means changing the featureInspection methods of the kernels
 		for (int i = 0; i < llw.length; i++) {
 			weights[i % nrClass][i / nrClass] = new WeightIndexPair(llw[i], (i/nrClass)+1);
 		}

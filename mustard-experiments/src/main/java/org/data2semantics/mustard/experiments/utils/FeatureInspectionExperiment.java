@@ -61,14 +61,15 @@ public class FeatureInspectionExperiment<D extends GraphData, K extends FeatureV
 		System.out.println("Computing Model...");	
 		LibLINEARModel model = LibLINEAR.trainLinearModelWithMultipleFeatureVectors(fvs, target, svmParms);		
 		LibLINEARModel.WeightIndexPair[][] fws = model.getFeatureWeights();
-
+		int[] intLabs = model.getLabels();
+ 
 		// Sort them
 		for (int i = 0; i < fws.length; i++) {
 			FeatureInspector fi = (FeatureInspector) model.getKernelSetting();
 			Arrays.sort(fws[i]);
 			List<Integer> indices = new ArrayList<Integer>();
 
-			System.out.println("Class " + i);
+			System.out.println("Class " + intLabs[i]);
 			System.out.print("Index: Weight - ");
 
 			for (int k = 0; k < maxFeatures; k++) {
