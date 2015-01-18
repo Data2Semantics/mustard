@@ -2,6 +2,7 @@ package org.data2semantics.mustard.experiments.SDM2015;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -23,6 +24,8 @@ import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFWLSubTreeKerne
 import org.data2semantics.mustard.learners.evaluation.Accuracy;
 import org.data2semantics.mustard.learners.evaluation.EvaluationFunction;
 import org.data2semantics.mustard.learners.evaluation.F1;
+import org.data2semantics.mustard.learners.evaluation.SingleClassAccuracy;
+import org.data2semantics.mustard.learners.evaluation.SingleClassF1;
 import org.data2semantics.mustard.learners.libsvm.LibSVMParameters;
 import org.data2semantics.mustard.rdf.RDFDataSet;
 import org.data2semantics.mustard.rdf.RDFFileDataSet;
@@ -47,6 +50,15 @@ public class AffiliationExperiment {
 		List<EvaluationFunction> evalFuncs = new ArrayList<EvaluationFunction>();
 		evalFuncs.add(new Accuracy());
 		evalFuncs.add(new F1());
+		
+		Set<Double> set = new HashSet<Double>();
+		for (double d : ds.getTarget()) {
+			if (!set.contains(d)) {
+				evalFuncs.add(new SingleClassAccuracy(d));
+				evalFuncs.add(new SingleClassF1(d));
+				set.add(d);
+			}
+		}
 
 		ResultsTable resTable = new ResultsTable();
 		resTable.setDigits(2);
@@ -67,7 +79,7 @@ public class AffiliationExperiment {
 		int[] pathDepths = {0,1,2,3,4,5,6};
 		int[] iterationsWL = {0,1,2,3,4,5,6};
 
-		boolean depthTimesTwo = true;
+		boolean depthTimesTwo = false;
 
 
 
@@ -112,7 +124,7 @@ public class AffiliationExperiment {
 		}
 		//*/
 
-		///* Path Count Root
+		/* Path Count Root
 		for (boolean inf : inference) {
 			resTable.newRow("Path Count through root: " + inf);		 
 			for (int d : depths) {
@@ -139,7 +151,7 @@ public class AffiliationExperiment {
 		}
 		//*/
 
-		///* WL Root
+		/* WL Root
 		for (boolean inf : inference) {
 			resTable.newRow("WL through root: " + inf);		 
 			for (int d : depths) {
@@ -166,7 +178,7 @@ public class AffiliationExperiment {
 		}
 		//*/
 
-		///* Path Count Tree
+		/* Path Count Tree
 		for (boolean inf : inference) {
 			resTable.newRow("Path Count Tree: " + inf);		 
 			for (int d : depths) {
@@ -261,7 +273,7 @@ public class AffiliationExperiment {
 		resTable.addCompResults(resTable.getBestResults());
 		System.out.println(resTable);
 
-		///* Path Count full
+		/* Path Count full
 		for (boolean inf : inference) {
 			resTable.newRow("Path Count Full: " + inf);		
 			for (int d : depths) {
