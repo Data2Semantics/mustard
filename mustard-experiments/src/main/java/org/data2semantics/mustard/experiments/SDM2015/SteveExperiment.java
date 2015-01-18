@@ -11,15 +11,14 @@ import org.data2semantics.mustard.experiments.data.LargeClassificationDataSet;
 import org.data2semantics.mustard.experiments.data.SteveDataSet;
 import org.data2semantics.mustard.experiments.utils.Result;
 import org.data2semantics.mustard.experiments.utils.ResultsTable;
-import org.data2semantics.mustard.experiments.utils.SimpleGraphKernelExperiment;
+import org.data2semantics.mustard.experiments.utils.SimpleGraphFeatureVectorKernelExperiment;
 import org.data2semantics.mustard.kernels.data.GraphList;
-import org.data2semantics.mustard.kernels.data.RDFData;
 import org.data2semantics.mustard.kernels.data.SingleDTGraph;
-import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFWLSubTreeKernel;
+import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphWLSubTreeKernel;
 import org.data2semantics.mustard.learners.evaluation.Accuracy;
 import org.data2semantics.mustard.learners.evaluation.EvaluationFunction;
 import org.data2semantics.mustard.learners.evaluation.F1;
-import org.data2semantics.mustard.learners.libsvm.LibSVMParameters;
+import org.data2semantics.mustard.learners.liblinear.LibLINEARParameters;
 import org.data2semantics.mustard.rdf.RDFDataSet;
 import org.data2semantics.mustard.rdf.RDFFileDataSet;
 import org.data2semantics.mustard.rdf.RDFUtils;
@@ -41,8 +40,6 @@ public class SteveExperiment {
 		// load all the RDF data
 		tripleStore = new RDFFileDataSet(STEVE_FOLDER, RDFFormat.RDFXML);
 		LargeClassificationDataSet ds = new SteveDataSet(tripleStore, 10);
-		// create a subset
-		ds.create();
 
 		// Define evaluation functions
 		List<EvaluationFunction> evalFuncs = new ArrayList<EvaluationFunction>();
@@ -62,16 +59,17 @@ public class SteveExperiment {
 		// the c parameter for the SVM. Higher values mean more training with
 		// chance of overtraining
 		double[] cs = { 1 }; // { 1, 10, 100, 1000 };
-		LibSVMParameters svmParms = new LibSVMParameters(LibSVMParameters.C_SVC, cs);
-		svmParms.setNumFolds(10);
+		LibLINEARParameters svmParms = new LibLINEARParameters(LibLINEARParameters.SVC_DUAL, cs);
+		svmParms.setNumFolds(5);
 
 		/*
 		 * Random generator seeds so the experiment is reproducible
 		 */
-		long[] seeds = { 11 };
+		// Repeat experiment for same dataset (only once since we have the
+		// subsets)
+		long[] seeds = { 1 };
 		// the seeds used for generating random subsets
-		long[] seedsDataset = { 11 }; // { 11, 21, 31, 41, 51, 61, 71, 81, 91,
-										// 101 };
+		long[] seedsDataset = { 11, 21, 31, 41, 51, 61, 71, 81, 91, 101 };
 
 		// WL should be in reverse mode, which means regular subtrees
 		boolean reverseWL = true;
@@ -82,10 +80,7 @@ public class SteveExperiment {
 		boolean iterationWeigthing = false;
 		// always use inference (although in our case it has no effect)
 		boolean inference = true;
-		int[] depths = { 1, 2, 3 };
-		int[] pathDepths = { 2, 4, 6 };
-		int[] iterationsWL = { 2, 4, 6 };
-		boolean depthTimesTwo = true;
+		int[] depths = { 3 };
 
 		// prepare a Map with all the subsets of the data we want to run our
 		// experiment on.
@@ -109,15 +104,13 @@ public class SteveExperiment {
 				target = p.getSecond();
 
 				// Define the kernel to use
-				List<RDFWLSubTreeKernel> kernels = new ArrayList<RDFWLSubTreeKernel>();
-				kernels.add(new RDFWLSubTreeKernel(depth * 2, depth, inference, reverseWL, iterationWeigthing,
-						trackPrevNBH, normalize));
+				List<DTGraphWLSubTreeKernel> kernels = new ArrayList<DTGraphWLSubTreeKernel>();
+				kernels.add(new DTGraphWLSubTreeKernel(depth * 2, depth, reverseWL, iterationWeigthing, trackPrevNBH,
+						normalize));
 
 				// Run the experiment
-				// TODO This now uses the full data everytime, we need to
-				// make it work on a subset
-				SimpleGraphKernelExperiment<RDFData> exp = new SimpleGraphKernelExperiment<RDFData>(kernels,
-						ds.getRDFData(), target, svmParms, seeds, evalFuncs);
+				SimpleGraphFeatureVectorKernelExperiment<SingleDTGraph> exp = new SimpleGraphFeatureVectorKernelExperiment<SingleDTGraph>(
+						kernels, data, target, svmParms, seeds, evalFuncs);
 				exp.run();
 
 				if (tempRes.isEmpty()) {
@@ -136,6 +129,7 @@ public class SteveExperiment {
 		}
 		resTable.addCompResults(resTable.getBestResults());
 		System.out.println(resTable);
+		System.out.println(resTable.allScoresToString());
 
 	}
 
@@ -190,7 +184,7 @@ public class SteveExperiment {
 
 		for (long seed : seeds) {
 			cache.put(seed, new HashMap<Boolean, Map<Integer, Pair<SingleDTGraph, List<Double>>>>());
-			data.createSubSet(seed, 0, 0, 0);
+			data.createSubSet(seed, 0, 50, 0);
 			cache.get(seed).put(inference, new HashMap<Integer, Pair<SingleDTGraph, List<Double>>>());
 
 			for (int depth : depths) {

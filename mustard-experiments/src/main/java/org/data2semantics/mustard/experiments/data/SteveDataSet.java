@@ -26,7 +26,7 @@ public class SteveDataSet implements LargeClassificationDataSet {
 	}
 
 	public void create() {
-		createSubSet(seed, 0, 0, 0);
+		createSubSet(seed, 0, 50, 0);
 	}
 
 	public void createSubSet(long seed, double fraction, int minClassSize, int maxNumClasses) {
@@ -51,7 +51,6 @@ public class SteveDataSet implements LargeClassificationDataSet {
 		// the classes)
 		target = EvaluationUtils.createTarget(labels2);
 		Map<Double, Double> classCounts = EvaluationUtils.computeClassCounts(target);
-		System.out.println("# classes: " + classCounts.keySet().size());
 
 		// identify the ID and size of the largest class
 		double largestClassID = -1;
@@ -93,15 +92,18 @@ public class SteveDataSet implements LargeClassificationDataSet {
 				instances.add(instances2.get(i));
 				labels.add(labels2.get(i));
 			}
-
 		}
+
+		EvaluationUtils.removeSmallClasses(instances, labels, minClassSize);
 
 		// create the RDFData object form the SUBSET and remove the blacklist
 		// triples
 		rdfData = new RDFData(tripleStore, instances, blackList);
 		// convert the prediction variables of the SUBSET to a double
 		target = EvaluationUtils.createTarget(labels);
-		System.out.println("Subset class count: " + EvaluationUtils.computeClassCounts(target));
+		classCounts = EvaluationUtils.computeClassCounts(target);
+		System.out.println("# classes: " + classCounts.keySet().size());
+		System.out.println("Subset class count: " + classCounts);
 	}
 
 	public RDFData getRDFData() {

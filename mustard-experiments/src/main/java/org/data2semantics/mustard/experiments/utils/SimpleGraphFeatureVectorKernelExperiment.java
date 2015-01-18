@@ -19,16 +19,15 @@ import org.data2semantics.mustard.learners.liblinear.LibLINEAR;
 import org.data2semantics.mustard.learners.liblinear.LibLINEARModel;
 import org.data2semantics.mustard.learners.liblinear.LibLINEARParameters;
 
-
-public class SimpleGraphFeatureVectorKernelExperiment<D extends GraphData> extends KernelExperiment<FeatureVectorKernel<D>> {
+public class SimpleGraphFeatureVectorKernelExperiment<D extends GraphData> extends
+		KernelExperiment<FeatureVectorKernel<D>> {
 	private D data;
 	private List<Double> labels;
 	private LibLINEARParameters svmParms;
 	private Result compR;
 
 	public SimpleGraphFeatureVectorKernelExperiment(List<? extends FeatureVectorKernel<D>> kernels, D data,
-			List<Double> labels, LibLINEARParameters svmParms, long[] seeds,
-			List<EvaluationFunction> evalFunctions) {
+			List<Double> labels, LibLINEARParameters svmParms, long[] seeds, List<EvaluationFunction> evalFunctions) {
 		super(kernels, seeds);
 		this.data = data;
 		this.labels = labels;
@@ -36,7 +35,12 @@ public class SimpleGraphFeatureVectorKernelExperiment<D extends GraphData> exten
 
 		for (EvaluationFunction evalFunc : evalFunctions) {
 			Result res = new Result(evalFunc);
-			double[] resA = new double[seeds.length]; // add a new empty array with the length of the amount of seeds (i.e. the number of repetitions of the experiment).
+			double[] resA = new double[seeds.length]; // add a new empty array
+														// with the length of
+														// the amount of seeds
+														// (i.e. the number of
+														// repetitions of the
+														// experiment).
 			res.setScores(resA);
 			results.add(res);
 		}
@@ -54,8 +58,8 @@ public class SimpleGraphFeatureVectorKernelExperiment<D extends GraphData> exten
 
 		Map<Kernel, SparseVector[]> fvs = new HashMap<Kernel, SparseVector[]>();
 
-		tic = System.currentTimeMillis();	
-		System.out.println("Computing FVs...");	
+		tic = System.currentTimeMillis();
+		System.out.println("Computing FVs...");
 		for (FeatureVectorKernel<D> kernel : kernels) {
 			SparseVector[] fv = kernel.computeFeatureVectors(data);
 			fvs.put(kernel, fv);
@@ -71,22 +75,23 @@ public class SimpleGraphFeatureVectorKernelExperiment<D extends GraphData> exten
 				Collections.shuffle(tempFV, new Random(seeds[j]));
 				fvs.put(k, tempFV.toArray(new SparseVector[0]));
 			}
-			Collections.shuffle(tempLabels, new Random(seeds[j]));		
+			Collections.shuffle(tempLabels, new Random(seeds[j]));
 
 			double[] target = new double[tempLabels.size()];
 			for (int i = 0; i < target.length; i++) {
 				target[i] = tempLabels.get(i);
 			}
 
-			Prediction[] pred = LibLINEAR.crossValidateWithMultipleFeatureVectors(fvs, target, svmParms, svmParms.getNumFolds());
+			Prediction[] pred = LibLINEAR.crossValidateWithMultipleFeatureVectors(fvs, target, svmParms,
+					svmParms.getNumFolds());
 
 			for (Result res : results) {
 				if (res.getEval() != null) {
-					res.getScores()[j] = res.getEval().computeScore(target, pred);	
+					res.getScores()[j] = res.getEval().computeScore(target, pred);
 				}
-			}	
+			}
 
-			LibLINEARModel model = LibLINEAR.trainLinearModelWithMultipleFeatureVectors(fvs, target, svmParms);		
+			LibLINEARModel model = LibLINEAR.trainLinearModelWithMultipleFeatureVectors(fvs, target, svmParms);
 			LibLINEARModel.WeightIndexPair[][] fws = model.getFeatureWeights();
 
 			// Sort them
@@ -98,16 +103,15 @@ public class SimpleGraphFeatureVectorKernelExperiment<D extends GraphData> exten
 					for (int k = 0; k < 10; k++) {
 						indices.add(fws[i][k].getIndex());
 					}
-					
-					System.out.println("Class " + i + ": " + fi.getFeatureDescriptions(indices));
+
+					// System.out.println("Class " + i + ": " +
+					// fi.getFeatureDescriptions(indices));
 				}
 			}
 
-
-
 		}
 
-		double[] comp = {toc - tic};
-		compR.setScores(comp);		
+		double[] comp = { toc - tic };
+		compR.setScores(comp);
 	}
 }
