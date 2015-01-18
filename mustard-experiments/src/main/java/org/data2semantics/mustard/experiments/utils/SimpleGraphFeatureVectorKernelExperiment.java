@@ -90,25 +90,6 @@ public class SimpleGraphFeatureVectorKernelExperiment<D extends GraphData> exten
 					res.getScores()[j] = res.getEval().computeScore(target, pred);
 				}
 			}
-
-			LibLINEARModel model = LibLINEAR.trainLinearModelWithMultipleFeatureVectors(fvs, target, svmParms);
-			LibLINEARModel.WeightIndexPair[][] fws = model.getFeatureWeights();
-
-			// Sort them
-			for (int i = 0; i < fws.length; i++) {
-				if (model.getKernelSetting() instanceof FeatureInspector) {
-					FeatureInspector fi = (FeatureInspector) model.getKernelSetting();
-					Arrays.sort(fws[i]);
-					List<Integer> indices = new ArrayList<Integer>();
-					for (int k = 0; k < 10; k++) {
-						indices.add(fws[i][k].getIndex());
-					}
-
-					// System.out.println("Class " + i + ": " +
-					// fi.getFeatureDescriptions(indices));
-				}
-			}
-
 		}
 
 		double[] comp = { toc - tic };

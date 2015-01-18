@@ -265,7 +265,7 @@ public class DTGraphWLSubTreeKernel implements GraphKernel<SingleDTGraph>, Featu
 			List<String> desc = new ArrayList<String>();
 			
 			for (int index : indices) {
-				desc.add(WLUtils.getFeatureDecription(dict, index-1));
+				desc.add(WLUtils.getFeatureDecription(dict, index));
 			}
 			return desc;
 		}

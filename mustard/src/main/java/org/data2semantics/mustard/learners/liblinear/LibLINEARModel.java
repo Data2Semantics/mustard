@@ -38,9 +38,8 @@ public class LibLINEARModel {
 			weights[i] = new WeightIndexPair[model.getNrFeature()];
 		}
 		
-		// TODO remove the +1 for the index, but this means changing the featureInspection methods of the kernels
 		for (int i = 0; i < llw.length; i++) {
-			weights[i % nrClass][i / nrClass] = new WeightIndexPair(llw[i], (i/nrClass)+1);
+			weights[i % nrClass][i / nrClass] = new WeightIndexPair(llw[i], (i/nrClass));
 		}
 		
 		return weights;

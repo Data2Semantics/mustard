@@ -170,7 +170,7 @@ public class WLSubTreeKernel implements GraphKernel<GraphList<DTGraph<String,Str
 			List<String> desc = new ArrayList<String>();
 			
 			for (int index : indicesSV) {
-				desc.add(WLUtils.getFeatureDecription(dict, index-1));
+				desc.add(WLUtils.getFeatureDecription(dict, index));
 			}
 			return desc;
 		}
