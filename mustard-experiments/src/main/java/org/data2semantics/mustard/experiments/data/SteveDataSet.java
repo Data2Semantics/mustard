@@ -1,6 +1,7 @@
 package org.data2semantics.mustard.experiments.data;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -100,7 +101,10 @@ public class SteveDataSet implements LargeClassificationDataSet {
 		// triples
 		rdfData = new RDFData(tripleStore, instances, blackList);
 		// convert the prediction variables of the SUBSET to a double
-		target = EvaluationUtils.createTarget(labels);
+		Map<Value, Double> labelMap = new HashMap<Value, Double>();
+		target = EvaluationUtils.createTarget(labels, labelMap);
+		System.out.println("Label mapping: " + labelMap);
+
 		classCounts = EvaluationUtils.computeClassCounts(target);
 		System.out.println("# classes: " + classCounts.keySet().size());
 		System.out.println("Subset class count: " + classCounts);
