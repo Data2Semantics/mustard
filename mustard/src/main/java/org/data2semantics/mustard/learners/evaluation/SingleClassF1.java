@@ -14,7 +14,12 @@ import org.data2semantics.mustard.learners.Prediction;
  * @author Gerben
  *
  */
-public class F1 implements EvaluationFunction {
+public class SingleClassF1 implements EvaluationFunction {
+	private double clazz;
+
+	public SingleClassF1(double clazz) {
+		this.clazz = clazz;
+	}
 
 	public double computeScore(double[] target, Prediction[] prediction) {
 		Map<Double, Double> counts = new HashMap<Double, Double>();
@@ -28,21 +33,19 @@ public class F1 implements EvaluationFunction {
 		}
 
 		double f1 = 0, temp1 = 0, temp2 = 0;
-		
-		for (double label : counts.keySet()) {
-			for (int i = 0; i < prediction.length; i++) {
-				if ((prediction[i].getLabel() == label && target[i] == label)) { // TP
-					temp1 += 1;
-				}
-				else if ((prediction[i].getLabel() == label || target[i] == label)) { // FP || FN (because we have all the TP already)
-					temp2 += 1;
-				}
+
+		for (int i = 0; i < prediction.length; i++) {
+			if ((prediction[i].getLabel() == clazz && target[i] == clazz)) { // TP
+				temp1 += 1;
 			}
-			f1 += (2*temp1) /((2*temp1) + temp2);
-			temp1 = 0;
-			temp2 = 0;
-		}	
-		return f1 / (counts.size());
+			else if ((prediction[i].getLabel() == clazz || target[i] == clazz)) { // FP || FN (because we have all the TP already)
+				temp2 += 1;
+			}
+		}
+		f1 += (2*temp1) /((2*temp1) + temp2);
+		temp1 = 0;
+		temp2 = 0;
+		return f1;
 	}
 
 	public boolean isBetter(double scoreA, double scoreB) {
@@ -50,7 +53,7 @@ public class F1 implements EvaluationFunction {
 	}
 
 	public String getLabel() {
-		return "F1";
+		return "SingleClassF1_"+clazz;
 	}
 
 	public boolean isHigherIsBetter() {
