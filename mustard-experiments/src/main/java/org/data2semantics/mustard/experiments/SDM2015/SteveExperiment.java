@@ -28,7 +28,7 @@ import org.openrdf.model.Statement;
 import org.openrdf.rio.RDFFormat;
 
 public class SteveExperiment {
-	private static final String STEVE_FOLDER = "/Users/oosterman/Dropbox/STeve/RDF_data/";
+	public static final String STEVE_FOLDER = "/Users/oosterman/Dropbox/STeve/RDF_data/";
 
 	private static List<Double> target;
 	private static RDFDataSet tripleStore;
@@ -80,7 +80,7 @@ public class SteveExperiment {
 		boolean iterationWeigthing = false;
 		// always use inference (although in our case it has no effect)
 		boolean inference = true;
-		int[] depths = { 3 };
+		int[] depths = { 1, 2, 3 };
 
 		// prepare a Map with all the subsets of the data we want to run our
 		// experiment on.
@@ -92,8 +92,8 @@ public class SteveExperiment {
 
 		computeGraphStatistics(cache, seedsDataset, inference, depths);
 
-		resTable.newRow("RDF WL. Inference: " + inference);
 		for (int depth : depths) { // for each depth
+			resTable.newRow("Depth: " + depth);
 			List<Result> tempRes = new ArrayList<Result>();
 			for (long sDS : seedsDataset) { // for each subset of the data
 				// get the data from the cash
@@ -126,6 +126,7 @@ public class SteveExperiment {
 			for (Result res : tempRes) {
 				resTable.addResult(res);
 			}
+
 		}
 		resTable.addCompResults(resTable.getBestResults());
 		System.out.println(resTable);
