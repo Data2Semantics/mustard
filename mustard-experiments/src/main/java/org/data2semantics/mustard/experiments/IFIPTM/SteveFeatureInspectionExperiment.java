@@ -34,7 +34,7 @@ public class SteveFeatureInspectionExperiment {
 
 		int[] depths = { 3 };
 
-		int maxFeatures = 10;
+		int maxFeatures = 100;
 
 		RDFData data = ds.getRDFData();
 		List<Double> target = ds.getTarget();
