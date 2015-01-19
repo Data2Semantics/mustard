@@ -14,6 +14,7 @@ import org.data2semantics.mustard.rdf.RDFDataSet;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 import org.openrdf.model.Value;
+import org.openrdf.model.impl.LiteralImpl;
 
 public class SteveDataSet implements LargeClassificationDataSet {
 	private RDFDataSet tripleStore;
@@ -51,8 +52,13 @@ public class SteveDataSet implements LargeClassificationDataSet {
 
 		// convert the prediction variable to a double (only used for counting
 		// the classes)
-		target = EvaluationUtils.createTarget(labels2);
+		Map<Value, Double> labelMap = new HashMap<Value, Double>();
+		target = EvaluationUtils.createTargetSorted(labels2, labelMap, EvaluationUtils.getValueComparator());
 		Map<Double, Double> classCounts = EvaluationUtils.computeClassCounts(target);
+
+		//identify the categories that should be removed
+		double commentsID = labelMap.get(new LiteralImpl("comments"));
+		double todoID = labelMap.get(new LiteralImpl("todo"));
 
 		// identify the ID and size of the largest class
 		double largestClassID = -1;
@@ -82,12 +88,13 @@ public class SteveDataSet implements LargeClassificationDataSet {
 		fraction = largestClassDesiredSize / largestClassCount;
 		for (int i = 0; i < instances2.size(); i++) {
 			boolean add = false;
+			Double categoryId = target.get(i);
 			// if the instance comes from the largest class
-			if (target.get(i).equals(largestClassID)) {
+			if (categoryId.equals(largestClassID)) {
 				// Use the fraction to decide whether to keep it.
 				add = rand.nextDouble() < fraction;
-			} else {
-				// always add other classes
+			} else if (!categoryId.equals(todoID) && !categoryId.equals(commentsID)) {
+				// add all classes that are not todo and comments
 				add = true;
 			}
 			if (add) {
@@ -96,14 +103,14 @@ public class SteveDataSet implements LargeClassificationDataSet {
 			}
 		}
 
-		EvaluationUtils.removeSmallClasses(instances, labels, minClassSize);
+		//EvaluationUtils.removeSmallClasses(instances, labels, minClassSize);
 
-		// create the RDFData object form the SUBSET and remove the blacklist
+		// create the RDFData object from the SUBSET and remove the blacklist
 		// triples
 		rdfData = new RDFData(tripleStore, instances, blackList);
 		// convert the prediction variables of the SUBSET to a double
-		Map<Value, Double> labelMap = new HashMap<Value, Double>();
-		target = EvaluationUtils.createTarget(labels, labelMap);
+		labelMap = new HashMap<Value, Double>();
+		target = EvaluationUtils.createTargetSorted(labels, labelMap, EvaluationUtils.getValueComparator());
 		System.out.println("Label mapping: " + labelMap);
 
 		classCounts = EvaluationUtils.computeClassCounts(target);
