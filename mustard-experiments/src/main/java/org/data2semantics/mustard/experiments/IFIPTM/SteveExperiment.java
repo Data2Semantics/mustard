@@ -1,4 +1,4 @@
-package org.data2semantics.mustard.experiments.SDM2015;
+package org.data2semantics.mustard.experiments.IFIPTM;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.data2semantics.mustard.experiments.data.LargeClassificationDataSet;
-import org.data2semantics.mustard.experiments.data.SteveDataSet;
 import org.data2semantics.mustard.experiments.utils.Result;
 import org.data2semantics.mustard.experiments.utils.ResultsTable;
 import org.data2semantics.mustard.experiments.utils.SimpleGraphFeatureVectorKernelExperiment;
