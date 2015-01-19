@@ -42,8 +42,11 @@ public class SingleClassPrecision implements EvaluationFunction {
 			}
 		}
 		p += temp1 /(temp1 + temp2);
-		temp1 = 0;
-		temp2 = 0;
+		
+		if (Double.isNaN(p)) {
+			p = 0.0;
+		}
+
 		return p;
 	}
 

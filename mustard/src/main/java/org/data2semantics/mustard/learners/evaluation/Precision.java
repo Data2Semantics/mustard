@@ -37,7 +37,10 @@ public class Precision implements EvaluationFunction {
 					temp2 += 1;
 				}
 			}
-			p += temp1 /(temp1 + temp2);
+			
+			if (temp1 != 0.0 || temp2 != 0.0) {
+				p += temp1 /(temp1 + temp2);
+			}
 			temp1 = 0;
 			temp2 = 0;
 		}	

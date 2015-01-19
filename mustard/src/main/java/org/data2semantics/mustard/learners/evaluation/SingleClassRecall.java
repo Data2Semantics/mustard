@@ -43,8 +43,6 @@ public class SingleClassRecall implements EvaluationFunction {
 			}
 		}
 		r += temp1 /(temp1 + temp2);
-		temp1 = 0;
-		temp2 = 0;
 		return r;
 	}
 
@@ -53,7 +51,7 @@ public class SingleClassRecall implements EvaluationFunction {
 	}
 
 	public String getLabel() {
-		return "SingleClassRecall_"+clazz;
+		return "Recall_"+clazz;
 	}
 
 	public boolean isHigherIsBetter() {

@@ -53,7 +53,7 @@ public class SingleClassF1 implements EvaluationFunction {
 	}
 
 	public String getLabel() {
-		return "SingleClassF1_"+clazz;
+		return "F1_"+clazz;
 	}
 
 	public boolean isHigherIsBetter() {

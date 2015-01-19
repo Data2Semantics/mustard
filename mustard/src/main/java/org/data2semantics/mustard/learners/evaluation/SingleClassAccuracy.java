@@ -32,7 +32,7 @@ public class SingleClassAccuracy implements EvaluationFunction, Serializable {
 	}
 	
 	public String getLabel() {
-		return "SingleClassAccuracy_" + clazz;
+		return "Accuracy_" + clazz;
 	}
 	
 	public boolean isHigherIsBetter() {
