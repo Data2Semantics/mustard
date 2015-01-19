@@ -18,6 +18,12 @@ import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphWLSu
 import org.data2semantics.mustard.learners.evaluation.Accuracy;
 import org.data2semantics.mustard.learners.evaluation.EvaluationFunction;
 import org.data2semantics.mustard.learners.evaluation.F1;
+import org.data2semantics.mustard.learners.evaluation.Precision;
+import org.data2semantics.mustard.learners.evaluation.Recall;
+import org.data2semantics.mustard.learners.evaluation.SingleClassAccuracy;
+import org.data2semantics.mustard.learners.evaluation.SingleClassF1;
+import org.data2semantics.mustard.learners.evaluation.SingleClassPrecision;
+import org.data2semantics.mustard.learners.evaluation.SingleClassRecall;
 import org.data2semantics.mustard.learners.liblinear.LibLINEARParameters;
 import org.data2semantics.mustard.rdf.RDFDataSet;
 import org.data2semantics.mustard.rdf.RDFFileDataSet;
@@ -40,11 +46,26 @@ public class SteveExperiment {
 		// load all the RDF data
 		tripleStore = new RDFFileDataSet(STEVE_FOLDER, RDFFormat.RDFXML);
 		LargeClassificationDataSet ds = new SteveDataSet(tripleStore, 10);
+		ds.create();
 
 		// Define evaluation functions
 		List<EvaluationFunction> evalFuncs = new ArrayList<EvaluationFunction>();
 		evalFuncs.add(new Accuracy());
 		evalFuncs.add(new F1());
+		evalFuncs.add(new Precision());
+		evalFuncs.add(new Recall());
+
+		// Add the metrics for the single class
+		Set<Double> set = new HashSet<Double>();
+		for (double d : ds.getTarget()) {
+			if (!set.contains(d)) {
+				evalFuncs.add(new SingleClassAccuracy(d));
+				evalFuncs.add(new SingleClassF1(d));
+				evalFuncs.add(new SingleClassPrecision(d));
+				evalFuncs.add(new SingleClassRecall(d));
+				set.add(d);
+			}
+		}
 
 		// Prepare result table
 		ResultsTable resTable = new ResultsTable();
