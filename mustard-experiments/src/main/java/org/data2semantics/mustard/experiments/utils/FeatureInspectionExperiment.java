@@ -69,7 +69,15 @@ public class FeatureInspectionExperiment<D extends GraphData, K extends FeatureV
 			Arrays.sort(fws[i]);
 			List<Integer> indices = new ArrayList<Integer>();
 
-			System.out.println("Class " + intLabs[i]);
+			int nonZero = 0;
+			for (int k = 0; k < fws[i].length; k++) {
+				if (fws[i][k].getWeight() == 0) {
+					break;
+				}
+				nonZero = k+1;
+			}
+			
+			System.out.println("Class " + intLabs[i] + " , #non-zero: " + nonZero);
 			System.out.print("Index: Weight - ");
 
 			for (int k = 0; k < maxFeatures; k++) {
