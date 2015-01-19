@@ -24,6 +24,12 @@ import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphWLSu
 import org.data2semantics.mustard.learners.evaluation.Accuracy;
 import org.data2semantics.mustard.learners.evaluation.EvaluationFunction;
 import org.data2semantics.mustard.learners.evaluation.F1;
+import org.data2semantics.mustard.learners.evaluation.Precision;
+import org.data2semantics.mustard.learners.evaluation.Recall;
+import org.data2semantics.mustard.learners.evaluation.SingleClassAccuracy;
+import org.data2semantics.mustard.learners.evaluation.SingleClassF1;
+import org.data2semantics.mustard.learners.evaluation.SingleClassPrecision;
+import org.data2semantics.mustard.learners.evaluation.SingleClassRecall;
 import org.data2semantics.mustard.learners.liblinear.LibLINEARParameters;
 import org.data2semantics.mustard.rdf.RDFDataSet;
 import org.data2semantics.mustard.rdf.RDFFileDataSet;
@@ -50,6 +56,9 @@ public class ThemeExperiment {
 		List<EvaluationFunction> evalFuncs = new ArrayList<EvaluationFunction>();
 		evalFuncs.add(new Accuracy());
 		evalFuncs.add(new F1());
+		evalFuncs.add(new Precision());
+		evalFuncs.add(new Recall());
+	
 
 		ResultsTable resTable = new ResultsTable();
 		resTable.setDigits(2);
@@ -58,7 +67,7 @@ public class ThemeExperiment {
 		resTable.setShowStdDev(true);
 
 		long[] seeds = {11};
-		long[] seedsDataset = {11};// ,21,31,41,51,61,71,81,91,101};
+		long[] seedsDataset = {11,21,31};// ,21,31,41,51,61,71,81,91,101};
 		double[] cs = {1, 10, 100, 1000};	
 
 		LibLINEARParameters svmParms = new LibLINEARParameters(LibLINEARParameters.SVC_DUAL, cs);
@@ -83,6 +92,18 @@ public class ThemeExperiment {
 
 		Map<Long, Map<Boolean, Map<Integer,Pair<SingleDTGraph, List<Double>>>>> cache = createDataSetCache(ds, seedsDataset, fraction, minClassSize, maxNumClasses, depths, inference);
 		tripleStore = null;
+		
+		
+		Set<Double> set = new HashSet<Double>();
+		for (double d : cache.get(seedsDataset[0]).get(inference[0]).get(depths[0]).getSecond()) {
+			if (!set.contains(d)) {
+				evalFuncs.add(new SingleClassAccuracy(d));
+				evalFuncs.add(new SingleClassF1(d));
+				evalFuncs.add(new SingleClassPrecision(d));
+				evalFuncs.add(new SingleClassRecall(d));
+				set.add(d);
+			}
+		}
 
 		//computeGraphStatistics(cache, seedsDataset, inference, depths);
 

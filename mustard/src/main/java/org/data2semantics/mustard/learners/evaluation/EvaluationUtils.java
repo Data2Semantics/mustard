@@ -1,17 +1,65 @@
 package org.data2semantics.mustard.learners.evaluation;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.openrdf.model.Value;
+
 public class EvaluationUtils {
 
+	public static <T> List<Double> createTargetSorted(List<T> labels, Comparator<T> comp) {
+		return createTargetSorted(labels, new HashMap<T,Double>(), comp);
+	}
+	
+	/**
+	 * Convert a list of arbitary labels into al list of Doubles which is used as the training target in LibSVM/LINEAR
+	 * 
+	 * @param labels, this list needs to be sortable, i.e. we need a Comparator for T
+	 * @param labelMap
+	 * @return
+	 */
+	public static <T> List<Double> createTargetSorted(List<T> labels, Map<T,Double> labelMap, Comparator<T> comp) {
+		List<T> sorted = new ArrayList<T>(labels);
+		Collections.sort(sorted, comp);
+		
+		double t = 0;
+		
+		for (T label : sorted) {
+			if (!labelMap.containsKey(label)) {
+				t += 1;
+				labelMap.put(label, t);
+			} 
+		}
+		
+		return createTarget(labels, labelMap);
+	}
+	
+	public static Comparator<Value> getValueComparator() {
+		return new ValueComp();
+	}
+	
+	/**
+	 * compare Value's on stringValue()
+	 * 
+	 * @author Gerben
+	 *
+	 */
+	private static class ValueComp implements Comparator<Value> {
+		public int compare(Value o1, Value o2) {
+			return o1.stringValue().compareTo(o2.stringValue());
+		}	
+	}
+	
 	public static <T> List<Double> createTarget(List<T> labels) {
 		return createTarget(labels, new HashMap<T,Double>());
 	}
-
+	
 	public static <T> List<Double> createTarget(List<T> labels, Map<T,Double> labelMap) {
 		List<Double> target = new ArrayList<Double>();
 		double t = 0;

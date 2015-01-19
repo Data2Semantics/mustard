@@ -117,7 +117,7 @@ public class BGSDataSet implements LargeClassificationDataSet {
 		}
 		
 		rdfData = new RDFData(tripleStore, instances, blackList);
-		target = EvaluationUtils.createTarget(labels);
+		target = EvaluationUtils.createTargetSorted(labels, EvaluationUtils.getValueComparator());
 		
 		System.out.println("Subset class count: " + EvaluationUtils.computeClassCounts(target));
 	}
