@@ -24,6 +24,10 @@ public class LibLINEARModel {
 		this.kernelSetting = kernelSetting;
 	}
 	
+	public int[] getLabels() {
+		return model.getLabels();
+	}
+	
 	public WeightIndexPair[][] getFeatureWeights() {
 		int nrClass = model.getNrClass() == 2 ? 1 : model.getNrClass();
 		
@@ -35,7 +39,7 @@ public class LibLINEARModel {
 		}
 		
 		for (int i = 0; i < llw.length; i++) {
-			weights[i % nrClass][i / nrClass] = new WeightIndexPair(llw[i], (i/nrClass)+1);
+			weights[i % nrClass][i / nrClass] = new WeightIndexPair(llw[i], (i/nrClass));
 		}
 		
 		return weights;

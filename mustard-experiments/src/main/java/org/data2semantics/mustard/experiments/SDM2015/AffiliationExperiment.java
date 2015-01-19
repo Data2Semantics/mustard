@@ -24,8 +24,12 @@ import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFWLSubTreeKerne
 import org.data2semantics.mustard.learners.evaluation.Accuracy;
 import org.data2semantics.mustard.learners.evaluation.EvaluationFunction;
 import org.data2semantics.mustard.learners.evaluation.F1;
+import org.data2semantics.mustard.learners.evaluation.Precision;
+import org.data2semantics.mustard.learners.evaluation.Recall;
 import org.data2semantics.mustard.learners.evaluation.SingleClassAccuracy;
 import org.data2semantics.mustard.learners.evaluation.SingleClassF1;
+import org.data2semantics.mustard.learners.evaluation.SingleClassPrecision;
+import org.data2semantics.mustard.learners.evaluation.SingleClassRecall;
 import org.data2semantics.mustard.learners.libsvm.LibSVMParameters;
 import org.data2semantics.mustard.rdf.RDFDataSet;
 import org.data2semantics.mustard.rdf.RDFFileDataSet;
@@ -50,12 +54,16 @@ public class AffiliationExperiment {
 		List<EvaluationFunction> evalFuncs = new ArrayList<EvaluationFunction>();
 		evalFuncs.add(new Accuracy());
 		evalFuncs.add(new F1());
+		evalFuncs.add(new Precision());
+		evalFuncs.add(new Recall());
 		
 		Set<Double> set = new HashSet<Double>();
 		for (double d : ds.getTarget()) {
 			if (!set.contains(d)) {
 				evalFuncs.add(new SingleClassAccuracy(d));
 				evalFuncs.add(new SingleClassF1(d));
+				evalFuncs.add(new SingleClassPrecision(d));
+				evalFuncs.add(new SingleClassRecall(d));
 				set.add(d);
 			}
 		}
@@ -106,7 +114,7 @@ public class AffiliationExperiment {
 		}
 		//*/
 
-		///* The baseline experiment, BoW (or BoL if you prefer) Tree variant
+		/* The baseline experiment, BoW (or BoL if you prefer) Tree variant
 		for (boolean inf : inference) {
 			resTable.newRow("Baseline BoL Tree: " + inf);		 
 			for (int d : depths) {
@@ -205,7 +213,7 @@ public class AffiliationExperiment {
 		}
 		//*/
 
-		///* WL Tree
+		/* WL Tree
 		for (boolean inf : inference) {
 			resTable.newRow("WL Tree: " + inf);		 
 			for (int d : depths) {
@@ -232,7 +240,7 @@ public class AffiliationExperiment {
 		}
 		//*/
 
-		///* Regular WL
+		/* Regular WL
 		for (boolean inf : inference) {
 			resTable.newRow("Regular WL: " + inf);		
 			for (int d : depths) {

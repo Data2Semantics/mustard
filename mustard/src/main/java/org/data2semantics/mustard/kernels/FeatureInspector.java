@@ -13,8 +13,6 @@ public interface FeatureInspector {
 
 	/**
 	 * Return a list of Strings describing the features with the given Support Vector indices
-	 * Note that LibLINEAR starts at 1 with the support vectors, but SparseVector starts at 0!
-	 * Implementations of this method are responsible for subtracting 1.
 	 * 
 	 * @param indices
 	 * @return
