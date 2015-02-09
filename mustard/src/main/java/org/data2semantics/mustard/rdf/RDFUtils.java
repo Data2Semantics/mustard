@@ -332,34 +332,28 @@ public class RDFUtils {
 	 * @return
 	 */
 	public static DTGraph<String,String> statements2Graph(Set<Statement> stmts, int literalOption) {
-		DTGraph<String,String> graph = new LightDTGraph<String,String>();
-
+		DTGraph<String,String> graph = new LightDTGraph<String,String>();	
+		Map<String, DTNode<String,String>> nodeMap = new HashMap<String, DTNode<String,String>>();
+		
 		for (Statement s : stmts) {
 			if (s.getObject() instanceof Literal && literalOption != NO_LITERALS) {
 				if (literalOption == REGULAR_LITERALS) {
-					addStatement(graph, s, false);
+					addStatement(graph, s, false, false, nodeMap);
+				}
+				if (literalOption == REGULAR_SPLIT_LITERALS) {
+					addStatement(graph, s, false, true, nodeMap);
 				}
 				if (literalOption == REPEAT_LITERALS) {
-					addStatement(graph, s, true);
+					addStatement(graph, s, true, false, nodeMap);
+				}
+				if (literalOption == REPEAT_SPLIT_LITERALS) {
+					addStatement(graph, s, true, true, nodeMap);
 				}
 			} else if (!(s.getObject() instanceof Literal)){
-				addStatement(graph, s, false);
+				addStatement(graph, s, false, false, nodeMap);
 			}
 		}	
 		return graph;
-	}
-
-	private static void addStatement(DTGraph<String,String> graph, Statement stmt, boolean newObject) {
-		DTNode<String, String> n1 = graph.node(stmt.getSubject().toString());
-		if (n1 == null) {
-			n1 = graph.add(stmt.getSubject().toString());
-		}
-		DTNode<String, String> n2 = graph.node(stmt.getObject().toString());
-		if (n2 == null || newObject) {
-			n2 = graph.add(stmt.getObject().toString());
-		}
-		// Statements are unique, since they are in a Set, thus we have never seem this particular edge before, we know that.
-		n1.connect(n2, stmt.getPredicate().toString());
 	}
 
 	/**

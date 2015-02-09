@@ -253,17 +253,20 @@ public class StringArgumentsParser {
 				sb.append(p);
 			}
 		}
-		sb.append("_");
+		sb.append("_minHubCount");
 		sb.append(minHubCount);
-		sb.append("_");
+		sb.append("_optHubs");
 		sb.append(optHubs);
-		sb.append("_");
+		sb.append("_depth");
 		sb.append(depth);
-		sb.append("_");
+		sb.append("_inference");
 		sb.append(inference);
-		sb.append("_");
+		sb.append("_blankLabels");
 		sb.append(blankLabels);
+		sb.append("_splitLiterals");
+		sb.append(splitLiterals);
 
+		
 		return sb.toString();
 	}
 
