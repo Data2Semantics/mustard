@@ -12,9 +12,7 @@ import org.data2semantics.mustard.kernels.FeatureInspector;
 import org.data2semantics.mustard.kernels.Kernel;
 import org.data2semantics.mustard.kernels.data.GraphData;
 import org.data2semantics.mustard.kernels.graphkernels.FeatureVectorKernel;
-import org.data2semantics.mustard.learners.Prediction;
 import org.data2semantics.mustard.learners.SparseVector;
-import org.data2semantics.mustard.learners.evaluation.EvaluationFunction;
 import org.data2semantics.mustard.learners.liblinear.LibLINEAR;
 import org.data2semantics.mustard.learners.liblinear.LibLINEARModel;
 import org.data2semantics.mustard.learners.liblinear.LibLINEARParameters;
@@ -69,15 +67,15 @@ public class FeatureInspectionExperiment<D extends GraphData, K extends FeatureV
 			Arrays.sort(fws[i]);
 			List<Integer> indices = new ArrayList<Integer>();
 
-			int nonZero = 0;
-			for (int k = 0; k < fws[i].length; k++) {
-				if (fws[i][k].getWeight() == 0) {
-					break;
+			//count the total number of features that are not zero
+			int nonZeroFeatures = 0;
+			for (int j = 0; j < fws[i].length; j++) {
+				if (fws[i][j].getWeight() > 0) {
+					nonZeroFeatures++;
 				}
-				nonZero = k+1;
 			}
-			
-			System.out.println("Class " + intLabs[i] + " , #non-zero: " + nonZero);
+
+			System.out.println("Class " + intLabs[i] + " (" + nonZeroFeatures + " features ) ");
 			System.out.print("Index: Weight - ");
 
 			for (int k = 0; k < maxFeatures; k++) {
