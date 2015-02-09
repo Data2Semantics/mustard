@@ -3,8 +3,8 @@ package org.data2semantics.mustard.experiments.IFIPTM;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.data2semantics.mustard.experiments.FeatureInspectionExperiment;
 import org.data2semantics.mustard.experiments.data.LargeClassificationDataSet;
-import org.data2semantics.mustard.experiments.utils.FeatureInspectionExperiment;
 import org.data2semantics.mustard.kernels.data.RDFData;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFWLSubTreeKernel;
 import org.data2semantics.mustard.learners.liblinear.LibLINEARParameters;

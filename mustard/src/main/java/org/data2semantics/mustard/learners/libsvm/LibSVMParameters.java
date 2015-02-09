@@ -142,6 +142,14 @@ public class LibSVMParameters implements Serializable {
 	public void setPs(double[] ps) {
 		this.ps = ps;
 	}
+	
+	public boolean isProbEstimates() {
+		return (params.probability == 1);
+	}
+
+	public void setProbEstimates(boolean probEstimates) {
+		params.probability = (probEstimates) ? 1 : 0;
+	}
 
 	/**
 	 * Together with setWeights this controls the weights for the different classes, when we have a skewed distribution.

@@ -9,8 +9,8 @@ import java.util.Map.Entry;
 import org.data2semantics.mustard.kernels.KernelUtils;
 import org.data2semantics.mustard.kernels.data.SingleDTGraph;
 import org.data2semantics.mustard.kernels.graphkernels.GraphKernel;
-import org.data2semantics.mustard.util.LabelTagPair;
-import org.data2semantics.mustard.util.HubUtils;
+import org.data2semantics.mustard.utils.HubUtils;
+import org.data2semantics.mustard.utils.LabelTagPair;
 
 public class DTGraphHubRemovalWrapperKernel<K extends GraphKernel<SingleDTGraph>> implements GraphKernel<SingleDTGraph> {
 	private boolean normalize;

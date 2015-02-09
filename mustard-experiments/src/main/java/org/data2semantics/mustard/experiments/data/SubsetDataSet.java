@@ -5,7 +5,7 @@ import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
 import org.data2semantics.mustard.kernels.data.RDFData;
-import org.data2semantics.mustard.learners.evaluation.EvaluationUtils;
+import org.data2semantics.mustard.learners.evaluation.utils.EvaluationUtils;
 import org.data2semantics.mustard.rdf.RDFDataSet;
 import org.data2semantics.mustard.rdf.RDFFileDataSet;
 import org.openrdf.model.Resource;

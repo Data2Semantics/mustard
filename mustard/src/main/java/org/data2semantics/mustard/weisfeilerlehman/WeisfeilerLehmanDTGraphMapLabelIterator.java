@@ -38,11 +38,11 @@ public class WeisfeilerLehmanDTGraphMapLabelIterator extends WeisfeilerLehmanIte
 					}
 					node.label().clear(k);
 					node.label().get(k).append(lab);
-					
+
 					if (trackPrevNBH) {
 						node.label().putPrevNBH(k, "");
 					}
-					
+
 					//node.label().put(k, new StringBuilder(lab));
 				}
 			}
@@ -57,11 +57,11 @@ public class WeisfeilerLehmanDTGraphMapLabelIterator extends WeisfeilerLehmanIte
 					}
 					link.tag().clear(k);
 					link.tag().get(k).append(lab);
-					
+
 					if (trackPrevNBH) {
 						link.tag().putPrevNBH(k, "");
 					}		
-					
+
 					//link.tag().put(k, new StringBuilder(lab));
 				}
 			}
@@ -130,48 +130,42 @@ public class WeisfeilerLehmanDTGraphMapLabelIterator extends WeisfeilerLehmanIte
 					}
 				}
 			}
+		}
+		
+		// Since the labels are not necessarily neatly from i to n+i, we sort them
+		List<String> keysE = new ArrayList<String>(bucketsE.keySet());
+		Collections.sort(keysE);
+		List<String> keysV = new ArrayList<String>(bucketsV.keySet());
+		Collections.sort(keysV);
 
-			// 2. add bucket labels to existing labels
-			// Change the original label to a prefix label
-
-			/*
-			for (DTLink<MapLabel,MapLabel> edge : graph.links()) {
-				for (int i : edge.tag().keySet()) {
-					edge.tag().get(i).append("_");   
-				}
-
-			}
-			for (DTNode<MapLabel,MapLabel> vertex : graph.nodes()) {
-				for (int i : vertex.label().keySet()) {
-					vertex.label().get(i).append("_"); 
-				}
-			}
-			 */
-
-			// Since the labels are not necessarily neatly from i to n+i, we sort them
-			List<String> keysE = new ArrayList<String>(bucketsE.keySet());
-			Collections.sort(keysE);
-			List<String> keysV = new ArrayList<String>(bucketsV.keySet());
-			Collections.sort(keysV);
-
-			// 3. Relabel to the labels in the buckets
-			for (String keyV : keysV) {
-				// Process vertices
-				Bucket<VertexIndexPair> bucketV = bucketsV.get(keyV);			
-				for (VertexIndexPair vp : bucketV.getContents()) {
-					vp.getVertex().label().get(vp.getIndex()).append("_");
-					vp.getVertex().label().get(vp.getIndex()).append(bucketV.getLabel());				
-				}
-			}
-			for (String keyE : keysE) {
-				// Process edges
-				Bucket<EdgeIndexPair> bucketE = bucketsE.get(keyE);			
-				for (EdgeIndexPair ep : bucketE.getContents()) {
-					ep.getEdge().tag().get(ep.getIndex()).append("_");
-					ep.getEdge().tag().get(ep.getIndex()).append(bucketE.getLabel());			
+		/*
+		for (DTGraph<MapLabel,MapLabel> graph : graphs) {
+			for (DTNode<MapLabel,MapLabel> node : graph.nodes()) {
+				for (int k : node.label().keySet()) {
+					node.label().clear(k);
 				}
 			}
 		}
+		*/
+
+		// 3. Relabel to the labels in the buckets
+		for (String keyV : keysV) {
+			// Process vertices
+			Bucket<VertexIndexPair> bucketV = bucketsV.get(keyV);			
+			for (VertexIndexPair vp : bucketV.getContents()) {
+				vp.getVertex().label().get(vp.getIndex()).append("_");
+				vp.getVertex().label().get(vp.getIndex()).append(bucketV.getLabel());				
+			}
+		}
+		for (String keyE : keysE) {
+			// Process edges
+			Bucket<EdgeIndexPair> bucketE = bucketsE.get(keyE);			
+			for (EdgeIndexPair ep : bucketE.getContents()) {
+				ep.getEdge().tag().get(ep.getIndex()).append("_");
+				ep.getEdge().tag().get(ep.getIndex()).append(bucketE.getLabel());			
+			}
+		}
+
 
 		String label;
 		for (DTGraph<MapLabel,MapLabel> graph : graphs) {		
@@ -208,7 +202,7 @@ public class WeisfeilerLehmanDTGraphMapLabelIterator extends WeisfeilerLehmanIte
 						} else {
 							nb = "";
 						}
-						
+
 						if (nb.equals(vertex.label().getPrevNBH(i))) {
 							vertex.label().putSameAsPrev(i,true);
 						}

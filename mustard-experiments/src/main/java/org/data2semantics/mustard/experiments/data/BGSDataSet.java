@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Random;
 
 import org.data2semantics.mustard.kernels.data.RDFData;
-import org.data2semantics.mustard.learners.evaluation.EvaluationUtils;
+import org.data2semantics.mustard.learners.evaluation.utils.EvaluationUtils;
 import org.data2semantics.mustard.rdf.DataSetUtils;
 import org.data2semantics.mustard.rdf.RDFDataSet;
 import org.openrdf.model.Resource;

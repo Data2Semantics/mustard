@@ -7,7 +7,11 @@ import java.util.Map;
 
 import org.data2semantics.mustard.learners.Prediction;
 import org.data2semantics.mustard.learners.SparseVector;
+import org.data2semantics.mustard.learners.utils.CVUtils;
+import org.data2semantics.mustard.learners.utils.ParameterIterator;
+import org.data2semantics.mustard.learners.utils.Stratifier;
 import org.data2semantics.mustard.kernels.Kernel;
+import org.data2semantics.mustard.kernels.KernelUtils;
 
 
 /**
@@ -19,7 +23,7 @@ import org.data2semantics.mustard.kernels.Kernel;
  *
  */
 public class LibSVM {
-	
+
 	/*
 	public static final int ACCURACY = 1;
 	public static final int F1 = 2;
@@ -110,7 +114,6 @@ public class LibSVM {
 
 		svm_parameter svmParams = params.getParamsCopy();
 
-
 		double score = 0, bestScore = 0, bestC = 0, bestP = 0;
 		Kernel bestSetting = null;
 
@@ -119,13 +122,13 @@ public class LibSVM {
 			if (bestSetting == null) {
 				bestSetting = setting;
 			}
-			
+
 			// Parameter selection
 			for (double p : params.getPs()) {
 				svmParams.p = p;
 
 				ParameterIterator pi = new ParameterIterator(params.getItParams());
-				
+
 				while (pi.hasNext()) {
 					double c = pi.nextParm();
 					if (svmParams.svm_type == LibSVMParameters.C_SVC || svmParams.svm_type == LibSVMParameters.EPSILON_SVR) {
@@ -137,7 +140,7 @@ public class LibSVM {
 					score = params.getEvalFunction().computeScore(target, prediction);
 
 					pi.updateParm(bestC == 0 || params.getEvalFunction().isBetter(score, bestScore));
-					
+
 					if (bestC == 0 || params.getEvalFunction().isBetter(score, bestScore)) {
 						bestC = c;
 						bestP = p;
@@ -153,18 +156,18 @@ public class LibSVM {
 		svmParams.p = bestP;
 		LibSVMModel model = new LibSVMModel(svm.svm_train(svmProbs.get(bestSetting), svmParams));
 		model.setKernelSetting(bestSetting);
-		
+
 		String label = "default kernel";
 		if (bestSetting != null) {
 			label = bestSetting.getLabel();
 		} 
-		
+
 		System.out.println("Trained SVM for " + label + ", with C: " + bestC + " and P: " + bestP);
 		return model;
 	}
 
-	
-	
+
+
 	/**
 	 * test model for multiple arrays of feature vectors
 	 * 
@@ -179,8 +182,8 @@ public class LibSVM {
 		}	
 		return testSVMModel(model, probs);
 	}
-	
-	
+
+
 	/**
 	 * test model for multiple kernels
 	 * 
@@ -195,7 +198,7 @@ public class LibSVM {
 		}	
 		return testSVMModel(model, probs);
 	}
-	
+
 
 	/**
 	 * Use a trained LibSVMModel to generate a prediction for new instances.
@@ -228,11 +231,23 @@ public class LibSVM {
 	private static Prediction[] testSVMModel(LibSVMModel model, Map<Kernel, svm_node[][]> testNodesMap) {
 		svm_node[][] testNodes = testNodesMap.get(model.getKernelSetting());
 		Prediction[] pred = new Prediction[testNodes.length];	
-		
+
 		for (int i = 0 ; i < testNodes.length; i++) {
-			double[] decVal = new double[model.getModel().nr_class*(model.getModel().nr_class-1)/2];
-			pred[i] = new Prediction(svm.svm_predict_values(model.getModel(), testNodes[i], decVal), i);
-			pred[i].setDecisionValue(decVal);
+			if (!model.hasProbabilities()) {
+				double[] decVal = new double[model.getModel().nr_class*(model.getModel().nr_class-1)/2];
+				pred[i] = new Prediction(svm.svm_predict_values(model.getModel(), testNodes[i], decVal), i);
+				pred[i].setDecisionValue(decVal);
+				pred[i].setClassLabels(model.getModel().label);
+				pred[i].setPairWise(true);
+				pred[i].setProbabilities(false);
+			} else {
+				double[] decVal = new double[model.getModel().nr_class];
+				pred[i] = new Prediction(svm.svm_predict_probability(model.getModel(), testNodes[i], decVal), i);
+				pred[i].setDecisionValue(decVal);
+				pred[i].setClassLabels(model.getModel().label);
+				pred[i].setPairWise(false);
+				pred[i].setProbabilities(true);
+			}
 		}
 		return pred;
 	}
@@ -249,20 +264,29 @@ public class LibSVM {
 	public static Prediction[] crossValidateWithMultipleFeatureVectors(Map<Kernel,SparseVector[]> fvs, double[] target, LibSVMParameters params,  int numberOfFolds) {
 		Prediction[] pred = new Prediction[target.length];
 
+		List<Integer> indices = Stratifier.stratifyFolds(target, numberOfFolds);
+		double[] targetCopy = Stratifier.shuffle(target, indices);
+		
+		Map<Kernel, SparseVector[]> fvsCopy = new HashMap<Kernel,SparseVector[]>();		
+		for (Kernel k : fvs.keySet()) {
+			fvsCopy.put(k, Stratifier.shuffle(fvs.get(k), indices));
+		}
+	
 		for (int fold = 1; fold <= numberOfFolds; fold++) {
 			Map<Kernel, SparseVector[]> trainFVs = new HashMap<Kernel,SparseVector[]>();
 			Map<Kernel, SparseVector[]> testFVs = new HashMap<Kernel,SparseVector[]>();
-			for (Kernel k : fvs.keySet()) {
-				trainFVs.put(k,  createFeatureVectorsTrainFold(fvs.get(k), numberOfFolds, fold));
-				testFVs.put(k, createFeatureVectorsTestFold(fvs.get(k), numberOfFolds, fold));
+			for (Kernel k : fvsCopy.keySet()) {
+				trainFVs.put(k,  CVUtils.createFeatureVectorsTrainFold(fvsCopy.get(k), numberOfFolds, fold));
+				testFVs.put(k, CVUtils.createFeatureVectorsTestFold(fvsCopy.get(k), numberOfFolds, fold));
 			}
-			double[] trainTarget = createTargetTrainFold(target, numberOfFolds, fold);
+			double[] trainTarget = CVUtils.createTargetTrainFold(targetCopy, numberOfFolds, fold);
 
-			pred = addFold2Prediction(testSVMModelWithMultipleFeatureVectors(trainSVMModelWithMultipleFeatureVectors(trainFVs, trainTarget, params), testFVs), pred, numberOfFolds, fold);
-		}		
+			pred = CVUtils.addFold2Prediction(testSVMModelWithMultipleFeatureVectors(trainSVMModelWithMultipleFeatureVectors(trainFVs, trainTarget, params), testFVs), pred, numberOfFolds, fold);
+		}
+		pred = Stratifier.deshuffle(pred, indices);
 		return pred;
 	}
-	
+
 	/**
 	 * Cross-validation for Multiple kernels
 	 * 
@@ -275,21 +299,30 @@ public class LibSVM {
 	public static Prediction[] crossValidateWithMultipleKernels(Map<Kernel,double[][]> kernels, double[] target, LibSVMParameters params,  int numberOfFolds) {
 		Prediction[] pred = new Prediction[target.length];
 
+		List<Integer> indices = Stratifier.stratifyFolds(target, numberOfFolds);
+		double[] targetCopy = Stratifier.shuffle(target, indices);
+		
+		Map<Kernel, double[][]> kernelsCopy = new HashMap<Kernel,double[][]>();		
+		for (Kernel k : kernels.keySet()) {
+			kernelsCopy.put(k, Stratifier.shuffle(kernels.get(k), indices));
+		}
+		
 		for (int fold = 1; fold <= numberOfFolds; fold++) {
 			Map<Kernel, double[][]> trainKernels = new HashMap<Kernel,double[][]>();
 			Map<Kernel, double[][]> testKernels = new HashMap<Kernel,double[][]>();
-			for (Kernel k : kernels.keySet()) {
-				trainKernels.put(k,  createTrainFold(kernels.get(k), numberOfFolds, fold));
-				testKernels.put(k, createTestFold(kernels.get(k), numberOfFolds, fold));
+			for (Kernel k : kernelsCopy.keySet()) {
+				trainKernels.put(k, CVUtils.createTrainFold(kernelsCopy.get(k), numberOfFolds, fold));
+				testKernels.put(k, CVUtils.createTestFold(kernelsCopy.get(k), numberOfFolds, fold));
 			}
-			double[] trainTarget  = createTargetTrainFold(target, numberOfFolds, fold);
+			double[] trainTarget =  CVUtils.createTargetTrainFold(targetCopy, numberOfFolds, fold);
 
-			pred = addFold2Prediction(testSVMModelWithMultipleKernels(trainSVMModelWithMultipleKernels(trainKernels, trainTarget, params), testKernels), pred, numberOfFolds, fold);
-		}		
+			pred =  CVUtils.addFold2Prediction(testSVMModelWithMultipleKernels(trainSVMModelWithMultipleKernels(trainKernels, trainTarget, params), testKernels), pred, numberOfFolds, fold);
+		}
+		pred = Stratifier.deshuffle(pred, indices);
 		return pred;
 	}
-	
-	
+
+
 	/**
 	 * Convenience method to do a cross-validation experiment with feature vectors
 	 * 
@@ -302,13 +335,18 @@ public class LibSVM {
 	public static Prediction[] crossValidate(SparseVector[] featureVectors, double[] target, LibSVMParameters params,  int numberOfFolds) {
 		Prediction[] pred = new Prediction[target.length];
 
+		List<Integer> indices = Stratifier.stratifyFolds(target, numberOfFolds);
+		double[] targetCopy = Stratifier.shuffle(target, indices);
+		SparseVector[] fvCopy = Stratifier.shuffle(featureVectors, indices);
+		
 		for (int fold = 1; fold <= numberOfFolds; fold++) {
-			SparseVector[] trainFV = createFeatureVectorsTrainFold(featureVectors, numberOfFolds, fold);
-			SparseVector[] testFV  = createFeatureVectorsTestFold(featureVectors, numberOfFolds, fold);
-			double[] trainTarget  = createTargetTrainFold(target, numberOfFolds, fold);
+			SparseVector[] trainFV =  CVUtils.createFeatureVectorsTrainFold(fvCopy, numberOfFolds, fold);
+			SparseVector[] testFV  =  CVUtils.createFeatureVectorsTestFold(fvCopy, numberOfFolds, fold);
+			double[] trainTarget  =  CVUtils.createTargetTrainFold(targetCopy, numberOfFolds, fold);
 
-			pred = addFold2Prediction(testSVMModel(trainSVMModel(trainFV, trainTarget, params), testFV), pred, numberOfFolds, fold);
-		}		
+			pred =  CVUtils.addFold2Prediction(testSVMModel(trainSVMModel(trainFV, trainTarget, params), testFV), pred, numberOfFolds, fold);
+		}	
+		pred = Stratifier.deshuffle(pred, indices);
 		return pred;
 	}
 
@@ -324,14 +362,19 @@ public class LibSVM {
 	 */
 	public static Prediction[] crossValidate(double[][] kernel, double[] target, LibSVMParameters params,  int numberOfFolds) {
 		Prediction[] pred = new Prediction[target.length];
-
+		
+		List<Integer> indices = Stratifier.stratifyFolds(target, numberOfFolds);
+		double[] targetCopy = Stratifier.shuffle(target, indices);
+		double[][] kernelCopy = Stratifier.shuffle(kernel, indices);
+	
 		for (int fold = 1; fold <= numberOfFolds; fold++) {
-			double[][] trainKernel = createTrainFold(kernel, numberOfFolds, fold);
-			double[][] testKernel  = createTestFold(kernel, numberOfFolds, fold);
-			double[] trainTarget  = createTargetTrainFold(target, numberOfFolds, fold);
+			double[][] trainKernel =  CVUtils.createTrainFold(kernelCopy, numberOfFolds, fold);
+			double[][] testKernel  =  CVUtils.createTestFold(kernelCopy, numberOfFolds, fold);
+			double[] trainTarget  =  CVUtils.createTargetTrainFold(targetCopy, numberOfFolds, fold);
 
-			pred = addFold2Prediction(testSVMModel(trainSVMModel(trainKernel, trainTarget, params), testKernel), pred, numberOfFolds, fold);
+			pred =  CVUtils.addFold2Prediction(testSVMModel(trainSVMModel(trainKernel, trainTarget, params), testKernel), pred, numberOfFolds, fold);
 		}		
+		pred = Stratifier.deshuffle(pred, indices);
 		return pred;
 	}
 
@@ -366,7 +409,7 @@ public class LibSVM {
 	 * @param labels
 	 * @return
 	 * 
-	 * @deprecated, use method in {@link org.data2semantics.proppred.learners.evaluation.EvaluationUtils}
+	 * @deprecated, use method in {@link org.data2semantics.mustard.learners.evaluation.utils.proppred.learners.evaluation.EvaluationUtils}
 	 */
 	public static <L> double[] createTargets(List<L> labels) {
 		Map<L, Integer> labelMap = new HashMap<L, Integer>();
@@ -382,7 +425,7 @@ public class LibSVM {
 	 * @param labelMap
 	 * @return
 	 * 
-	 * @deprecated, use method in {@link org.data2semantics.proppred.learners.evaluation.EvaluationUtils}
+	 * @deprecated, use method in {@link org.data2semantics.mustard.learners.evaluation.utils.proppred.learners.evaluation.EvaluationUtils}
 	 */
 	public static <L> double[] createTargets(List<L> labels, Map<L, Integer> labelMap) {
 		double[] targets = new double[labels.size()];
@@ -407,7 +450,7 @@ public class LibSVM {
 	 * @param labelMap
 	 * @return
 	 * 
-	 * @deprecated, use method in {@link org.data2semantics.proppred.learners.evaluation.EvaluationUtils}
+	 * @deprecated, use method in {@link org.data2semantics.mustard.learners.evaluation.utils.proppred.learners.evaluation.EvaluationUtils}
 	 */
 	public static <L> Map<Integer, L> reverseLabelMap(Map<L, Integer> labelMap) {
 		Map<Integer, L> reverseMap = new HashMap<Integer, L>();
@@ -535,7 +578,7 @@ public class LibSVM {
 	 * @param target
 	 * @return
 	 * 
-	 * @deprecated, use {@link org.data2semantics.proppred.learners.evaluation.EvaluationUtils}
+	 * @deprecated, use {@link org.data2semantics.mustard.learners.evaluation.utils.proppred.learners.evaluation.EvaluationUtils}
 	 */
 	public static Map<Double, Double> computeClassCounts(double[] target) {
 		Map<Double, Double> counts = new HashMap<Double, Double>();
@@ -556,7 +599,7 @@ public class LibSVM {
 	 * @param pred
 	 * @return
 	 * 
-	 * @deprecated, use {@link org.data2semantics.proppred.learners.evaluation.EvaluationUtils}
+	 * @deprecated, use {@link org.data2semantics.mustard.learners.evaluation.utils.proppred.learners.evaluation.EvaluationUtils}
 	 */
 	public static double[] extractLabels(Prediction[] pred) {
 		double[] predLabels = new double[pred.length];
@@ -577,7 +620,7 @@ public class LibSVM {
 	 * @param pred
 	 * @return
 	 * 
-	 * @deprecated, should reimplement as implementation of EvaluationFunction
+	 * @deprecated, TODO should reimplement as implementation of EvaluationFunction
 	 */
 	public static int[] computeRanking(Prediction[] pred) {
 		Arrays.sort(pred);
@@ -599,7 +642,7 @@ public class LibSVM {
 	 * @param label
 	 * @return
 	 * 
-	 * @deprecated, should reimplement as implementation of EvaluationFunction
+	 * @deprecated, TODO should reimplement as implementation of EvaluationFunction
 	 */
 	public static double computePrecisionAt(double[] target, int[] ranking, int at, double label) {
 		double precision = 0;
@@ -619,7 +662,7 @@ public class LibSVM {
 	 * @param label
 	 * @return
 	 * 
-	 * @deprecated, should reimplement as implementation of EvaluationFunction
+	 * @deprecated, TODO should reimplement as implementation of EvaluationFunction
 	 */
 	public static double computeRPrecision(double[] target, int[] ranking, double label) {
 		int count = 0;
@@ -641,7 +684,7 @@ public class LibSVM {
 	 * @param label
 	 * @return
 	 * 
-	 * @deprecated, should reimplement as implementation of EvaluationFunction
+	 * @deprecated, should TODO reimplement as implementation of EvaluationFunction
 	 */
 	public static double computeAveragePrecision(double[] target, int[] ranking, double label) {
 		double posClass = 0;
@@ -668,7 +711,7 @@ public class LibSVM {
 	 * @param label
 	 * @return
 	 * 
-	 * @deprecated, should reimplement as implementation of EvaluationFunction
+	 * @deprecated, should TODO reimplement as implementation of EvaluationFunction
 	 */
 	public static double computeNDCG(double[] target, int[] ranking, int p, double label) {
 		double dcg = 0, idcg = 0;
@@ -782,7 +825,7 @@ public class LibSVM {
 	}
 
 
-
+	@Deprecated
 	private static double[][] createTrainFold(double[][] kernel, int numberOfFolds, int fold) {
 		int foldStart = Math.round((kernel.length / ((float) numberOfFolds)) * ((float) fold - 1));
 		int foldEnd   = Math.round((kernel.length / ((float) numberOfFolds)) * (fold));
@@ -816,7 +859,8 @@ public class LibSVM {
 
 		return trainKernel;
 	}
-
+	
+	@Deprecated
 	private static double[][] createTestFold(double[][] kernel, int numberOfFolds, int fold) {
 		int foldStart = Math.round((kernel.length / ((float) numberOfFolds)) * ((float) fold - 1));
 		int foldEnd   = Math.round((kernel.length / ((float) numberOfFolds)) * (fold));
@@ -836,7 +880,8 @@ public class LibSVM {
 		return testKernel;
 	}
 
-	static double[] createTargetTrainFold(double[] target, int numberOfFolds, int fold) {
+	@Deprecated
+	private static double[] createTargetTrainFold(double[] target, int numberOfFolds, int fold) {
 		int foldStart = Math.round((target.length / ((float) numberOfFolds)) * ((float) fold - 1));
 		int foldEnd   = Math.round((target.length / ((float) numberOfFolds)) * (fold));
 		int foldLength = (foldEnd-foldStart);
@@ -852,7 +897,8 @@ public class LibSVM {
 		return trainTargets;
 	}
 
-	static SparseVector[] createFeatureVectorsTrainFold(SparseVector[] featureVectors, int numberOfFolds, int fold) {
+	@Deprecated
+	private static SparseVector[] createFeatureVectorsTrainFold(SparseVector[] featureVectors, int numberOfFolds, int fold) {
 		int foldStart = Math.round((featureVectors.length / ((float) numberOfFolds)) * ((float) fold - 1));
 		int foldEnd   = Math.round((featureVectors.length / ((float) numberOfFolds)) * (fold));
 		int foldLength = (foldEnd-foldStart);
@@ -868,7 +914,8 @@ public class LibSVM {
 		return trainFV;
 	}
 
-	static SparseVector[] createFeatureVectorsTestFold(SparseVector[] featureVectors, int numberOfFolds, int fold) {
+	@Deprecated
+	private static SparseVector[] createFeatureVectorsTestFold(SparseVector[] featureVectors, int numberOfFolds, int fold) {
 		int foldStart = Math.round((featureVectors.length / ((float) numberOfFolds)) * ((float) fold - 1));
 		int foldEnd   = Math.round((featureVectors.length / ((float) numberOfFolds)) * (fold));
 		int foldLength = (foldEnd-foldStart);
@@ -881,13 +928,14 @@ public class LibSVM {
 		return testFV;
 	}
 
-
-	static Prediction[] addFold2Prediction(Prediction[] foldPred, Prediction[] pred, int numberOfFolds, int fold) {
+	@Deprecated
+	private static Prediction[] addFold2Prediction(Prediction[] foldPred, Prediction[] pred, int numberOfFolds, int fold) {
 		int foldStart = Math.round((pred.length / ((float) numberOfFolds)) * ((float) fold - 1));
 		int foldEnd   = Math.round((pred.length / ((float) numberOfFolds)) * (fold));
 
 		for (int i = foldStart; i < foldEnd; i++) {
 			pred[i] = foldPred[i - foldStart];
+			pred[i].setFold(fold);
 		}
 		return pred;
 	}

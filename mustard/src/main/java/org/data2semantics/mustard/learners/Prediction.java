@@ -10,12 +10,18 @@ package org.data2semantics.mustard.learners;
 public class Prediction implements Comparable<Prediction> {
 	private double label;
 	private double[] decisionValue;
-	private double probability;
+	private int[] classLabels;
+	private boolean pairWise;
 	private int index;
+	private int fold;
+	private boolean probabilities;
 	
 	public Prediction(double label, int index) {
 		this.label = label;
 		this.index = index;
+		
+		fold = -1;
+		probabilities = false;
 	}
 	
 	public double getLabel() {
@@ -30,13 +36,39 @@ public class Prediction implements Comparable<Prediction> {
 	public void setDecisionValue(double[] decisionValue) {
 		this.decisionValue = decisionValue;
 	}
-	public double getProbability() {
-		return probability;
+	
+	public int[] getClassLabels() {
+		return classLabels;
 	}
-	public void setProbability(double probability) {
-		this.probability = probability;
+
+	public void setClassLabels(int[] classLabels) {
+		this.classLabels = classLabels;
+	}
+
+	public boolean isPairWise() {
+		return pairWise;
+	}
+
+	public void setPairWise(boolean pairWise) {
+		this.pairWise = pairWise;
 	}
 	
+	public int getFold() {
+		return fold;
+	}
+
+	public void setFold(int fold) {
+		this.fold = fold;
+	}
+
+	public boolean isProbabilities() {
+		return probabilities;
+	}
+
+	public void setProbabilities(boolean probabilities) {
+		this.probabilities = probabilities;
+	}
+
 	@Override
 	public String toString() {
 		return "Test index: " + index + ", " + label + ", " + decisionValue[0];

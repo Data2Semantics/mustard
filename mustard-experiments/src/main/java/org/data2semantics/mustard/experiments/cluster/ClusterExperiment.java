@@ -6,10 +6,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.data2semantics.mustard.experiments.SimpleGraphFeatureVectorKernelExperiment;
+import org.data2semantics.mustard.experiments.SimpleGraphKernelExperiment;
 import org.data2semantics.mustard.experiments.data.ClassificationDataSet;
 import org.data2semantics.mustard.experiments.utils.Result;
-import org.data2semantics.mustard.experiments.utils.SimpleGraphFeatureVectorKernelExperiment;
-import org.data2semantics.mustard.experiments.utils.SimpleGraphKernelExperiment;
 import org.data2semantics.mustard.kernels.data.SingleDTGraph;
 import org.data2semantics.mustard.kernels.graphkernels.FeatureVectorKernel;
 import org.data2semantics.mustard.kernels.graphkernels.GraphKernel;

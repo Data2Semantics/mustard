@@ -29,7 +29,9 @@ public class LibSVMModel {
 		this.kernelSetting = kernelSetting;
 	}
 	
-	
+	public boolean hasProbabilities() {
+		return model.param.probability == 1;
+	}
 	
 	/*
 	public double[] getRho() {

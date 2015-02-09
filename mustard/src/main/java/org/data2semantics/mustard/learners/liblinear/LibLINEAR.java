@@ -4,6 +4,7 @@ package org.data2semantics.mustard.learners.liblinear;
 import java.io.FileWriter;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -11,7 +12,9 @@ import org.data2semantics.mustard.kernels.Kernel;
 import org.data2semantics.mustard.learners.Prediction;
 import org.data2semantics.mustard.learners.SparseVector;
 import org.data2semantics.mustard.learners.libsvm.LibSVM;
-import org.data2semantics.mustard.learners.libsvm.ParameterIterator;
+import org.data2semantics.mustard.learners.utils.CVUtils;
+import org.data2semantics.mustard.learners.utils.ParameterIterator;
+import org.data2semantics.mustard.learners.utils.Stratifier;
 
 import de.bwaldvogel.liblinear.Feature;
 import de.bwaldvogel.liblinear.FeatureNode;
@@ -157,40 +160,64 @@ public class LibLINEAR {
 		Prediction[] pred = new Prediction[problem.length];		
 		for (int i = 0; i < problem.length; i++) {
 			double[] decVal = new double[(model.getModel().getNrClass() <= 2) ? 1 : model.getModel().getNrClass()];
-			pred[i] = new Prediction(Linear.predictValues(model.getModel(), problem[i], decVal), i);
+			if (!model.hasProbabilities()) {
+				pred[i] = new Prediction(Linear.predictValues(model.getModel(), problem[i], decVal), i);
+				pred[i].setProbabilities(false);
+			} else {
+				pred[i] = new Prediction(Linear.predictProbability(model.getModel(), problem[i], decVal), i);
+				pred[i].setProbabilities(true);
+			}
 			pred[i].setDecisionValue(decVal);
+			pred[i].setClassLabels(model.getModel().getLabels());
+			pred[i].setPairWise(false); // LibLINEAR does not do pairwise multiclass prediction, but 1 vs all
 		}
 		return pred;
 	}
 	
 	public static Prediction[] crossValidateWithMultipleFeatureVectors(Map<Kernel,SparseVector[]> featureVectors, double[] target, LibLINEARParameters params, int numberOfFolds) {
 		Prediction[] pred = new Prediction[target.length];
+		
+		List<Integer> indices = Stratifier.stratifyFolds(target, numberOfFolds);
+		double[] targetCopy = Stratifier.shuffle(target, indices);
+		
+		Map<Kernel, SparseVector[]> fvsCopy = new HashMap<Kernel,SparseVector[]>();		
+		for (Kernel k : featureVectors.keySet()) {
+			fvsCopy.put(k, Stratifier.shuffle(featureVectors.get(k), indices));
+		}
+	
 	
 		for (int fold = 1; fold <= numberOfFolds; fold++) {
 			Map<Kernel, Problem> trainPs = new HashMap<Kernel, Problem>();
 			Map<Kernel, Feature[][]> testPs = new HashMap<Kernel, Feature[][]>();
-			for (Kernel k : featureVectors.keySet()) {
-				Problem p = createLinearProblem(featureVectors.get(k), target, params.getBias());
+			for (Kernel k : fvsCopy.keySet()) {
+				Problem p = createLinearProblem(fvsCopy.get(k), targetCopy, params.getBias());
 				trainPs.put(k, createProblemTrainFold(p, numberOfFolds, fold));
 				testPs.put(k, createProblemTestFold(p, numberOfFolds, fold));
 			}
-				pred = addFold2Prediction(testLinearModel(trainLinearModel(trainPs, params), testPs), pred, numberOfFolds, fold);
-		}		
+				pred = CVUtils.addFold2Prediction(testLinearModel(trainLinearModel(trainPs, params), testPs), pred, numberOfFolds, fold);
+		}
+		pred = Stratifier.deshuffle(pred, indices);
 		return pred;
 	}
 	
 	
 	public static Prediction[] crossValidate(SparseVector[] featureVectors, double[] target, LibLINEARParameters params, int numberOfFolds) {
 		Prediction[] pred = new Prediction[target.length];
+		
+		List<Integer> indices = Stratifier.stratifyFolds(target, numberOfFolds);
+		double[] targetCopy = Stratifier.shuffle(target, indices);
+		SparseVector[] fvCopy = Stratifier.shuffle(featureVectors, indices);
+		
 		Problem trainP;
 		Feature[][] testP;
-		Problem prob = createLinearProblem(featureVectors, target, params.getBias());
+		Problem prob = createLinearProblem(fvCopy, targetCopy, params.getBias());
 
 		for (int fold = 1; fold <= numberOfFolds; fold++) {
 			trainP = createProblemTrainFold(prob, numberOfFolds, fold);
 			testP  = createProblemTestFold(prob, numberOfFolds, fold);
-			pred = addFold2Prediction(testLinearModel(trainLinearModel(trainP, params), testP), pred, numberOfFolds, fold);
-		}		
+			pred = CVUtils.addFold2Prediction(testLinearModel(trainLinearModel(trainP, params), testP), pred, numberOfFolds, fold);
+		}
+		pred = Stratifier.deshuffle(pred, indices);
 		return pred;
 	}
 
@@ -207,31 +234,45 @@ public class LibLINEAR {
 	
 	
 	public static Prediction[] trainTestSplit(Map<Kernel, SparseVector[]> featureVectors, double[] target, LibLINEARParameters params, float splitFraction) {
+		List<Integer> indices = Stratifier.stratifySplit(target, splitFraction);
+		double[] targetCopy = Stratifier.shuffle(target, indices);
+		
+		Map<Kernel, SparseVector[]> fvsCopy = new HashMap<Kernel,SparseVector[]>();		
+		for (Kernel k : featureVectors.keySet()) {
+			fvsCopy.put(k, Stratifier.shuffle(featureVectors.get(k), indices));
+		}
+
 		Map<Kernel, Problem> trainPs    = new HashMap<Kernel, Problem>();
 		Map<Kernel, Feature[][]> testPs = new HashMap<Kernel, Feature[][]>();
 		
-		for (Kernel k : featureVectors.keySet()) {
-			Problem p = createLinearProblem(featureVectors.get(k), target, params.getBias());
+		for (Kernel k : fvsCopy.keySet()) {
+			Problem p = createLinearProblem(fvsCopy.get(k), targetCopy, params.getBias());
 			trainPs.put(k, createProblemTrainSplit(p, splitFraction));	
 			testPs.put(k, createProblemTestSplit(p, splitFraction).x);
 		}
-
+		
 		return testLinearModel(trainLinearModel(trainPs, params), testPs);
 	}
 
 	public static Prediction[] trainTestSplit(SparseVector[] featureVectors, double[] target, LibLINEARParameters params, float splitFraction) {
-		Problem total  = createLinearProblem(featureVectors, target, params.getBias());
+		List<Integer> indices = Stratifier.stratifySplit(target, splitFraction);
+		double[] targetCopy = Stratifier.shuffle(target, indices);
+		SparseVector[] fvCopy = Stratifier.shuffle(featureVectors, indices);
+		
+		Problem total  = createLinearProblem(fvCopy, targetCopy, params.getBias());
 		Problem trainP = createProblemTrainSplit(total, splitFraction);		
 		Feature[][] testP  = createProblemTestSplit(total, splitFraction).x;
 
 		return testLinearModel(trainLinearModel(trainP, params), testP);
 	}
 
+	
 	public static double[] splitTestTarget(double[] target, double splitFraction) {
-		int foldStart = Math.round(target.length * (float) splitFraction); 
+		int foldStart = CVUtils.splitPoint(target.length, splitFraction); 
 		int foldEnd   = target.length;
-
-		return Arrays.copyOfRange(target, foldStart, foldEnd);
+		List<Integer> indices = Stratifier.stratifySplit(target, splitFraction);
+		double[] targetCopy = Stratifier.shuffle(target, indices);
+		return Arrays.copyOfRange(targetCopy, foldStart, foldEnd);
 	}
 
 
@@ -316,7 +357,7 @@ public class LibLINEAR {
 
 	private static Problem createProblemTrainSplit(Problem problem, float splitFrac) {
 		int foldStart = 0; 
-		int foldEnd   = Math.round((problem.l) * splitFrac);
+		int foldEnd   = CVUtils.splitPoint(problem.l, splitFrac);
 
 		Problem prob = new Problem();
 		prob.y = Arrays.copyOfRange(problem.y, foldStart, foldEnd);
@@ -328,7 +369,7 @@ public class LibLINEAR {
 	}
 
 	private static Problem createProblemTestSplit(Problem problem, float splitFrac) {
-		int foldStart = Math.round((problem.l) * splitFrac); 
+		int foldStart = CVUtils.splitPoint(problem.l, splitFrac); 
 		int foldEnd   = problem.l;
 
 		Problem prob = new Problem();
@@ -342,8 +383,8 @@ public class LibLINEAR {
 
 
 	private static Problem createProblemTrainFold(Problem problem, int numberOfFolds, int fold) {
-		int foldStart = Math.round((problem.x.length / ((float) numberOfFolds)) * ((float) fold - 1));
-		int foldEnd   = Math.round((problem.x.length / ((float) numberOfFolds)) * (fold));
+		int foldStart = CVUtils.foldStart(problem.x.length, numberOfFolds, fold);
+		int foldEnd   = CVUtils.foldEnd(problem.x.length, numberOfFolds, fold);
 		int foldLength = (foldEnd-foldStart);
 
 		Problem prob = new Problem();
@@ -366,8 +407,8 @@ public class LibLINEAR {
 
 
 	static Feature[][] createProblemTestFold(Problem problem, int numberOfFolds, int fold) {
-		int foldStart = Math.round((problem.x.length / ((float) numberOfFolds)) * ((float) fold - 1));
-		int foldEnd   = Math.round((problem.x.length / ((float) numberOfFolds)) * (fold));
+		int foldStart = CVUtils.foldStart(problem.x.length, numberOfFolds, fold);
+		int foldEnd   = CVUtils.foldEnd(problem.x.length, numberOfFolds, fold);
 		int foldLength = (foldEnd-foldStart);
 
 		Feature[][] testP = new FeatureNode[foldLength][];
@@ -378,7 +419,8 @@ public class LibLINEAR {
 		return testP;
 	}
 
-	static Prediction[] addFold2Prediction(Prediction[] foldPred, Prediction[] pred, int numberOfFolds, int fold) {
+	@Deprecated
+	private static Prediction[] addFold2Prediction(Prediction[] foldPred, Prediction[] pred, int numberOfFolds, int fold) {
 		int foldStart = Math.round((pred.length / ((float) numberOfFolds)) * ((float) fold - 1));
 		int foldEnd   = Math.round((pred.length / ((float) numberOfFolds)) * (fold));
 

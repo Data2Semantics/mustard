@@ -18,6 +18,26 @@ public class KernelUtils {
 	public static final String ROOTID = "ROOT1337"; // Special root label used in some kernels
 
 	/**
+	 * returns a copy of the kernel.
+	 * 
+	 * @param kernel
+	 * @return
+	 */
+	public static double[][] copy(double[][] kernel) {
+		double[][] copy = new double[kernel.length][];
+		
+		for (int i = 0; i < kernel.length; i++) {
+			copy[i] = new double[kernel[i].length];
+			for (int j = 0; j < kernel[i].length; j++) {
+				copy[i][j] = kernel[i][j];
+			}
+		}		
+		return copy;
+	}
+	
+	
+	
+	/**
 	 * Shuffle a kernel matrix with seed to initialize the Random object
 	 * 
 	 * @param kernel, 2D matrix of doubles

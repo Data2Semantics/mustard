@@ -11,7 +11,7 @@ import org.data2semantics.mustard.kernels.data.SingleDTGraph;
 import org.data2semantics.mustard.kernels.graphkernels.FeatureVectorKernel;
 import org.data2semantics.mustard.kernels.graphkernels.GraphKernel;
 import org.data2semantics.mustard.learners.SparseVector;
-import org.data2semantics.mustard.util.Pair;
+import org.data2semantics.mustard.utils.Pair;
 import org.data2semantics.mustard.weisfeilerlehman.MapLabel;
 import org.data2semantics.mustard.weisfeilerlehman.WeisfeilerLehmanDTGraphMapLabelIterator;
 import org.data2semantics.mustard.weisfeilerlehman.WeisfeilerLehmanIterator;

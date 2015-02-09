@@ -16,6 +16,10 @@ public class LibLINEARModel {
 		return model;
 	}
 	
+	public boolean hasProbabilities() {
+		return model.isProbabilityModel();
+	}
+	
 	public Kernel getKernelSetting() {
 		return kernelSetting;
 	}

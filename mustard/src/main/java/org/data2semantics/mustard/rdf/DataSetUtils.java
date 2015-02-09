@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-import org.data2semantics.mustard.util.Pair;
+import org.data2semantics.mustard.utils.Pair;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 import org.openrdf.model.Value;

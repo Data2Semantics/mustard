@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.data2semantics.mustard.kernels.data.RDFData;
-import org.data2semantics.mustard.learners.evaluation.EvaluationUtils;
+import org.data2semantics.mustard.learners.evaluation.utils.EvaluationUtils;
 import org.data2semantics.mustard.rdf.DataSetUtils;
 import org.data2semantics.mustard.rdf.RDFDataSet;
 import org.openrdf.model.Resource;
@@ -17,10 +17,15 @@ public class AIFBDataSet implements ClassificationDataSet {
 	private RDFDataSet tripleStore;
 	private RDFData data;
 	private List<Double> target;
+	private boolean smallClass;
 
 	public AIFBDataSet(RDFDataSet tripleStore) {
-		super();
+		this(tripleStore, false);
+	}
+
+	public AIFBDataSet(RDFDataSet tripleStore, boolean withSmallClass) {
 		this.tripleStore = tripleStore;
+		this.smallClass = withSmallClass;
 	}
 
 	public void create() {
@@ -35,13 +40,16 @@ public class AIFBDataSet implements ClassificationDataSet {
 		}
 
 		List<Statement> blackList = DataSetUtils.createBlacklist(tripleStore, instances, labels);
-		EvaluationUtils.removeSmallClasses(instances, labels, 5);
-		
+
+		if (!smallClass) {
+			EvaluationUtils.removeSmallClasses(instances, labels, 5);
+		}
+
 		Map<Value, Double> labelMap = new HashMap<Value,Double>();
 		target = EvaluationUtils.createTarget(labels, labelMap);
-		
+
 		System.out.println("Label mapping: " + labelMap);
-		
+
 		data = new RDFData(tripleStore, instances, blackList);
 	}
 

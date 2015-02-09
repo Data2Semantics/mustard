@@ -101,18 +101,6 @@ public class WeisfeilerLehmanDTGraphIterator extends WeisfeilerLehmanIterator<DT
 			}
 		}
 
-		// 2. add bucket labels to existing labels
-		// Change the original label to a prefix label
-		/*
-		for (DTGraph<StringLabel,StringLabel> graph : graphs) {
-			for (DTLink<StringLabel,StringLabel> edge : graph.links()) {
-				edge.tag().append("_");
-			}
-			for (DTNode<StringLabel,StringLabel> vertex : graph.nodes()) {
-				vertex.label().append("_");
-			}
-		}
-		 */
 
 		// Since the labels are not necessarily neatly from i to n+i, we sort them
 		List<String> keysE = new ArrayList<String>(bucketsE.keySet());
@@ -120,6 +108,14 @@ public class WeisfeilerLehmanDTGraphIterator extends WeisfeilerLehmanIterator<DT
 		List<String> keysV = new ArrayList<String>(bucketsV.keySet());
 		Collections.sort(keysV);
 
+		/*
+		for (DTGraph<StringLabel,StringLabel> graph : graphs) {
+			for (DTNode<StringLabel,StringLabel> node : graph.nodes()) {
+				node.label().clear();
+			}
+		}
+		*/
+		
 
 		// 3. Relabel to the labels in the buckets
 		for (String key : keysV) {	
