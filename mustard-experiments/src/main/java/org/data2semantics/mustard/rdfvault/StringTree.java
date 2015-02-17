@@ -124,22 +124,28 @@ public class StringTree {
 		return sb.toString();
 	}
 	
+	// once prefixstatistics are requested, no tree operations should be performed except through the statistics object
 	public PrefixStatistics getPrefixStatistics() { return new PrefixStatistics(); }
 	
 	public class PrefixStatistics {
 		
 		private HashMap<InternalNode, Integer> _node2bitix = new HashMap<InternalNode,Integer>();
+		private HashMap<InternalNode, Integer> _leaves     = new HashMap<InternalNode,Integer>();
 		private int _bits_used = 0;
 		
-		// assign a bit to identify each of its children, and recurse
-		private void initialise_rec(InternalNode node) {
+		// assign a bit to identify each of its children, and recurse.
+		// returns the number of leafs with this node as ancestor.
+		private int initialise_rec(InternalNode node) {
 			_node2bitix.put(node, _bits_used);
 			for (Node n = node._children; n!=null; n=n._siblings) {
 				_bits_used++;
 			}
+			int leaves = 0;
 			for (Node n = node._children; n!=null; n=n._siblings) {
-				if (n instanceof InternalNode) initialise_rec((InternalNode)n);
+				if (n instanceof InternalNode) leaves += initialise_rec((InternalNode)n); else leaves++;
 			}
+			_leaves.put(node, leaves);
+			return leaves;
 		}
 		
 		public PrefixStatistics() { initialise_rec(_root); }
@@ -196,7 +202,7 @@ public class StringTree {
 			}
 			// n is the internal node where the paths diverge, or a leaf indicating an exact match
 			if (n instanceof Leaf) return 1.0;
-			return 1.0 - (double)sizeOfSubtree(n) / (double)_bits_used;
+			return 1.0 - (double)_leaves.get(n) / (double)_size;
 		}
 		
 	}
