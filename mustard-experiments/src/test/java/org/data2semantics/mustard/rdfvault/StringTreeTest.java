@@ -32,7 +32,7 @@ public class StringTreeTest {
 
 		for (String s : tst) {
 			Object ticket = T.search(s);
-			assert ticket==null: "Huh? Key not in tree: "+s;
+			assert ticket!=null: "Huh? Key not in tree: "+s;
 			T.trash(ticket);
 			assert T.search(s)==null: "Trashing '"+s+"' seems to have failed!?";
 		}

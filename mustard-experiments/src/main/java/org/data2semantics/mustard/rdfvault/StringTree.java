@@ -148,20 +148,9 @@ public class StringTree {
 			return leaves;
 		}
 		
-		public PrefixStatistics() { initialise_rec(_root); }
-		
-		/* _node2bitix assigns bit indices to all the internal tree nodes.
-		 * Parent first, then subtrees in order.
-		 * Thus, to find the size of the subtree rooted by a node, find the
-		 * _node2bitix of its sibling, or if it is the last sibling, the first on the path to the
-		 * root that has a sibling.
-		 */
-		public int sizeOfSubtree(Node n) {
-			int ix0 = _node2bitix.get(n);
-			Node m = n;
-			while (m._siblings==null && m!=_root) m = m._parent;
-			int ix1 = m==_root ? _bits_used : _node2bitix.get(m._siblings);
-			return ix1-ix0;
+		public PrefixStatistics() {
+			initialise_rec(_root);
+			assert _leaves.get(_root)==_size : "The number of leaves should be equal to the size of the StringTree";
 		}
 		
 		public SparseVector createSparseVector(String s) {
