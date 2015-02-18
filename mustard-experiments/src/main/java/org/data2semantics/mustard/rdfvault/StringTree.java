@@ -125,12 +125,15 @@ public class StringTree {
 	}
 	
 	// once prefixstatistics are requested, no tree operations should be performed except through the statistics object
-	public PrefixStatistics getPrefixStatistics() { return new PrefixStatistics(); }
+	public PrefixStatistics getPrefixStatistics(boolean include_internal_nodes) {
+		return new PrefixStatistics(include_internal_nodes); 
+	}
 	
 	public class PrefixStatistics {
 		
 		private HashMap<InternalNode, Integer> _node2bitix = new HashMap<InternalNode,Integer>();
 		private HashMap<InternalNode, Integer> _leaves     = new HashMap<InternalNode,Integer>();
+		private boolean _int_nodes;
 		private int _bits_used = 0;
 		
 		// assign a bit to identify each of its children, and recurse.
@@ -138,7 +141,7 @@ public class StringTree {
 		private int initialise_rec(InternalNode node) {
 			_node2bitix.put(node, _bits_used);
 			for (Node n = node._children; n!=null; n=n._siblings) {
-				_bits_used++;
+				if (_int_nodes || (n instanceof Leaf)) _bits_used++; // if !_int_nodes, only count edges to leaves 
 			}
 			int leaves = 0;
 			for (Node n = node._children; n!=null; n=n._siblings) {
@@ -148,7 +151,8 @@ public class StringTree {
 			return leaves;
 		}
 		
-		public PrefixStatistics() {
+		public PrefixStatistics(boolean include_internal_nodes) {
+			_int_nodes = include_internal_nodes;
 			initialise_rec(_root);
 			assert _leaves.get(_root)==_size : "The number of leaves should be equal to the size of the StringTree";
 		}
@@ -164,11 +168,16 @@ public class StringTree {
 				int ix0 = _node2bitix.get(n);
 				int c = depth==s.length() ? ITEM_MARKER : s.charAt(depth);
 				Node ch = ((InternalNode)n)._children;
-				int i;
-				for (i=0; ch.label_char()!=c; i++) {
+				int i,j;
+				for (i=0,j=0; ch.label_char()!=c; i++) {
+					if (ch instanceof Leaf) j++;
 					ch = ch._siblings;
 				}
-				sv.setValue(ix0+i, 1);
+				if (_int_nodes) {
+					sv.setValue(ix0+i, 1);
+				} else {
+					if (ch instanceof Leaf) sv.setValue(ix0+j, 1); // output leaf index: one bit for each leaf!
+				}
 				depth += ch._label==null ? 0 : ch._label.length;
 				n = ch;
 			}

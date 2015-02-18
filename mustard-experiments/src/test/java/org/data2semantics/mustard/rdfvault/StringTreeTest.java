@@ -42,7 +42,10 @@ public class StringTreeTest {
 		assert !problem : "The vault did not complain when I trashed a ticket twice!";
 	}
 	
-	@Test public void prefix_statistics_test() {
+	public void prefix_statistics_test(boolean include_internal_nodes) {
+		System.out.println("\n\nTesting prefix statistics, internal_nodes = "+include_internal_nodes);
+		
+		
 		String [] tst = { "blub", "blubblieb", "blu", "bla", "aap", "iets", "nog iets", "stringetje" };
 		StringTree T = new StringTree();
 		
@@ -51,13 +54,13 @@ public class StringTreeTest {
 			T.store(s);
 		}
 		
-		PrefixStatistics ps = T.getPrefixStatistics();
+		PrefixStatistics ps = T.getPrefixStatistics(include_internal_nodes);
 		
 		for (int i=0; i<tst.length; i++) {
 			String s1 = tst[i];
 			SparseVector sv = ps.createSparseVector(s1);
 			int bits = sv.getIndices().size();
-			System.out.println(s1 + " has bitvector with "+bits+" indices.");
+			System.out.println(s1 + " has bitvector with "+bits+"/"+(sv.getLastIndex()+1)+" indices.");
 			for (int j=0; j<=i; j++) {
 				String s2 = tst[j];
 				double sim = ps.prefixSimilarity(s1, s2);
@@ -67,6 +70,9 @@ public class StringTreeTest {
 	
 	}
 
+	@Test public void ps_test1() { prefix_statistics_test(true); }
+	@Test public void ps_test2() { prefix_statistics_test(false); }
+	
 }
 
 // Test SparseVector creation
