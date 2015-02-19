@@ -1,6 +1,0 @@
--inference false -depth 1 -kernel IntersectionPartialSubTree -kernelParm1 0.1 -kernelParm2 1 
--inference false -depth 2 -kernel IntersectionPartialSubTree -kernelParm1 0.1 -kernelParm2 2 
--inference false -depth 3 -kernel IntersectionPartialSubTree -kernelParm1 0.1 -kernelParm2 3 
--inference true -depth 1 -kernel IntersectionPartialSubTree -kernelParm1 0.1 -kernelParm2 1
--inference true -depth 2 -kernel IntersectionPartialSubTree -kernelParm1 0.1 -kernelParm2 2
--inference true -depth 3 -kernel IntersectionPartialSubTree -kernelParm1 0.1 -kernelParm2 3

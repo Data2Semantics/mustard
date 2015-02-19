@@ -130,6 +130,7 @@ public class DTGraphWLSubTreeKernel implements GraphKernel<SingleDTGraph>, Featu
 		if (this.normalize) {
 			featureVectors = KernelUtils.normalize(featureVectors);
 		}
+		
 		return featureVectors;
 	}
 

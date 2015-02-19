@@ -17,14 +17,14 @@ public class ParamsCreator {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		String filePrefix = "BGSsubset";
+		String filePrefix = "AMsubset";
 		String[] subsets = {"1","2","3","4","5","6","7","8","9","10"};
 		String[] infs = {"false","true"};
-		int[] depths = {1,23};
+		int[] depths = {1,2,3};
 		boolean opt = false;
-			String[] kernels = {"TreeBoL", "GraphBoL", "TreeWalksRoot", "TreeSubtreesRoot",
-				"GraphWalks", "GraphWalksFast", "TreeWalks",
-				"GraphSubtreesFast", "GraphSubtrees", "TreeSubtrees"}; 
+			String[] kernels = {"URIPrefix", "TreeBoL", "GraphBoL"}; //, "TreeWalksRoot", "TreeSubtreesRoot",
+				//"GraphWalks", "GraphWalksFast", "TreeWalks",
+				//"GraphSubtreesFast", "GraphSubtrees", "TreeSubtrees"}; 
 				
 
 		for (String subset : subsets) {
@@ -63,7 +63,7 @@ public class ParamsCreator {
 		}
 
 		private void init() {
-			if (kernel.equals("GraphBoL") || kernel.equals("TreeBoL")) {
+			if (kernel.equals("GraphBoL") || kernel.equals("TreeBoL") || kernel.equals("URIPrefix")) {
 				settings.add("-kernel " + kernel + " -kernelParm1 " + depth);
 			}
 			else if (kernel.equals("TreeWalksRoot") || kernel.equals("TreeSubtreesRoot")) {

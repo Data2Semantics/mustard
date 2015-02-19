@@ -58,7 +58,7 @@ public class LithogenesisExperiment {
 		double[] cs = {1,10,100,1000};	
 
 		LibSVMParameters svmParms = new LibSVMParameters(LibSVMParameters.C_SVC, cs);
-		svmParms.setNumFolds(10);
+		svmParms.setNumFolds(5);
 
 
 		boolean reverseWL = true; // WL should be in reverse mode, which means regular subtrees

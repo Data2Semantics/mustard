@@ -55,7 +55,7 @@ public class RESCALKernel implements GraphKernel<RDFData>, FeatureVectorKernel<R
 
 	public SparseVector[] computeFeatureVectors(RDFData data) {
 
-		RESCALConverter rc = new RESCALConverter();
+		RESCALInput rc = new RESCALInput();
 		List<Statement> all = null;
 		if (depth == 0) {
 			all = data.getDataset().getFullGraph(inference);
@@ -65,7 +65,7 @@ public class RESCALKernel implements GraphKernel<RDFData>, FeatureVectorKernel<R
 
 		all.removeAll(data.getBlackList());
 		rc.convert(all);
-		Map<Integer, Resource> invEntityMap = rc.save(outputDir);
+		rc.save(outputDir);
 
 		Runtime rt = Runtime.getRuntime();
 		try {
@@ -102,7 +102,8 @@ public class RESCALKernel implements GraphKernel<RDFData>, FeatureVectorKernel<R
 			e.printStackTrace();
 		}
 
-		SparseVector[] fv = readInstanceEmbeddings(data.getInstances(), invEntityMap);
+		SparseVector[] fv = null; 
+		
 		
 		if (normalize) {
 			fv = KernelUtils.normalize(fv);
@@ -112,7 +113,7 @@ public class RESCALKernel implements GraphKernel<RDFData>, FeatureVectorKernel<R
 
 	public double[][] compute(RDFData data) {
 		double[][] kernel = KernelUtils.initMatrix(data.getInstances().size(), data.getInstances().size());
-		computeKernelMatrix(computeFeatureVectors(data), kernel);				
+		KernelUtils.computeKernelMatrix(computeFeatureVectors(data), kernel);				
 		return kernel;
 	}
 
@@ -124,7 +125,7 @@ public class RESCALKernel implements GraphKernel<RDFData>, FeatureVectorKernel<R
 		SparseVector[] fv = new SparseVector[instances.size()];
 
 		try {
-			BufferedReader fr = new BufferedReader(new FileReader(outputDir + "\\entity.embeddings.csv"));
+			BufferedReader fr = new BufferedReader(new FileReader(outputDir + "/entity.embeddings.csv"));
 			String line;
 
 			for (int i = 0; (line = fr.readLine()) != null; i++) {
@@ -147,14 +148,6 @@ public class RESCALKernel implements GraphKernel<RDFData>, FeatureVectorKernel<R
 		return fv;
 	}
 	
-	private void computeKernelMatrix(SparseVector[] featureVectors, double[][] kernel) {
-		for (int i = 0; i < featureVectors.length; i++) {
-			for (int j = i; j < featureVectors.length; j++) {
-				kernel[i][j] += featureVectors[i].dot(featureVectors[j]);
-				kernel[j][i] = kernel[i][j];
-			}
-		}
-	}
 	
 	class StreamHandler implements Runnable {
 		InputStream in;
@@ -162,8 +155,7 @@ public class RESCALKernel implements GraphKernel<RDFData>, FeatureVectorKernel<R
 		public StreamHandler(InputStream in) {
 			this.in = in;
 		}
-		
-		
+				
 		public void run() {
 			try {
 	            InputStreamReader isr = new InputStreamReader(in);
@@ -172,8 +164,7 @@ public class RESCALKernel implements GraphKernel<RDFData>, FeatureVectorKernel<R
 				String line = null;
 				while((line = br.readLine()) != null) {
 					System.out.println(line);
-				}
-				
+				}		
 				
 			} catch (Exception e) {
 				e.printStackTrace();
