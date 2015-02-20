@@ -146,19 +146,23 @@ public class StringTree {
 			}
 			int leaves = 0;
 			for (Node n = node._children; n!=null; n=n._siblings) {
-				if (n instanceof InternalNode) leaves += initialise_rec((InternalNode)n); else leaves++;
+				int l = 1;
+				if (n instanceof InternalNode) l = initialise_rec((InternalNode)n);
+				_normalization.setValue(node_index, l);
+				leaves += l;
 			}
-			_normalization.setValue(node_index, leaves);
+
 			return leaves;
 		}
 		
 		public PrefixStatistics(boolean include_internal_nodes) {
 			_int_nodes = include_internal_nodes;
-			initialise_rec(_root);
+			int tot_leaves = initialise_rec(_root);
+			_normalization.setValue(0, tot_leaves);
 			_normalization.setLastIndex(_bits_used-1);
 		}
 		
-		public SparseVector getNormalization() { return _normalization; }
+		public SparseVector getNormalization() { return _normalization; } 
 		
 		public SparseVector createSparseVector(String s) {
 			SparseVector sv = new SparseVector();
