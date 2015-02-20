@@ -124,6 +124,17 @@ public class StringTree {
 		return sb.toString();
 	}
 	
+	public String shorten(String uri, int steps) {
+		Node n = (Node)search(uri);
+		assert n!=null : "Cannot find the uri '"+uri+"' in the tree"; 
+		for (int i=0; i<steps; i++) {
+			if (n._parent!=null) n = n._parent;
+		}
+		StringBuilder sb = new StringBuilder();
+		n.redeem_rec(sb);
+		return sb.toString();
+	}
+	
 	// once prefixstatistics are requested, no tree operations should be performed except through the statistics object
 	public PrefixStatistics getPrefixStatistics(boolean include_internal_nodes) {
 		return new PrefixStatistics(include_internal_nodes); 
