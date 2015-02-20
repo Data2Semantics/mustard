@@ -150,6 +150,7 @@ public class StringTree {
 				if (n instanceof InternalNode) l = initialise_rec((InternalNode)n);
 				_normalization.setValue(node_index, l);
 				leaves += l;
+				node_index++;
 			}
 
 			return leaves;
