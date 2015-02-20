@@ -174,9 +174,10 @@ public class StringTree {
 					ch = ch._siblings;
 				}
 				if (_int_nodes) {
-					sv.setValue(ix0+i, 1);
+					double freq = ch instanceof Leaf ? 1.0 : _leaves.get(ch);
+					sv.setValue(ix0+i, 1.0/freq);
 				} else {
-					if (ch instanceof Leaf) sv.setValue(ix0+j, 1); // output leaf index: one bit for each leaf!
+					if (ch instanceof Leaf) sv.setValue(ix0+j, 1.0); // output leaf index: one bit for each leaf!
 				}
 				depth += ch._label==null ? 0 : ch._label.length;
 				n = ch;
