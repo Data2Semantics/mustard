@@ -132,14 +132,15 @@ public class StringTree {
 	public class PrefixStatistics {
 		
 		private HashMap<InternalNode, Integer> _node2bitix = new HashMap<InternalNode,Integer>();
-		private HashMap<InternalNode, Integer> _leaves     = new HashMap<InternalNode,Integer>();
+		private SparseVector _normalization = new SparseVector();
 		private boolean _int_nodes;
 		private int _bits_used = 0;
 		
 		// assign a bit to identify each of its children, and recurse.
 		// returns the number of leafs with this node as ancestor.
 		private int initialise_rec(InternalNode node) {
-			_node2bitix.put(node, _bits_used);
+			int node_index = _bits_used;
+			_node2bitix.put(node, node_index);
 			for (Node n = node._children; n!=null; n=n._siblings) {
 				if (_int_nodes || (n instanceof Leaf)) _bits_used++; // if !_int_nodes, only count edges to leaves 
 			}
@@ -147,15 +148,17 @@ public class StringTree {
 			for (Node n = node._children; n!=null; n=n._siblings) {
 				if (n instanceof InternalNode) leaves += initialise_rec((InternalNode)n); else leaves++;
 			}
-			_leaves.put(node, leaves);
+			_normalization.setValue(node_index, leaves);
 			return leaves;
 		}
 		
 		public PrefixStatistics(boolean include_internal_nodes) {
 			_int_nodes = include_internal_nodes;
 			initialise_rec(_root);
-			assert _leaves.get(_root)==_size : "The number of leaves should be equal to the size of the StringTree";
+			_normalization.setLastIndex(_bits_used-1);
 		}
+		
+		public SparseVector getNormalization() { return _normalization; }
 		
 		public SparseVector createSparseVector(String s) {
 			SparseVector sv = new SparseVector();
@@ -174,8 +177,7 @@ public class StringTree {
 					ch = ch._siblings;
 				}
 				if (_int_nodes) {
-					double freq = ch instanceof Leaf ? 1.0 : _leaves.get(ch);
-					sv.setValue(ix0+i, 1.0/freq);
+					sv.setValue(ix0+i, 1.0);
 				} else {
 					if (ch instanceof Leaf) sv.setValue(ix0+j, 1.0); // output leaf index: one bit for each leaf!
 				}
@@ -201,7 +203,7 @@ public class StringTree {
 			}
 			// n is the internal node where the paths diverge, or a leaf indicating an exact match
 			if (n instanceof Leaf) return 1.0;
-			return 1.0 - (double)_leaves.get(n) / (double)_size;
+			return 1.0 - _normalization.getValue(_node2bitix.get(n)) / _size;
 		}
 		
 	}
