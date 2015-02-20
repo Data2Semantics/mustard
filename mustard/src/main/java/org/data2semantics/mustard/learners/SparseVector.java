@@ -75,6 +75,13 @@ public class SparseVector {
 		return lastIndex;
 	}
 
+	
+	/**
+	 * Set the value of last index that is potentially used (can be 0 for this specific SparseVector). 
+	 * Needed when we want to use {@link addVector()}.
+	 * 
+	 * @param lastIndex
+	 */
 	public void setLastIndex(int lastIndex) {
 		this.lastIndex = lastIndex;
 	}

@@ -52,6 +52,18 @@ public class CombinedResults {
 					if (res.getLabel().equals("F1")) {
 						res.setHigherIsBetter(true);
 					}
+					if (res.getLabel().equals("Precision")) {
+						res.setHigherIsBetter(true);
+					}
+					if (res.getLabel().equals("Recall")) {
+						res.setHigherIsBetter(true);
+					}
+					if (res.getLabel().equals("AUC-ROC")) {
+						res.setHigherIsBetter(true);
+					}
+					if (res.getLabel().equals("AUC-PR")) {
+						res.setHigherIsBetter(true);
+					}
 					readLine = read.readLine();
 				}
 				read.close();		
@@ -69,6 +81,10 @@ public class CombinedResults {
 			String tableId = "";
 			for (int i = (idSplits.length - splits); i < idSplits.length; i++) {
 				tableId += idSplits[i];
+			}
+			
+			if (id.startsWith("Tree")) {
+				tableId = "Tree" + tableId;
 			}
 			
 			if (!tables.containsKey(tableId)) {
@@ -113,10 +129,10 @@ public class CombinedResults {
 	public static void main(String[] args) {
 		CombinedResults res = new CombinedResults();
 
-		res.readDirectory("litho_results");
+		res.readDirectory("am_results_2015");
 		
 		//res.readDirectory("C:\\Users\\Gerben\\Dropbox\\D2S\\workspace_TeX\\JWS\\results_bgs_hubs");
-		Map<String, ResultsTable> tables = res.generateTables(3);
+		Map<String, ResultsTable> tables = res.generateTables(4);
 		
 		CombinedResults res2 = new CombinedResults();
 		

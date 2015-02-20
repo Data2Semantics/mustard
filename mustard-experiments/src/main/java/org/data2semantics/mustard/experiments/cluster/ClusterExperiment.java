@@ -13,9 +13,13 @@ import org.data2semantics.mustard.experiments.utils.Result;
 import org.data2semantics.mustard.kernels.data.SingleDTGraph;
 import org.data2semantics.mustard.kernels.graphkernels.FeatureVectorKernel;
 import org.data2semantics.mustard.kernels.graphkernels.GraphKernel;
+import org.data2semantics.mustard.learners.evaluation.AUCPR;
+import org.data2semantics.mustard.learners.evaluation.AUCROC;
 import org.data2semantics.mustard.learners.evaluation.Accuracy;
 import org.data2semantics.mustard.learners.evaluation.EvaluationFunction;
 import org.data2semantics.mustard.learners.evaluation.F1;
+import org.data2semantics.mustard.learners.evaluation.Precision;
+import org.data2semantics.mustard.learners.evaluation.Recall;
 import org.data2semantics.mustard.learners.liblinear.LibLINEARParameters;
 import org.data2semantics.mustard.learners.libsvm.LibSVMParameters;
 import org.data2semantics.mustard.rdf.RDFUtils;
@@ -48,6 +52,10 @@ public class ClusterExperiment {
 		List<EvaluationFunction> evalFuncs = new ArrayList<EvaluationFunction>();
 		evalFuncs.add(new Accuracy());
 		evalFuncs.add(new F1());
+		evalFuncs.add(new Precision());
+		evalFuncs.add(new Recall());
+		evalFuncs.add(new AUCROC());
+		evalFuncs.add(new AUCPR());
 		double[] cs = {1,10,100,1000};
 
 		List<Result> results = null;

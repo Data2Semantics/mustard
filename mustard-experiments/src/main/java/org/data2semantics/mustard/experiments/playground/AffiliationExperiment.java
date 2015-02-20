@@ -9,7 +9,9 @@ import java.util.Set;
 
 import org.data2semantics.mustard.experiments.SimpleGraphKernelExperiment;
 import org.data2semantics.mustard.experiments.data.AIFBDataSet;
+import org.data2semantics.mustard.experiments.data.BGSLithoDataSet;
 import org.data2semantics.mustard.experiments.data.ClassificationDataSet;
+import org.data2semantics.mustard.experiments.data.MutagDataSet;
 import org.data2semantics.mustard.experiments.utils.Result;
 import org.data2semantics.mustard.experiments.utils.ResultsTable;
 import org.data2semantics.mustard.kernels.data.GraphList;
@@ -38,6 +40,7 @@ import org.data2semantics.mustard.learners.libsvm.LibSVMParameters;
 import org.data2semantics.mustard.rdf.RDFDataSet;
 import org.data2semantics.mustard.rdf.RDFFileDataSet;
 import org.data2semantics.mustard.rdf.RDFUtils;
+import org.data2semantics.mustard.rdfvault.RDFGraphListURIPrefixKernel;
 import org.data2semantics.mustard.utils.Pair;
 import org.nodes.DTGraph;
 import org.nodes.DTNode;
@@ -52,16 +55,23 @@ public class AffiliationExperiment {
 	 */
 	public static void main(String[] args) {
 		RDFDataSet tripleStore = new RDFFileDataSet(AIFB_FILE, RDFFormat.N3);
+		//RDFDataSet tripleStore = new RDFFileDataSet("datasets/carcinogenesis.owl", RDFFormat.forFileName("datasets/carcinogenesis.owl"));
+		//RDFDataSet tripleStore = new RDFFileDataSet("C:\\Users\\Gerben\\Dropbox\\data_bgs_ac_uk_ALL", RDFFormat.NTRIPLES);
+		
 		ClassificationDataSet ds = new AIFBDataSet(tripleStore, false);
+		//ClassificationDataSet ds = new MutagDataSet(tripleStore);
+		//ClassificationDataSet ds = new BGSLithoDataSet(tripleStore);
 		ds.create();
+
+		System.out.println(ds.getRDFData().getInstances());
 
 		List<EvaluationFunction> evalFuncs = new ArrayList<EvaluationFunction>();
 		evalFuncs.add(new Accuracy());
 		evalFuncs.add(new F1());
-		evalFuncs.add(new Precision());
-		evalFuncs.add(new Recall());
-		evalFuncs.add(new AUCROC());
-		evalFuncs.add(new AUCPR());
+		//evalFuncs.add(new Precision());
+		//evalFuncs.add(new Recall());
+		//evalFuncs.add(new AUCROC());
+		//evalFuncs.add(new AUCPR());
 
 
 		/*
@@ -89,7 +99,7 @@ public class AffiliationExperiment {
 		LibSVMParameters svmParms = new LibSVMParameters(LibSVMParameters.C_SVC, cs);
 		svmParms.setNumFolds(10);
 		svmParms.setProbEstimates(false);
-		
+
 		//svmParms.setEvalFunction(new AUCPR());
 
 		boolean reverseWL = true; // WL should be in reverse mode, which means regular subtrees
@@ -108,7 +118,26 @@ public class AffiliationExperiment {
 
 		//computeGraphStatistics(tripleStore, ds, inference, depths);
 
-		/* The baseline experiment, BoW (or BoL if you prefer)
+
+		///*
+		for (boolean inf : inference) {
+			resTable.newRow("URI Prefix: " + inf);
+			for (int d : depths) {				 
+				List<RDFGraphListURIPrefixKernel> kernelsBaseline = new ArrayList<RDFGraphListURIPrefixKernel>();	
+				kernelsBaseline.add(new RDFGraphListURIPrefixKernel(d, inf, true));
+
+				SimpleGraphKernelExperiment<RDFData> exp = new SimpleGraphKernelExperiment<RDFData>(kernelsBaseline, data, target, svmParms, seeds, evalFuncs);
+
+				exp.run();
+
+				for (Result res : exp.getResults()) {
+					resTable.addResult(res);
+				}
+			}
+		}
+		//*/
+
+		///* The baseline experiment, BoW (or BoL if you prefer)
 		for (boolean inf : inference) {
 			resTable.newRow("Baseline BoL: " + inf);		 
 			for (int d : depths) {
@@ -126,7 +155,7 @@ public class AffiliationExperiment {
 		}
 		//*/
 
-		///* The baseline experiment, BoW (or BoL if you prefer) Tree variant
+		/* The baseline experiment, BoW (or BoL if you prefer) Tree variant
 		for (boolean inf : inference) {
 			resTable.newRow("Baseline BoL Tree: " + inf);		 
 			for (int d : depths) {
@@ -198,7 +227,7 @@ public class AffiliationExperiment {
 		}
 		//*/
 
-		///* Path Count Tree
+		/* Path Count Tree
 		for (boolean inf : inference) {
 			resTable.newRow("Path Count Tree: " + inf);		 
 			for (int d : depths) {
@@ -281,7 +310,7 @@ public class AffiliationExperiment {
 		//*/
 
 
-		///* WL Tree
+		/* WL Tree
 		for (boolean inf : inference) {
 			resTable.newRow("WL Tree: " + inf);		 
 			for (int d : depths) {

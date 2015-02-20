@@ -24,8 +24,18 @@ import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphWLSu
 import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphWalkCountKernel;
 import org.data2semantics.mustard.rdf.RDFDataSet;
 import org.data2semantics.mustard.rdf.RDFFileDataSet;
+import org.data2semantics.mustard.rdfvault.DTGraphGraphListURIPrefixKernel;
 import org.openrdf.rio.RDFFormat;
 
+
+/**
+ * Parser for String[] args, for cluster experiments. 
+ * 
+ * TODO For the future, what kernel to create should be done via reflection, instead of using String arguments.
+ * 
+ * @author Gerben
+ *
+ */
 public class StringArgumentsParser {
 	private String dataFile;
 	private String dataset;
@@ -155,6 +165,9 @@ public class StringArgumentsParser {
 		if (kernel.equals("IntersectionPartialSubTree")) {
 			return intersectionPartialSubTree(kernelParms);
 		}
+		if (kernel.equals("URIPrefix")) {
+			return graphURIPrefix(kernelParms);
+		}
 		return null;
 	}
 
@@ -212,6 +225,9 @@ public class StringArgumentsParser {
 		}
 		if (kernel.equals("GraphSubtreesFast")) {
 			return graphSubtreesFast(kernelParms);
+		}
+		if (kernel.equals("URIPrefix")) {
+			return graphURIPrefix(kernelParms);
 		}
 		return null;
 	}
@@ -294,6 +310,21 @@ public class StringArgumentsParser {
 	public boolean isSplitLiterals() {
 		return splitLiterals;
 	}
+	
+	
+	/**
+	 * -kernel URIPrefix
+	 * -kernelParm1 depth (int)
+	 * 
+	 * @return
+	 */
+	public static List<DTGraphGraphListURIPrefixKernel> graphURIPrefix(String[] parms) {
+		List<DTGraphGraphListURIPrefixKernel> kernels = new ArrayList<DTGraphGraphListURIPrefixKernel>();
+		int depth = Integer.parseInt(parms[0]);	
+		kernels.add(new DTGraphGraphListURIPrefixKernel(depth, true));
+		return kernels;
+	}
+	
 
 	/**
 	 * -kernel GraphBoL
