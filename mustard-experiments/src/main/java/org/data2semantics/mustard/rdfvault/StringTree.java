@@ -127,6 +127,7 @@ public class StringTree {
 	public String shorten(String uri, int steps) {
 		Node n = (Node)search(uri);
 		assert n!=null : "Cannot find the uri '"+uri+"' in the tree"; 
+		if (n._label==null) steps++;
 		for (int i=0; i<steps; i++) {
 			if (n._parent!=null) n = n._parent;
 		}

@@ -17,6 +17,10 @@ public class StringTreeTest {
 			tickets[i] = T.store(s);
 		}
 
+		assert T.shorten("aap",3).equals("") : "Shortening failed";
+		assert T.shorten("blubblieb",1).equals("blub") : "Shortening failed";
+		assert T.shorten("blubblieb",2).equals("blu") : "Shortening failed";
+		
 		for (int i=0; i<tst.length; i++) {
 			String s = T.redeem(tickets[i]);
 			assert s.equals(tst[i]): "Item '"+tst[i]+"' redeemed as '"+s+"'!";
