@@ -2,7 +2,10 @@ package org.data2semantics.mustard.learners.liblinear;
 
 
 import java.io.FileWriter;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,22 +41,22 @@ public class LibLINEAR {
 		}
 		return trainLinearModel(probs, params);
 	}
-	
+
 	public static LibLINEARModel trainLinearModel(SparseVector[] featureVectors, double[] target, LibLINEARParameters params) {
 		Problem prob = createLinearProblem(featureVectors, target, params.getBias());
 		Map<Kernel, Problem> dummy = new HashMap<Kernel,Problem>();
 		dummy.put(null, prob);
-		
+
 		return trainLinearModel(dummy, params);
 	}
 
-	
+
 	private static LibLINEARModel trainLinearModel(Problem prob, LibLINEARParameters params) {
 		Map<Kernel, Problem> dummy = new HashMap<Kernel,Problem>();
 		dummy.put(null, prob);		
 		return trainLinearModel(dummy, params);
 	}
-	
+
 	private static LibLINEARModel trainLinearModel(Map<Kernel, Problem> probs, LibLINEARParameters params) {
 		if (!params.isVerbose()) {
 			Linear.disableDebugOutput();
@@ -66,11 +69,19 @@ public class LibLINEAR {
 		Problem testProb = null;
 
 		Parameter linearParams = params.getParamsCopy();
-		
+
 		double score = 0, bestScore = 0, bestC = 0, bestP = 0;
 		Kernel bestSetting = null;
 
-		for (Kernel setting : probs.keySet()) {
+		// Some sorting of the keys of the svmProbs map, so that CV always generates the same results
+		List<Kernel> settings = new ArrayList<Kernel>(probs.keySet());
+		Collections.sort(settings, new Comparator<Kernel>() {
+			public int compare(Kernel o1, Kernel o2) {
+				return o1.getLabel().compareTo(o2.getLabel());
+			}
+		});
+
+		for (Kernel setting : settings) {
 			if (bestSetting == null) { // Initialize best setting
 				bestSetting = setting;
 			}
@@ -85,9 +96,9 @@ public class LibLINEAR {
 
 			for (double p : params.getPs()) {
 				linearParams.setP(p);
-				
+
 				ParameterIterator pi = new ParameterIterator(params.getCs());
-				
+
 				while (pi.hasNext()) {
 					double c = pi.nextParm();
 					linearParams.setC(c);
@@ -101,7 +112,7 @@ public class LibLINEAR {
 					score = params.getEvalFunction().computeScore(target, prediction);
 
 					pi.updateParm(bestC == 0 || params.getEvalFunction().isBetter(score, bestScore));
-					
+
 					if (bestC == 0 || params.getEvalFunction().isBetter(score, bestScore)) {
 						bestC = c;
 						bestP = p;
@@ -116,12 +127,12 @@ public class LibLINEAR {
 		linearParams.setP(bestP);
 		LibLINEARModel model = new LibLINEARModel(Linear.train(probs.get(bestSetting), linearParams));
 		model.setKernelSetting(bestSetting);
-		
+
 		String label = "default kernel";
 		if (bestSetting != null) {
 			label = bestSetting.getLabel();
 		} 		
-		
+
 		System.out.println("Trained Linear SVM for " + label + ", with C: " + bestC + " and P: " + bestP);
 
 		double avg = 0;
@@ -131,7 +142,7 @@ public class LibLINEAR {
 		avg /= probs.get(bestSetting).x.length;
 
 		System.out.println("#instances:" + probs.get(bestSetting).l + ", #features: " + probs.get(bestSetting).n + ", #avg-non-zero: " + avg);
-		
+
 		return model;
 	}
 
@@ -142,7 +153,7 @@ public class LibLINEAR {
 		}
 		return testLinearModel(model, problems);
 	}
-	
+
 
 	public static Prediction[] testLinearModel(LibLINEARModel model, SparseVector[] testVectors) {
 		Map<Kernel, Feature[][]> dummy = new HashMap<Kernel, Feature[][]>();
@@ -173,19 +184,19 @@ public class LibLINEAR {
 		}
 		return pred;
 	}
-	
+
 	public static Prediction[] crossValidateWithMultipleFeatureVectors(Map<Kernel,SparseVector[]> featureVectors, double[] target, LibLINEARParameters params, int numberOfFolds) {
 		Prediction[] pred = new Prediction[target.length];
-		
+
 		List<Integer> indices = Stratifier.stratifyFolds(target, numberOfFolds);
 		double[] targetCopy = Stratifier.shuffle(target, indices);
-		
+
 		Map<Kernel, SparseVector[]> fvsCopy = new HashMap<Kernel,SparseVector[]>();		
 		for (Kernel k : featureVectors.keySet()) {
 			fvsCopy.put(k, Stratifier.shuffle(featureVectors.get(k), indices));
 		}
-	
-	
+
+
 		for (int fold = 1; fold <= numberOfFolds; fold++) {
 			Map<Kernel, Problem> trainPs = new HashMap<Kernel, Problem>();
 			Map<Kernel, Feature[][]> testPs = new HashMap<Kernel, Feature[][]>();
@@ -194,20 +205,20 @@ public class LibLINEAR {
 				trainPs.put(k, createProblemTrainFold(p, numberOfFolds, fold));
 				testPs.put(k, createProblemTestFold(p, numberOfFolds, fold));
 			}
-				pred = CVUtils.addFold2Prediction(testLinearModel(trainLinearModel(trainPs, params), testPs), pred, numberOfFolds, fold);
+			pred = CVUtils.addFold2Prediction(testLinearModel(trainLinearModel(trainPs, params), testPs), pred, numberOfFolds, fold);
 		}
 		pred = Stratifier.deshuffle(pred, indices);
 		return pred;
 	}
-	
-	
+
+
 	public static Prediction[] crossValidate(SparseVector[] featureVectors, double[] target, LibLINEARParameters params, int numberOfFolds) {
 		Prediction[] pred = new Prediction[target.length];
-		
+
 		List<Integer> indices = Stratifier.stratifyFolds(target, numberOfFolds);
 		double[] targetCopy = Stratifier.shuffle(target, indices);
 		SparseVector[] fvCopy = Stratifier.shuffle(featureVectors, indices);
-		
+
 		Problem trainP;
 		Feature[][] testP;
 		Problem prob = createLinearProblem(fvCopy, targetCopy, params.getBias());
@@ -231,12 +242,12 @@ public class LibLINEAR {
 		}
 		return pred2;
 	}
-	
-	
+
+
 	public static Prediction[] trainTestSplit(Map<Kernel, SparseVector[]> featureVectors, double[] target, LibLINEARParameters params, float splitFraction) {
 		List<Integer> indices = Stratifier.stratifySplit(target, splitFraction);
 		double[] targetCopy = Stratifier.shuffle(target, indices);
-		
+
 		Map<Kernel, SparseVector[]> fvsCopy = new HashMap<Kernel,SparseVector[]>();		
 		for (Kernel k : featureVectors.keySet()) {
 			fvsCopy.put(k, Stratifier.shuffle(featureVectors.get(k), indices));
@@ -244,13 +255,13 @@ public class LibLINEAR {
 
 		Map<Kernel, Problem> trainPs    = new HashMap<Kernel, Problem>();
 		Map<Kernel, Feature[][]> testPs = new HashMap<Kernel, Feature[][]>();
-		
+
 		for (Kernel k : fvsCopy.keySet()) {
 			Problem p = createLinearProblem(fvsCopy.get(k), targetCopy, params.getBias());
 			trainPs.put(k, createProblemTrainSplit(p, splitFraction));	
 			testPs.put(k, createProblemTestSplit(p, splitFraction).x);
 		}
-		
+
 		return testLinearModel(trainLinearModel(trainPs, params), testPs);
 	}
 
@@ -258,7 +269,7 @@ public class LibLINEAR {
 		List<Integer> indices = Stratifier.stratifySplit(target, splitFraction);
 		double[] targetCopy = Stratifier.shuffle(target, indices);
 		SparseVector[] fvCopy = Stratifier.shuffle(featureVectors, indices);
-		
+
 		Problem total  = createLinearProblem(fvCopy, targetCopy, params.getBias());
 		Problem trainP = createProblemTrainSplit(total, splitFraction);		
 		Feature[][] testP  = createProblemTestSplit(total, splitFraction).x;
@@ -266,7 +277,7 @@ public class LibLINEAR {
 		return testLinearModel(trainLinearModel(trainP, params), testP);
 	}
 
-	
+
 	public static double[] splitTestTarget(double[] target, double splitFraction) {
 		int foldStart = CVUtils.splitPoint(target.length, splitFraction); 
 		int foldEnd   = target.length;
@@ -329,7 +340,7 @@ public class LibLINEAR {
 		prob.y = target;
 		prob.x = new FeatureNode[featureVectors.length][];	
 		prob.l = featureVectors.length;
-		
+
 		int maxIndex = 0;
 		for (int i = 0; i < featureVectors.length; i++) {
 			Set<Integer> indices = featureVectors[i].getIndices();

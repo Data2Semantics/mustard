@@ -16,14 +16,14 @@ public class DTGraphGraphListURIPrefixKernel implements GraphKernel<SingleDTGrap
 	private long compTime;
 	private URIPrefixKernel kernel;
 
-	public DTGraphGraphListURIPrefixKernel(int depth, boolean normalize) {
+	public DTGraphGraphListURIPrefixKernel(double lambda, int depth, boolean normalize) {
 		this.depth = depth;
 		
-		kernel = new URIPrefixKernel(normalize);	
+		kernel = new URIPrefixKernel(lambda, normalize);	
 	}
 
 	public String getLabel() {
-		return KernelUtils.createLabel(this);		
+		return KernelUtils.createLabel(this) + "_" + kernel.getLabel();
 	}
 
 	public long getComputationTime() {

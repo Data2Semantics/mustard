@@ -10,20 +10,21 @@ import org.data2semantics.mustard.kernels.data.GraphList;
 import org.data2semantics.mustard.kernels.data.SingleDTGraph;
 import org.data2semantics.mustard.kernels.graphkernels.FeatureVectorKernel;
 import org.data2semantics.mustard.kernels.graphkernels.GraphKernel;
+import org.data2semantics.mustard.kernels.graphkernels.graphlist.WLSubTreeEdgeSetsKernel;
 import org.data2semantics.mustard.kernels.graphkernels.graphlist.WLSubTreeKernel;
 import org.data2semantics.mustard.learners.SparseVector;
 import org.data2semantics.mustard.rdf.RDFUtils;
 import org.nodes.DTGraph;
 
-public class DTGraphGraphListWLSubTreeKernel implements GraphKernel<SingleDTGraph>, FeatureVectorKernel<SingleDTGraph>, ComputationTimeTracker, FeatureInspector {
+public class DTGraphGraphListWLSubTreeEdgeSetsKernel implements GraphKernel<SingleDTGraph>, FeatureVectorKernel<SingleDTGraph>, ComputationTimeTracker, FeatureInspector {
 	private int depth;
 	private long compTime;
-	private WLSubTreeKernel kernel;
+	private WLSubTreeEdgeSetsKernel kernel;
 
-	public DTGraphGraphListWLSubTreeKernel(int iterations, int depth, boolean reverse, boolean trackPrevNBH, boolean normalize) {
+	public DTGraphGraphListWLSubTreeEdgeSetsKernel(int iterations, int depth, boolean reverse, boolean trackPrevNBH, boolean noRoot, boolean useSets, double minFreq, boolean normalize) {
 		this.depth = depth;
 		
-		kernel = new WLSubTreeKernel(iterations, reverse, trackPrevNBH, normalize);	
+		kernel = new WLSubTreeEdgeSetsKernel(iterations, reverse, trackPrevNBH, noRoot, useSets, minFreq, normalize);	
 	}
 
 	public String getLabel() {

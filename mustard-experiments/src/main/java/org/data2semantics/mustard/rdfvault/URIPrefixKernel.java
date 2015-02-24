@@ -21,8 +21,14 @@ import org.nodes.DTNode;
 public class URIPrefixKernel implements GraphKernel<GraphList<DTGraph<String,String>>>, FeatureVectorKernel<GraphList<DTGraph<String,String>>>, ComputationTimeTracker {
 	protected boolean normalize;
 	private long compTime;
+	private double lambda;
 	
 	public URIPrefixKernel(boolean normalize) {
+		this(1.0, normalize);
+	}
+	
+	public URIPrefixKernel(double lambda, boolean normalize) {
+		this.lambda = lambda;
 		this.normalize = normalize;
 	}
 
@@ -58,6 +64,11 @@ public class URIPrefixKernel implements GraphKernel<GraphList<DTGraph<String,Str
  		}
 		
 		StringTree.PrefixStatistics stat = st.getPrefixStatistics(true);
+		SparseVector norm = stat.getNormalization();
+		
+		for (int index : norm.getIndices()) {
+			norm.setValue(index, Math.pow(norm.getValue(index), lambda));
+		}
 		
 		int i = 0;
 		for (DTGraph<String,String> graph : data.getGraphs()) {
@@ -67,6 +78,11 @@ public class URIPrefixKernel implements GraphKernel<GraphList<DTGraph<String,Str
 			for (DTLink<String,String> link : graph.links()) {
 				featureVectors[i].sumVector(stat.createSparseVector(link.tag()));
 			}
+			
+			// normalize
+			for (int index : featureVectors[i].getIndices()) {
+				featureVectors[i].setValue(index, featureVectors[i].getValue(index) / norm.getValue(index));
+			}			
 			i++;
  		}	
 		compTime = System.currentTimeMillis() - tic;
