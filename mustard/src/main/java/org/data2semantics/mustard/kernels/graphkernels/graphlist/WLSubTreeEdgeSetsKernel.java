@@ -34,19 +34,17 @@ public class WLSubTreeEdgeSetsKernel implements GraphKernel<GraphList<DTGraph<St
 	private boolean reverse;
 	private boolean trackPrevNBH;
 	private double minFreq;
-	private boolean noRoot;
-	private boolean useSets;
+	private int maxLabelCard;
 	private long compTime;
 
 	private Map<String,String> dict;
 
-	public WLSubTreeEdgeSetsKernel(int iterations, boolean reverse, boolean trackPrevNBH, boolean noRoot, boolean useSets, double minFreq, boolean normalize) {
+	public WLSubTreeEdgeSetsKernel(int iterations, boolean reverse, boolean trackPrevNBH, int maxLabelCard, double minFreq, boolean normalize) {
 		this.reverse = reverse;
 		this.trackPrevNBH = trackPrevNBH;
 		this.normalize = normalize;
 		this.iterations = iterations;
-		this.noRoot = noRoot;
-		this.useSets = useSets;
+		this.maxLabelCard = maxLabelCard;
 		this.minFreq = minFreq;
 	}
 
@@ -69,7 +67,7 @@ public class WLSubTreeEdgeSetsKernel implements GraphKernel<GraphList<DTGraph<St
 		}
 
 		List<DTGraph<StringLabel,StringLabel>> graphs = copyGraphs(data.getGraphs());
-		WeisfeilerLehmanEdgeSetsDTGraphIterator wl = new WeisfeilerLehmanEdgeSetsDTGraphIterator(reverse, trackPrevNBH, noRoot, useSets, minFreq);
+		WeisfeilerLehmanEdgeSetsDTGraphIterator wl = new WeisfeilerLehmanEdgeSetsDTGraphIterator(reverse, trackPrevNBH, maxLabelCard, minFreq);
 
 		long tic = System.currentTimeMillis();
 

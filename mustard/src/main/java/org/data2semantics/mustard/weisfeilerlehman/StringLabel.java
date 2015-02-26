@@ -13,6 +13,7 @@ public class StringLabel {
 	private String prevNBH;
 	private boolean sameAsPrev;
 	private String lastAdded;
+	private int lastAddedCount;
 	
 	public StringLabel() {
 		this(new String());
@@ -21,16 +22,25 @@ public class StringLabel {
 
 	public StringLabel(String s) {
 		sb = new StringBuilder(s);
+		this.lastAdded = "";
+		this.lastAddedCount = 0;
 	}
 	
 	public void append(String s) {
+		if (s.equals(lastAdded)) {
+			lastAddedCount++;
+		} else {
+			lastAddedCount = 0;
+		}
 		this.lastAdded = s;
+		
 		sb.append(s);
 	}
 	
 	public void clear() {
 		sb.delete(0, sb.length());
 		this.lastAdded = "";
+		this.lastAddedCount = 0;
 	}
 	
 	@Override
@@ -56,5 +66,9 @@ public class StringLabel {
 
 	public String getLastAdded() {
 		return lastAdded;
+	}
+	
+	public int getLastAddedCount() {
+		return lastAddedCount;
 	}
 }

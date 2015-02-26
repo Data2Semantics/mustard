@@ -25,12 +25,12 @@ public class RDFGraphListWLSubTreeEdgeSetsKernel implements GraphKernel<RDFData>
 	private SingleDTGraph graph;
 
 
-	public RDFGraphListWLSubTreeEdgeSetsKernel(int iterations, int depth, boolean inference, boolean reverse, boolean trackPrevNBH, boolean noRoot, boolean useSets, double minFreq, boolean normalize) {
+	public RDFGraphListWLSubTreeEdgeSetsKernel(int iterations, int depth, boolean inference, boolean reverse, boolean trackPrevNBH, int maxLabelCard, double minFreq, boolean normalize) {
 		super();
 		this.depth = depth;
 		this.inference = inference;
 
-		kernel = new DTGraphGraphListWLSubTreeEdgeSetsKernel(iterations, depth, reverse, trackPrevNBH, noRoot, useSets, minFreq, normalize);
+		kernel = new DTGraphGraphListWLSubTreeEdgeSetsKernel(iterations, depth, reverse, trackPrevNBH, maxLabelCard, minFreq, normalize);
 	}
 
 	public String getLabel() {
@@ -54,7 +54,7 @@ public class RDFGraphListWLSubTreeEdgeSetsKernel implements GraphKernel<RDFData>
 	private void init(RDFDataSet dataset, List<Resource> instances, List<Statement> blackList) {
 		Set<Statement> stmts = RDFUtils.getStatements4Depth(dataset, instances, depth, inference);
 		stmts.removeAll(blackList);
-		graph = RDFUtils.statements2Graph(stmts, RDFUtils.REGULAR_LITERALS, instances, true);
+		graph = RDFUtils.statements2Graph(stmts, RDFUtils.REGULAR_LITERALS, instances, false);
 	}
 
 	public long getComputationTime() {

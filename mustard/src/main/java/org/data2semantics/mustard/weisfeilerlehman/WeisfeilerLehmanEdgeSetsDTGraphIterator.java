@@ -3,8 +3,10 @@ package org.data2semantics.mustard.weisfeilerlehman;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.nodes.DTGraph;
 import org.nodes.DTLink;
@@ -14,19 +16,17 @@ public class WeisfeilerLehmanEdgeSetsDTGraphIterator extends WeisfeilerLehmanIte
 	private boolean reverse;
 	private boolean trackPrevNBH;
 	private double minFrac;
-	private boolean noRoot;
-	private boolean useSets;
-
+	private int maxLabelCard;
+	
 	public WeisfeilerLehmanEdgeSetsDTGraphIterator(boolean reverse) {
-		this(reverse, false, true, true, 0.1);
+		this(reverse, false, 1, 0.1);
 	}
 
-	public WeisfeilerLehmanEdgeSetsDTGraphIterator(boolean reverse, boolean trackPrevNBH, boolean noRoot, boolean useSets, double minFreq) {
+	public WeisfeilerLehmanEdgeSetsDTGraphIterator(boolean reverse, boolean trackPrevNBH, int maxLabelCard, double minFreq) {
 		super();
 		this.reverse = reverse;
 		this.trackPrevNBH = trackPrevNBH;
-		this.noRoot = noRoot;
-		this.useSets = useSets;
+		this.maxLabelCard = maxLabelCard;
 		this.minFrac = minFreq;
 	}
 
@@ -66,29 +66,39 @@ public class WeisfeilerLehmanEdgeSetsDTGraphIterator extends WeisfeilerLehmanIte
 	@Override
 	public void wlIterate(List<DTGraph<StringLabel, StringLabel>> graphs) {
 		// 0.5 Count the labels
-		int minFreq = (int) Math.round(minFrac * graphs.size());
 		Map<String, Integer> labelFreq = new HashMap<String, Integer>();
 
+		int totalLabelsV = 0;
+		int totalLabelsE = 0;
 		for (DTGraph<StringLabel,StringLabel> graph : graphs) {
+			Set<String> occursE = new HashSet<String>();
 			for (DTLink<StringLabel,StringLabel> edge : graph.links()) {
 				String lab = edge.tag().toString();
 				if (!labelFreq.containsKey(lab)) {
 					labelFreq.put(lab, 0);
 				}
-				labelFreq.put(lab, labelFreq.get(lab) + 1);
+				if (!occursE.contains(lab)) {
+					labelFreq.put(lab, labelFreq.get(lab) + 1);
+					occursE.add(lab);
+				}
+				totalLabelsE++;
 			}
+			Set<String> occursV = new HashSet<String>();
 			for (DTNode<StringLabel,StringLabel> vertex : graph.nodes()) {
 				String lab = vertex.label().toString();
 				if (!labelFreq.containsKey(lab)) {
 					labelFreq.put(lab, 0);
 				}
-				labelFreq.put(lab, labelFreq.get(lab) + 1);
-
+				if (!occursV.contains(lab)) {
+					labelFreq.put(lab, labelFreq.get(lab) + 1);
+					occursV.add(lab);
+				}
+				totalLabelsV++;
 			}
 		}
-
-
-
+		int minFreqV = (int) Math.round(minFrac * graphs.size());
+		int minFreqE = (int) Math.round(minFrac * graphs.size());
+	
 		Map<String, Bucket<DTNode<StringLabel,StringLabel>>> bucketsV = new HashMap<String, Bucket<DTNode<StringLabel,StringLabel>>>();
 		Map<String, Bucket<DTLink<StringLabel,StringLabel>>> bucketsE = new HashMap<String, Bucket<DTLink<StringLabel,StringLabel>>>();
 
@@ -97,7 +107,7 @@ public class WeisfeilerLehmanEdgeSetsDTGraphIterator extends WeisfeilerLehmanIte
 			for (DTGraph<StringLabel,StringLabel> graph : graphs) {
 				// Add each edge source (i.e.) start vertex to the bucket of the edge label
 				for (DTLink<StringLabel,StringLabel> edge : graph.links()) {
-					if (labelFreq.get(edge.tag().toString()) >= minFreq) {
+					if (labelFreq.get(edge.tag().toString()) >= minFreqE) {
 						if (!bucketsV.containsKey(edge.tag().toString())) {
 							bucketsV.put(edge.tag().toString(), new Bucket<DTNode<StringLabel,StringLabel>>(edge.tag().toString()));
 						}			
@@ -107,7 +117,7 @@ public class WeisfeilerLehmanEdgeSetsDTGraphIterator extends WeisfeilerLehmanIte
 
 				// Add each incident edge to the bucket of the node label
 				for (DTNode<StringLabel,StringLabel> vertex : graph.nodes()) {
-					if (labelFreq.get(vertex.label().toString()) >= minFreq) {
+					if (labelFreq.get(vertex.label().toString()) >= minFreqV) {
 						if (!bucketsE.containsKey(vertex.label().toString())) {
 							bucketsE.put(vertex.label().toString(), new Bucket<DTLink<StringLabel,StringLabel>>(vertex.label().toString()));
 						}
@@ -119,7 +129,7 @@ public class WeisfeilerLehmanEdgeSetsDTGraphIterator extends WeisfeilerLehmanIte
 			for (DTGraph<StringLabel,StringLabel> graph : graphs) {
 				// Add each edge source (i.e.) start vertex to the bucket of the edge label
 				for (DTLink<StringLabel,StringLabel> edge : graph.links()) {
-					if (labelFreq.get(edge.tag().toString()) >= minFreq) {
+					if (labelFreq.get(edge.tag().toString()) >= minFreqE) {
 						if (!bucketsV.containsKey(edge.tag().toString())) {
 							bucketsV.put(edge.tag().toString(), new Bucket<DTNode<StringLabel,StringLabel>>(edge.tag().toString()));
 						}
@@ -129,7 +139,7 @@ public class WeisfeilerLehmanEdgeSetsDTGraphIterator extends WeisfeilerLehmanIte
 
 				// Add each incident edge to the bucket of the node label
 				for (DTNode<StringLabel,StringLabel> vertex : graph.nodes()) {
-					if (labelFreq.get(vertex.label().toString()) >= minFreq) {
+					if (labelFreq.get(vertex.label().toString()) >= minFreqV) {
 						if (!bucketsE.containsKey(vertex.label().toString())) {
 							bucketsE.put(vertex.label().toString(), new Bucket<DTLink<StringLabel,StringLabel>>(vertex.label().toString()));
 						}
@@ -149,16 +159,20 @@ public class WeisfeilerLehmanEdgeSetsDTGraphIterator extends WeisfeilerLehmanIte
 
 
 		// We want the edge (predicate) sets as the new label, without the original node label, if noRoot == true
-		if (noRoot) {
-			for (DTGraph<StringLabel,StringLabel> graph : graphs) {
-				for (DTNode<StringLabel,StringLabel> node : graph.nodes()) {
+		//if (noRoot) {
+		for (DTGraph<StringLabel,StringLabel> graph : graphs) {
+			for (DTNode<StringLabel,StringLabel> node : graph.nodes()) {
+				if (labelFreq.get(node.label().toString()) < minFreqV) {
 					node.label().clear();
 				}
-				for (DTLink<StringLabel,StringLabel> link : graph.links()) {
+			}
+			for (DTLink<StringLabel,StringLabel> link : graph.links()) {
+				if (labelFreq.get(link.tag().toString()) < minFreqE) {
 					link.tag().clear();
 				}
 			}
 		}
+		//}
 
 
 
@@ -167,7 +181,7 @@ public class WeisfeilerLehmanEdgeSetsDTGraphIterator extends WeisfeilerLehmanIte
 			// Process vertices
 			Bucket<DTNode<StringLabel,StringLabel>> bucketV = bucketsV.get(key);			
 			for (DTNode<StringLabel,StringLabel> vertex : bucketV.getContents()) {
-				if (!useSets || !vertex.label().getLastAdded().equals(bucketV.getLabel())) { // we want sets, not multisets, if useSets == true
+				if (!vertex.label().getLastAdded().equals(bucketV.getLabel()) || vertex.label().getLastAddedCount() < maxLabelCard) { // we want sets, not multisets, if useSets == true
 					vertex.label().append("_");
 					vertex.label().append(bucketV.getLabel());
 				}

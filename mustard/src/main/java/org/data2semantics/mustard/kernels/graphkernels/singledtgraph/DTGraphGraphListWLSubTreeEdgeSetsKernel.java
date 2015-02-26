@@ -21,10 +21,10 @@ public class DTGraphGraphListWLSubTreeEdgeSetsKernel implements GraphKernel<Sing
 	private long compTime;
 	private WLSubTreeEdgeSetsKernel kernel;
 
-	public DTGraphGraphListWLSubTreeEdgeSetsKernel(int iterations, int depth, boolean reverse, boolean trackPrevNBH, boolean noRoot, boolean useSets, double minFreq, boolean normalize) {
+	public DTGraphGraphListWLSubTreeEdgeSetsKernel(int iterations, int depth, boolean reverse, boolean trackPrevNBH, int maxLabelCard, double minFreq, boolean normalize) {
 		this.depth = depth;
 		
-		kernel = new WLSubTreeEdgeSetsKernel(iterations, reverse, trackPrevNBH, noRoot, useSets, minFreq, normalize);	
+		kernel = new WLSubTreeEdgeSetsKernel(iterations, reverse, trackPrevNBH, maxLabelCard, minFreq, normalize);	
 	}
 
 	public String getLabel() {
