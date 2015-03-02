@@ -10,7 +10,7 @@ import org.data2semantics.mustard.kernels.data.SingleDTGraph;
 import org.data2semantics.mustard.kernels.graphkernels.FeatureVectorKernel;
 import org.data2semantics.mustard.kernels.graphkernels.GraphKernel;
 import org.data2semantics.mustard.learners.SparseVector;
-import org.data2semantics.mustard.weisfeilerlehman.MapLabel;
+import org.data2semantics.mustard.weisfeilerlehman.ArrayMapLabel;
 import org.data2semantics.mustard.weisfeilerlehman.WeisfeilerLehmanDTGraphMapLabelIterator;
 import org.data2semantics.mustard.weisfeilerlehman.WeisfeilerLehmanIterator;
 import org.nodes.DTGraph;
@@ -28,11 +28,11 @@ import org.nodes.LightDTGraph;
  */
 public class DTGraphRootWLSubTreeKernel implements GraphKernel<SingleDTGraph>, FeatureVectorKernel<SingleDTGraph> {
 
-	private Map<DTNode<MapLabel,MapLabel>, Map<DTNode<MapLabel,MapLabel>, Integer>> instanceVertexIndexMap;
-	private Map<DTNode<MapLabel,MapLabel>, Map<DTLink<MapLabel,MapLabel>, Integer>> instanceEdgeIndexMap;
+	private Map<DTNode<ArrayMapLabel,ArrayMapLabel>, Map<DTNode<ArrayMapLabel,ArrayMapLabel>, Integer>> instanceVertexIndexMap;
+	private Map<DTNode<ArrayMapLabel,ArrayMapLabel>, Map<DTLink<ArrayMapLabel,ArrayMapLabel>, Integer>> instanceEdgeIndexMap;
 
-	private DTGraph<MapLabel,MapLabel> rdfGraph;
-	private List<DTNode<MapLabel,MapLabel>> instanceVertices;
+	private DTGraph<ArrayMapLabel,ArrayMapLabel> rdfGraph;
+	private List<DTNode<ArrayMapLabel,ArrayMapLabel>> instanceVertices;
 
 	private int depth;
 	private int iterations;
@@ -60,9 +60,9 @@ public class DTGraphRootWLSubTreeKernel implements GraphKernel<SingleDTGraph>, F
 	}
 
 	public SparseVector[] computeFeatureVectors(SingleDTGraph data) {
-		instanceVertices = new ArrayList<DTNode<MapLabel,MapLabel>>();
-		this.instanceVertexIndexMap = new HashMap<DTNode<MapLabel,MapLabel>, Map<DTNode<MapLabel,MapLabel>, Integer>>();
-		this.instanceEdgeIndexMap = new HashMap<DTNode<MapLabel,MapLabel>, Map<DTLink<MapLabel,MapLabel>, Integer>>();		
+		instanceVertices = new ArrayList<DTNode<ArrayMapLabel,ArrayMapLabel>>();
+		this.instanceVertexIndexMap = new HashMap<DTNode<ArrayMapLabel,ArrayMapLabel>, Map<DTNode<ArrayMapLabel,ArrayMapLabel>, Integer>>();
+		this.instanceEdgeIndexMap = new HashMap<DTNode<ArrayMapLabel,ArrayMapLabel>, Map<DTLink<ArrayMapLabel,ArrayMapLabel>, Integer>>();		
 		
 		SparseVector[] featureVectors = new SparseVector[data.getInstances().size()];
 		for (int i = 0; i < featureVectors.length; i++) {
@@ -70,9 +70,9 @@ public class DTGraphRootWLSubTreeKernel implements GraphKernel<SingleDTGraph>, F
 		}	
 
 		init(data.getGraph(), data.getInstances());
-		WeisfeilerLehmanIterator<DTGraph<MapLabel,MapLabel>> wl = new WeisfeilerLehmanDTGraphMapLabelIterator(true, false);
+		WeisfeilerLehmanIterator<DTGraph<ArrayMapLabel,ArrayMapLabel>> wl = new WeisfeilerLehmanDTGraphMapLabelIterator(true, false);
 
-		List<DTGraph<MapLabel,MapLabel>> gList = new ArrayList<DTGraph<MapLabel,MapLabel>>();
+		List<DTGraph<ArrayMapLabel,ArrayMapLabel>> gList = new ArrayList<DTGraph<ArrayMapLabel,ArrayMapLabel>>();
 		gList.add(rdfGraph);
 
 		wl.wlInitialize(gList);
@@ -109,24 +109,24 @@ public class DTGraphRootWLSubTreeKernel implements GraphKernel<SingleDTGraph>, F
 
 
 	private void init(DTGraph<String,String> graph, List<DTNode<String,String>> instances) {
-		DTNode<MapLabel,MapLabel> startV;
+		DTNode<ArrayMapLabel,ArrayMapLabel> startV;
 		List<DTNode<String,String>> frontV, newFrontV;
-		Map<DTNode<MapLabel,MapLabel>, Integer> vertexIndexMap;
-		Map<DTLink<MapLabel,MapLabel>, Integer> edgeIndexMap;
-		Map<DTNode<String,String>, DTNode<MapLabel,MapLabel>> vOldNewMap = new HashMap<DTNode<String,String>,DTNode<MapLabel,MapLabel>>();
-		Map<DTLink<String,String>, DTLink<MapLabel,MapLabel>> eOldNewMap = new HashMap<DTLink<String,String>,DTLink<MapLabel,MapLabel>>();
+		Map<DTNode<ArrayMapLabel,ArrayMapLabel>, Integer> vertexIndexMap;
+		Map<DTLink<ArrayMapLabel,ArrayMapLabel>, Integer> edgeIndexMap;
+		Map<DTNode<String,String>, DTNode<ArrayMapLabel,ArrayMapLabel>> vOldNewMap = new HashMap<DTNode<String,String>,DTNode<ArrayMapLabel,ArrayMapLabel>>();
+		Map<DTLink<String,String>, DTLink<ArrayMapLabel,ArrayMapLabel>> eOldNewMap = new HashMap<DTLink<String,String>,DTLink<ArrayMapLabel,ArrayMapLabel>>();
 
-		rdfGraph = new LightDTGraph<MapLabel,MapLabel>();
+		rdfGraph = new LightDTGraph<ArrayMapLabel,ArrayMapLabel>();
 
 		for (DTNode<String,String> oldStartV : instances) {				
-			vertexIndexMap = new HashMap<DTNode<MapLabel,MapLabel>, Integer>();
-			edgeIndexMap   = new HashMap<DTLink<MapLabel,MapLabel>, Integer>();
+			vertexIndexMap = new HashMap<DTNode<ArrayMapLabel,ArrayMapLabel>, Integer>();
+			edgeIndexMap   = new HashMap<DTLink<ArrayMapLabel,ArrayMapLabel>, Integer>();
 
 			// Get the start node
 			if (vOldNewMap.containsKey(oldStartV)) {
 				startV = vOldNewMap.get(oldStartV);
 			} else { 
-				startV = rdfGraph.add(new MapLabel());
+				startV = rdfGraph.add(new ArrayMapLabel());
 				vOldNewMap.put(oldStartV, startV);
 			}
 			startV.label().put(depth, new StringBuilder(oldStartV.label()));
@@ -151,7 +151,7 @@ public class DTGraphRootWLSubTreeKernel implements GraphKernel<SingleDTGraph>, F
 							}
 							vOldNewMap.get(edge.to()).label().put(j, new StringBuilder(edge.to().label())); // However, we should always include it in the graph at depth j
 						} else {
-							DTNode<MapLabel,MapLabel> newN = rdfGraph.add(new MapLabel());
+							DTNode<ArrayMapLabel,ArrayMapLabel> newN = rdfGraph.add(new ArrayMapLabel());
 							newN.label().put(j, new StringBuilder(edge.to().label()));
 							vOldNewMap.put(edge.to(), newN);
 							vertexIndexMap.put(newN, j);
@@ -164,7 +164,7 @@ public class DTGraphRootWLSubTreeKernel implements GraphKernel<SingleDTGraph>, F
 							}
 							eOldNewMap.get(edge).tag().put(j, new StringBuilder(edge.tag()));
 						} else {
-							DTLink<MapLabel,MapLabel> newE = vOldNewMap.get(qV).connect(vOldNewMap.get(edge.to()), new MapLabel());
+							DTLink<ArrayMapLabel,ArrayMapLabel> newE = vOldNewMap.get(qV).connect(vOldNewMap.get(edge.to()), new ArrayMapLabel());
 							newE.tag().put(j, new StringBuilder(edge.tag()));
 							eOldNewMap.put(edge, newE);
 							edgeIndexMap.put(newE, j);
@@ -195,14 +195,14 @@ public class DTGraphRootWLSubTreeKernel implements GraphKernel<SingleDTGraph>, F
 	 * @param weight
 	 * @param featureVectors
 	 */
-	private void computeFVs(DTGraph<MapLabel,MapLabel> graph, List<DTNode<MapLabel,MapLabel>> instances, double weight, SparseVector[] featureVectors, int lastIndex) {
+	private void computeFVs(DTGraph<ArrayMapLabel,ArrayMapLabel> graph, List<DTNode<ArrayMapLabel,ArrayMapLabel>> instances, double weight, SparseVector[] featureVectors, int lastIndex) {
 		int index;
-		Map<DTNode<MapLabel,MapLabel>, Integer> vertexIndexMap;
+		Map<DTNode<ArrayMapLabel,ArrayMapLabel>, Integer> vertexIndexMap;
 		for (int i = 0; i < instances.size(); i++) {
 			featureVectors[i].setLastIndex(lastIndex);
 
 			vertexIndexMap = instanceVertexIndexMap.get(instances.get(i));
-			for (DTNode<MapLabel,MapLabel> vertex : vertexIndexMap.keySet()) {
+			for (DTNode<ArrayMapLabel,ArrayMapLabel> vertex : vertexIndexMap.keySet()) {
 			if (vertexIndexMap.get(vertex) == depth) {
 					index = Integer.parseInt(vertex.label().get(vertexIndexMap.get(vertex)).toString());
 					featureVectors[i].setValue(index, featureVectors[i].getValue(index) + weight);

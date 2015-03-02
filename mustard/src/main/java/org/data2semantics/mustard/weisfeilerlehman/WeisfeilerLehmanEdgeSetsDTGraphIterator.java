@@ -159,7 +159,6 @@ public class WeisfeilerLehmanEdgeSetsDTGraphIterator extends WeisfeilerLehmanIte
 
 
 		// We want the edge (predicate) sets as the new label, without the original node label, if noRoot == true
-		//if (noRoot) {
 		for (DTGraph<StringLabel,StringLabel> graph : graphs) {
 			for (DTNode<StringLabel,StringLabel> node : graph.nodes()) {
 				if (labelFreq.get(node.label().toString()) < minFreqV) {
@@ -172,9 +171,6 @@ public class WeisfeilerLehmanEdgeSetsDTGraphIterator extends WeisfeilerLehmanIte
 				}
 			}
 		}
-		//}
-
-
 
 		// 3. Relabel to the labels in the buckets
 		for (String key : keysV) {	

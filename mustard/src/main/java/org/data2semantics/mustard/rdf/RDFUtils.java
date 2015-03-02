@@ -55,11 +55,11 @@ public class RDFUtils {
 							nodeMap.put(link.from(), newGraph.add(new StringLabel(link.from().label(),i)));
 						}
 						if (!nodeMap.containsKey(link.to())) {
-							nodeMap.put(link.to(), newGraph.add(new StringLabel(link.to().label(),i)));
+							nodeMap.put(link.to(), newGraph.add(new StringLabel(link.to().label(),i+1)));
 							newSearchNodes.add(link.to());
 						}
 						if (!linkMap.containsKey(link)) {
-							linkMap.put(link, nodeMap.get(link.from()).connect(nodeMap.get(link.to()), new StringLabel(link.tag(),i)));
+							linkMap.put(link, nodeMap.get(link.from()).connect(nodeMap.get(link.to()), new StringLabel(link.tag(),i+1)));
 						}
 					}
 				}
@@ -122,9 +122,9 @@ public class RDFUtils {
 				newSearchNodes = new ArrayList<Pair<DTNode<String,String>,DTNode<StringLabel,StringLabel>>>();
 				for (Pair<DTNode<String,String>,DTNode<StringLabel,StringLabel>> nodePair : searchNodes) {				
 					for (DTLink<String,String> link : nodePair.first().linksOut()) {
-						DTNode<StringLabel,StringLabel> n2 = newGraph.add(new StringLabel(link.to().label(), i));
+						DTNode<StringLabel,StringLabel> n2 = newGraph.add(new StringLabel(link.to().label(), i+1));
 						newSearchNodes.add(new Pair<DTNode<String,String>,DTNode<StringLabel,StringLabel>>(link.to(),n2));					
-						nodePair.second().connect(n2, new StringLabel(link.tag(),i));
+						nodePair.second().connect(n2, new StringLabel(link.tag(),i+1));
 					}
 				}
 				searchNodes = newSearchNodes;

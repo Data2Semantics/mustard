@@ -21,7 +21,7 @@ import org.data2semantics.mustard.kernels.graphkernels.graphlist.WLSubTreeKernel
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFGraphListWLSubTreeEdgeSetsKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFGraphListWLSubTreeKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFRootWalkCountKernel;
-import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFTreeGraphListWLSubTreeEdgeSetsKernel;
+import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFTreeWLSubTreeApproxKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFTreeWalkCountKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFTreeWLSubTreeKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFRootWLSubTreeKernel;
@@ -58,7 +58,7 @@ public class AffiliationExperiment {
 	public static void main(String[] args) {
 		//RDFDataSet tripleStore = new RDFFileDataSet(AIFB_FILE, RDFFormat.N3);
 		//RDFDataSet tripleStore = new RDFFileDataSet("datasets/carcinogenesis.owl", RDFFormat.forFileName("datasets/carcinogenesis.owl"));
-		RDFDataSet tripleStore = new RDFFileDataSet("C:\\Users\\Gerben\\SkyDrive\\D2S\\data_bgs_ac_uk_ALL", RDFFormat.NTRIPLES);
+		RDFDataSet tripleStore = new RDFFileDataSet("C:\\Users\\Gerben\\OneDrive\\D2S\\data_bgs_ac_uk_ALL", RDFFormat.NTRIPLES);
 
 		//ClassificationDataSet ds = new AIFBDataSet(tripleStore, false);
 		//ClassificationDataSet ds = new MutagDataSet(tripleStore);
@@ -117,9 +117,9 @@ public class AffiliationExperiment {
 		double[] lambdas = {1.0};
 
 
-		double[] minFreqs = {0.0, 0.025, 0.05, 0.1, 0.2};
-		int[] maxCards = {1}; //,2,100};
-		double[] depthWeights = {-1.0, 0.0, 1.0};
+		double[] minFreqs = {0.0, 0.025, 0.05, 0.1};
+		int[] maxCards = {1,2}; //,2,100};
+		double[] depthWeights = {0.0};
 
 		RDFData data = ds.getRDFData();
 		List<Double> target = ds.getTarget();
@@ -166,20 +166,21 @@ public class AffiliationExperiment {
 		}
 		//*/
 
-		/* The baseline experiment, BoW (or BoL if you prefer) Tree variant
+		///* The baseline experiment, BoW (or BoL if you prefer) Tree variant
 		for (boolean inf : inference) {
-			resTable.newRow("Baseline BoL Tree: " + inf);		 
-			List<RDFTreeWLSubTreeKernel> kernelsBaseline = new ArrayList<RDFTreeWLSubTreeKernel>();	
+			resTable.newRow("Baseline BoL Tree: " + inf);		 		
 
 			for (int d : depths) {
+				List<RDFTreeWLSubTreeKernel> kernelsBaseline = new ArrayList<RDFTreeWLSubTreeKernel>();	
 				kernelsBaseline.add(new RDFTreeWLSubTreeKernel(0, d, inf, reverseWL, false, true));
-			}
-			SimpleGraphKernelExperiment<RDFData> exp = new SimpleGraphKernelExperiment<RDFData>(kernelsBaseline, data, target, svmParms, seeds, evalFuncs);
 
-			exp.run();
+				SimpleGraphKernelExperiment<RDFData> exp = new SimpleGraphKernelExperiment<RDFData>(kernelsBaseline, data, target, svmParms, seeds, evalFuncs);
 
-			for (Result res : exp.getResults()) {
-				resTable.addResult(res);
+				exp.run();
+
+				for (Result res : exp.getResults()) {
+					resTable.addResult(res);
+				}
 			}
 
 		}
@@ -441,22 +442,20 @@ public class AffiliationExperiment {
 		}
 		//*/
 
-		/* WL EdgeSets Tree
+		///* WL EdgeSets Tree
 		for (boolean inf : inference) {
 			resTable.newRow("WL Tree Edge Sets (opt): " + inf);		 
 			for (int d : depths) {
 
-				List<RDFTreeGraphListWLSubTreeEdgeSetsKernel> kernels = new ArrayList<RDFTreeGraphListWLSubTreeEdgeSetsKernel>();	
+				List<RDFTreeWLSubTreeApproxKernel> kernels = new ArrayList<RDFTreeWLSubTreeApproxKernel>();	
 
 				for (double minFreq : minFreqs) {
 					for (int maxCard : maxCards) {
-						for (double depthWeight : depthWeights) {
-							if (depthTimesTwo) {
-								kernels.add(new RDFTreeGraphListWLSubTreeEdgeSetsKernel(d*2, d, inf, reverseWL, true, maxCard, minFreq, depthWeight, true));
-							} else {
-								for (int dd : iterationsWL) {
-									kernels.add(new RDFTreeGraphListWLSubTreeEdgeSetsKernel(dd, d, inf, reverseWL, true, maxCard, minFreq, depthWeight, true));
-								}
+						if (depthTimesTwo) {
+							kernels.add(new RDFTreeWLSubTreeApproxKernel(d*2, d, inf, reverseWL, false, true, maxCard, minFreq, true));
+						} else {
+							for (int dd : iterationsWL) {
+								kernels.add(new RDFTreeWLSubTreeApproxKernel(dd, d, inf, reverseWL, false, true, maxCard, minFreq, true));
 							}
 						}
 					}

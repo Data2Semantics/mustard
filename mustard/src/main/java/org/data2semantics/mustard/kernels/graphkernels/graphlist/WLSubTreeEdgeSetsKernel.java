@@ -39,9 +39,9 @@ public class WLSubTreeEdgeSetsKernel implements GraphKernel<GraphList<DTGraph<St
 	private double minFreq;
 	private int maxLabelCard;
 	private double depthWeight;
-	private long compTime;
 	private int maxDepth;
-
+	private long compTime;
+	
 	private Map<String,String> dict;
 
 	public WLSubTreeEdgeSetsKernel(int iterations, boolean reverse, boolean trackPrevNBH, int maxLabelCard, double minFreq, double depthWeight, boolean normalize) {
@@ -69,9 +69,15 @@ public class WLSubTreeEdgeSetsKernel implements GraphKernel<GraphList<DTGraph<St
 	public SparseVector[] computeFeatureVectors(GraphList<DTGraph<StringLabel,StringLabel>> data) {
 		// copy to avoid changing the original graphs
 		List<DTGraph<StringLabel,StringLabel>> graphs = copyGraphs(data.getGraphs());
-		SparseVector[] featureVectors = new SparseVector[data.numInstances()];
-		for (int j = 0; j < featureVectors.length; j++) {
-			featureVectors[j] = new SparseVector();
+
+		Map<Integer, SparseVector[]> fvMap = new TreeMap<Integer, SparseVector[]>();
+
+		for (int i = 0; i <= maxDepth; i++) {
+			SparseVector[] featureVectors = new SparseVector[data.numInstances()];
+			fvMap.put(i, featureVectors);
+			for (int j = 0; j < featureVectors.length; j++) {
+				featureVectors[j] = new SparseVector();
+			}
 		}
 
 
@@ -80,11 +86,11 @@ public class WLSubTreeEdgeSetsKernel implements GraphKernel<GraphList<DTGraph<St
 		long tic = System.currentTimeMillis();
 
 		wl.wlInitialize(graphs);
-		computeFVs(graphs, featureVectors, 1.0, depthWeight, wl.getLabelDict().size()-1);
+		computeFVs(graphs, fvMap, 1.0, depthWeight, wl.getLabelDict().size()-1);
 
 		for (int i = 0; i < this.iterations; i++) {
 			wl.wlIterate(graphs);
-			computeFVs(graphs, featureVectors, 1.0, depthWeight, wl.getLabelDict().size()-1);
+			computeFVs(graphs, fvMap, 1.0, depthWeight, wl.getLabelDict().size()-1);
 		}
 
 		compTime = System.currentTimeMillis() - tic;
@@ -93,6 +99,14 @@ public class WLSubTreeEdgeSetsKernel implements GraphKernel<GraphList<DTGraph<St
 		dict = new HashMap<String,String>();
 		for (String key : wl.getLabelDict().keySet()) {
 			dict.put(wl.getLabelDict().get(key), key);
+		}
+
+		SparseVector[] featureVectors = fvMap.get(0);
+		for (int i = 1; i <= maxDepth; i++) {
+			SparseVector[] fv2 = fvMap.get(i);
+			for (int j = 0; j < featureVectors.length; j++) {
+				featureVectors[j].addVector(fv2[j]);
+			}
 		}
 
 		if (normalize) {
@@ -116,23 +130,35 @@ public class WLSubTreeEdgeSetsKernel implements GraphKernel<GraphList<DTGraph<St
 	 * @param startLabel
 	 * @param currentLabel
 	 */
-	private void computeFVs(List<DTGraph<StringLabel,StringLabel>> graphs, SparseVector[] featureVectors, double weight, double depthWeight, int lastIndex) {
-		int index;
+	private void computeFVs(List<DTGraph<StringLabel,StringLabel>> graphs, Map<Integer, SparseVector[]> featureVectors, double weight, double depthWeight, int lastIndex) {
+		int index, depth;
 		for (int i = 0; i < graphs.size(); i++) {
-			featureVectors[i].setLastIndex(lastIndex);
+			for (int j = 0; j <= maxDepth; j++) {
+				featureVectors.get(j)[i].setLastIndex(lastIndex * (maxDepth + 1) + maxDepth);
+			}
 
 			// for each vertex, use the label as index into the feature vector and do a + 1,
 			for (DTNode<StringLabel,StringLabel> vertex : graphs.get(i).nodes()) {
 				if (!vertex.label().isSameAsPrev()) {
-					index = Integer.parseInt(vertex.label().toString());	
-					featureVectors[i].setValue(index, featureVectors[i].getValue(index) + (weight / Math.pow((double) vertex.label().getDepth()+1, depthWeight)));
+					index = Integer.parseInt(vertex.label().toString()) * (maxDepth + 1);
+					depth = vertex.label().getDepth();
+					for (int j = 0; j <= maxDepth; j++) {
+						if (true) { // set bits for the depth that we are not on, counterintuitive, but makes a nice FV
+							featureVectors.get(j)[i].setValue(index + j, featureVectors.get(j)[i].getValue(index + j) + (weight / Math.pow((double) vertex.label().getDepth()+1, depthWeight)));
+						}
+					}
 				}
 			}
 
 			for (DTLink<StringLabel,StringLabel> edge : graphs.get(i).links()) {
 				if (!edge.tag().isSameAsPrev()) {
-					index = Integer.parseInt(edge.tag().toString());
-					featureVectors[i].setValue(index, featureVectors[i].getValue(index) + (weight / Math.pow((double) edge.tag().getDepth()+1, depthWeight)));
+					index = Integer.parseInt(edge.tag().toString()) * (maxDepth + 1);
+					depth = edge.tag().getDepth();
+					for (int j = 0; j <= maxDepth; j++) {
+						if (true) {
+							featureVectors.get(j)[i].setValue(index + j, featureVectors.get(j)[i].getValue(index + j) + (weight / Math.pow((double) edge.tag().getDepth()+1, depthWeight)));
+						}
+					}
 				}
 			}
 		}

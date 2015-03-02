@@ -10,7 +10,7 @@ import org.nodes.DTGraph;
 import org.nodes.DTLink;
 import org.nodes.DTNode;
 
-public class WeisfeilerLehmanDTGraphMapLabelIterator extends WeisfeilerLehmanIterator<DTGraph<MapLabel,MapLabel>> {
+public class WeisfeilerLehmanDTGraphMapLabelIterator extends WeisfeilerLehmanIterator<DTGraph<ArrayMapLabel,ArrayMapLabel>> {
 	private boolean reverse;
 	private boolean trackPrevNBH;
 
@@ -25,9 +25,9 @@ public class WeisfeilerLehmanDTGraphMapLabelIterator extends WeisfeilerLehmanIte
 	}
 
 	@Override
-	public void wlInitialize(List<DTGraph<MapLabel, MapLabel>> graphs) {
-		for (DTGraph<MapLabel, MapLabel> graph : graphs) {
-			for (DTNode<MapLabel,MapLabel> node : graph.nodes()) {
+	public void wlInitialize(List<DTGraph<ArrayMapLabel, ArrayMapLabel>> graphs) {
+		for (DTGraph<ArrayMapLabel, ArrayMapLabel> graph : graphs) {
+			for (DTNode<ArrayMapLabel,ArrayMapLabel> node : graph.nodes()) {
 				for (Integer k : node.label().keySet()) {
 					String oldLab = node.label().get(k).toString();
 					String lab = labelDict.get(oldLab);
@@ -46,7 +46,7 @@ public class WeisfeilerLehmanDTGraphMapLabelIterator extends WeisfeilerLehmanIte
 					//node.label().put(k, new StringBuilder(lab));
 				}
 			}
-			for (DTLink<MapLabel,MapLabel> link : graph.links()) {
+			for (DTLink<ArrayMapLabel,ArrayMapLabel> link : graph.links()) {
 				for (Integer k : link.tag().keySet()) {
 					String oldLab = link.tag().get(k).toString();
 					String lab = labelDict.get(oldLab);
@@ -69,17 +69,17 @@ public class WeisfeilerLehmanDTGraphMapLabelIterator extends WeisfeilerLehmanIte
 	}
 
 	@Override
-	public void wlIterate(List<DTGraph<MapLabel, MapLabel>> graphs) {
+	public void wlIterate(List<DTGraph<ArrayMapLabel, ArrayMapLabel>> graphs) {
 		Map<String, Bucket<VertexIndexPair>> bucketsV = new HashMap<String, Bucket<VertexIndexPair>>();
 		Map<String, Bucket<EdgeIndexPair>> bucketsE   = new HashMap<String, Bucket<EdgeIndexPair>>();
 
-		for (DTGraph<MapLabel,MapLabel> graph :graphs) {
+		for (DTGraph<ArrayMapLabel,ArrayMapLabel> graph :graphs) {
 
 			// 1. Fill buckets 
 			if (reverse) { // Labels "travel" to the root node
 
 				// Add each edge source (i.e.) start vertex to the bucket of the edge label
-				for (DTLink<MapLabel,MapLabel> edge : graph.links()) {
+				for (DTLink<ArrayMapLabel,ArrayMapLabel> edge : graph.links()) {
 					// for each label we add a vertex-index-pair to the bucket
 					for (int index : edge.tag().keySet()) {
 						if (!bucketsV.containsKey(edge.tag().get(index).toString())) {
@@ -90,9 +90,9 @@ public class WeisfeilerLehmanDTGraphMapLabelIterator extends WeisfeilerLehmanIte
 				}
 
 				// Add each incident edge to the bucket of the node label
-				for (DTNode<MapLabel,MapLabel> vertex : graph.nodes()) {			
+				for (DTNode<ArrayMapLabel,ArrayMapLabel> vertex : graph.nodes()) {			
 					for (int index : vertex.label().keySet()) {
-						for (DTLink<MapLabel,MapLabel> e2 : vertex.linksIn()) {
+						for (DTLink<ArrayMapLabel,ArrayMapLabel> e2 : vertex.linksIn()) {
 							if (e2.tag().containsKey(index)) {
 								if (!bucketsE.containsKey(vertex.label().get(index).toString())) {
 									bucketsE.put(vertex.label().get(index).toString(), new Bucket<EdgeIndexPair>(vertex.label().get(index).toString()));
@@ -106,7 +106,7 @@ public class WeisfeilerLehmanDTGraphMapLabelIterator extends WeisfeilerLehmanIte
 			} else { // Labels "travel" to the fringe nodes
 
 				// Add each edge source (i.e.) start vertex to the bucket of the edge label
-				for (DTLink<MapLabel,MapLabel> edge : graph.links()) {
+				for (DTLink<ArrayMapLabel,ArrayMapLabel> edge : graph.links()) {
 					// for each label we add a vertex-index-pair to the bucket
 					for (int index : edge.tag().keySet()) {
 						if (!bucketsV.containsKey(edge.tag().get(index).toString())) {
@@ -117,10 +117,10 @@ public class WeisfeilerLehmanDTGraphMapLabelIterator extends WeisfeilerLehmanIte
 				}
 
 				// Add each incident edge to the bucket of the node label
-				for (DTNode<MapLabel,MapLabel> vertex : graph.nodes()) {			
+				for (DTNode<ArrayMapLabel,ArrayMapLabel> vertex : graph.nodes()) {			
 					for (int index : vertex.label().keySet()) {
 						if (index > 0) { // If index is 0 then we treat it as a fringe node, thus the label will not be propagated to the edges
-							for (DTLink<MapLabel,MapLabel> e2 : vertex.linksOut()) {
+							for (DTLink<ArrayMapLabel,ArrayMapLabel> e2 : vertex.linksOut()) {
 								if (!bucketsE.containsKey(vertex.label().get(index).toString())) {
 									bucketsE.put(vertex.label().get(index).toString(), new Bucket<EdgeIndexPair>(vertex.label().get(index).toString()));
 								}
@@ -168,8 +168,8 @@ public class WeisfeilerLehmanDTGraphMapLabelIterator extends WeisfeilerLehmanIte
 
 
 		String label;
-		for (DTGraph<MapLabel,MapLabel> graph : graphs) {		
-			for (DTLink<MapLabel,MapLabel> edge : graph.links()) {						
+		for (DTGraph<ArrayMapLabel,ArrayMapLabel> graph : graphs) {		
+			for (DTLink<ArrayMapLabel,ArrayMapLabel> edge : graph.links()) {						
 				for (int i : edge.tag().keySet()) {
 					if (trackPrevNBH) {
 						String nb = edge.tag().get(i).toString();
@@ -193,7 +193,7 @@ public class WeisfeilerLehmanDTGraphMapLabelIterator extends WeisfeilerLehmanIte
 				}
 			}
 
-			for (DTNode<MapLabel,MapLabel> vertex : graph.nodes()) {
+			for (DTNode<ArrayMapLabel,ArrayMapLabel> vertex : graph.nodes()) {
 				for (int i : vertex.label().keySet()) {
 					if (trackPrevNBH) {
 						String nb = vertex.label().get(i).toString();
@@ -226,15 +226,15 @@ public class WeisfeilerLehmanDTGraphMapLabelIterator extends WeisfeilerLehmanIte
 
 
 	private class VertexIndexPair {
-		private DTNode<MapLabel,MapLabel> vertex;
+		private DTNode<ArrayMapLabel,ArrayMapLabel> vertex;
 		private int index;
 
-		public VertexIndexPair(DTNode<MapLabel,MapLabel> vertex, int index) {
+		public VertexIndexPair(DTNode<ArrayMapLabel,ArrayMapLabel> vertex, int index) {
 			this.vertex = vertex;
 			this.index = index;
 		}
 
-		public DTNode<MapLabel,MapLabel> getVertex() {
+		public DTNode<ArrayMapLabel,ArrayMapLabel> getVertex() {
 			return vertex;
 		}
 		public int getIndex() {
@@ -243,15 +243,15 @@ public class WeisfeilerLehmanDTGraphMapLabelIterator extends WeisfeilerLehmanIte
 	}
 
 	private class EdgeIndexPair {
-		private DTLink<MapLabel,MapLabel> edge;
+		private DTLink<ArrayMapLabel,ArrayMapLabel> edge;
 		private int index;
 
-		public EdgeIndexPair(DTLink<MapLabel,MapLabel> edge, int index) {
+		public EdgeIndexPair(DTLink<ArrayMapLabel,ArrayMapLabel> edge, int index) {
 			this.edge = edge;
 			this.index = index;
 		}
 
-		public DTLink<MapLabel,MapLabel> getEdge() {
+		public DTLink<ArrayMapLabel,ArrayMapLabel> getEdge() {
 			return edge;
 		}
 		public int getIndex() {

@@ -19,7 +19,6 @@ import org.nodes.DTGraph;
 
 public class DTGraphGraphListWLSubTreeEdgeSetsKernel implements GraphKernel<SingleDTGraph>, FeatureVectorKernel<SingleDTGraph>, ComputationTimeTracker, FeatureInspector {
 	private int depth;
-	private long compTime;
 	private WLSubTreeEdgeSetsKernel kernel;
 
 	public DTGraphGraphListWLSubTreeEdgeSetsKernel(int iterations, int depth, boolean reverse, boolean trackPrevNBH, int maxLabelCard, double minFreq, double depthWeight, boolean normalize) {
@@ -37,24 +36,19 @@ public class DTGraphGraphListWLSubTreeEdgeSetsKernel implements GraphKernel<Sing
 	}
 
 	public long getComputationTime() {
-		return compTime;
+		return kernel.getComputationTime();
 	}
 
 	public SparseVector[] computeFeatureVectors(SingleDTGraph data) {
 		GraphList<DTGraph<StringLabel,StringLabel>> graphs = RDFUtils.getSubGraphsStringLabel(data.getGraph(), data.getInstances(), depth);				
 		SparseVector[] ret =  kernel.computeFeatureVectors(graphs);
-		compTime = kernel.getComputationTime();
 		return ret;
 	}
 
 
 	public double[][] compute(SingleDTGraph data) {
-		SparseVector[] featureVectors = computeFeatureVectors(data);
-		double[][] kernel = KernelUtils.initMatrix(data.getInstances().size(), data.getInstances().size());
-		long tic = System.currentTimeMillis();
-		kernel = KernelUtils.computeKernelMatrix(featureVectors, kernel);
-		compTime += System.currentTimeMillis() - tic;
-		return kernel;
+		GraphList<DTGraph<StringLabel,StringLabel>> graphs = RDFUtils.getSubGraphsStringLabel(data.getGraph(), data.getInstances(), depth);				
+		return kernel.compute(graphs);
 	}
 
 	public List<String> getFeatureDescriptions(List<Integer> indicesSV) {

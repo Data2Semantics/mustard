@@ -12,17 +12,19 @@ import java.util.Set;
  *
  */
 public class MapLabel {
-	private StringBuilder[] map;
+	private Map<Integer, StringBuilder> map;
+	private Map<Integer, String> lastAdded;
+	private Map<Integer, Integer> lastAddedCount;
 	private Map<Integer, String> prevNBH;
 	private Map<Integer, Boolean> sameAsPrev;
-	private Set<Integer> keySet;
 
 
 	public MapLabel(int mapSize) {
-		map = new StringBuilder[mapSize];
-		prevNBH = new HashMap<Integer, String>();
-		sameAsPrev = new HashMap<Integer, Boolean>();
-		keySet = new HashSet<Integer>();
+		map = new HashMap<Integer, StringBuilder>(mapSize);
+		lastAdded = new HashMap<Integer, String>(mapSize);
+		lastAddedCount = new HashMap<Integer, Integer>(mapSize);
+		prevNBH = new HashMap<Integer, String>(mapSize);
+		sameAsPrev = new HashMap<Integer, Boolean>(mapSize);
 	}
 
 
@@ -31,35 +33,41 @@ public class MapLabel {
 	}
 
 	public Set<Integer> keySet() {
-		return keySet;
+		return map.keySet();
 	}
 
-	public void put(Integer key, StringBuilder value) {
-		if (key >= map.length) {
-			StringBuilder[] map2 = new StringBuilder[key+1]; 
-			for (int i = 0; i < map.length; i++) {
-				map2[i] = map[i];
-			}
-
-			map = map2;
+	/**
+	 * append(), clear() and get() hide the StringBuilder's that are used
+	 * 
+	 */
+	public void append(Integer key, String value) {
+		if (!map.containsKey(key)) { // init if we have nothing for this key yet
+			map.put(key, new StringBuilder());
+			lastAdded.put(key, "");
+			lastAddedCount.put(key, 0);
 		}
-
-		if (map[key] == null) {
-			keySet.add(key);
+		if (value.equals(lastAdded.get(key))) {
+			lastAddedCount.put(key, lastAddedCount.get(key) + 1);
+		} else {
+			lastAddedCount.put(key, 0);
 		}
-		map[key] = value;
+		lastAdded.put(key, value);
+		
+		map.get(key).append(value);
 	}
-
-	public StringBuilder get(Integer key) {
-		return map[key];
+	
+	public String get(Integer key) {
+		return map.get(key).toString();
 	}
 
 	public boolean containsKey(Integer key) {
-		return keySet.contains(key);
+		return map.containsKey(key);
 	}
 
 	public void clear(Integer key) {
-		map[key].delete(0, map[key].length());
+		map.get(key).delete(0, map.get(key).length());
+		lastAdded.put(key, "");
+		lastAddedCount.put(key, 0);
 	}
 
 	@Override
@@ -82,6 +90,14 @@ public class MapLabel {
 	public boolean getSameAsPrev(Integer key) {
 		Boolean ret = sameAsPrev.get(key);
 		return (ret == null) ? false : ret;
+	}
+	
+	public String getLastAdded(Integer key) {
+		return lastAdded.get(key);
+	}
+	
+	public int getLastAddedCount(Integer key) {
+		return lastAddedCount.get(key);
 	}
 }
 
