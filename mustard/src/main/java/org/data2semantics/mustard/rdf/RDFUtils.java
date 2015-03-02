@@ -12,6 +12,7 @@ import java.util.Set;
 import org.data2semantics.mustard.kernels.KernelUtils;
 import org.data2semantics.mustard.kernels.data.GraphList;
 import org.data2semantics.mustard.kernels.data.SingleDTGraph;
+import org.data2semantics.mustard.weisfeilerlehman.StringLabel;
 import org.nodes.DTGraph;
 import org.nodes.DTLink;
 import org.nodes.DTNode;
@@ -34,6 +35,41 @@ public class RDFUtils {
 	public static final int REGULAR_SPLIT_LITERALS = 5;
 
 
+	public static GraphList<DTGraph<StringLabel,StringLabel>> getSubGraphsStringLabel(DTGraph<String,String> graph, List<DTNode<String,String>> instances, int depth) {
+		List<DTGraph<StringLabel,StringLabel>> subGraphs = new ArrayList<DTGraph<StringLabel,StringLabel>>();
+		Map<DTNode<String,String>,DTNode<StringLabel,StringLabel>> nodeMap;
+		Map<DTLink<String,String>,DTLink<StringLabel,StringLabel>> linkMap;
+		List<DTNode<String,String>> searchNodes, newSearchNodes;
+
+		for (DTNode<String,String> startNode : instances) {
+			DTGraph<StringLabel,StringLabel> newGraph = new LightDTGraph<StringLabel,StringLabel>();
+			searchNodes = new ArrayList<DTNode<String,String>>();
+			searchNodes.add(startNode);
+			nodeMap = new HashMap<DTNode<String,String>,DTNode<StringLabel,StringLabel>>();
+			linkMap = new HashMap<DTLink<String,String>,DTLink<StringLabel,StringLabel>>();
+			for (int i = 0; i < depth; i++) {
+				newSearchNodes = new ArrayList<DTNode<String,String>>();
+				for (DTNode<String,String> node : searchNodes) {
+					for (DTLink<String,String> link : node.linksOut()) {
+						if (!nodeMap.containsKey(link.from())) {
+							nodeMap.put(link.from(), newGraph.add(new StringLabel(link.from().label(),i)));
+						}
+						if (!nodeMap.containsKey(link.to())) {
+							nodeMap.put(link.to(), newGraph.add(new StringLabel(link.to().label(),i)));
+							newSearchNodes.add(link.to());
+						}
+						if (!linkMap.containsKey(link)) {
+							linkMap.put(link, nodeMap.get(link.from()).connect(nodeMap.get(link.to()), new StringLabel(link.tag(),i)));
+						}
+					}
+				}
+				searchNodes = newSearchNodes;
+			}
+			subGraphs.add(newGraph);
+		}
+		return new GraphList<DTGraph<StringLabel,StringLabel>>(subGraphs);
+	}
+	
 
 	public static GraphList<DTGraph<String,String>> getSubGraphs(DTGraph<String,String> graph, List<DTNode<String,String>> instances, int depth) {
 		List<DTGraph<String,String>> subGraphs = new ArrayList<DTGraph<String,String>>();
@@ -68,6 +104,34 @@ public class RDFUtils {
 			subGraphs.add(newGraph);
 		}
 		return new GraphList<DTGraph<String,String>>(subGraphs);
+	}
+	
+	
+	public static GraphList<DTGraph<StringLabel,StringLabel>> getSubTreesStringLabel(DTGraph<String,String> graph, List<DTNode<String,String>> instances, int depth) {
+		List<DTGraph<StringLabel,StringLabel>> subTrees = new ArrayList<DTGraph<StringLabel,StringLabel>>();
+		List<Pair<DTNode<String,String>,DTNode<StringLabel,StringLabel>>> searchNodes, newSearchNodes;
+
+		for (DTNode<String,String> startNode : instances) {
+			DTGraph<StringLabel,StringLabel> newGraph = new LightDTGraph<StringLabel,StringLabel>();
+			searchNodes = new ArrayList<Pair<DTNode<String,String>,DTNode<StringLabel,StringLabel>>>();
+
+			// root gets index 0
+			searchNodes.add(new Pair<DTNode<String,String>,DTNode<StringLabel,StringLabel>>(startNode, newGraph.add(new StringLabel(startNode.label(),0))));
+
+			for (int i = 0; i < depth; i++) {
+				newSearchNodes = new ArrayList<Pair<DTNode<String,String>,DTNode<StringLabel,StringLabel>>>();
+				for (Pair<DTNode<String,String>,DTNode<StringLabel,StringLabel>> nodePair : searchNodes) {				
+					for (DTLink<String,String> link : nodePair.first().linksOut()) {
+						DTNode<StringLabel,StringLabel> n2 = newGraph.add(new StringLabel(link.to().label(), i));
+						newSearchNodes.add(new Pair<DTNode<String,String>,DTNode<StringLabel,StringLabel>>(link.to(),n2));					
+						nodePair.second().connect(n2, new StringLabel(link.tag(),i));
+					}
+				}
+				searchNodes = newSearchNodes;
+			}
+			subTrees.add(newGraph);
+		}
+		return new GraphList<DTGraph<StringLabel,StringLabel>>(subTrees);
 	}
 
 	/**

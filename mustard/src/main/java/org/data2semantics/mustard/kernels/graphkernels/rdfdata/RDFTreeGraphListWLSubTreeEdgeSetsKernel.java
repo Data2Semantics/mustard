@@ -12,25 +12,26 @@ import org.data2semantics.mustard.kernels.graphkernels.FeatureVectorKernel;
 import org.data2semantics.mustard.kernels.graphkernels.GraphKernel;
 import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphGraphListWLSubTreeEdgeSetsKernel;
 import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphGraphListWLSubTreeKernel;
+import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphTreeGraphListWLSubTreeEdgeSetsKernel;
 import org.data2semantics.mustard.learners.SparseVector;
 import org.data2semantics.mustard.rdf.RDFDataSet;
 import org.data2semantics.mustard.rdf.RDFUtils;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 
-public class RDFGraphListWLSubTreeEdgeSetsKernel implements GraphKernel<RDFData>, FeatureVectorKernel<RDFData>, ComputationTimeTracker, FeatureInspector {
+public class RDFTreeGraphListWLSubTreeEdgeSetsKernel implements GraphKernel<RDFData>, FeatureVectorKernel<RDFData>, ComputationTimeTracker, FeatureInspector {
 	private int depth;
 	private boolean inference;
-	private DTGraphGraphListWLSubTreeEdgeSetsKernel kernel;
+	private DTGraphTreeGraphListWLSubTreeEdgeSetsKernel kernel;
 	private SingleDTGraph graph;
 
 
-	public RDFGraphListWLSubTreeEdgeSetsKernel(int iterations, int depth, boolean inference, boolean reverse, boolean trackPrevNBH, int maxLabelCard, double minFreq, double depthWeight, boolean normalize) {
+	public RDFTreeGraphListWLSubTreeEdgeSetsKernel(int iterations, int depth, boolean inference, boolean reverse, boolean trackPrevNBH, int maxLabelCard, double minFreq, double depthWeight, boolean normalize) {
 		super();
 		this.depth = depth;
 		this.inference = inference;
 
-		kernel = new DTGraphGraphListWLSubTreeEdgeSetsKernel(iterations, depth, reverse, trackPrevNBH, maxLabelCard, minFreq, depthWeight, normalize);
+		kernel = new DTGraphTreeGraphListWLSubTreeEdgeSetsKernel(iterations, depth, reverse, trackPrevNBH, maxLabelCard, minFreq, depthWeight, normalize);
 	}
 
 	public String getLabel() {

@@ -14,16 +14,22 @@ public class StringLabel {
 	private boolean sameAsPrev;
 	private String lastAdded;
 	private int lastAddedCount;
+	private int depth;
 	
 	public StringLabel() {
 		this(new String());
 		sameAsPrev = false;
 	}
 
-	public StringLabel(String s) {
+	public StringLabel(String s, int depth) {
 		sb = new StringBuilder(s);
 		this.lastAdded = "";
 		this.lastAddedCount = 0;
+		this.depth = depth;
+	}
+	
+	public StringLabel(String s) {
+		this(s,0);
 	}
 	
 	public void append(String s) {
@@ -70,5 +76,9 @@ public class StringLabel {
 	
 	public int getLastAddedCount() {
 		return lastAddedCount;
+	}
+	
+	public int getDepth() {
+		return depth;
 	}
 }

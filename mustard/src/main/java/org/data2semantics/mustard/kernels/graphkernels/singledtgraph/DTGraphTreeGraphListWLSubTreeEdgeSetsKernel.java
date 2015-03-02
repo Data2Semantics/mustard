@@ -17,12 +17,12 @@ import org.data2semantics.mustard.rdf.RDFUtils;
 import org.data2semantics.mustard.weisfeilerlehman.StringLabel;
 import org.nodes.DTGraph;
 
-public class DTGraphGraphListWLSubTreeEdgeSetsKernel implements GraphKernel<SingleDTGraph>, FeatureVectorKernel<SingleDTGraph>, ComputationTimeTracker, FeatureInspector {
+public class DTGraphTreeGraphListWLSubTreeEdgeSetsKernel implements GraphKernel<SingleDTGraph>, FeatureVectorKernel<SingleDTGraph>, ComputationTimeTracker, FeatureInspector {
 	private int depth;
 	private long compTime;
 	private WLSubTreeEdgeSetsKernel kernel;
 
-	public DTGraphGraphListWLSubTreeEdgeSetsKernel(int iterations, int depth, boolean reverse, boolean trackPrevNBH, int maxLabelCard, double minFreq, double depthWeight, boolean normalize) {
+	public DTGraphTreeGraphListWLSubTreeEdgeSetsKernel(int iterations, int depth, boolean reverse, boolean trackPrevNBH, int maxLabelCard, double minFreq, double depthWeight, boolean normalize) {
 		this.depth = depth;
 		
 		kernel = new WLSubTreeEdgeSetsKernel(iterations, reverse, trackPrevNBH, maxLabelCard, minFreq, depthWeight, normalize);	
@@ -41,7 +41,7 @@ public class DTGraphGraphListWLSubTreeEdgeSetsKernel implements GraphKernel<Sing
 	}
 
 	public SparseVector[] computeFeatureVectors(SingleDTGraph data) {
-		GraphList<DTGraph<StringLabel,StringLabel>> graphs = RDFUtils.getSubGraphsStringLabel(data.getGraph(), data.getInstances(), depth);				
+		GraphList<DTGraph<StringLabel,StringLabel>> graphs = RDFUtils.getSubTreesStringLabel(data.getGraph(), data.getInstances(), depth);				
 		SparseVector[] ret =  kernel.computeFeatureVectors(graphs);
 		compTime = kernel.getComputationTime();
 		return ret;
