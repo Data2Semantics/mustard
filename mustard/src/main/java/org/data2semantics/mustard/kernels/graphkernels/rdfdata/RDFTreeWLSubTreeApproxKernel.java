@@ -10,7 +10,6 @@ import org.data2semantics.mustard.kernels.data.SingleDTGraph;
 import org.data2semantics.mustard.kernels.graphkernels.FeatureVectorKernel;
 import org.data2semantics.mustard.kernels.graphkernels.GraphKernel;
 import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphTreeWLSubTreeApproxKernel;
-import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphTreeWLSubTreeKernel;
 import org.data2semantics.mustard.learners.SparseVector;
 import org.data2semantics.mustard.rdf.RDFDataSet;
 import org.data2semantics.mustard.rdf.RDFUtils;
@@ -56,6 +55,6 @@ public class RDFTreeWLSubTreeApproxKernel implements GraphKernel<RDFData>, Featu
 	private void init(RDFDataSet dataset, List<Resource> instances, List<Statement> blackList) {
 		Set<Statement> stmts = RDFUtils.getStatements4Depth(dataset, instances, depth, inference);
 		stmts.removeAll(blackList);
-		graph = RDFUtils.statements2Graph(stmts, RDFUtils.REGULAR_LITERALS, instances, false); // we don't want to set the instances node labels to the identical root label
+		graph = RDFUtils.statements2Graph(stmts, RDFUtils.REGULAR_LITERALS, instances, true); // we don't want to set the instances node labels to the identical root label
 	}	
 }

@@ -53,11 +53,13 @@ public class SimpleGraphKernelExperiment<D extends GraphData> extends KernelExpe
 		Map<Kernel, double[][]> matrices = new HashMap<Kernel, double[][]>();
 
 		tic = System.currentTimeMillis();	
-		System.out.println("Computing kernels...");	
+		System.out.print("Computing kernels");	
 		for (GraphKernel<D> kernel : kernels) {
 			double[][] matrix = kernel.compute(data);
 			matrices.put(kernel, matrix);
+			System.out.print(".");
 		}
+		System.out.print("\n");
 		toc = System.currentTimeMillis();
 
 		compR.setLabel("kernel comp time");

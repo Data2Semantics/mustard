@@ -2,8 +2,10 @@ package org.data2semantics.mustard.kernels.graphkernels.graphlist;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 import javax.swing.text.html.HTML.Tag;
@@ -17,8 +19,9 @@ import org.data2semantics.mustard.kernels.graphkernels.GraphKernel;
 import org.data2semantics.mustard.learners.SparseVector;
 import org.data2semantics.mustard.weisfeilerlehman.StringLabel;
 import org.data2semantics.mustard.weisfeilerlehman.WLUtils;
+import org.data2semantics.mustard.weisfeilerlehman.WeisfeilerLehmanApproxIterator;
 import org.data2semantics.mustard.weisfeilerlehman.WeisfeilerLehmanDTGraphIterator;
-import org.data2semantics.mustard.weisfeilerlehman.WeisfeilerLehmanEdgeSetsDTGraphIterator;
+import org.data2semantics.mustard.weisfeilerlehman.WeisfeilerLehmanApproxDTGraphIterator;
 import org.data2semantics.mustard.weisfeilerlehman.WeisfeilerLehmanIterator;
 import org.nodes.DTGraph;
 import org.nodes.DTLink;
@@ -31,24 +34,27 @@ import org.nodes.LightDTGraph;
  * 
  * @author Gerben *
  */
-public class WLSubTreeEdgeSetsKernel implements GraphKernel<GraphList<DTGraph<StringLabel,StringLabel>>>, FeatureVectorKernel<GraphList<DTGraph<StringLabel,StringLabel>>>, ComputationTimeTracker, FeatureInspector {
+public class WLSubTreeApproxKernel implements GraphKernel<GraphList<DTGraph<StringLabel,StringLabel>>>, FeatureVectorKernel<GraphList<DTGraph<StringLabel,StringLabel>>>, ComputationTimeTracker, FeatureInspector {
 	private int iterations;
 	protected boolean normalize;
 	private boolean reverse;
 	private boolean trackPrevNBH;
 	private double minFreq;
 	private int maxLabelCard;
+	private boolean skipSamePrevNBH;
 	private double depthWeight;
 	private int maxDepth;
 	private long compTime;
-	
-	private Map<String,String> dict;
 
-	public WLSubTreeEdgeSetsKernel(int iterations, boolean reverse, boolean trackPrevNBH, int maxLabelCard, double minFreq, double depthWeight, boolean normalize) {
+	private Map<String,String> dict;
+	private Map<String, Double> labelFreq;
+
+	public WLSubTreeApproxKernel(int iterations, boolean reverse, boolean trackPrevNBH, boolean skipSamePrevNBH, int maxLabelCard, double minFreq, double depthWeight, boolean normalize) {
 		this.reverse = reverse;
 		this.trackPrevNBH = trackPrevNBH;
 		this.normalize = normalize;
 		this.iterations = iterations;
+		this.skipSamePrevNBH = skipSamePrevNBH;
 		this.maxLabelCard = maxLabelCard;
 		this.minFreq = minFreq;
 		this.depthWeight = depthWeight;
@@ -68,29 +74,43 @@ public class WLSubTreeEdgeSetsKernel implements GraphKernel<GraphList<DTGraph<St
 
 	public SparseVector[] computeFeatureVectors(GraphList<DTGraph<StringLabel,StringLabel>> data) {
 		// copy to avoid changing the original graphs
-		List<DTGraph<StringLabel,StringLabel>> graphs = copyGraphs(data.getGraphs());
 
-		Map<Integer, SparseVector[]> fvMap = new TreeMap<Integer, SparseVector[]>();
-
-		for (int i = 0; i <= maxDepth; i++) {
-			SparseVector[] featureVectors = new SparseVector[data.numInstances()];
-			fvMap.put(i, featureVectors);
-			for (int j = 0; j < featureVectors.length; j++) {
-				featureVectors[j] = new SparseVector();
-			}
+		SparseVector[] featureVectors = new SparseVector[data.numInstances()];
+		for (int j = 0; j < featureVectors.length; j++) {
+			featureVectors[j] = new SparseVector();
 		}
 
-
-		WeisfeilerLehmanEdgeSetsDTGraphIterator wl = new WeisfeilerLehmanEdgeSetsDTGraphIterator(reverse, trackPrevNBH, maxLabelCard, minFreq);
+		WeisfeilerLehmanApproxIterator<DTGraph<StringLabel,StringLabel>,String> wl = new WeisfeilerLehmanApproxDTGraphIterator(reverse, trackPrevNBH, skipSamePrevNBH, maxLabelCard, minFreq);
 
 		long tic = System.currentTimeMillis();
 
-		wl.wlInitialize(graphs);
-		computeFVs(graphs, fvMap, 1.0, depthWeight, wl.getLabelDict().size()-1);
+		double[] minFreqs = {0.0}; //{1 / (double) (data.numInstances()-1), 2 / (double) (data.numInstances()-1), 3 / (double) (data.numInstances()-1), 4 / (double) (data.numInstances()-1)};
+		int[] maxCards = {1000000}; //{1,2,3,4};
 
-		for (int i = 0; i < this.iterations; i++) {
-			wl.wlIterate(graphs);
-			computeFVs(graphs, fvMap, 1.0, depthWeight, wl.getLabelDict().size()-1);
+		// Initial FV (the bag of labels)
+		List<DTGraph<StringLabel,StringLabel>> graphs = copyGraphs(data.getGraphs());
+		wl.wlInitialize(graphs);
+		computeFVs(graphs, featureVectors, 1.0, depthWeight, wl.getLabelDict().size()-1);
+
+		boolean first = true;
+		
+		for (double minFreq : minFreqs) {
+			for (int maxCard : maxCards) {
+				if (!first) {
+					graphs = copyGraphs(data.getGraphs());
+					wl.wlInitialize(graphs);
+				}
+				first = false;
+				
+				wl.setMaxLabelCard(maxCard);
+				wl.setMinFreq(minFreq);
+				
+				for (int i = 0; i < this.iterations; i++) {
+					computeLabelFreqs(graphs);	
+					wl.wlIterate(graphs, labelFreq);
+					computeFVs(graphs, featureVectors, 1.0, depthWeight, wl.getLabelDict().size()-1);
+				}
+			}
 		}
 
 		compTime = System.currentTimeMillis() - tic;
@@ -99,14 +119,6 @@ public class WLSubTreeEdgeSetsKernel implements GraphKernel<GraphList<DTGraph<St
 		dict = new HashMap<String,String>();
 		for (String key : wl.getLabelDict().keySet()) {
 			dict.put(wl.getLabelDict().get(key), key);
-		}
-
-		SparseVector[] featureVectors = fvMap.get(0);
-		for (int i = 1; i <= maxDepth; i++) {
-			SparseVector[] fv2 = fvMap.get(i);
-			for (int j = 0; j < featureVectors.length; j++) {
-				featureVectors[j].addVector(fv2[j]);
-			}
 		}
 
 		if (normalize) {
@@ -130,37 +142,67 @@ public class WLSubTreeEdgeSetsKernel implements GraphKernel<GraphList<DTGraph<St
 	 * @param startLabel
 	 * @param currentLabel
 	 */
-	private void computeFVs(List<DTGraph<StringLabel,StringLabel>> graphs, Map<Integer, SparseVector[]> featureVectors, double weight, double depthWeight, int lastIndex) {
-		int index, depth;
-		for (int i = 0; i < graphs.size(); i++) {
-			for (int j = 0; j <= maxDepth; j++) {
-				featureVectors.get(j)[i].setLastIndex(lastIndex * (maxDepth + 1) + maxDepth);
-			}
+	private void computeFVs(List<DTGraph<StringLabel,StringLabel>> graphs, SparseVector[] featureVectors, double weight, double depthWeight, int lastIndex) {
+		int index;
 
+	for (int i = 0; i < graphs.size(); i++) {
+			featureVectors[i].setLastIndex(lastIndex);
+	
 			// for each vertex, use the label as index into the feature vector and do a + 1,
 			for (DTNode<StringLabel,StringLabel> vertex : graphs.get(i).nodes()) {
+				String lab = vertex.label().toString();
 				if (!vertex.label().isSameAsPrev()) {
-					index = Integer.parseInt(vertex.label().toString()) * (maxDepth + 1);
-					depth = vertex.label().getDepth();
-					for (int j = 0; j <= maxDepth; j++) {
-						if (true) { // set bits for the depth that we are not on, counterintuitive, but makes a nice FV
-							featureVectors.get(j)[i].setValue(index + j, featureVectors.get(j)[i].getValue(index + j) + (weight / Math.pow((double) vertex.label().getDepth()+1, depthWeight)));
-						}
-					}
+					index = Integer.parseInt(lab);
+					featureVectors[i].setValue(index, featureVectors[i].getValue(index) + (weight / Math.pow((double) vertex.label().getDepth() + 1, depthWeight)));
 				}
 			}
 
 			for (DTLink<StringLabel,StringLabel> edge : graphs.get(i).links()) {
+				String lab = edge.tag().toString();
 				if (!edge.tag().isSameAsPrev()) {
-					index = Integer.parseInt(edge.tag().toString()) * (maxDepth + 1);
-					depth = edge.tag().getDepth();
-					for (int j = 0; j <= maxDepth; j++) {
-						if (true) {
-							featureVectors.get(j)[i].setValue(index + j, featureVectors.get(j)[i].getValue(index + j) + (weight / Math.pow((double) edge.tag().getDepth()+1, depthWeight)));
-						}
-					}
+					index = Integer.parseInt(lab);
+					featureVectors[i].setValue(index, featureVectors[i].getValue(index) + (weight / Math.pow((double) edge.tag().getDepth() + 1, depthWeight)));
 				}
 			}
+		}
+	}
+	
+	private void computeLabelFreqs(List<DTGraph<StringLabel,StringLabel>> graphs) {
+		int index;
+
+		// Build a new label Frequencies map
+		labelFreq = new HashMap<String, Double>();
+
+		for (int i = 0; i < graphs.size(); i++) {
+			Set<String> seen = new HashSet<String>(); // to track seen label for this instance
+
+			// for each vertex, use the label as index into the feature vector and do a + 1,
+			for (DTNode<StringLabel,StringLabel> vertex : graphs.get(i).nodes()) {
+				String lab = vertex.label().toString();
+				if (!labelFreq.containsKey(lab)) {
+					labelFreq.put(lab, 0.0);
+				} 
+				if (!seen.contains(lab)) {
+					labelFreq.put(lab, labelFreq.get(lab) + 1);
+					seen.add(lab);
+				}
+			}
+
+			for (DTLink<StringLabel,StringLabel> edge : graphs.get(i).links()) {
+				String lab = edge.tag().toString();
+				// Count
+				if (!labelFreq.containsKey(lab)) {
+					labelFreq.put(lab, 0.0);
+				} 
+				if (!seen.contains(lab)) {
+					labelFreq.put(lab, labelFreq.get(lab) + 1);
+					seen.add(lab);
+				}
+			}
+		}
+		// normalize to #occur/#instances.
+		for (String k : labelFreq.keySet()) {
+			labelFreq.put(k, labelFreq.get(k) / ((double) graphs.size()));
 		}
 	}
 

@@ -52,10 +52,10 @@ public class MapLabel {
 			lastAddedCount.put(key, 0);
 		}
 		lastAdded.put(key, value);
-		
+
 		map.get(key).append(value);
 	}
-	
+
 	public String get(Integer key) {
 		return map.get(key).toString();
 	}
@@ -65,9 +65,11 @@ public class MapLabel {
 	}
 
 	public void clear(Integer key) {
-		map.get(key).delete(0, map.get(key).length());
-		lastAdded.put(key, "");
-		lastAddedCount.put(key, 0);
+		if (map.containsKey(key)) {
+			map.get(key).delete(0, map.get(key).length());
+			lastAdded.put(key, "");
+			lastAddedCount.put(key, 0);
+		}
 	}
 
 	@Override
@@ -91,11 +93,11 @@ public class MapLabel {
 		Boolean ret = sameAsPrev.get(key);
 		return (ret == null) ? false : ret;
 	}
-	
+
 	public String getLastAdded(Integer key) {
 		return lastAdded.get(key);
 	}
-	
+
 	public int getLastAddedCount(Integer key) {
 		return lastAddedCount.get(key);
 	}

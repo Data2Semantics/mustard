@@ -156,6 +156,13 @@ public class WeisfeilerLehmanDTGraphIterator extends WeisfeilerLehmanIterator<DT
 					}
 					edge.tag().clear();
 					edge.tag().append(label);
+				} else { // retain old label
+					String old = edge.tag().toString();
+					if (old.contains("_")) {
+						old = old.substring(0, old.indexOf("_"));
+						edge.tag().clear();
+						edge.tag().append(old);
+					} 
 				}
 			}
 
@@ -182,6 +189,13 @@ public class WeisfeilerLehmanDTGraphIterator extends WeisfeilerLehmanIterator<DT
 					}
 					vertex.label().clear();
 					vertex.label().append(label);
+				} else { // retain old label
+					String old = vertex.label().toString();
+					if (old.contains("_")) {
+						old = old.substring(0, old.indexOf("_"));
+						vertex.label().clear();
+						vertex.label().append(old);
+					} 
 				}
 			}
 		}

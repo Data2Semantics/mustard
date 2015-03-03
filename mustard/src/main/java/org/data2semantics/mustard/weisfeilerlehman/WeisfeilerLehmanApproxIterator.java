@@ -6,16 +6,20 @@ import java.util.Map;
 
 
 /**
- * Class implementing the different steps of the Weisfeiler-Lehman algorithm for different types of graphs
+ * Class implementing the different steps of the Weisfeiler-Lehman Approx algorithm for different types of graphs
  * 
  * @author Gerben
  *
  */
 public abstract class WeisfeilerLehmanApproxIterator<G,L> {
 	protected Map<String,String> labelDict;
+	protected double minFreq;
+	protected int maxLabelCard;
 
-	public WeisfeilerLehmanApproxIterator() {
+	public WeisfeilerLehmanApproxIterator(int maxLabelCard, double minFreq) {
 		this.labelDict = new HashMap<String,String>();
+		this.maxLabelCard = maxLabelCard;
+		this.minFreq = minFreq;
 	}
 
 	public Map<String, String> getLabelDict() {
@@ -36,8 +40,13 @@ public abstract class WeisfeilerLehmanApproxIterator<G,L> {
 	 * @param graphs
 	 */
 	public abstract void wlIterate(List<G> graphs, Map<L, Double> labelFreq);
-		
 
 	
-	
+	public void setMinFreq(double minFreq) {
+		this.minFreq = minFreq;
+	}
+
+	public void setMaxLabelCard(int maxLabelCard) {
+		this.maxLabelCard = maxLabelCard;
+	}	
 }

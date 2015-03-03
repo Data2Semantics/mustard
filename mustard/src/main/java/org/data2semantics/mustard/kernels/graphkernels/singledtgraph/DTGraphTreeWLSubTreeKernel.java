@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.data2semantics.mustard.kernels.ComputationTimeTracker;
 import org.data2semantics.mustard.kernels.KernelUtils;
@@ -13,6 +14,7 @@ import org.data2semantics.mustard.kernels.graphkernels.GraphKernel;
 import org.data2semantics.mustard.learners.SparseVector;
 import org.data2semantics.mustard.utils.Pair;
 import org.data2semantics.mustard.weisfeilerlehman.ArrayMapLabel;
+
 import org.data2semantics.mustard.weisfeilerlehman.WeisfeilerLehmanDTGraphMapLabelIterator;
 import org.data2semantics.mustard.weisfeilerlehman.WeisfeilerLehmanIterator;
 import org.nodes.DTGraph;
@@ -81,16 +83,13 @@ public class DTGraphTreeWLSubTreeKernel implements GraphKernel<SingleDTGraph>, F
 
 
 	public SparseVector[] computeFeatureVectors(SingleDTGraph data) {
-		instanceVertices = new ArrayList<DTNode<ArrayMapLabel,ArrayMapLabel>>();
-		this.instanceVertexIndexMap = new HashMap<DTNode<ArrayMapLabel,ArrayMapLabel>, List<Pair<DTNode<ArrayMapLabel,ArrayMapLabel>, Integer>>>();
-		this.instanceEdgeIndexMap = new HashMap<DTNode<ArrayMapLabel,ArrayMapLabel>, List<Pair<DTLink<ArrayMapLabel,ArrayMapLabel>, Integer>>>();
-
 		SparseVector[] featureVectors = new SparseVector[data.getInstances().size()];
 		for (int i = 0; i < featureVectors.length; i++) {
 			featureVectors[i] = new SparseVector();
 		}	
 
 		init(data.getGraph(), data.getInstances());
+			
 		WeisfeilerLehmanIterator<DTGraph<ArrayMapLabel,ArrayMapLabel>> wl = new WeisfeilerLehmanDTGraphMapLabelIterator(reverse, trackPrevNBH);
 
 		List<DTGraph<ArrayMapLabel,ArrayMapLabel>> gList = new ArrayList<DTGraph<ArrayMapLabel,ArrayMapLabel>>();
@@ -104,7 +103,7 @@ public class DTGraphTreeWLSubTreeKernel implements GraphKernel<SingleDTGraph>, F
 		if (iterationWeighting) {
 			weight = Math.sqrt(1.0 / (iterations + 1));
 		}
-
+		
 		computeFVs(rdfGraph, instanceVertices, weight, featureVectors, wl.getLabelDict().size()-1);
 
 		for (int i = 0; i < iterations; i++) {
@@ -143,6 +142,9 @@ public class DTGraphTreeWLSubTreeKernel implements GraphKernel<SingleDTGraph>, F
 		Map<DTNode<String,String>, DTNode<ArrayMapLabel,ArrayMapLabel>> vOldNewMap = new HashMap<DTNode<String,String>,DTNode<ArrayMapLabel,ArrayMapLabel>>();
 		Map<DTLink<String,String>, DTLink<ArrayMapLabel,ArrayMapLabel>> eOldNewMap = new HashMap<DTLink<String,String>,DTLink<ArrayMapLabel,ArrayMapLabel>>();
 
+		instanceVertices = new ArrayList<DTNode<ArrayMapLabel,ArrayMapLabel>>();
+		instanceVertexIndexMap = new HashMap<DTNode<ArrayMapLabel,ArrayMapLabel>, List<Pair<DTNode<ArrayMapLabel,ArrayMapLabel>, Integer>>>();
+		instanceEdgeIndexMap = new HashMap<DTNode<ArrayMapLabel,ArrayMapLabel>, List<Pair<DTLink<ArrayMapLabel,ArrayMapLabel>, Integer>>>();
 		rdfGraph = new LightDTGraph<ArrayMapLabel,ArrayMapLabel>();
 
 		for (DTNode<String,String> oldStartV : instances) {				
@@ -208,10 +210,6 @@ public class DTGraphTreeWLSubTreeKernel implements GraphKernel<SingleDTGraph>, F
 
 
 	/**
-	 * The computation of the feature vectors assumes that each edge and vertex is only processed once. We can encounter the same
-	 * vertex/edge on different depths during computation, this could lead to multiple counts of the same vertex, possibly of different
-	 * depth labels.
-	 * 
 	 * @param graph
 	 * @param instances
 	 * @param weight
@@ -240,5 +238,33 @@ public class DTGraphTreeWLSubTreeKernel implements GraphKernel<SingleDTGraph>, F
 				}
 			}
 		}
+	}
+	
+	private Map<String, Integer> computeLabelCounts(List<DTNode<ArrayMapLabel,ArrayMapLabel>> instances) {
+		List<Pair<DTNode<ArrayMapLabel,ArrayMapLabel>, Integer>> vertexIndexMap;
+		List<Pair<DTLink<ArrayMapLabel,ArrayMapLabel>, Integer>> edgeIndexMap;
+
+		Map<String,Integer> counts = new TreeMap<String,Integer>(); 
+
+		for (int i = 0; i < instances.size(); i++) {
+
+			vertexIndexMap = instanceVertexIndexMap.get(instances.get(i));
+			for (Pair<DTNode<ArrayMapLabel,ArrayMapLabel>, Integer> vertex : vertexIndexMap) {
+				String lab = vertex.getFirst().label().get(vertex.getSecond()).toString();
+				if (!counts.containsKey(lab)) {
+					counts.put(lab, 0);
+				} 
+				counts.put(lab, counts.get(lab) + 1);
+			}
+			edgeIndexMap = instanceEdgeIndexMap.get(instances.get(i));
+			for (Pair<DTLink<ArrayMapLabel,ArrayMapLabel>, Integer> edge : edgeIndexMap) {
+				String lab = edge.getFirst().tag().get(edge.getSecond()).toString();
+				if (!counts.containsKey(lab)) {
+					counts.put(lab, 0);
+				} 
+				counts.put(lab, counts.get(lab) + 1);
+			}
+		}
+		return counts;
 	}
 }

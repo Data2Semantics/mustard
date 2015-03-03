@@ -13,19 +13,15 @@ import org.nodes.DTNode;
 public class WeisfeilerLehmanApproxDTGraphMapLabelIterator extends WeisfeilerLehmanApproxIterator<DTGraph<MapLabel,MapLabel>, String> {
 	private boolean reverse;
 	private boolean trackPrevNBH;
-	private double minFreq;
-	private int maxLabelCard;
 
 	public WeisfeilerLehmanApproxDTGraphMapLabelIterator(boolean reverse) {
 		this(reverse, false, 1, 0.1);
 	}
 
 	public WeisfeilerLehmanApproxDTGraphMapLabelIterator(boolean reverse, boolean trackPrevNBH, int maxLabelCard, double minFreq) {
-		super();
+		super(maxLabelCard, minFreq);
 		this.reverse = reverse;
 		this.trackPrevNBH = trackPrevNBH;
-		this.minFreq = minFreq;
-		this.maxLabelCard = maxLabelCard;
 	}
 
 	@Override
@@ -77,7 +73,7 @@ public class WeisfeilerLehmanApproxDTGraphMapLabelIterator extends WeisfeilerLeh
 		Map<String, Bucket<VertexIndexPair>> bucketsV = new HashMap<String, Bucket<VertexIndexPair>>();
 		Map<String, Bucket<EdgeIndexPair>> bucketsE   = new HashMap<String, Bucket<EdgeIndexPair>>();
 
-		for (DTGraph<MapLabel,MapLabel> graph :graphs) {
+		for (DTGraph<MapLabel,MapLabel> graph : graphs) {
 
 			// 1. Fill buckets 
 			if (reverse) { // Labels "travel" to the root node
@@ -86,19 +82,19 @@ public class WeisfeilerLehmanApproxDTGraphMapLabelIterator extends WeisfeilerLeh
 				for (DTLink<MapLabel,MapLabel> edge : graph.links()) {
 					// for each label we add a vertex-index-pair to the bucket
 					for (int index : edge.tag().keySet()) {
-						if (labelFreq.get(edge.tag().get(index)) >= minFreq) {
+						//if (labelFreq.get(edge.tag().get(index)) >= minFreq) {
 							if (!bucketsV.containsKey(edge.tag().get(index))) {
 								bucketsV.put(edge.tag().get(index), new Bucket<VertexIndexPair>(edge.tag().get(index)));
 							}					
 							bucketsV.get(edge.tag().get(index)).getContents().add(new VertexIndexPair(edge.from(), index + 1));
-						}
+						//}
 					}
 				}
 
 				// Add each incident edge to the bucket of the node label
 				for (DTNode<MapLabel,MapLabel> vertex : graph.nodes()) {			
 					for (int index : vertex.label().keySet()) {
-						if (labelFreq.get(vertex.label().get(index)) >= minFreq) {
+						//if (labelFreq.get(vertex.label().get(index)) >= minFreq) {
 							for (DTLink<MapLabel,MapLabel> e2 : vertex.linksIn()) {
 								if (e2.tag().containsKey(index)) {
 									if (!bucketsE.containsKey(vertex.label().get(index))) {
@@ -107,7 +103,7 @@ public class WeisfeilerLehmanApproxDTGraphMapLabelIterator extends WeisfeilerLeh
 									bucketsE.get(vertex.label().get(index)).getContents().add(new EdgeIndexPair(e2, index));
 								}
 							}
-						}
+						//}
 					}
 				}
 
@@ -117,19 +113,19 @@ public class WeisfeilerLehmanApproxDTGraphMapLabelIterator extends WeisfeilerLeh
 				for (DTLink<MapLabel,MapLabel> edge : graph.links()) {
 					// for each label we add a vertex-index-pair to the bucket
 					for (int index : edge.tag().keySet()) {
-						if (labelFreq.get(edge.tag().get(index)) >= minFreq) {
+						//if (labelFreq.get(edge.tag().get(index)) >= minFreq) {
 							if (!bucketsV.containsKey(edge.tag().get(index))) {
 								bucketsV.put(edge.tag().get(index), new Bucket<VertexIndexPair>(edge.tag().get(index)));
 							}
 							bucketsV.get(edge.tag().get(index)).getContents().add(new VertexIndexPair(edge.to(), index));
-						}
+						//}
 					}
 				}
 
 				// Add each incident edge to the bucket of the node label
 				for (DTNode<MapLabel,MapLabel> vertex : graph.nodes()) {			
 					for (int index : vertex.label().keySet()) {
-						if (labelFreq.get(vertex.label().get(index)) >= minFreq) {
+						//if (labelFreq.get(vertex.label().get(index)) >= minFreq) {
 							if (index > 0) { // If index is 0 then we treat it as a fringe node, thus the label will not be propagated to the edges
 								for (DTLink<MapLabel,MapLabel> e2 : vertex.linksOut()) {
 									if (!bucketsE.containsKey(vertex.label().get(index))) {
@@ -138,7 +134,7 @@ public class WeisfeilerLehmanApproxDTGraphMapLabelIterator extends WeisfeilerLeh
 									bucketsE.get(vertex.label().get(index)).getContents().add(new EdgeIndexPair(e2, index - 1));
 								}
 							}
-						}
+						//}
 					}
 				}
 			}
@@ -151,6 +147,7 @@ public class WeisfeilerLehmanApproxDTGraphMapLabelIterator extends WeisfeilerLeh
 		Collections.sort(keysV);
 
 
+		/*
 		for (DTGraph<MapLabel,MapLabel> graph : graphs) {
 			for (DTNode<MapLabel,MapLabel> node : graph.nodes()) {
 				for (int k : node.label().keySet()) {
@@ -167,16 +164,18 @@ public class WeisfeilerLehmanApproxDTGraphMapLabelIterator extends WeisfeilerLeh
 				}
 			}
 		}
+		*/
 
 		// 3. Relabel to the labels in the buckets
+		String lab;
 		for (String keyV : keysV) {
 			// Process vertices
 			Bucket<VertexIndexPair> bucketV = bucketsV.get(keyV);			
 			for (VertexIndexPair vp : bucketV.getContents()) {
-				if (!vp.getVertex().label().getLastAdded(vp.getIndex()).equals(bucketV.getLabel()) || vp.getVertex().label().getLastAddedCount(vp.getIndex()) < maxLabelCard) {
-					vp.getVertex().label().append(vp.getIndex(), "_");
-					vp.getVertex().label().append(vp.getIndex(), bucketV.getLabel());				
-				}
+				lab = "_" + bucketV.getLabel();
+				//if (!vp.getVertex().label().getLastAdded(vp.getIndex()).equals(lab) || vp.getVertex().label().getLastAddedCount(vp.getIndex()) < maxLabelCard) {
+					vp.getVertex().label().append(vp.getIndex(), lab);		 // use 1 string, so that lastadded works		
+				//}
 			}
 		}
 		for (String keyE : keysE) {
@@ -214,6 +213,13 @@ public class WeisfeilerLehmanApproxDTGraphMapLabelIterator extends WeisfeilerLeh
 						}
 						edge.tag().clear(i);
 						edge.tag().append(i,label);
+					} else { // retain old label
+						String old = edge.tag().get(i);
+						if (old.contains("_")) {
+							old = old.substring(0, old.indexOf("_"));
+							edge.tag().clear(i);
+							edge.tag().append(i, old);
+						} 
 					}
 				}
 			}
@@ -241,6 +247,13 @@ public class WeisfeilerLehmanApproxDTGraphMapLabelIterator extends WeisfeilerLeh
 						}
 						vertex.label().clear(i);
 						vertex.label().append(i, label);
+					} else { // retain old label
+						String old = vertex.label().get(i);
+						if (old.contains("_")) {
+							old = old.substring(0, old.indexOf("_"));
+							vertex.label().clear(i);
+							vertex.label().append(i, old);
+						} 
 					}
 				}
 			}
