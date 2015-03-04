@@ -239,32 +239,4 @@ public class DTGraphTreeWLSubTreeKernel implements GraphKernel<SingleDTGraph>, F
 			}
 		}
 	}
-	
-	private Map<String, Integer> computeLabelCounts(List<DTNode<ArrayMapLabel,ArrayMapLabel>> instances) {
-		List<Pair<DTNode<ArrayMapLabel,ArrayMapLabel>, Integer>> vertexIndexMap;
-		List<Pair<DTLink<ArrayMapLabel,ArrayMapLabel>, Integer>> edgeIndexMap;
-
-		Map<String,Integer> counts = new TreeMap<String,Integer>(); 
-
-		for (int i = 0; i < instances.size(); i++) {
-
-			vertexIndexMap = instanceVertexIndexMap.get(instances.get(i));
-			for (Pair<DTNode<ArrayMapLabel,ArrayMapLabel>, Integer> vertex : vertexIndexMap) {
-				String lab = vertex.getFirst().label().get(vertex.getSecond()).toString();
-				if (!counts.containsKey(lab)) {
-					counts.put(lab, 0);
-				} 
-				counts.put(lab, counts.get(lab) + 1);
-			}
-			edgeIndexMap = instanceEdgeIndexMap.get(instances.get(i));
-			for (Pair<DTLink<ArrayMapLabel,ArrayMapLabel>, Integer> edge : edgeIndexMap) {
-				String lab = edge.getFirst().tag().get(edge.getSecond()).toString();
-				if (!counts.containsKey(lab)) {
-					counts.put(lab, 0);
-				} 
-				counts.put(lab, counts.get(lab) + 1);
-			}
-		}
-		return counts;
-	}
 }

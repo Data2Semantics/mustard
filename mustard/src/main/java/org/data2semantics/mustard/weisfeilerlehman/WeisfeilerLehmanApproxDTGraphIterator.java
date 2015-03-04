@@ -15,17 +15,15 @@ import org.nodes.DTNode;
 public class WeisfeilerLehmanApproxDTGraphIterator extends WeisfeilerLehmanApproxIterator<DTGraph<StringLabel,StringLabel>, String> {
 	private boolean reverse;
 	private boolean trackPrevNBH;
-	private boolean skipSamePrevNBH;
-
+	
 	public WeisfeilerLehmanApproxDTGraphIterator(boolean reverse) {
 		this(reverse, false, false, 1, 0.1);
 	}
 
 	public WeisfeilerLehmanApproxDTGraphIterator(boolean reverse, boolean trackPrevNBH, boolean skipSamePrevNBH, int maxLabelCard, double minFreq) {
-		super(maxLabelCard, minFreq);
+		super(skipSamePrevNBH, maxLabelCard, minFreq);
 		this.reverse = reverse;
 		this.trackPrevNBH = trackPrevNBH;
-		this.skipSamePrevNBH = skipSamePrevNBH;
 	}
 
 	@Override

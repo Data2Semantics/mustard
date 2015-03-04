@@ -45,10 +45,11 @@ public class DTGraphTreeWLSubTreeApproxKernel implements GraphKernel<SingleDTGra
 	private boolean trackPrevNBH;
 	private int maxLabelCard;
 	private double minFreq;
+	private boolean skipSamePrevNBH;
 
 	private long compTime; // should be last, so that it is the last arg in the label
 
-	public DTGraphTreeWLSubTreeApproxKernel(int iterations, int depth, boolean reverse, boolean iterationWeighting, boolean trackPrevNBH, int maxLabelCard, double minFreq, boolean normalize) {
+	public DTGraphTreeWLSubTreeApproxKernel(int iterations, int depth, boolean reverse, boolean iterationWeighting, boolean trackPrevNBH, boolean skipSamePrevNBH, int maxLabelCard, double minFreq, boolean normalize) {
 		this.reverse = reverse;
 		this.iterationWeighting = iterationWeighting;
 		this.trackPrevNBH = trackPrevNBH;
@@ -57,6 +58,7 @@ public class DTGraphTreeWLSubTreeApproxKernel implements GraphKernel<SingleDTGra
 		this.iterations = iterations;
 		this.maxLabelCard = maxLabelCard;
 		this.minFreq = minFreq;
+		this.skipSamePrevNBH = skipSamePrevNBH;
 	}
 
 	public String getLabel() {
@@ -72,22 +74,24 @@ public class DTGraphTreeWLSubTreeApproxKernel implements GraphKernel<SingleDTGra
 	}
 
 	public SparseVector[] computeFeatureVectors(SingleDTGraph data) {
-
 		SparseVector[] featureVectors = new SparseVector[data.getInstances().size()];
 		for (int i = 0; i < featureVectors.length; i++) {
 			featureVectors[i] = new SparseVector();
 		}	
-		init(data.getGraph(), data.getInstances());
 
-		WeisfeilerLehmanApproxIterator<DTGraph<MapLabel,MapLabel>,String> wl = new WeisfeilerLehmanApproxDTGraphMapLabelIterator(reverse, trackPrevNBH, 100000, 0.0);
-
-		List<DTGraph<MapLabel,MapLabel>> gList = new ArrayList<DTGraph<MapLabel,MapLabel>>();
-		gList.add(rdfGraph);
+		WeisfeilerLehmanApproxIterator<DTGraph<MapLabel,MapLabel>,String> wl = new WeisfeilerLehmanApproxDTGraphMapLabelIterator(reverse, trackPrevNBH, skipSamePrevNBH, maxLabelCard, minFreq);
 
 		long tic = System.currentTimeMillis();
-	
+
+		double[] minFreqs = {0.0, 1 / (double) (data.numInstances()-1), 2 / (double) (data.numInstances()-1), 3 / (double) (data.numInstances()-1), 4 / (double) (data.numInstances()-1)};
+		int[] maxCards = {1,2,30000};
+
+
+		init(data.getGraph(), data.getInstances());
+		List<DTGraph<MapLabel,MapLabel>> gList = new ArrayList<DTGraph<MapLabel,MapLabel>>();
+		gList.add(rdfGraph);
 		wl.wlInitialize(gList);
-	
+
 		double weight = 1.0;
 		if (iterationWeighting) {
 			weight = Math.sqrt(1.0 / (iterations + 1));
@@ -95,12 +99,30 @@ public class DTGraphTreeWLSubTreeApproxKernel implements GraphKernel<SingleDTGra
 
 		computeFVs(rdfGraph, instanceVertices, weight, featureVectors, wl.getLabelDict().size()-1);
 
-		for (int i = 0; i < iterations; i++) {
-			if (iterationWeighting) {
-				weight = Math.sqrt((2.0 + i) / (iterations + 1));
+
+		boolean first = true;
+		for (double minFreq : minFreqs) {
+			for (int maxCard : maxCards) {
+				if (!first) {
+					init(data.getGraph(), data.getInstances());
+					gList = new ArrayList<DTGraph<MapLabel,MapLabel>>();
+					gList.add(rdfGraph);
+					wl.wlInitialize(gList);
+				}
+				first = false;
+				
+				wl.setMaxLabelCard(maxCard);
+				wl.setMinFreq(minFreq);
+
+				for (int i = 0; i < iterations; i++) {
+					if (iterationWeighting) {
+						weight = Math.sqrt((2.0 + i) / (iterations + 1));
+					}
+					computeLabelFreqs(rdfGraph, instanceVertices);
+					wl.wlIterate(gList, labelFreq);
+					computeFVs(rdfGraph, instanceVertices, weight, featureVectors, wl.getLabelDict().size()-1);
+				}
 			}
-			wl.wlIterate(gList, null);
-			computeFVs(rdfGraph, instanceVertices, weight, featureVectors, wl.getLabelDict().size()-1);
 		}
 
 		compTime = System.currentTimeMillis() - tic;
@@ -271,33 +293,5 @@ public class DTGraphTreeWLSubTreeApproxKernel implements GraphKernel<SingleDTGra
 		for (String k : labelFreq.keySet()) {
 			labelFreq.put(k, labelFreq.get(k) / ((double) instances.size()));
 		}
-	}
-
-	private Map<String, Integer> computeLabelCounts(List<DTNode<MapLabel,MapLabel>> instances) {
-		List<Pair<DTNode<MapLabel,MapLabel>, Integer>> vertexIndexMap;
-		List<Pair<DTLink<MapLabel,MapLabel>, Integer>> edgeIndexMap;
-
-		Map<String,Integer> counts = new TreeMap<String,Integer>(); 
-
-		for (int i = 0; i < instances.size(); i++) {
-
-			vertexIndexMap = instanceVertexIndexMap.get(instances.get(i));
-			for (Pair<DTNode<MapLabel,MapLabel>, Integer> vertex : vertexIndexMap) {
-				String lab = vertex.getFirst().label().get(vertex.getSecond());
-				if (!counts.containsKey(lab)) {
-					counts.put(lab, 0);
-				} 
-				counts.put(lab, counts.get(lab) + 1);
-			}
-			edgeIndexMap = instanceEdgeIndexMap.get(instances.get(i));
-			for (Pair<DTLink<MapLabel,MapLabel>, Integer> edge : edgeIndexMap) {
-				String lab = edge.getFirst().tag().get(edge.getSecond());
-				if (!counts.containsKey(lab)) {
-					counts.put(lab, 0);
-				} 
-				counts.put(lab, counts.get(lab) + 1);
-			}
-		}
-		return counts;
 	}
 }

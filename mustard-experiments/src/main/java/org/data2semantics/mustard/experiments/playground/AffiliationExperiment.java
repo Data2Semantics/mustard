@@ -56,13 +56,13 @@ public class AffiliationExperiment {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		RDFDataSet tripleStore = new RDFFileDataSet(AIFB_FILE, RDFFormat.N3);
+		//RDFDataSet tripleStore = new RDFFileDataSet(AIFB_FILE, RDFFormat.N3);
 		//RDFDataSet tripleStore = new RDFFileDataSet("datasets/carcinogenesis.owl", RDFFormat.forFileName("datasets/carcinogenesis.owl"));
-		//RDFDataSet tripleStore = new RDFFileDataSet("C:\\Users\\Gerben\\OneDrive\\D2S\\data_bgs_ac_uk_ALL", RDFFormat.NTRIPLES);
+		RDFDataSet tripleStore = new RDFFileDataSet("C:\\Users\\Gerben\\OneDrive\\D2S\\data_bgs_ac_uk_ALL", RDFFormat.NTRIPLES);
 
-		ClassificationDataSet ds = new AIFBDataSet(tripleStore, false);
+		//ClassificationDataSet ds = new AIFBDataSet(tripleStore, false);
 		//ClassificationDataSet ds = new MutagDataSet(tripleStore);
-		//ClassificationDataSet ds = new BGSLithoDataSet(tripleStore);
+		ClassificationDataSet ds = new BGSLithoDataSet(tripleStore);
 		ds.create();
 
 		System.out.println(ds.getRDFData().getInstances());
@@ -117,6 +117,8 @@ public class AffiliationExperiment {
 		double[] lambdas = {1.0};
 
 
+		boolean skipSamePrevNBH = false;
+		
 		double[] minFreqs = {0.0};//, 1 / (double) (ds.getRDFData().numInstances()-1), 2 / (double) (ds.getRDFData().numInstances()-1), 4 / (double) (ds.getRDFData().numInstances()-1), 8 / (double) (ds.getRDFData().numInstances()-1)};
 		//double[] minFreqs = {0.0, 0.025, 0.05, 0.1, 0.2};
 		int[] maxCards = {100000};//,2,30}; //,2,100}; //,2,100};
@@ -148,7 +150,7 @@ public class AffiliationExperiment {
 		}
 		//*/
 
-		/* The baseline experiment, BoW (or BoL if you prefer)
+		///* The baseline experiment, BoW (or BoL if you prefer)
 		for (boolean inf : inference) {
 			resTable.newRow("Baseline BoL: " + inf);
 
@@ -167,7 +169,7 @@ public class AffiliationExperiment {
 		}
 		//*/
 
-		/* The baseline experiment, BoW (or BoL if you prefer) Tree variant
+		///* The baseline experiment, BoW (or BoL if you prefer) Tree variant
 		for (boolean inf : inference) {
 			resTable.newRow("Baseline BoL Tree: " + inf);		 		
 
@@ -296,7 +298,7 @@ public class AffiliationExperiment {
 		//*/
 
 
-		/* WL
+		///* WL
 		for (boolean inf : inference) {
 			resTable.newRow("WL: " + inf);		 
 
@@ -327,7 +329,7 @@ public class AffiliationExperiment {
 		//*/
 
 		
-		/* WL EdgeSets
+		///* WL EdgeSets
 		for (boolean inf : inference) {
 			resTable.newRow("WL Edge Sets (opt): " + inf);		 
 			for (int d : depths) {
@@ -338,10 +340,10 @@ public class AffiliationExperiment {
 					for (int maxCard : maxCards) {
 						for (double depthWeight : depthWeights) {
 							if (depthTimesTwo) {
-								kernels.add(new RDFGraphListWLSubTreeApproxKernel(d*2, d, inf, reverseWL, true, false, maxCard, minFreq, depthWeight, true));
+								kernels.add(new RDFGraphListWLSubTreeApproxKernel(d*2, d, inf, reverseWL, true, skipSamePrevNBH, maxCard, minFreq, depthWeight, true));
 							} else {
 								for (int dd : iterationsWL) {
-									kernels.add(new RDFGraphListWLSubTreeApproxKernel(dd, d, inf, reverseWL, true, false, maxCard, minFreq, depthWeight, true));
+									kernels.add(new RDFGraphListWLSubTreeApproxKernel(dd, d, inf, reverseWL, true, skipSamePrevNBH, maxCard, minFreq, depthWeight, true));
 								}
 							}
 						}
@@ -398,10 +400,10 @@ public class AffiliationExperiment {
 				for (double minFreq : minFreqs) {
 					for (int maxCard : maxCards) {
 						if (depthTimesTwo) {
-							kernels.add(new RDFTreeWLSubTreeApproxKernel(d*2, d, inf, reverseWL, false, true, maxCard, minFreq, true));
+							kernels.add(new RDFTreeWLSubTreeApproxKernel(d*2, d, inf, reverseWL, false, true, skipSamePrevNBH, maxCard, minFreq, true));
 						} else {
 							for (int dd : iterationsWL) {
-								kernels.add(new RDFTreeWLSubTreeApproxKernel(dd, d, inf, reverseWL, false, true, maxCard, minFreq, true));
+								kernels.add(new RDFTreeWLSubTreeApproxKernel(dd, d, inf, reverseWL, false, true, skipSamePrevNBH, maxCard, minFreq, true));
 							}
 						}
 					}

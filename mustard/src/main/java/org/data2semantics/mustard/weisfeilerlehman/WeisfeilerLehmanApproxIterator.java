@@ -15,11 +15,13 @@ public abstract class WeisfeilerLehmanApproxIterator<G,L> {
 	protected Map<String,String> labelDict;
 	protected double minFreq;
 	protected int maxLabelCard;
+	protected boolean skipSamePrevNBH;
 
-	public WeisfeilerLehmanApproxIterator(int maxLabelCard, double minFreq) {
+	public WeisfeilerLehmanApproxIterator(boolean skipSamePrevNBH, int maxLabelCard, double minFreq) {
 		this.labelDict = new HashMap<String,String>();
 		this.maxLabelCard = maxLabelCard;
 		this.minFreq = minFreq;
+		this.skipSamePrevNBH = skipSamePrevNBH;
 	}
 
 	public Map<String, String> getLabelDict() {

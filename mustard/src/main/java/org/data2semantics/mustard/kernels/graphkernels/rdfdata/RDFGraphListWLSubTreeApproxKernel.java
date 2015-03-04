@@ -54,7 +54,7 @@ public class RDFGraphListWLSubTreeApproxKernel implements GraphKernel<RDFData>, 
 	private void init(RDFDataSet dataset, List<Resource> instances, List<Statement> blackList) {
 		Set<Statement> stmts = RDFUtils.getStatements4Depth(dataset, instances, depth, inference);
 		stmts.removeAll(blackList);
-		graph = RDFUtils.statements2Graph(stmts, RDFUtils.REGULAR_LITERALS, instances, true);
+		graph = RDFUtils.statements2Graph(stmts, RDFUtils.REGULAR_LITERALS, instances, false);
 	}
 
 	public long getComputationTime() {

@@ -73,8 +73,6 @@ public class WLSubTreeApproxKernel implements GraphKernel<GraphList<DTGraph<Stri
 	}
 
 	public SparseVector[] computeFeatureVectors(GraphList<DTGraph<StringLabel,StringLabel>> data) {
-		// copy to avoid changing the original graphs
-
 		SparseVector[] featureVectors = new SparseVector[data.numInstances()];
 		for (int j = 0; j < featureVectors.length; j++) {
 			featureVectors[j] = new SparseVector();
@@ -84,10 +82,11 @@ public class WLSubTreeApproxKernel implements GraphKernel<GraphList<DTGraph<Stri
 
 		long tic = System.currentTimeMillis();
 
-		double[] minFreqs = {0.0}; //{1 / (double) (data.numInstances()-1), 2 / (double) (data.numInstances()-1), 3 / (double) (data.numInstances()-1), 4 / (double) (data.numInstances()-1)};
-		int[] maxCards = {1000000}; //{1,2,3,4};
+		double[] minFreqs = {0.0, 1 / (double) (data.numInstances()-1), 2 / (double) (data.numInstances()-1), 3 / (double) (data.numInstances()-1), 4 / (double) (data.numInstances()-1)};
+		int[] maxCards = {1,2,300000};
 
 		// Initial FV (the bag of labels)
+		// copy to avoid changing the original graphs
 		List<DTGraph<StringLabel,StringLabel>> graphs = copyGraphs(data.getGraphs());
 		wl.wlInitialize(graphs);
 		computeFVs(graphs, featureVectors, 1.0, depthWeight, wl.getLabelDict().size()-1);

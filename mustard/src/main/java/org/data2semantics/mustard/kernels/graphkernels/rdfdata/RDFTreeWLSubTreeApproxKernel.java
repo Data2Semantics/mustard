@@ -22,12 +22,12 @@ public class RDFTreeWLSubTreeApproxKernel implements GraphKernel<RDFData>, Featu
 	private DTGraphTreeWLSubTreeApproxKernel kernel;
 	private SingleDTGraph graph;
 	
-	public RDFTreeWLSubTreeApproxKernel(int iterations, int depth, boolean inference, boolean reverse, boolean iterationWeighting, boolean trackPrevNBH, int maxLabelCard, double minFreq, boolean normalize) {
+	public RDFTreeWLSubTreeApproxKernel(int iterations, int depth, boolean inference, boolean reverse, boolean iterationWeighting, boolean trackPrevNBH, boolean skipSamePrevNBH, int maxLabelCard, double minFreq, boolean normalize) {
 		super();
 		this.depth = depth;
 		this.inference = inference;
 
-		kernel = new DTGraphTreeWLSubTreeApproxKernel(iterations, depth, reverse, iterationWeighting, trackPrevNBH, maxLabelCard, minFreq, normalize);
+		kernel = new DTGraphTreeWLSubTreeApproxKernel(iterations, depth, reverse, iterationWeighting, trackPrevNBH, skipSamePrevNBH, maxLabelCard, minFreq, normalize);
 	}
 
 	public String getLabel() {
@@ -55,6 +55,6 @@ public class RDFTreeWLSubTreeApproxKernel implements GraphKernel<RDFData>, Featu
 	private void init(RDFDataSet dataset, List<Resource> instances, List<Statement> blackList) {
 		Set<Statement> stmts = RDFUtils.getStatements4Depth(dataset, instances, depth, inference);
 		stmts.removeAll(blackList);
-		graph = RDFUtils.statements2Graph(stmts, RDFUtils.REGULAR_LITERALS, instances, true); // we don't want to set the instances node labels to the identical root label
+		graph = RDFUtils.statements2Graph(stmts, RDFUtils.REGULAR_LITERALS, instances, false); // we don't want to set the instances node labels to the identical root label
 	}	
 }
