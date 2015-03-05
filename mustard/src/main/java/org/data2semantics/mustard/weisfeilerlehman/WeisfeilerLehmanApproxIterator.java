@@ -13,15 +13,15 @@ import java.util.Map;
  */
 public abstract class WeisfeilerLehmanApproxIterator<G,L> {
 	protected Map<String,String> labelDict;
-	protected double minFreq;
+	protected int minFreq;
 	protected int maxLabelCard;
-	protected boolean skipSamePrevNBH;
+	protected int maxPrevNBH;
 
-	public WeisfeilerLehmanApproxIterator(boolean skipSamePrevNBH, int maxLabelCard, double minFreq) {
+	public WeisfeilerLehmanApproxIterator(int maxPrevNBH, int maxLabelCard, int minFreq) {
 		this.labelDict = new HashMap<String,String>();
 		this.maxLabelCard = maxLabelCard;
 		this.minFreq = minFreq;
-		this.skipSamePrevNBH = skipSamePrevNBH;
+		this.maxPrevNBH = maxPrevNBH;
 	}
 
 	public Map<String, String> getLabelDict() {
@@ -41,14 +41,18 @@ public abstract class WeisfeilerLehmanApproxIterator<G,L> {
 	 * 
 	 * @param graphs
 	 */
-	public abstract void wlIterate(List<G> graphs, Map<L, Double> labelFreq);
+	public abstract void wlIterate(List<G> graphs, Map<L, Integer> labelFreq);
 
 	
-	public void setMinFreq(double minFreq) {
+	public void setMinFreq(int minFreq) {
 		this.minFreq = minFreq;
 	}
 
 	public void setMaxLabelCard(int maxLabelCard) {
 		this.maxLabelCard = maxLabelCard;
 	}	
+	
+	public void setMaxPrevNBH(int maxPrevNBH) {
+		this.maxPrevNBH = maxPrevNBH;
+	}
 }

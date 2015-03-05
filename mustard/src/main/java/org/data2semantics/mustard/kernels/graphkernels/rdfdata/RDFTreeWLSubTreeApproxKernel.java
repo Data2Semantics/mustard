@@ -22,12 +22,12 @@ public class RDFTreeWLSubTreeApproxKernel implements GraphKernel<RDFData>, Featu
 	private DTGraphTreeWLSubTreeApproxKernel kernel;
 	private SingleDTGraph graph;
 	
-	public RDFTreeWLSubTreeApproxKernel(int iterations, int depth, boolean inference, boolean reverse, boolean iterationWeighting, boolean trackPrevNBH, boolean skipSamePrevNBH, int maxLabelCard, double minFreq, boolean normalize) {
+	public RDFTreeWLSubTreeApproxKernel(int iterations, int depth, boolean inference, boolean reverse, boolean iterationWeighting, boolean noDuplicateNBH, int[] maxPrevNBHs, int[] maxLabelCards, int[] minFreqs, boolean normalize) {
 		super();
 		this.depth = depth;
 		this.inference = inference;
 
-		kernel = new DTGraphTreeWLSubTreeApproxKernel(iterations, depth, reverse, iterationWeighting, trackPrevNBH, skipSamePrevNBH, maxLabelCard, minFreq, normalize);
+		kernel = new DTGraphTreeWLSubTreeApproxKernel(iterations, depth, reverse, iterationWeighting, noDuplicateNBH, maxPrevNBHs, maxLabelCards, minFreqs, normalize);
 	}
 
 	public String getLabel() {

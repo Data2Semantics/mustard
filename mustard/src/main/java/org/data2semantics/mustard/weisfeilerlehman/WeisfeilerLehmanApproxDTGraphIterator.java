@@ -12,24 +12,22 @@ import org.nodes.DTGraph;
 import org.nodes.DTLink;
 import org.nodes.DTNode;
 
-public class WeisfeilerLehmanApproxDTGraphIterator extends WeisfeilerLehmanApproxIterator<DTGraph<StringLabel,StringLabel>, String> {
+public class WeisfeilerLehmanApproxDTGraphIterator extends WeisfeilerLehmanApproxIterator<DTGraph<ApproxStringLabel,ApproxStringLabel>, String> {
 	private boolean reverse;
-	private boolean trackPrevNBH;
-	
+
 	public WeisfeilerLehmanApproxDTGraphIterator(boolean reverse) {
-		this(reverse, false, false, 1, 0.1);
+		this(reverse, 1, 1, 1);
 	}
 
-	public WeisfeilerLehmanApproxDTGraphIterator(boolean reverse, boolean trackPrevNBH, boolean skipSamePrevNBH, int maxLabelCard, double minFreq) {
-		super(skipSamePrevNBH, maxLabelCard, minFreq);
+	public WeisfeilerLehmanApproxDTGraphIterator(boolean reverse, int maxPrevNBH, int maxLabelCard, int minFreq) {
+		super(maxPrevNBH, maxLabelCard, minFreq);
 		this.reverse = reverse;
-		this.trackPrevNBH = trackPrevNBH;
 	}
 
 	@Override
-	public void wlInitialize(List<DTGraph<StringLabel, StringLabel>> graphs) {
-		for (DTGraph<StringLabel, StringLabel> graph : graphs) {
-			for (DTNode<StringLabel,StringLabel> node : graph.nodes()) {
+	public void wlInitialize(List<DTGraph<ApproxStringLabel, ApproxStringLabel>> graphs) {
+		for (DTGraph<ApproxStringLabel, ApproxStringLabel> graph : graphs) {
+			for (DTNode<ApproxStringLabel,ApproxStringLabel> node : graph.nodes()) {
 				String lab = labelDict.get(node.label().toString());
 				if (lab == null) {
 					lab = Integer.toString(labelDict.size());
@@ -38,12 +36,11 @@ public class WeisfeilerLehmanApproxDTGraphIterator extends WeisfeilerLehmanAppro
 				node.label().clear();
 				node.label().append(lab);
 
-				if (trackPrevNBH) {
-					node.label().setPrevNBH("");
-				}
+				node.label().setPrevNBH("");
+				node.label().setSameAsPrev(0);
 
 			}
-			for (DTLink<StringLabel,StringLabel> link : graph.links()) {
+			for (DTLink<ApproxStringLabel,ApproxStringLabel> link : graph.links()) {
 				String lab = labelDict.get(link.tag().toString());
 				if (lab == null) {
 					lab = Integer.toString(labelDict.size());
@@ -52,28 +49,27 @@ public class WeisfeilerLehmanApproxDTGraphIterator extends WeisfeilerLehmanAppro
 				link.tag().clear();
 				link.tag().append(lab);
 
-				if (trackPrevNBH) {
-					link.tag().setPrevNBH("");
-				}
+				link.tag().setPrevNBH("");
+				link.tag().setSameAsPrev(0);
 			}
 		}
 	}
 
 	@Override
-	public void wlIterate(List<DTGraph<StringLabel, StringLabel>> graphs, Map<String, Double> labelFreq) {
+	public void wlIterate(List<DTGraph<ApproxStringLabel, ApproxStringLabel>> graphs, Map<String, Integer> labelFreq) {
 
-		Map<String, Bucket<DTNode<StringLabel,StringLabel>>> bucketsV = new HashMap<String, Bucket<DTNode<StringLabel,StringLabel>>>();
-		Map<String, Bucket<DTLink<StringLabel,StringLabel>>> bucketsE = new HashMap<String, Bucket<DTLink<StringLabel,StringLabel>>>();
+		Map<String, Bucket<DTNode<ApproxStringLabel,ApproxStringLabel>>> bucketsV = new HashMap<String, Bucket<DTNode<ApproxStringLabel,ApproxStringLabel>>>();
+		Map<String, Bucket<DTLink<ApproxStringLabel,ApproxStringLabel>>> bucketsE = new HashMap<String, Bucket<DTLink<ApproxStringLabel,ApproxStringLabel>>>();
 
 		// 1. Fill buckets 
 		if (reverse) { // Labels "travel" in the root direction	
-			for (DTGraph<StringLabel,StringLabel> graph : graphs) {
+			for (DTGraph<ApproxStringLabel,ApproxStringLabel> graph : graphs) {
 				// Add each edge source (i.e.) start vertex to the bucket of the edge label
-				for (DTLink<StringLabel,StringLabel> edge : graph.links()) {
-					if (!skipSamePrevNBH || !edge.tag().isSameAsPrev()) {
-						if (labelFreq.get(edge.tag().toString()) >= minFreq) {
+				for (DTLink<ApproxStringLabel,ApproxStringLabel> edge : graph.links()) {
+					if (edge.tag().getSameAsPrev() < maxPrevNBH) {
+						if (labelFreq.get(edge.tag().toString()) > minFreq) {
 							if (!bucketsV.containsKey(edge.tag().toString())) {
-								bucketsV.put(edge.tag().toString(), new Bucket<DTNode<StringLabel,StringLabel>>(edge.tag().toString()));
+								bucketsV.put(edge.tag().toString(), new Bucket<DTNode<ApproxStringLabel,ApproxStringLabel>>(edge.tag().toString()));
 							}			
 							bucketsV.get(edge.tag().toString()).getContents().add(edge.from());
 						}
@@ -81,11 +77,11 @@ public class WeisfeilerLehmanApproxDTGraphIterator extends WeisfeilerLehmanAppro
 				}
 
 				// Add each incident edge to the bucket of the node label
-				for (DTNode<StringLabel,StringLabel> vertex : graph.nodes()) {
-					if (!skipSamePrevNBH || !vertex.label().isSameAsPrev()) {
-						if (labelFreq.get(vertex.label().toString()) >= minFreq) {
+				for (DTNode<ApproxStringLabel,ApproxStringLabel> vertex : graph.nodes()) {
+					if (vertex.label().getSameAsPrev() < maxPrevNBH) {
+						if (labelFreq.get(vertex.label().toString()) > minFreq) {
 							if (!bucketsE.containsKey(vertex.label().toString())) {
-								bucketsE.put(vertex.label().toString(), new Bucket<DTLink<StringLabel,StringLabel>>(vertex.label().toString()));
+								bucketsE.put(vertex.label().toString(), new Bucket<DTLink<ApproxStringLabel,ApproxStringLabel>>(vertex.label().toString()));
 							}
 							bucketsE.get(vertex.label().toString()).getContents().addAll(vertex.linksIn());
 						}
@@ -93,13 +89,13 @@ public class WeisfeilerLehmanApproxDTGraphIterator extends WeisfeilerLehmanAppro
 				}	
 			}
 		} else { // Labels "travel" in the fringe vertices direction
-			for (DTGraph<StringLabel,StringLabel> graph : graphs) {
+			for (DTGraph<ApproxStringLabel,ApproxStringLabel> graph : graphs) {
 				// Add each edge source (i.e.) start vertex to the bucket of the edge label
-				for (DTLink<StringLabel,StringLabel> edge : graph.links()) {
-					if (!skipSamePrevNBH || !edge.tag().isSameAsPrev()) {
-						if (labelFreq.get(edge.tag().toString()) >= minFreq) {
+				for (DTLink<ApproxStringLabel,ApproxStringLabel> edge : graph.links()) {
+					if (edge.tag().getSameAsPrev() < maxPrevNBH) {
+						if (labelFreq.get(edge.tag().toString()) > minFreq) {
 							if (!bucketsV.containsKey(edge.tag().toString())) {
-								bucketsV.put(edge.tag().toString(), new Bucket<DTNode<StringLabel,StringLabel>>(edge.tag().toString()));
+								bucketsV.put(edge.tag().toString(), new Bucket<DTNode<ApproxStringLabel,ApproxStringLabel>>(edge.tag().toString()));
 							}
 							bucketsV.get(edge.tag().toString()).getContents().add(edge.to());
 						}
@@ -107,11 +103,11 @@ public class WeisfeilerLehmanApproxDTGraphIterator extends WeisfeilerLehmanAppro
 				}
 
 				// Add each incident edge to the bucket of the node label
-				for (DTNode<StringLabel,StringLabel> vertex : graph.nodes()) {
-					if (!skipSamePrevNBH || !vertex.label().isSameAsPrev()) {
-						if (labelFreq.get(vertex.label().toString()) >= minFreq) {
+				for (DTNode<ApproxStringLabel,ApproxStringLabel> vertex : graph.nodes()) {
+					if (vertex.label().getSameAsPrev() < maxPrevNBH) {
+						if (labelFreq.get(vertex.label().toString()) > minFreq) {
 							if (!bucketsE.containsKey(vertex.label().toString())) {
-								bucketsE.put(vertex.label().toString(), new Bucket<DTLink<StringLabel,StringLabel>>(vertex.label().toString()));
+								bucketsE.put(vertex.label().toString(), new Bucket<DTLink<ApproxStringLabel,ApproxStringLabel>>(vertex.label().toString()));
 							}
 							bucketsE.get(vertex.label().toString()).getContents().addAll(vertex.linksOut());
 						}
@@ -130,14 +126,14 @@ public class WeisfeilerLehmanApproxDTGraphIterator extends WeisfeilerLehmanAppro
 
 
 		// We want the edge (predicate) sets as the new label, without the original node label, if noRoot == true
-		for (DTGraph<StringLabel,StringLabel> graph : graphs) {
-			for (DTNode<StringLabel,StringLabel> node : graph.nodes()) {
-				if (labelFreq.get(node.label().toString()) < minFreq) {
+		for (DTGraph<ApproxStringLabel,ApproxStringLabel> graph : graphs) {
+			for (DTNode<ApproxStringLabel,ApproxStringLabel> node : graph.nodes()) {
+				if (labelFreq.get(node.label().toString()) <= minFreq) {
 					node.label().clear();
 				}
 			}
-			for (DTLink<StringLabel,StringLabel> link : graph.links()) {
-				if (labelFreq.get(link.tag().toString()) < minFreq) {
+			for (DTLink<ApproxStringLabel,ApproxStringLabel> link : graph.links()) {
+				if (labelFreq.get(link.tag().toString()) <= minFreq) {
 					link.tag().clear();
 				}
 			}
@@ -147,41 +143,46 @@ public class WeisfeilerLehmanApproxDTGraphIterator extends WeisfeilerLehmanAppro
 		String lab;
 		for (String key : keysV) {	
 			// Process vertices
-			Bucket<DTNode<StringLabel,StringLabel>> bucketV = bucketsV.get(key);			
-			for (DTNode<StringLabel,StringLabel> vertex : bucketV.getContents()) {
-				lab = "_" + bucketV.getLabel();
-				if (!vertex.label().getLastAdded().equals(lab) || vertex.label().getLastAddedCount() < maxLabelCard) { // we want sets, not multisets, if useSets == true
-					vertex.label().append(lab);
+			Bucket<DTNode<ApproxStringLabel,ApproxStringLabel>> bucketV = bucketsV.get(key);			
+			for (DTNode<ApproxStringLabel,ApproxStringLabel> vertex : bucketV.getContents()) {
+				if (!bucketV.getLabel().equals("")) { // should not concat with an empty label, else the purpose of the empty label is lost, because it implicitly gets meaning which it should not get
+					lab = "_" + bucketV.getLabel();
+					if (!vertex.label().getLastAdded().equals(lab) || vertex.label().getLastAddedCount() < maxLabelCard) { // we want sets, not multisets, if useSets == true
+						vertex.label().append(lab);
+					}
 				}
 			}
 		}
 		for (String key : keysE) {
 			// Process edges
-			Bucket<DTLink<StringLabel,StringLabel>> bucketE = bucketsE.get(key);			
-			for (DTLink<StringLabel,StringLabel> edge : bucketE.getContents()) {
-				edge.tag().append("_");
-				edge.tag().append(bucketE.getLabel());
+			Bucket<DTLink<ApproxStringLabel,ApproxStringLabel>> bucketE = bucketsE.get(key);			
+			for (DTLink<ApproxStringLabel,ApproxStringLabel> edge : bucketE.getContents()) {
+				if (!bucketE.getLabel().equals("")) { // should not concat with an empty label, else the purpose of the empty label is lost, because it implicitly gets meaning which it should not get
+					edge.tag().append("_");
+					edge.tag().append(bucketE.getLabel());
+				}
 			}
 		}
 
 		String label;
-		for (DTGraph<StringLabel,StringLabel> graph : graphs) {
-			for (DTLink<StringLabel,StringLabel> edge : graph.links()) {
-				if (trackPrevNBH) {
-					String nb = edge.tag().toString();
-					if (nb.contains("_")) {
-						nb = nb.substring(nb.indexOf("_"));
-					} else {
-						nb = "";
-					}
-
-					if (nb.equals(edge.tag().getPrevNBH())) {
-						edge.tag().setSameAsPrev(true);
-					}
-					edge.tag().setPrevNBH(nb);
+		for (DTGraph<ApproxStringLabel,ApproxStringLabel> graph : graphs) {
+			for (DTLink<ApproxStringLabel,ApproxStringLabel> edge : graph.links()) {
+				String nb = edge.tag().toString();
+				if (nb.contains("_")) {
+					nb = nb.substring(nb.indexOf("_"));
+				} else {
+					nb = "";
 				}
 
-				if (!edge.tag().isSameAsPrev()) {
+				if (nb.equals(edge.tag().getPrevNBH())) {
+					edge.tag().setSameAsPrev(edge.tag().getSameAsPrev() + 1);
+				} else {
+					edge.tag().setSameAsPrev(0);
+				}
+
+				edge.tag().setPrevNBH(nb);
+
+				if (edge.tag().getSameAsPrev() == 0) {
 					label = labelDict.get(edge.tag().toString());						
 					if (label == null) {					
 						label = Integer.toString(labelDict.size());
@@ -199,22 +200,23 @@ public class WeisfeilerLehmanApproxDTGraphIterator extends WeisfeilerLehmanAppro
 				}
 			}
 
-			for (DTNode<StringLabel,StringLabel> vertex : graph.nodes()) {
-				if (trackPrevNBH) {
-					String nb = vertex.label().toString();
-					if (nb.contains("_")) {
-						nb = nb.substring(nb.indexOf("_"));
-					} else {
-						nb = "";
-					}
-
-					if (nb.equals(vertex.label().getPrevNBH())) {
-						vertex.label().setSameAsPrev(true);
-					}
-					vertex.label().setPrevNBH(nb);
+			for (DTNode<ApproxStringLabel,ApproxStringLabel> vertex : graph.nodes()) {
+				String nb = vertex.label().toString();
+				if (nb.contains("_")) {
+					nb = nb.substring(nb.indexOf("_"));
+				} else {
+					nb = "";
 				}
 
-				if (!vertex.label().isSameAsPrev()) {
+				if (nb.equals(vertex.label().getPrevNBH())) {
+					vertex.label().setSameAsPrev(vertex.label().getSameAsPrev() + 1);
+				} else {
+					vertex.label().setSameAsPrev(0);
+				}
+	
+				vertex.label().setPrevNBH(nb);
+
+				if (vertex.label().getSameAsPrev() == 0) {
 					label = labelDict.get(vertex.label().toString());
 					if (label == null) {
 						label = Integer.toString(labelDict.size());

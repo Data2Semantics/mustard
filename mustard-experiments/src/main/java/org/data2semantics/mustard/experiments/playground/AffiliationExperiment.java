@@ -56,13 +56,13 @@ public class AffiliationExperiment {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		//RDFDataSet tripleStore = new RDFFileDataSet(AIFB_FILE, RDFFormat.N3);
+		RDFDataSet tripleStore = new RDFFileDataSet(AIFB_FILE, RDFFormat.N3);
 		//RDFDataSet tripleStore = new RDFFileDataSet("datasets/carcinogenesis.owl", RDFFormat.forFileName("datasets/carcinogenesis.owl"));
-		RDFDataSet tripleStore = new RDFFileDataSet("C:\\Users\\Gerben\\OneDrive\\D2S\\data_bgs_ac_uk_ALL", RDFFormat.NTRIPLES);
+		//RDFDataSet tripleStore = new RDFFileDataSet("C:\\Users\\Gerben\\OneDrive\\D2S\\data_bgs_ac_uk_ALL", RDFFormat.NTRIPLES);
 
-		//ClassificationDataSet ds = new AIFBDataSet(tripleStore, false);
+		ClassificationDataSet ds = new AIFBDataSet(tripleStore, false);
 		//ClassificationDataSet ds = new MutagDataSet(tripleStore);
-		ClassificationDataSet ds = new BGSLithoDataSet(tripleStore);
+		//ClassificationDataSet ds = new BGSLithoDataSet(tripleStore);
 		ds.create();
 
 		System.out.println(ds.getRDFData().getInstances());
@@ -116,12 +116,10 @@ public class AffiliationExperiment {
 
 		double[] lambdas = {1.0};
 
+		int[][] maxPrevNBHs = {{1},{2},{100000}};
+		int[][] maxCards    = {{1},{2},{100000}};
+		int[][] minFreqs    = {{1,2,4,8}};
 
-		boolean skipSamePrevNBH = false;
-		
-		double[] minFreqs = {0.0};//, 1 / (double) (ds.getRDFData().numInstances()-1), 2 / (double) (ds.getRDFData().numInstances()-1), 4 / (double) (ds.getRDFData().numInstances()-1), 8 / (double) (ds.getRDFData().numInstances()-1)};
-		//double[] minFreqs = {0.0, 0.025, 0.05, 0.1, 0.2};
-		int[] maxCards = {100000};//,2,30}; //,2,100}; //,2,100};
 		double[] depthWeights = {0.0};
 
 		RDFData data = ds.getRDFData();
@@ -328,7 +326,7 @@ public class AffiliationExperiment {
 		}
 		//*/
 
-		
+
 		///* WL EdgeSets
 		for (boolean inf : inference) {
 			resTable.newRow("WL Edge Sets (opt): " + inf);		 
@@ -336,14 +334,17 @@ public class AffiliationExperiment {
 
 				List<RDFGraphListWLSubTreeApproxKernel> kernels = new ArrayList<RDFGraphListWLSubTreeApproxKernel>();	
 
-				for (double minFreq : minFreqs) {
-					for (int maxCard : maxCards) {
-						for (double depthWeight : depthWeights) {
-							if (depthTimesTwo) {
-								kernels.add(new RDFGraphListWLSubTreeApproxKernel(d*2, d, inf, reverseWL, true, skipSamePrevNBH, maxCard, minFreq, depthWeight, true));
-							} else {
-								for (int dd : iterationsWL) {
-									kernels.add(new RDFGraphListWLSubTreeApproxKernel(dd, d, inf, reverseWL, true, skipSamePrevNBH, maxCard, minFreq, depthWeight, true));
+				for (int[] minFreq : minFreqs) {
+					for (int[] maxCard : maxCards) {
+						for (int[] maxPrevNBH : maxPrevNBHs) {
+
+							for (double depthWeight : depthWeights) {
+								if (depthTimesTwo) {
+									kernels.add(new RDFGraphListWLSubTreeApproxKernel(d*2, d, inf, reverseWL, true, maxPrevNBH, maxCard, minFreq, depthWeight, true));
+								} else {
+									for (int dd : iterationsWL) {
+										kernels.add(new RDFGraphListWLSubTreeApproxKernel(dd, d, inf, reverseWL, true, maxPrevNBH, maxCard, minFreq, depthWeight, true));
+									}
 								}
 							}
 						}
@@ -397,13 +398,16 @@ public class AffiliationExperiment {
 
 				List<RDFTreeWLSubTreeApproxKernel> kernels = new ArrayList<RDFTreeWLSubTreeApproxKernel>();	
 
-				for (double minFreq : minFreqs) {
-					for (int maxCard : maxCards) {
-						if (depthTimesTwo) {
-							kernels.add(new RDFTreeWLSubTreeApproxKernel(d*2, d, inf, reverseWL, false, true, skipSamePrevNBH, maxCard, minFreq, true));
-						} else {
-							for (int dd : iterationsWL) {
-								kernels.add(new RDFTreeWLSubTreeApproxKernel(dd, d, inf, reverseWL, false, true, skipSamePrevNBH, maxCard, minFreq, true));
+				for (int[] minFreq : minFreqs) {
+					for (int[] maxCard : maxCards) {
+						for (int[] maxPrevNBH : maxPrevNBHs) {
+
+							if (depthTimesTwo) {
+								kernels.add(new RDFTreeWLSubTreeApproxKernel(d*2, d, inf, reverseWL, false, true, maxPrevNBH, maxCard, minFreq, true));
+							} else {
+								for (int dd : iterationsWL) {
+									kernels.add(new RDFTreeWLSubTreeApproxKernel(dd, d, inf, reverseWL, false, true, maxPrevNBH, maxCard, minFreq, true));
+								}
 							}
 						}
 					}

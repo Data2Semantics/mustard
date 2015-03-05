@@ -38,6 +38,7 @@ public class WeisfeilerLehmanDTGraphIterator extends WeisfeilerLehmanIterator<DT
 				
 				if (trackPrevNBH) {
 					node.label().setPrevNBH("");
+					node.label().setSameAsPrev(false);
 				}
 				
 			}
@@ -52,6 +53,7 @@ public class WeisfeilerLehmanDTGraphIterator extends WeisfeilerLehmanIterator<DT
 				
 				if (trackPrevNBH) {
 					link.tag().setPrevNBH("");
+					link.tag().setSameAsPrev(false);
 				}
 			}
 		}
@@ -177,7 +179,7 @@ public class WeisfeilerLehmanDTGraphIterator extends WeisfeilerLehmanIterator<DT
 
 					if (nb.equals(vertex.label().getPrevNBH())) {
 						vertex.label().setSameAsPrev(true);
-					}
+					}				
 					vertex.label().setPrevNBH(nb);
 				}
 
