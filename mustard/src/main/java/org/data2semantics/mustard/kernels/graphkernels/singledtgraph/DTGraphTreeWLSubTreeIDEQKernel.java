@@ -45,26 +45,18 @@ public class DTGraphTreeWLSubTreeIDEQKernel implements GraphKernel<SingleDTGraph
 	private boolean normalize;
 	private boolean reverse;
 	private boolean iterationWeighting;
-	private boolean trackPrevNBH;
+	private boolean noDuplicateNBH;
+	private boolean noSubGraphs;
 	private long compTime;
 
-	public DTGraphTreeWLSubTreeIDEQKernel(int iterations, int depth, boolean reverse, boolean iterationWeighting, boolean trackPrevNBH, boolean normalize) {
+	public DTGraphTreeWLSubTreeIDEQKernel(int iterations, int depth, boolean reverse, boolean iterationWeighting, boolean noDuplicateNBH, boolean noSubGraphs, boolean normalize) {
 		this.reverse = reverse;
 		this.iterationWeighting = iterationWeighting;
-		this.trackPrevNBH = trackPrevNBH;
+		this.noDuplicateNBH = noDuplicateNBH;
+		this.noSubGraphs = noSubGraphs;
 		this.normalize = normalize;
 		this.depth = depth;
 		this.iterations = iterations;
-	}
-
-
-	public DTGraphTreeWLSubTreeIDEQKernel(int iterations, int depth, boolean reverse, boolean iterationWeighting, boolean normalize) {
-		this(iterations, depth, reverse, iterationWeighting, false, normalize);
-	}
-
-
-	public DTGraphTreeWLSubTreeIDEQKernel(int iterations, int depth, boolean normalize) {
-		this(iterations, depth, false, false, false, normalize);
 	}
 
 	public String getLabel() {
@@ -90,7 +82,7 @@ public class DTGraphTreeWLSubTreeIDEQKernel implements GraphKernel<SingleDTGraph
 
 		init(data.getGraph(), data.getInstances());
 			
-		WeisfeilerLehmanIterator<DTGraph<StringLabel,StringLabel>> wl = new WeisfeilerLehmanDTGraphIterator(reverse, trackPrevNBH);
+		WeisfeilerLehmanIterator<DTGraph<StringLabel,StringLabel>> wl = new WeisfeilerLehmanDTGraphIterator(reverse, noDuplicateNBH);
 
 		List<DTGraph<StringLabel,StringLabel>> gList = new ArrayList<DTGraph<StringLabel,StringLabel>>();
 		gList.add(rdfGraph);
@@ -231,7 +223,7 @@ public class DTGraphTreeWLSubTreeIDEQKernel implements GraphKernel<SingleDTGraph
 			vertexIndexMap = instanceVertexIndexMap.get(instances.get(i));
 			for (Pair<DTNode<StringLabel,StringLabel>, Integer> vertex : vertexIndexMap) {
 				depth = vertex.getSecond();
-				if ((!trackPrevNBH || !vertex.getFirst().label().isSameAsPrev()) && ((depth * 2) >=  currentIt)) {
+				if ((!noDuplicateNBH || !vertex.getFirst().label().isSameAsPrev()) && (noSubGraphs || (depth * 2) >=  currentIt)) {
 					index = Integer.parseInt(vertex.getFirst().label().toString());
 					featureVectors[i].setValue(index, featureVectors[i].getValue(index) + weight);
 				}
@@ -239,7 +231,7 @@ public class DTGraphTreeWLSubTreeIDEQKernel implements GraphKernel<SingleDTGraph
 			edgeIndexMap = instanceEdgeIndexMap.get(instances.get(i));
 			for (Pair<DTLink<StringLabel,StringLabel>, Integer> edge : edgeIndexMap) {
 				depth = edge.getSecond();
-				if ((!trackPrevNBH || !edge.getFirst().tag().isSameAsPrev()) && (((depth * 2)+1) >=  currentIt)) {
+				if ((!noDuplicateNBH || !edge.getFirst().tag().isSameAsPrev()) && (noSubGraphs || ((depth * 2)+1) >=  currentIt)) {
 					index = Integer.parseInt(edge.getFirst().tag().toString());
 					featureVectors[i].setValue(index, featureVectors[i].getValue(index) + weight);
 				}

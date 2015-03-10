@@ -23,20 +23,12 @@ public class RDFTreeWLSubTreeIDEQKernel implements GraphKernel<RDFData>, Feature
 	private DTGraphTreeWLSubTreeIDEQKernel kernel;
 	private SingleDTGraph graph;
 
-	public RDFTreeWLSubTreeIDEQKernel(int iterations, int depth, boolean inference, boolean normalize) {
-		this(iterations, depth, inference, false, false, false, normalize);
-	}
-
-	public RDFTreeWLSubTreeIDEQKernel(int iterations, int depth, boolean inference, boolean reverse, boolean iterationWeighting, boolean normalize) {
-		this(iterations, depth, inference, reverse, iterationWeighting, false, normalize);
-	}
-
-	public RDFTreeWLSubTreeIDEQKernel(int iterations, int depth, boolean inference, boolean reverse, boolean iterationWeighting, boolean trackPrevNBH, boolean normalize) {
+	public RDFTreeWLSubTreeIDEQKernel(int iterations, int depth, boolean inference, boolean reverse, boolean iterationWeighting, boolean noDuplicateNBH, boolean noSubGraphs, boolean normalize) {
 		super();
 		this.depth = depth;
 		this.inference = inference;
 
-		kernel = new DTGraphTreeWLSubTreeIDEQKernel(iterations, depth, reverse, iterationWeighting, trackPrevNBH, normalize);
+		kernel = new DTGraphTreeWLSubTreeIDEQKernel(iterations, depth, reverse, iterationWeighting, noDuplicateNBH, noSubGraphs, normalize);
 	}
 
 	public String getLabel() {

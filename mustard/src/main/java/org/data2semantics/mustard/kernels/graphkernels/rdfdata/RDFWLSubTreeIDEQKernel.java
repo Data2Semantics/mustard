@@ -10,7 +10,6 @@ import org.data2semantics.mustard.kernels.data.RDFData;
 import org.data2semantics.mustard.kernels.data.SingleDTGraph;
 import org.data2semantics.mustard.kernels.graphkernels.FeatureVectorKernel;
 import org.data2semantics.mustard.kernels.graphkernels.GraphKernel;
-import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphWLSubTreeKernel;
 import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphWLSubTreeIDEQKernel;
 import org.data2semantics.mustard.learners.SparseVector;
 import org.data2semantics.mustard.rdf.RDFDataSet;
@@ -24,20 +23,12 @@ public class RDFWLSubTreeIDEQKernel implements GraphKernel<RDFData>, FeatureVect
 	private DTGraphWLSubTreeIDEQKernel kernel;
 	private SingleDTGraph graph;
 
-	public RDFWLSubTreeIDEQKernel(int iterations, int depth, boolean inference, boolean normalize) {
-		this(iterations, depth, inference, false, false, normalize);
-	}
-	
-	public RDFWLSubTreeIDEQKernel(int iterations, int depth, boolean inference, boolean reverse, boolean iterationWeighting, boolean normalize) {
-		this(iterations, depth, inference, reverse, iterationWeighting, false, normalize);
-	}
-
-	public RDFWLSubTreeIDEQKernel(int iterations, int depth, boolean inference, boolean reverse, boolean iterationWeighting, boolean trackPrevNBH, boolean normalize) {
+	public RDFWLSubTreeIDEQKernel(int iterations, int depth, boolean inference, boolean reverse, boolean iterationWeighting, boolean noDuplicateNBH, boolean noSubGraphs, boolean normalize) {
 		super();
 		this.depth = depth;
 		this.inference = inference;
 
-		kernel = new DTGraphWLSubTreeIDEQKernel(iterations, depth, reverse, iterationWeighting, trackPrevNBH, normalize);
+		kernel = new DTGraphWLSubTreeIDEQKernel(iterations, depth, reverse, iterationWeighting, noDuplicateNBH, noSubGraphs, normalize);
 	}
 	
 	public String getLabel() {

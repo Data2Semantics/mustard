@@ -23,14 +23,12 @@ import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFGraphListWLSub
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFRootWalkCountKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFTreeWLSubTreeIDEQApproxKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFTreeWLSubTreeIDEQKernel;
-import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFTreeWLSubTreeOneGraphKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFTreeWalkCountKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFTreeWLSubTreeKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFRootWLSubTreeKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFWLSubTreeIDEQApproxKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFWLSubTreeKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFWLSubTreeIDEQKernel;
-import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFWLSubTreeOneGraphKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFWalkCountKernel;
 import org.data2semantics.mustard.learners.evaluation.AUCPR;
 import org.data2semantics.mustard.learners.evaluation.AUCROC;
@@ -61,12 +59,12 @@ public class AffiliationExperiment {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		RDFDataSet tripleStore = new RDFFileDataSet(AIFB_FILE, RDFFormat.N3);
-		//RDFDataSet tripleStore = new RDFFileDataSet("datasets/carcinogenesis.owl", RDFFormat.forFileName("datasets/carcinogenesis.owl"));
+		//RDFDataSet tripleStore = new RDFFileDataSet(AIFB_FILE, RDFFormat.N3);
+		RDFDataSet tripleStore = new RDFFileDataSet("datasets/carcinogenesis.owl", RDFFormat.forFileName("datasets/carcinogenesis.owl"));
 		//RDFDataSet tripleStore = new RDFFileDataSet("C:\\Users\\Gerben\\OneDrive\\D2S\\data_bgs_ac_uk_ALL", RDFFormat.NTRIPLES);
 
-		ClassificationDataSet ds = new AIFBDataSet(tripleStore, false);
-		//ClassificationDataSet ds = new MutagDataSet(tripleStore);
+		//ClassificationDataSet ds = new AIFBDataSet(tripleStore, false);
+		ClassificationDataSet ds = new MutagDataSet(tripleStore);
 		//ClassificationDataSet ds = new BGSLithoDataSet(tripleStore);
 		ds.create();
 
@@ -121,8 +119,11 @@ public class AffiliationExperiment {
 
 		double[] lambdas = {1.0};
 
-		int[][] maxPrevNBHs = {{1},{2},{100000}};
-		int[][] maxCards    = {{1},{2},{100000}};
+		double[] depthDecays = {2 / Math.sqrt(2), 1 / Math.sqrt(2), 1, Math.sqrt(2), 2};
+		//int[][] maxPrevNBHs = {{1},{2},{100000}};
+		int[][] maxPrevNBHs = {{1}};
+		//int[][] maxCards    = {{1},{2},{100000}};
+		int[][] maxCards    = {{6}};
 		int[][] minFreqs    = {{1,2,4,8}};
 
 		double[] depthWeights = {0.0};
@@ -301,7 +302,7 @@ public class AffiliationExperiment {
 		//*/
 
 
-		/* WL
+		///* WL
 		for (boolean inf : inference) {
 			resTable.newRow("WL: " + inf);		 
 
@@ -332,9 +333,9 @@ public class AffiliationExperiment {
 		//*/
 
 
-		/* WL EdgeSets
+		///* WL EdgeSets
 		for (boolean inf : inference) {
-			resTable.newRow("WL Edge Sets (opt): " + inf);		 
+			resTable.newRow("WL Approx: " + inf);		 
 			for (int d : depths) {
 
 				List<RDFGraphListWLSubTreeApproxKernel> kernels = new ArrayList<RDFGraphListWLSubTreeApproxKernel>();	
@@ -342,13 +343,14 @@ public class AffiliationExperiment {
 				for (int[] minFreq : minFreqs) {
 					for (int[] maxCard : maxCards) {
 						for (int[] maxPrevNBH : maxPrevNBHs) {
-
-							for (double depthWeight : depthWeights) {
-								if (depthTimesTwo) {
-									kernels.add(new RDFGraphListWLSubTreeApproxKernel(d*2, d, inf, reverseWL, true, maxPrevNBH, maxCard, minFreq, depthWeight, true));
-								} else {
-									for (int dd : iterationsWL) {
-										kernels.add(new RDFGraphListWLSubTreeApproxKernel(dd, d, inf, reverseWL, true, maxPrevNBH, maxCard, minFreq, depthWeight, true));
+							for (double depthDecay : depthDecays) { 
+								for (double depthWeight : depthWeights) {
+									if (depthTimesTwo) {
+										kernels.add(new RDFGraphListWLSubTreeApproxKernel(d*2, d, inf, reverseWL, true, depthDecay, maxPrevNBH, maxCard, minFreq, depthWeight, true));
+									} else {
+										for (int dd : iterationsWL) {
+											kernels.add(new RDFGraphListWLSubTreeApproxKernel(dd, d, inf, reverseWL, true, depthDecay, maxPrevNBH, maxCard, minFreq, depthWeight, true));
+										}
 									}
 								}
 							}
@@ -373,13 +375,13 @@ public class AffiliationExperiment {
 			resTable.newRow("WL Tree: " + inf);		 
 
 			for (int d : depths) {
-				List<RDFTreeWLSubTreeKernel> kernels = new ArrayList<RDFTreeWLSubTreeKernel>();	
+				List<RDFTreeWLSubTreeIDEQKernel> kernels = new ArrayList<RDFTreeWLSubTreeIDEQKernel>();	
 
 				if (depthTimesTwo) {
-					kernels.add(new RDFTreeWLSubTreeKernel(d*2, d, inf, reverseWL, false, true, true));
+					kernels.add(new RDFTreeWLSubTreeIDEQKernel(d*2, d, inf, reverseWL, false, true, false,true));
 				} else {
 					for (int dd : iterationsWL) {
-						kernels.add(new RDFTreeWLSubTreeKernel(dd, d, inf, reverseWL, false, true, true));
+						kernels.add(new RDFTreeWLSubTreeIDEQKernel(dd, d, inf, reverseWL, false, true, false, true));
 					}
 				}
 
@@ -396,7 +398,35 @@ public class AffiliationExperiment {
 		}
 		//*/
 
-		
+		///* WL Tree OneGraph
+		for (boolean inf : inference) {
+			resTable.newRow("WL Tree OneGraph: " + inf);		 
+
+			for (int d : depths) {
+				List<RDFTreeWLSubTreeIDEQKernel> kernels = new ArrayList<RDFTreeWLSubTreeIDEQKernel>();	
+
+				if (depthTimesTwo) {
+					kernels.add(new RDFTreeWLSubTreeIDEQKernel(d*2, d, inf, reverseWL, false, true, true, true));
+				} else {
+					for (int dd : iterationsWL) {
+						kernels.add(new RDFTreeWLSubTreeIDEQKernel(dd, d, inf, reverseWL, false, true, true, true));
+					}
+				}
+
+				//Collections.shuffle(target);
+				SimpleGraphKernelExperiment<RDFData> exp = new SimpleGraphKernelExperiment<RDFData>(kernels, data, target, svmParms, seeds, evalFuncs);
+
+				exp.run();
+
+				for (Result res : exp.getResults()) {
+					resTable.addResult(res);
+				}
+			}
+
+		}
+		//*/
+
+
 		///* WL EdgeSets Tree
 		for (boolean inf : inference) {
 			resTable.newRow("WL Tree Approx: " + inf);		 
@@ -407,12 +437,13 @@ public class AffiliationExperiment {
 				for (int[] minFreq : minFreqs) {
 					for (int[] maxCard : maxCards) {
 						for (int[] maxPrevNBH : maxPrevNBHs) {
-
-							if (depthTimesTwo) {
-								kernels.add(new RDFTreeWLSubTreeIDEQApproxKernel(d*2, d, inf, reverseWL, false, true, maxPrevNBH, maxCard, minFreq, true));
-							} else {
-								for (int dd : iterationsWL) {
-									kernels.add(new RDFTreeWLSubTreeIDEQApproxKernel(dd, d, inf, reverseWL, false, true, maxPrevNBH, maxCard, minFreq, true));
+							for (double depthDecay : depthDecays) { 
+								if (depthTimesTwo) {
+									kernels.add(new RDFTreeWLSubTreeIDEQApproxKernel(d*2, d, inf, reverseWL, false, true, false, depthDecay, maxPrevNBH, maxCard, minFreq, true));
+								} else {
+									for (int dd : iterationsWL) {
+										kernels.add(new RDFTreeWLSubTreeIDEQApproxKernel(dd, d, inf, reverseWL, false, true, false, depthDecay, maxPrevNBH, maxCard, minFreq, true));
+									}
 								}
 							}
 						}
@@ -431,18 +462,27 @@ public class AffiliationExperiment {
 		}
 		//*/
 
-		///* WL Tree OneGraph
+
+		///* WL EdgeSets Tree
 		for (boolean inf : inference) {
-			resTable.newRow("WL Tree OneGraph: " + inf);		 
-
+			resTable.newRow("WL Tree Approx One Graph: " + inf);		 
 			for (int d : depths) {
-				List<RDFTreeWLSubTreeOneGraphKernel> kernels = new ArrayList<RDFTreeWLSubTreeOneGraphKernel>();	
 
-				if (depthTimesTwo) {
-					kernels.add(new RDFTreeWLSubTreeOneGraphKernel(d*2, d, inf, reverseWL, false, true, true));
-				} else {
-					for (int dd : iterationsWL) {
-						kernels.add(new RDFTreeWLSubTreeOneGraphKernel(dd, d, inf, reverseWL, false, true, true));
+				List<RDFTreeWLSubTreeIDEQApproxKernel> kernels = new ArrayList<RDFTreeWLSubTreeIDEQApproxKernel>();	
+
+				for (int[] minFreq : minFreqs) {
+					for (int[] maxCard : maxCards) {
+						for (int[] maxPrevNBH : maxPrevNBHs) {
+							for (double depthDecay : depthDecays) { 
+								if (depthTimesTwo) {
+									kernels.add(new RDFTreeWLSubTreeIDEQApproxKernel(d*2, d, inf, reverseWL, false, true, true, depthDecay, maxPrevNBH, maxCard, minFreq, true));
+								} else {
+									for (int dd : iterationsWL) {
+										kernels.add(new RDFTreeWLSubTreeIDEQApproxKernel(dd, d, inf, reverseWL, false, true, true, depthDecay, maxPrevNBH, maxCard, minFreq, true));
+									}
+								}
+							}
+						}
 					}
 				}
 
@@ -455,9 +495,9 @@ public class AffiliationExperiment {
 					resTable.addResult(res);
 				}
 			}
-
 		}
 		//*/
+
 
 
 		///* WL Fast
@@ -465,12 +505,38 @@ public class AffiliationExperiment {
 			resTable.newRow("WL Fast: " + inf);		 
 
 			for (int d : depths) {
-				List<RDFWLSubTreeKernel> kernels = new ArrayList<RDFWLSubTreeKernel>();	
+				List<RDFWLSubTreeIDEQKernel> kernels = new ArrayList<RDFWLSubTreeIDEQKernel>();	
 				if (depthTimesTwo) {
-					kernels.add(new RDFWLSubTreeKernel(d*2, d, inf, reverseWL, false, true, true));
+					kernels.add(new RDFWLSubTreeIDEQKernel(d*2, d, inf, reverseWL, false, true, false, true));
 				} else {
 					for (int dd : iterationsWL) {
-						kernels.add(new RDFWLSubTreeKernel(dd, d, inf, reverseWL, false, true, true));
+						kernels.add(new RDFWLSubTreeIDEQKernel(dd, d, inf, reverseWL, false, true, false, true));
+					}
+				}
+
+				//Collections.shuffle(target);
+				SimpleGraphKernelExperiment<RDFData> exp = new SimpleGraphKernelExperiment<RDFData>(kernels, data, target, svmParms, seeds, evalFuncs);
+
+				exp.run();
+
+				for (Result res : exp.getResults()) {
+					resTable.addResult(res);
+				}
+			}
+		}
+		//*/
+
+		///* WL Fast One Graph
+		for (boolean inf : inference) {
+			resTable.newRow("WL Fast OneGraph: " + inf);		 
+
+			for (int d : depths) {
+				List<RDFWLSubTreeIDEQKernel> kernels = new ArrayList<RDFWLSubTreeIDEQKernel>();	
+				if (depthTimesTwo) {
+					kernels.add(new RDFWLSubTreeIDEQKernel(d*2, d, inf, reverseWL, false, true, true, true));
+				} else {
+					for (int dd : iterationsWL) {
+						kernels.add(new RDFWLSubTreeIDEQKernel(dd, d, inf, reverseWL, false, true, true, true));
 					}
 				}
 
@@ -496,11 +562,13 @@ public class AffiliationExperiment {
 				for (int[] minFreq : minFreqs) {
 					for (int[] maxCard : maxCards) {
 						for (int[] maxPrevNBH : maxPrevNBHs) {
-							if (depthTimesTwo) {
-								kernels.add(new RDFWLSubTreeIDEQApproxKernel(d*2, d, inf, reverseWL, false, true, maxPrevNBH, maxCard, minFreq, true));
-							} else {
-								for (int dd : iterationsWL) {
-									kernels.add(new RDFWLSubTreeIDEQApproxKernel(dd, d, inf, reverseWL, false, true, maxPrevNBH, maxCard, minFreq, true));
+							for (double depthDecay : depthDecays) {
+								if (depthTimesTwo) {
+									kernels.add(new RDFWLSubTreeIDEQApproxKernel(d*2, d, inf, reverseWL, false, true, false, depthDecay, maxPrevNBH, maxCard, minFreq, true));
+								} else {
+									for (int dd : iterationsWL) {
+										kernels.add(new RDFWLSubTreeIDEQApproxKernel(dd, d, inf, reverseWL, false, true, false, depthDecay, maxPrevNBH, maxCard, minFreq, true));
+									}
 								}
 							}
 						}
@@ -520,17 +588,25 @@ public class AffiliationExperiment {
 		//*/
 
 
-		///* WL Fast MkIII
+		///* WL Fast Approx One Graph
 		for (boolean inf : inference) {
-			resTable.newRow("WL Fast OneGraph: " + inf);		 
+			resTable.newRow("WL Fast Approx One Graph: " + inf);		 
 
 			for (int d : depths) {
-				List<RDFWLSubTreeOneGraphKernel> kernels = new ArrayList<RDFWLSubTreeOneGraphKernel>();	
-				if (depthTimesTwo) {
-					kernels.add(new RDFWLSubTreeOneGraphKernel(d*2, d, inf, reverseWL, false, true, true));
-				} else {
-					for (int dd : iterationsWL) {
-						kernels.add(new RDFWLSubTreeOneGraphKernel(dd, d, inf, reverseWL, false, true, true));
+				List<RDFWLSubTreeIDEQApproxKernel> kernels = new ArrayList<RDFWLSubTreeIDEQApproxKernel>();	
+				for (int[] minFreq : minFreqs) {
+					for (int[] maxCard : maxCards) {
+						for (int[] maxPrevNBH : maxPrevNBHs) {
+							for (double depthDecay : depthDecays) {
+								if (depthTimesTwo) {
+									kernels.add(new RDFWLSubTreeIDEQApproxKernel(d*2, d, inf, reverseWL, false, true, true, depthDecay, maxPrevNBH, maxCard, minFreq, true));
+								} else {
+									for (int dd : iterationsWL) {
+										kernels.add(new RDFWLSubTreeIDEQApproxKernel(dd, d, inf, reverseWL, false, true, true, depthDecay, maxPrevNBH, maxCard, minFreq, true));
+									}
+								}
+							}
+						}
 					}
 				}
 
@@ -545,6 +621,8 @@ public class AffiliationExperiment {
 			}
 		}
 		//*/
+
+
 
 
 
