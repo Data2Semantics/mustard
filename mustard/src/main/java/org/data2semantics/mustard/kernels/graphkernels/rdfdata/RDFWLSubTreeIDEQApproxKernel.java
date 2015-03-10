@@ -9,25 +9,26 @@ import org.data2semantics.mustard.kernels.data.RDFData;
 import org.data2semantics.mustard.kernels.data.SingleDTGraph;
 import org.data2semantics.mustard.kernels.graphkernels.FeatureVectorKernel;
 import org.data2semantics.mustard.kernels.graphkernels.GraphKernel;
-import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphTreeWLSubTreeApproxKernel;
+import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphTreeWLSubTreeIDEQApproxKernel;
+import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphWLSubTreeIDEQApproxKernel;
 import org.data2semantics.mustard.learners.SparseVector;
 import org.data2semantics.mustard.rdf.RDFDataSet;
 import org.data2semantics.mustard.rdf.RDFUtils;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 
-public class RDFTreeWLSubTreeApproxKernel implements GraphKernel<RDFData>, FeatureVectorKernel<RDFData>, ComputationTimeTracker {
+public class RDFWLSubTreeIDEQApproxKernel implements GraphKernel<RDFData>, FeatureVectorKernel<RDFData>, ComputationTimeTracker {
 	private int depth;
 	private boolean inference;
-	private DTGraphTreeWLSubTreeApproxKernel kernel;
+	private DTGraphWLSubTreeIDEQApproxKernel kernel;
 	private SingleDTGraph graph;
 	
-	public RDFTreeWLSubTreeApproxKernel(int iterations, int depth, boolean inference, boolean reverse, boolean iterationWeighting, boolean noDuplicateNBH, int[] maxPrevNBHs, int[] maxLabelCards, int[] minFreqs, boolean normalize) {
+	public RDFWLSubTreeIDEQApproxKernel(int iterations, int depth, boolean inference, boolean reverse, boolean iterationWeighting, boolean noDuplicateNBH, int[] maxPrevNBHs, int[] maxLabelCards, int[] minFreqs, boolean normalize) {
 		super();
 		this.depth = depth;
 		this.inference = inference;
 
-		kernel = new DTGraphTreeWLSubTreeApproxKernel(iterations, depth, reverse, iterationWeighting, noDuplicateNBH, maxPrevNBHs, maxLabelCards, minFreqs, normalize);
+		kernel = new DTGraphWLSubTreeIDEQApproxKernel(iterations, depth, reverse, iterationWeighting, noDuplicateNBH, maxPrevNBHs, maxLabelCards, minFreqs, normalize);
 	}
 
 	public String getLabel() {
