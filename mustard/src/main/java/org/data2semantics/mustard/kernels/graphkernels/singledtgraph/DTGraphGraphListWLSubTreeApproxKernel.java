@@ -20,10 +20,10 @@ public class DTGraphGraphListWLSubTreeApproxKernel implements GraphKernel<Single
 	private int depth;
 	private WLSubTreeApproxKernel kernel;
 
-	public DTGraphGraphListWLSubTreeApproxKernel(int iterations, int depth, boolean reverse, boolean noDuplicateNBH, double depthDecay, int[] maxPrevNBHs, int[] maxLabelCards, int[] minFreqs, double depthWeight, boolean normalize) {
+	public DTGraphGraphListWLSubTreeApproxKernel(int iterations, int depth, boolean reverse, boolean noDuplicateNBH, double depthWeight, double depthDiffWeight, int[] maxPrevNBHs, int[] maxLabelCards, int[] minFreqs, boolean normalize) {
 		this.depth = depth;
 		
-		kernel = new WLSubTreeApproxKernel(iterations, reverse, noDuplicateNBH, depthDecay, maxPrevNBHs, maxLabelCards, minFreqs, depthWeight, normalize);	
+		kernel = new WLSubTreeApproxKernel(iterations, reverse, noDuplicateNBH, depthWeight, depthDiffWeight, maxPrevNBHs, maxLabelCards, minFreqs, normalize);	
 	}
 
 	public String getLabel() {

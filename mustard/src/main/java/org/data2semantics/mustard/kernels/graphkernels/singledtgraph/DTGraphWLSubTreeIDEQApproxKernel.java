@@ -46,13 +46,14 @@ public class DTGraphWLSubTreeIDEQApproxKernel implements GraphKernel<SingleDTGra
 	private int[] maxLabelCards;
 	private int[] minFreqs;
 	
-	private double depthDecay;
+	private double depthWeight;
+	private double depthDiffWeight;
 
 	private Map<String,Integer> labelFreq;
 
 	private long compTime;
 
-	public DTGraphWLSubTreeIDEQApproxKernel(int iterations, int depth, boolean reverse, boolean iterationWeighting, boolean noDuplicateNBH, boolean noSubGraphs, double depthDecay, int[] maxPrevNBHs, int[] maxLabelCards, int[] minFreqs, boolean normalize) {
+	public DTGraphWLSubTreeIDEQApproxKernel(int iterations, int depth, boolean reverse, boolean iterationWeighting, boolean noDuplicateNBH, boolean noSubGraphs, double depthWeight, double depthDiffWeight, int[] maxPrevNBHs, int[] maxLabelCards, int[] minFreqs, boolean normalize) {
 		this.reverse = reverse;
 		this.iterationWeighting = iterationWeighting;
 		this.noDuplicateNBH = noDuplicateNBH;	
@@ -63,7 +64,8 @@ public class DTGraphWLSubTreeIDEQApproxKernel implements GraphKernel<SingleDTGra
 		this.maxPrevNBHs = maxPrevNBHs;
 		this.maxLabelCards = maxLabelCards;
 		this.minFreqs = minFreqs;
-		this.depthDecay = depthDecay;
+		this.depthWeight = depthWeight;
+		this.depthDiffWeight = depthDiffWeight;
 	}
 
 	public String getLabel() {
@@ -296,7 +298,7 @@ public class DTGraphWLSubTreeIDEQApproxKernel implements GraphKernel<SingleDTGra
 					index = Integer.parseInt(vertex.label().toString());				
 					for (int j = 0; j <= this.depth; j++) {
 						int index2 = (index * (this.depth+1)) + j;
-						double weight2 = weight / Math.pow(depthDecay,Math.abs(j-depth)); // farther away depths get lower weight, the distance is abs(j-depth)
+						double weight2 = weight / Math.pow(depthDiffWeight,Math.abs(j-depth)); // farther away depths get lower weight, the distance is abs(j-depth)
 						featureVectors[i].setValue(index2, featureVectors[i].getValue(index2) + weight2);
 					}
 				}
@@ -308,7 +310,7 @@ public class DTGraphWLSubTreeIDEQApproxKernel implements GraphKernel<SingleDTGra
 					index = Integer.parseInt(edge.tag().toString());
 					for (int j = 0; j <= this.depth; j++) {
 						int index2 = (index * (this.depth+1)) + j;
-						double weight2 = weight / Math.pow(depthDecay,Math.abs(j-depth)); // farther away depths get lower weight, the distance is abs(j-depth)
+						double weight2 = weight / Math.pow(depthDiffWeight,Math.abs(j-depth)); // farther away depths get lower weight, the distance is abs(j-depth)
 						featureVectors[i].setValue(index2, featureVectors[i].getValue(index2) + weight2);
 					}
 				}

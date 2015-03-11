@@ -46,11 +46,12 @@ public class DTGraphTreeWLSubTreeIDEQApproxKernel implements GraphKernel<SingleD
 	private int[] minFreqs;
 	private int[] maxPrevNBHs;
 	
-	private double depthDecay;
+	private double depthWeight;
+	private double depthDiffWeight;
 
 	private long compTime; // should be last, so that it is the last arg in the label
 
-	public DTGraphTreeWLSubTreeIDEQApproxKernel(int iterations, int depth, boolean reverse, boolean iterationWeighting, boolean noDuplicateNBH, boolean noSubGraphs, double depthDecay, int[] maxPrevNBHs, int[] maxLabelCards, int[] minFreqs, boolean normalize) {
+	public DTGraphTreeWLSubTreeIDEQApproxKernel(int iterations, int depth, boolean reverse, boolean iterationWeighting, boolean noDuplicateNBH, boolean noSubGraphs, double depthWeight, double depthDiffWeight, int[] maxPrevNBHs, int[] maxLabelCards, int[] minFreqs, boolean normalize) {
 		this.reverse = reverse;
 		this.iterationWeighting = iterationWeighting;
 		this.noDuplicateNBH = noDuplicateNBH;
@@ -61,7 +62,8 @@ public class DTGraphTreeWLSubTreeIDEQApproxKernel implements GraphKernel<SingleD
 		this.maxLabelCards = maxLabelCards;
 		this.minFreqs = minFreqs;
 		this.maxPrevNBHs = maxPrevNBHs;
-		this.depthDecay = depthDecay;
+		this.depthWeight = depthWeight;
+		this.depthDiffWeight = depthDiffWeight;
 	}
 
 	public String getLabel() {
@@ -248,7 +250,7 @@ public class DTGraphTreeWLSubTreeIDEQApproxKernel implements GraphKernel<SingleD
 					
 					for (int j = 0; j <= this.depth; j++) {
 						int index2 = (index * (this.depth+1)) + j;
-						double weight2 = weight / Math.pow(depthDecay,Math.abs(j-depth)); // farther away depths get lower weight, the distance is abs(j-depth)
+						double weight2 = weight / Math.pow(depthDiffWeight,Math.abs(j-depth)); // farther away depths get lower weight, the distance is abs(j-depth)
 						featureVectors[i].setValue(index2, featureVectors[i].getValue(index2) + weight2);
 					}
 				}
@@ -260,7 +262,7 @@ public class DTGraphTreeWLSubTreeIDEQApproxKernel implements GraphKernel<SingleD
 					
 					for (int j = 0; j <= this.depth; j++) {
 						int index2 = (index * (this.depth+1)) + j;
-						double weight2 = weight / Math.pow(depthDecay,Math.abs(j-depth)); // farther away depths get lower weight, the distance is abs(j-depth)
+						double weight2 = weight / Math.pow(depthDiffWeight,Math.abs(j-depth)); // farther away depths get lower weight, the distance is abs(j-depth)
 						featureVectors[i].setValue(index2, featureVectors[i].getValue(index2) + weight2);
 					}
 				}
