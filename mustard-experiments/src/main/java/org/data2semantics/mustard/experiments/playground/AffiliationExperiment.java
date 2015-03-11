@@ -59,12 +59,12 @@ public class AffiliationExperiment {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		//RDFDataSet tripleStore = new RDFFileDataSet(AIFB_FILE, RDFFormat.N3);
-		RDFDataSet tripleStore = new RDFFileDataSet("datasets/carcinogenesis.owl", RDFFormat.forFileName("datasets/carcinogenesis.owl"));
+		RDFDataSet tripleStore = new RDFFileDataSet(AIFB_FILE, RDFFormat.N3);
+		//RDFDataSet tripleStore = new RDFFileDataSet("datasets/carcinogenesis.owl", RDFFormat.forFileName("datasets/carcinogenesis.owl"));
 		//RDFDataSet tripleStore = new RDFFileDataSet("C:\\Users\\Gerben\\OneDrive\\D2S\\data_bgs_ac_uk_ALL", RDFFormat.NTRIPLES);
 
-		//ClassificationDataSet ds = new AIFBDataSet(tripleStore, false);
-		ClassificationDataSet ds = new MutagDataSet(tripleStore);
+		ClassificationDataSet ds = new AIFBDataSet(tripleStore, false);
+		//ClassificationDataSet ds = new MutagDataSet(tripleStore);
 		//ClassificationDataSet ds = new BGSLithoDataSet(tripleStore);
 		ds.create();
 
@@ -119,11 +119,12 @@ public class AffiliationExperiment {
 
 		double[] lambdas = {1.0};
 
-		double[] depthDecays = {2 / Math.sqrt(2), 1 / Math.sqrt(2), 1, Math.sqrt(2), 2};
+		double[] depthDecays = {1.0 / 2.0, 1.0 / Math.sqrt(2), 1.0, Math.sqrt(2), 2.0};
+		//double[] depthDecays = {1.0};
 		//int[][] maxPrevNBHs = {{1},{2},{100000}};
-		int[][] maxPrevNBHs = {{1}};
+		int[][] maxPrevNBHs = {{6}};
 		//int[][] maxCards    = {{1},{2},{100000}};
-		int[][] maxCards    = {{6}};
+		int[][] maxCards    = {{1}};
 		int[][] minFreqs    = {{1,2,4,8}};
 
 		double[] depthWeights = {0.0};
