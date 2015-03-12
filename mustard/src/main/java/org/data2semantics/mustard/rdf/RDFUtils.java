@@ -53,14 +53,14 @@ public class RDFUtils {
 				for (DTNode<String,String> node : searchNodes) {
 					for (DTLink<String,String> link : node.linksOut()) {
 						if (!nodeMap.containsKey(link.from())) {
-							nodeMap.put(link.from(), newGraph.add(new ApproxStringLabel(link.from().label(),i)));
+							nodeMap.put(link.from(), newGraph.add(new ApproxStringLabel(link.from().label(), depth - i)));
 						}
 						if (!nodeMap.containsKey(link.to())) {
-							nodeMap.put(link.to(), newGraph.add(new ApproxStringLabel(link.to().label(),i+1)));
+							nodeMap.put(link.to(), newGraph.add(new ApproxStringLabel(link.to().label(), depth - (i+1))));
 							newSearchNodes.add(link.to());
 						}
 						if (!linkMap.containsKey(link)) {
-							linkMap.put(link, nodeMap.get(link.from()).connect(nodeMap.get(link.to()), new ApproxStringLabel(link.tag(),i+1)));
+							linkMap.put(link, nodeMap.get(link.from()).connect(nodeMap.get(link.to()), new ApproxStringLabel(link.tag(),depth - (i+1))));
 						}
 					}
 				}
@@ -117,15 +117,15 @@ public class RDFUtils {
 			searchNodes = new ArrayList<Pair<DTNode<String,String>,DTNode<ApproxStringLabel,ApproxStringLabel>>>();
 
 			// root gets index 0
-			searchNodes.add(new Pair<DTNode<String,String>,DTNode<ApproxStringLabel,ApproxStringLabel>>(startNode, newGraph.add(new ApproxStringLabel(startNode.label(),0))));
+			searchNodes.add(new Pair<DTNode<String,String>,DTNode<ApproxStringLabel,ApproxStringLabel>>(startNode, newGraph.add(new ApproxStringLabel(startNode.label(), depth))));
 
 			for (int i = 0; i < depth; i++) {
 				newSearchNodes = new ArrayList<Pair<DTNode<String,String>,DTNode<ApproxStringLabel,ApproxStringLabel>>>();
 				for (Pair<DTNode<String,String>,DTNode<ApproxStringLabel,ApproxStringLabel>> nodePair : searchNodes) {				
 					for (DTLink<String,String> link : nodePair.first().linksOut()) {
-						DTNode<ApproxStringLabel,ApproxStringLabel> n2 = newGraph.add(new ApproxStringLabel(link.to().label(), i+1));
+						DTNode<ApproxStringLabel,ApproxStringLabel> n2 = newGraph.add(new ApproxStringLabel(link.to().label(), depth - (i+1)));
 						newSearchNodes.add(new Pair<DTNode<String,String>,DTNode<ApproxStringLabel,ApproxStringLabel>>(link.to(),n2));					
-						nodePair.second().connect(n2, new ApproxStringLabel(link.tag(),i+1));
+						nodePair.second().connect(n2, new ApproxStringLabel(link.tag(),depth - (i+1)));
 					}
 				}
 				searchNodes = newSearchNodes;

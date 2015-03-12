@@ -59,13 +59,13 @@ public class AffiliationExperiment {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		RDFDataSet tripleStore = new RDFFileDataSet(AIFB_FILE, RDFFormat.N3);
+		//RDFDataSet tripleStore = new RDFFileDataSet(AIFB_FILE, RDFFormat.N3);
 		//RDFDataSet tripleStore = new RDFFileDataSet("datasets/carcinogenesis.owl", RDFFormat.forFileName("datasets/carcinogenesis.owl"));
-		//RDFDataSet tripleStore = new RDFFileDataSet("C:\\Users\\Gerben\\OneDrive\\D2S\\data_bgs_ac_uk_ALL", RDFFormat.NTRIPLES);
+		RDFDataSet tripleStore = new RDFFileDataSet("C:\\Users\\Gerben\\OneDrive\\D2S\\data_bgs_ac_uk_ALL", RDFFormat.NTRIPLES);
 
-		ClassificationDataSet ds = new AIFBDataSet(tripleStore, false);
+		//ClassificationDataSet ds = new AIFBDataSet(tripleStore, false);
 		//ClassificationDataSet ds = new MutagDataSet(tripleStore);
-		//ClassificationDataSet ds = new BGSLithoDataSet(tripleStore);
+		ClassificationDataSet ds = new BGSLithoDataSet(tripleStore);
 		ds.create();
 
 		System.out.println(ds.getRDFData().getInstances());
@@ -118,14 +118,14 @@ public class AffiliationExperiment {
 
 
 
-		double[] depthWeights = {1.0};
+		double[] depthWeights = {1.0}; //, 1.0, 2.0};
 		//double[] depthDiffWeights = {0.5, 0.7, 1.0, 1.4, 2};
-		double[] depthDiffWeights = {1.0};
+		double[] depthDiffWeights = {1.0}; //, 1.0, 2.0};
 		//int[][] maxPrevNBHs = {{1},{2},{100000}};
 		int[][] maxPrevNBHs = {{6}};
 		//int[][] maxCards    = {{1},{2},{100000}};
 		int[][] maxCards    = {{1}};
-		int[][] minFreqs    = {{8,16,32,64}};
+		int[][] minFreqs    = {{1},{2},{4},{8},{16}};
 		
 		
 		int[] baseMaxPrevNBH = {6};
@@ -398,7 +398,7 @@ public class AffiliationExperiment {
 		}
 		//*/
 
-		///* WL Tree
+		/* WL Tree
 		for (boolean inf : inference) {
 			resTable.newRow("WL Tree: " + inf);		 
 
@@ -426,7 +426,7 @@ public class AffiliationExperiment {
 		}
 		//*/
 
-		///* WL Tree OneGraph
+		/* WL Tree OneGraph
 		for (boolean inf : inference) {
 			resTable.newRow("WL Tree OneGraph: " + inf);		 
 
@@ -455,7 +455,7 @@ public class AffiliationExperiment {
 		//*/
 
 
-		///* WL EdgeSets Tree
+		/* WL EdgeSets Tree
 		for (boolean inf : inference) {
 			resTable.newRow("WL Tree Approx: " + inf);		 
 			for (int d : depths) {
@@ -493,7 +493,7 @@ public class AffiliationExperiment {
 		//*/
 
 
-		///* WL EdgeSets Tree
+		/* WL EdgeSets Tree
 		for (boolean inf : inference) {
 			resTable.newRow("WL Tree Approx One Graph: " + inf);		 
 			for (int d : depths) {

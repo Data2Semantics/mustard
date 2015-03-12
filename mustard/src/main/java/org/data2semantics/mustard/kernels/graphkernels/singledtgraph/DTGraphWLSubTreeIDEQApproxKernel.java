@@ -45,7 +45,7 @@ public class DTGraphWLSubTreeIDEQApproxKernel implements GraphKernel<SingleDTGra
 	private int[] maxPrevNBHs;
 	private int[] maxLabelCards;
 	private int[] minFreqs;
-	
+
 	private double depthWeight;
 	private double depthDiffWeight;
 
@@ -91,8 +91,11 @@ public class DTGraphWLSubTreeIDEQApproxKernel implements GraphKernel<SingleDTGra
 
 		WeisfeilerLehmanApproxIterator<DTGraph<ApproxStringLabel,ApproxStringLabel>,String> wl = new WeisfeilerLehmanApproxDTGraphIterator(reverse, 1, 1, 1);
 
+		double numK = (minFreqs.length) * (maxLabelCards.length) * (maxPrevNBHs.length); // number of different kernels that have to be computed computed	
+		
 		long tic = System.currentTimeMillis();
 
+		/*
 		init(data.getGraph(), data.getInstances());
 		List<DTGraph<ApproxStringLabel,ApproxStringLabel>> gList = new ArrayList<DTGraph<ApproxStringLabel,ApproxStringLabel>>();
 		gList.add(rdfGraph);
@@ -104,28 +107,34 @@ public class DTGraphWLSubTreeIDEQApproxKernel implements GraphKernel<SingleDTGra
 		}
 
 		computeFVs(rdfGraph, instanceVertices, weight, featureVectors, wl.getLabelDict().size()-1, 0);
-
-
-		boolean first = true;
+		 */	
+		
 		for (int minFreq : minFreqs) {
 			for (int maxCard : maxLabelCards) {
 				for (int maxPrevNBH : maxPrevNBHs) {
-					if (!first) {
-						init(data.getGraph(), data.getInstances());
-						gList = new ArrayList<DTGraph<ApproxStringLabel,ApproxStringLabel>>();
-						gList.add(rdfGraph);
-						wl.wlInitialize(gList);
-					}
-					first = false;
+					init(data.getGraph(), data.getInstances());
+					List<DTGraph<ApproxStringLabel,ApproxStringLabel>> gList = new ArrayList<DTGraph<ApproxStringLabel,ApproxStringLabel>>();
+					gList.add(rdfGraph);
+					wl.wlInitialize(gList);
 
 					wl.setMaxLabelCard(maxCard);
 					wl.setMinFreq(minFreq);
 					wl.setMaxPrevNBH(maxPrevNBH);
 
+					double weight = 1.0 / numK;
+					
+					//if (iterationWeighting) {
+					//	weight = Math.sqrt(1.0 / (iterations + 1));
+					//}
+
+					computeFVs(rdfGraph, instanceVertices, weight, featureVectors, wl.getLabelDict().size()-1, 0);
+
 					for (int i = 0; i < iterations; i++) {
-						if (iterationWeighting) {
-							weight = Math.sqrt((2.0 + i) / (iterations + 1));
-						}
+						//if (iterationWeighting) {
+						//	weight = Math.sqrt((2.0 + i) / (iterations + 1));
+						//}
+						weight = (1.0 + ((i+1) * ((numK-1.0) / iterations))) / numK;
+								
 						computeLabelFreqs(rdfGraph, instanceVertices);
 						wl.wlIterate(gList, labelFreq);
 						computeFVs(rdfGraph, instanceVertices, weight, featureVectors, wl.getLabelDict().size()-1, i + 1);
@@ -299,6 +308,7 @@ public class DTGraphWLSubTreeIDEQApproxKernel implements GraphKernel<SingleDTGra
 					for (int j = 0; j <= this.depth; j++) {
 						int index2 = (index * (this.depth+1)) + j;
 						double weight2 = weight / Math.pow(depthDiffWeight,Math.abs(j-depth)); // farther away depths get lower weight, the distance is abs(j-depth)
+						weight2 = weight2 / Math.pow(depthWeight, j);
 						featureVectors[i].setValue(index2, featureVectors[i].getValue(index2) + weight2);
 					}
 				}
@@ -311,6 +321,7 @@ public class DTGraphWLSubTreeIDEQApproxKernel implements GraphKernel<SingleDTGra
 					for (int j = 0; j <= this.depth; j++) {
 						int index2 = (index * (this.depth+1)) + j;
 						double weight2 = weight / Math.pow(depthDiffWeight,Math.abs(j-depth)); // farther away depths get lower weight, the distance is abs(j-depth)
+						weight2 = weight2 / Math.pow(depthWeight, j);
 						featureVectors[i].setValue(index2, featureVectors[i].getValue(index2) + weight2);
 					}
 				}
