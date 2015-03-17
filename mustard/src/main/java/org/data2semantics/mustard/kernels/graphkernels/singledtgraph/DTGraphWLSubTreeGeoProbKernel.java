@@ -35,7 +35,7 @@ import org.nodes.LightDTGraph;
  * @author Gerben
  *
  */
-public class DTGraphWLSubTreeIDEQKernel implements GraphKernel<SingleDTGraph>, FeatureVectorKernel<SingleDTGraph>, ComputationTimeTracker, FeatureInspector {
+public class DTGraphWLSubTreeGeoProbKernel implements GraphKernel<SingleDTGraph>, FeatureVectorKernel<SingleDTGraph>, ComputationTimeTracker, FeatureInspector {
 
 	private Map<DTNode<StringLabel,StringLabel>, Map<DTNode<StringLabel,StringLabel>, Integer>> instanceVertexIndexMap;
 	private Map<DTNode<StringLabel,StringLabel>, Map<DTLink<StringLabel,StringLabel>, Integer>> instanceEdgeIndexMap;
@@ -51,21 +51,22 @@ public class DTGraphWLSubTreeIDEQKernel implements GraphKernel<SingleDTGraph>, F
 	private boolean normalize;
 	private boolean reverse;
 	private boolean iterationWeighting;
-	private boolean noDuplicateNBH;
-	private boolean noSubGraphs;
 
 	private long compTime;
 	private Map<String,String> dict;
+	
+	private double p;
+	private double mean;
+	private Map<Integer, Double> probs;
 
 
-	public DTGraphWLSubTreeIDEQKernel(int iterations, int depth, boolean reverse, boolean iterationWeighting, boolean noDuplicateNBH, boolean noSubGraphs, boolean normalize) {
+	public DTGraphWLSubTreeGeoProbKernel(int iterations, int depth, boolean reverse, boolean iterationWeighting, double mean, boolean normalize) {
 		this.reverse = reverse;
 		this.iterationWeighting = iterationWeighting;
-		this.noDuplicateNBH = noDuplicateNBH;	
-		this.noSubGraphs = noSubGraphs;
 		this.normalize = normalize;
 		this.depth = depth;
 		this.iterations = iterations;
+		this.mean = mean;
 	}
 
 	public String getLabel() {
@@ -84,14 +85,16 @@ public class DTGraphWLSubTreeIDEQKernel implements GraphKernel<SingleDTGraph>, F
 
 
 	public SparseVector[] computeFeatureVectors(SingleDTGraph data) {		
-
 		SparseVector[] featureVectors = new SparseVector[data.getInstances().size()];
 		for (int i = 0; i < featureVectors.length; i++) {
 			featureVectors[i] = new SparseVector();
 		}	
+		
+		probs = new HashMap<Integer, Double>();
+		p = 1.0 / (mean + 1.0); // mean is (1-p)/p
 
 		init(data.getGraph(), data.getInstances());
-		WeisfeilerLehmanIterator<DTGraph<StringLabel,StringLabel>> wl = new WeisfeilerLehmanDTGraphIterator(reverse, noDuplicateNBH);
+		WeisfeilerLehmanIterator<DTGraph<StringLabel,StringLabel>> wl = new WeisfeilerLehmanDTGraphIterator(reverse, true);
 
 		List<DTGraph<StringLabel,StringLabel>> gList = new ArrayList<DTGraph<StringLabel,StringLabel>>();
 		gList.add(rdfGraph);
@@ -266,32 +269,19 @@ public class DTGraphWLSubTreeIDEQKernel implements GraphKernel<SingleDTGraph>, F
 
 			for (DTNode<StringLabel,StringLabel> vertex : vertexIndexMap.keySet()) {
 				depth = vertexIndexMap.get(vertex);
-				if ((depth * 2) + 1 == currentIt && !noSubGraphs) {
-					for (DTLink<StringLabel,StringLabel> edge : vertex.linksOut()) { // check if one of its children are on ignore
-						if (!edgeIgnoreMap.containsKey(edge) || edgeIgnoreMap.get(edge)) {
-							vertexIgnoreMap.put(vertex, true);
-							break;
-						}
-					}
-				}
 
-				if ((!noDuplicateNBH || !vertex.label().isSameAsPrev()) && !vertexIgnoreMap.get(vertex)) { // (depth * 2) >= currentIt
+				if (!vertex.label().isSameAsPrev()) { 
 					index = Integer.parseInt(vertex.label().toString());
-					featureVectors[i].setValue(index, featureVectors[i].getValue(index) + weight);
+					featureVectors[i].setValue(index, featureVectors[i].getValue(index) + getProb(((this.depth - depth) * 2) + currentIt)); // depth counts only vertices, we want it combined vert + edges here
 				}
 			}
 
 			for (DTLink<StringLabel,StringLabel> edge : edgeIndexMap.keySet()) {
 				depth = edgeIndexMap.get(edge);
-				if ((depth * 2) + 2 == currentIt && !noSubGraphs) {
-					if (vertexIgnoreMap.get(edge.to())) {
-						edgeIgnoreMap.put(edge, true);
-					}
-				}
 
-				if ((!noDuplicateNBH || !edge.tag().isSameAsPrev()) && !edgeIgnoreMap.get(edge)) { //edge are actually at d*2 - 1 // ((depth * 2)+1) >= currentIt)
+				if (!edge.tag().isSameAsPrev()) { 
 					index = Integer.parseInt(edge.tag().toString());
-					featureVectors[i].setValue(index, featureVectors[i].getValue(index) + weight);
+					featureVectors[i].setValue(index, featureVectors[i].getValue(index) + getProb(((this.depth - depth) * 2) - 1 + currentIt)); // see above
 				}
 			}
 		}
@@ -311,6 +301,19 @@ public class DTGraphWLSubTreeIDEQKernel implements GraphKernel<SingleDTGraph>, F
 		}
 	}
 
+	
+	/**
+	 * from wikipedia on geometric dist.
+	 * 
+	 * @param depth
+	 * @return
+	 */
+	private double getProb(int depth) {
+		if (!probs.containsKey(depth)) { // do caching
+			probs.put(depth, Math.pow(1-p, depth) * p);
+		}
+		return probs.get(depth);		
+	}
 
 
 

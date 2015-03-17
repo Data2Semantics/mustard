@@ -26,6 +26,7 @@ import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFTreeWLSubTreeI
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFTreeWalkCountKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFTreeWLSubTreeKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFRootWLSubTreeKernel;
+import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFWLSubTreeGeoProbKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFWLSubTreeIDEQApproxKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFWLSubTreeKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFWLSubTreeIDEQKernel;
@@ -59,13 +60,13 @@ public class AffiliationExperiment {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		//RDFDataSet tripleStore = new RDFFileDataSet(AIFB_FILE, RDFFormat.N3);
+		RDFDataSet tripleStore = new RDFFileDataSet(AIFB_FILE, RDFFormat.N3);
 		//RDFDataSet tripleStore = new RDFFileDataSet("datasets/carcinogenesis.owl", RDFFormat.forFileName("datasets/carcinogenesis.owl"));
-		RDFDataSet tripleStore = new RDFFileDataSet("C:\\Users\\Gerben\\OneDrive\\D2S\\data_bgs_ac_uk_ALL", RDFFormat.NTRIPLES);
+		//RDFDataSet tripleStore = new RDFFileDataSet("C:\\Users\\Gerben\\OneDrive\\D2S\\data_bgs_ac_uk_ALL", RDFFormat.NTRIPLES);
 
-		//ClassificationDataSet ds = new AIFBDataSet(tripleStore, false);
+		ClassificationDataSet ds = new AIFBDataSet(tripleStore, false);
 		//ClassificationDataSet ds = new MutagDataSet(tripleStore);
-		ClassificationDataSet ds = new BGSLithoDataSet(tripleStore);
+		//ClassificationDataSet ds = new BGSLithoDataSet(tripleStore);
 		ds.create();
 
 		System.out.println(ds.getRDFData().getInstances());
@@ -190,7 +191,7 @@ public class AffiliationExperiment {
 		}
 		//*/
 
-		///* The baseline experiment, BoW (or BoL if you prefer) Tree variant
+		/* The baseline experiment, BoW (or BoL if you prefer) Tree variant
 		for (boolean inf : inference) {
 			resTable.newRow("Baseline BoL Tree: " + inf);		 
 			for (int d : depths) {
@@ -330,7 +331,7 @@ public class AffiliationExperiment {
 		//*/
 
 
-		///* WL
+		/* WL
 		for (boolean inf : inference) {
 			resTable.newRow("WL: " + inf);		 
 
@@ -361,7 +362,7 @@ public class AffiliationExperiment {
 		//*/
 
 
-		///* WL EdgeSets
+		/* WL EdgeSets
 		for (boolean inf : inference) {
 			resTable.newRow("WL Approx: " + inf);		 
 			for (int d : depths) {
@@ -557,6 +558,32 @@ public class AffiliationExperiment {
 			}
 		}
 		//*/
+		
+		///* WL Geo Prob
+		for (boolean inf : inference) {
+			resTable.newRow("WL Geo Prob: " + inf);		 
+
+			for (int d : depths) {
+				List<RDFWLSubTreeGeoProbKernel> kernels = new ArrayList<RDFWLSubTreeGeoProbKernel>();	
+				if (depthTimesTwo) {
+					kernels.add(new RDFWLSubTreeGeoProbKernel(6, 3, inf, reverseWL, false, (double) d, true));
+				} else {
+					for (int dd : iterationsWL) {
+						kernels.add(new RDFWLSubTreeGeoProbKernel(dd, 3, inf, reverseWL, false, (double) d, true));
+					}
+				}
+
+				//Collections.shuffle(target);
+				SimpleGraphKernelExperiment<RDFData> exp = new SimpleGraphKernelExperiment<RDFData>(kernels, data, target, svmParms, seeds, evalFuncs);
+
+				exp.run();
+
+				for (Result res : exp.getResults()) {
+					resTable.addResult(res);
+				}
+			}
+		}
+		//*/
 
 		///* WL Fast One Graph
 		for (boolean inf : inference) {
@@ -585,7 +612,7 @@ public class AffiliationExperiment {
 		//*/
 
 
-		///* WL Fast Approx
+		/* WL Fast Approx
 		for (boolean inf : inference) {
 			resTable.newRow("WL Fast Approx: " + inf);		 
 
@@ -622,7 +649,7 @@ public class AffiliationExperiment {
 		//*/
 
 
-		///* WL Fast Approx One Graph
+		/* WL Fast Approx One Graph
 		for (boolean inf : inference) {
 			resTable.newRow("WL Fast Approx One Graph: " + inf);		 
 
