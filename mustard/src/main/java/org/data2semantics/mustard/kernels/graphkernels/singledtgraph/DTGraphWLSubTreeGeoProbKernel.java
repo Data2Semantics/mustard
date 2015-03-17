@@ -92,8 +92,21 @@ public class DTGraphWLSubTreeGeoProbKernel implements GraphKernel<SingleDTGraph>
 		
 		probs = new HashMap<Integer, Double>();
 		p = 1.0 / (mean + 1.0); // mean is (1-p)/p
+		
+		
+		System.out.println("Depth threshold info");
+		
+		for (int i = 0; i < 20; i++) {
+			System.out.print(i + ": " + getCumProb(i) + ", ");
+		}
+		System.out.println("");
 
+		long tic2 = System.currentTimeMillis();
+		
 		init(data.getGraph(), data.getInstances());
+				
+		System.out.println("DTGraph init (ms): " + (System.currentTimeMillis() - tic2));
+		
 		WeisfeilerLehmanIterator<DTGraph<StringLabel,StringLabel>> wl = new WeisfeilerLehmanDTGraphIterator(reverse, true);
 
 		List<DTGraph<StringLabel,StringLabel>> gList = new ArrayList<DTGraph<StringLabel,StringLabel>>();
@@ -120,6 +133,8 @@ public class DTGraphWLSubTreeGeoProbKernel implements GraphKernel<SingleDTGraph>
 		}
 
 		compTime = System.currentTimeMillis() - tic;
+		
+		System.out.println("DTGraph WL (ms): " + compTime);
 
 		// Set the reverse label dict, to reverse engineer the features
 		dict = new HashMap<String,String>();
@@ -256,21 +271,17 @@ public class DTGraphWLSubTreeGeoProbKernel implements GraphKernel<SingleDTGraph>
 		int index, depth;
 		Map<DTNode<StringLabel,StringLabel>, Integer> vertexIndexMap;
 		Map<DTLink<StringLabel,StringLabel>, Integer> edgeIndexMap;
-		Map<DTNode<StringLabel,StringLabel>, Boolean> vertexIgnoreMap;
-		Map<DTLink<StringLabel,StringLabel>, Boolean> edgeIgnoreMap;
-
+	
 		for (int i = 0; i < instances.size(); i++) {
 			featureVectors[i].setLastIndex(lastIndex);
 
 			vertexIndexMap = instanceVertexIndexMap.get(instances.get(i));
-			vertexIgnoreMap = instanceVertexIgnoreMap.get(instances.get(i));
 			edgeIndexMap = instanceEdgeIndexMap.get(instances.get(i));
-			edgeIgnoreMap = instanceEdgeIgnoreMap.get(instances.get(i));
-
+	
 			for (DTNode<StringLabel,StringLabel> vertex : vertexIndexMap.keySet()) {
 				depth = vertexIndexMap.get(vertex);
 
-				if (!vertex.label().isSameAsPrev()) { 
+				if (!vertex.label().isSameAsPrev() && (depth * 2) >= currentIt) { 
 					index = Integer.parseInt(vertex.label().toString());
 					featureVectors[i].setValue(index, featureVectors[i].getValue(index) + getProb(((this.depth - depth) * 2) + currentIt)); // depth counts only vertices, we want it combined vert + edges here
 				}
@@ -279,7 +290,7 @@ public class DTGraphWLSubTreeGeoProbKernel implements GraphKernel<SingleDTGraph>
 			for (DTLink<StringLabel,StringLabel> edge : edgeIndexMap.keySet()) {
 				depth = edgeIndexMap.get(edge);
 
-				if (!edge.tag().isSameAsPrev()) { 
+				if (!edge.tag().isSameAsPrev() && ((depth * 2)+1) >= currentIt) { 
 					index = Integer.parseInt(edge.tag().toString());
 					featureVectors[i].setValue(index, featureVectors[i].getValue(index) + getProb(((this.depth - depth) * 2) - 1 + currentIt)); // see above
 				}
@@ -316,5 +327,9 @@ public class DTGraphWLSubTreeGeoProbKernel implements GraphKernel<SingleDTGraph>
 	}
 
 
+	private double getCumProb(int depth) {
+		return 1-Math.pow(1-p, depth+1);		
+	}
+	
 
 }
