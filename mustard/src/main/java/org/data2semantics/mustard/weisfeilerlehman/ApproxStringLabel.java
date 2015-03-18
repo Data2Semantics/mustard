@@ -8,25 +8,44 @@ package org.data2semantics.mustard.weisfeilerlehman;
  * @author Gerben
  *
  */
-public class StringLabel {
+public class ApproxStringLabel {
 	private StringBuilder sb;
 	private String prevNBH;
-	private boolean sameAsPrev;
-
-	public StringLabel() {
+	private int sameAsPrev;
+	private String lastAdded;
+	private int lastAddedCount;
+	private int depth;
+	
+	public ApproxStringLabel() {
 		this(new String());
 	}
 
-	public StringLabel(String s) {
+	public ApproxStringLabel(String s, int depth) {
 		sb = new StringBuilder(s);
+		this.lastAdded = "";
+		this.lastAddedCount = 0;
+		this.depth = depth;
 	}
 	
-	public void append(String s) {		
+	public ApproxStringLabel(String s) {
+		this(s,0);
+	}
+	
+	public void append(String s) {
+		if (s.equals(lastAdded)) {
+			lastAddedCount++;
+		} else {
+			lastAddedCount = 0;
+		}
+		this.lastAdded = s;
+		
 		sb.append(s);
 	}
 	
 	public void clear() {
 		sb.delete(0, sb.length());
+		this.lastAdded = "";
+		this.lastAddedCount = 0;
 	}
 	
 	@Override
@@ -42,11 +61,23 @@ public class StringLabel {
 		this.prevNBH = prevNBH;
 	}
 
-	public boolean isSameAsPrev() {
+	public int getSameAsPrev() {
 		return sameAsPrev;
 	}
 
-	public void setSameAsPrev(boolean sameAsPrev) {
+	public void setSameAsPrev(int sameAsPrev) {
 		this.sameAsPrev = sameAsPrev;
+	}
+
+	public String getLastAdded() {
+		return lastAdded;
+	}
+	
+	public int getLastAddedCount() {
+		return lastAddedCount;
+	}
+	
+	public int getDepth() {
+		return depth;
 	}
 }

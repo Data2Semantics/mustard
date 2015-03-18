@@ -17,6 +17,7 @@ import org.data2semantics.mustard.learners.SparseVector;
 import org.data2semantics.mustard.rdf.RDFDataSet;
 import org.data2semantics.mustard.rdf.RDFFileDataSet;
 import org.data2semantics.mustard.rdf.RDFUtils;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
@@ -28,7 +29,7 @@ public class RESCALTest {
 	public static final String RESCAL_DIR = "C:\\Users\\Gerben\\Dropbox\\D2S\\python_stuff\\Ext-RESCAL-master";
 
 
-	@Test
+	@Ignore
 	public void test() {
 		RDFDataSet ts = new RDFFileDataSet(dataFile, RDFFormat.N3);
 		ClassificationDataSet data = new AIFBDataSet(ts);

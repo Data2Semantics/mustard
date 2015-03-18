@@ -10,20 +10,20 @@ import org.data2semantics.mustard.kernels.data.GraphList;
 import org.data2semantics.mustard.kernels.data.SingleDTGraph;
 import org.data2semantics.mustard.kernels.graphkernels.FeatureVectorKernel;
 import org.data2semantics.mustard.kernels.graphkernels.GraphKernel;
-import org.data2semantics.mustard.kernels.graphkernels.graphlist.WLSubTreeKernel;
+import org.data2semantics.mustard.kernels.graphkernels.graphlist.WLSubTreeApproxKernel;
 import org.data2semantics.mustard.learners.SparseVector;
 import org.data2semantics.mustard.rdf.RDFUtils;
+import org.data2semantics.mustard.weisfeilerlehman.ApproxStringLabel;
 import org.nodes.DTGraph;
 
-public class DTGraphGraphListWLSubTreeKernel implements GraphKernel<SingleDTGraph>, FeatureVectorKernel<SingleDTGraph>, ComputationTimeTracker, FeatureInspector {
+public class DTGraphGraphListWLSubTreeApproxKernel implements GraphKernel<SingleDTGraph>, FeatureVectorKernel<SingleDTGraph>, ComputationTimeTracker, FeatureInspector {
 	private int depth;
-	private long compTime;
-	private WLSubTreeKernel kernel;
+	private WLSubTreeApproxKernel kernel;
 
-	public DTGraphGraphListWLSubTreeKernel(int iterations, int depth, boolean reverse, boolean trackPrevNBH, boolean normalize) {
+	public DTGraphGraphListWLSubTreeApproxKernel(int iterations, int depth, boolean reverse, boolean noDuplicateNBH, double depthWeight, double depthDiffWeight, int[] maxPrevNBHs, int[] maxLabelCards, int[] minFreqs, boolean normalize) {
 		this.depth = depth;
 		
-		kernel = new WLSubTreeKernel(iterations, reverse, trackPrevNBH, normalize);	
+		kernel = new WLSubTreeApproxKernel(iterations, reverse, noDuplicateNBH, depthWeight, depthDiffWeight, maxPrevNBHs, maxLabelCards, minFreqs, normalize);	
 	}
 
 	public String getLabel() {
@@ -35,24 +35,19 @@ public class DTGraphGraphListWLSubTreeKernel implements GraphKernel<SingleDTGrap
 	}
 
 	public long getComputationTime() {
-		return compTime;
+		return kernel.getComputationTime();
 	}
 
 	public SparseVector[] computeFeatureVectors(SingleDTGraph data) {
-		GraphList<DTGraph<String,String>> graphs = RDFUtils.getSubGraphs(data.getGraph(), data.getInstances(), depth);				
+		GraphList<DTGraph<ApproxStringLabel,ApproxStringLabel>> graphs = RDFUtils.getSubGraphsApproxStringLabel(data.getGraph(), data.getInstances(), depth);				
 		SparseVector[] ret =  kernel.computeFeatureVectors(graphs);
-		compTime = kernel.getComputationTime();
 		return ret;
 	}
 
 
 	public double[][] compute(SingleDTGraph data) {
-		SparseVector[] featureVectors = computeFeatureVectors(data);
-		double[][] kernel = KernelUtils.initMatrix(data.getInstances().size(), data.getInstances().size());
-		long tic = System.currentTimeMillis();
-		kernel = KernelUtils.computeKernelMatrix(featureVectors, kernel);
-		compTime += System.currentTimeMillis() - tic;
-		return kernel;
+		GraphList<DTGraph<ApproxStringLabel,ApproxStringLabel>> graphs = RDFUtils.getSubGraphsApproxStringLabel(data.getGraph(), data.getInstances(), depth);				
+		return kernel.compute(graphs);
 	}
 
 	public List<String> getFeatureDescriptions(List<Integer> indicesSV) {

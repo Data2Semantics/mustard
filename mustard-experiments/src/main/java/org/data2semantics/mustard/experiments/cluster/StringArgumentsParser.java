@@ -321,7 +321,7 @@ public class StringArgumentsParser {
 	public static List<DTGraphGraphListURIPrefixKernel> graphURIPrefix(String[] parms) {
 		List<DTGraphGraphListURIPrefixKernel> kernels = new ArrayList<DTGraphGraphListURIPrefixKernel>();
 		int depth = Integer.parseInt(parms[0]);	
-		kernels.add(new DTGraphGraphListURIPrefixKernel(depth, true));
+		kernels.add(new DTGraphGraphListURIPrefixKernel(1.0, depth, true));
 		return kernels;
 	}
 	

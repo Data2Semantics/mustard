@@ -25,7 +25,7 @@ public class KernelUtils {
 	 */
 	public static double[][] copy(double[][] kernel) {
 		double[][] copy = new double[kernel.length][];
-		
+
 		for (int i = 0; i < kernel.length; i++) {
 			copy[i] = new double[kernel[i].length];
 			for (int j = 0; j < kernel[i].length; j++) {
@@ -34,9 +34,9 @@ public class KernelUtils {
 		}		
 		return copy;
 	}
-	
-	
-	
+
+
+
 	/**
 	 * Shuffle a kernel matrix with seed to initialize the Random object
 	 * 
@@ -243,18 +243,25 @@ public class KernelUtils {
 		sb.append(kernel.getClass().getSimpleName());
 
 		for (Field field : kernel.getClass().getDeclaredFields()) {
-			if (field.getType().isPrimitive()) {
-				field.setAccessible(true);
-				sb.append("_");
-				sb.append(field.getName());
-				sb.append("=");
-				try {
-					sb.append(field.get(kernel).toString());
-				} catch (IllegalArgumentException e) {
-					throw new RuntimeException(e);
-				} catch (IllegalAccessException e) {
-					throw new RuntimeException(e);
+			field.setAccessible(true);
+			try {
+				if (field.getType().isPrimitive() || field.get(kernel) instanceof int[] || field.get(kernel) instanceof double[]) { // we also want parameter arrays, for now int[] and double[]
+					sb.append("_");
+					sb.append(field.getName());
+					sb.append("=");
+					if (field.getType().isPrimitive()) {
+						sb.append(field.get(kernel).toString());
+					} else if (field.get(kernel) instanceof int[]) {
+						sb.append(Arrays.toString((int[]) field.get(kernel)));
+					} else if (field.get(kernel) instanceof double[]) {
+						sb.append(Arrays.toString((double[]) field.get(kernel)));
+					}
+
 				}
+			} catch (IllegalArgumentException e) {
+				throw new RuntimeException(e);
+			} catch (IllegalAccessException e) {
+				throw new RuntimeException(e);
 			}
 		}
 		return sb.toString();

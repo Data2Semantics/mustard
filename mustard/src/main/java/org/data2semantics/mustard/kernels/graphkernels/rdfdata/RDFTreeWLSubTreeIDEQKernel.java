@@ -1,34 +1,34 @@
-package org.data2semantics.mustard.rdfvault;
+package org.data2semantics.mustard.kernels.graphkernels.rdfdata;
 
 import java.util.List;
 import java.util.Set;
 
 import org.data2semantics.mustard.kernels.ComputationTimeTracker;
-import org.data2semantics.mustard.kernels.FeatureInspector;
 import org.data2semantics.mustard.kernels.KernelUtils;
 import org.data2semantics.mustard.kernels.data.RDFData;
 import org.data2semantics.mustard.kernels.data.SingleDTGraph;
 import org.data2semantics.mustard.kernels.graphkernels.FeatureVectorKernel;
 import org.data2semantics.mustard.kernels.graphkernels.GraphKernel;
-import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphGraphListWLSubTreeKernel;
+import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphTreeWLSubTreeKernel;
+import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphTreeWLSubTreeIDEQKernel;
 import org.data2semantics.mustard.learners.SparseVector;
 import org.data2semantics.mustard.rdf.RDFDataSet;
 import org.data2semantics.mustard.rdf.RDFUtils;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 
-public class RDFGraphListURIPrefixKernel implements GraphKernel<RDFData>, FeatureVectorKernel<RDFData>, ComputationTimeTracker {
+public class RDFTreeWLSubTreeIDEQKernel implements GraphKernel<RDFData>, FeatureVectorKernel<RDFData>, ComputationTimeTracker {
 	private int depth;
 	private boolean inference;
-	private DTGraphGraphListURIPrefixKernel kernel;
+	private DTGraphTreeWLSubTreeIDEQKernel kernel;
 	private SingleDTGraph graph;
 
-	public RDFGraphListURIPrefixKernel(double lambda, int depth, boolean inference, boolean normalize) {
+	public RDFTreeWLSubTreeIDEQKernel(int iterations, int depth, boolean inference, boolean reverse, boolean iterationWeighting, boolean noDuplicateNBH, boolean noSubGraphs, boolean normalize) {
 		super();
 		this.depth = depth;
 		this.inference = inference;
 
-		kernel = new DTGraphGraphListURIPrefixKernel(lambda, depth, normalize);
+		kernel = new DTGraphTreeWLSubTreeIDEQKernel(iterations, depth, reverse, iterationWeighting, noDuplicateNBH, noSubGraphs, normalize);
 	}
 
 	public String getLabel() {
@@ -37,6 +37,10 @@ public class RDFGraphListURIPrefixKernel implements GraphKernel<RDFData>, Featur
 
 	public void setNormalize(boolean normalize) {
 		kernel.setNormalize(normalize);
+	}
+
+	public long getComputationTime() {
+		return kernel.getComputationTime();
 	}
 
 	public SparseVector[] computeFeatureVectors(RDFData data) {
@@ -53,9 +57,5 @@ public class RDFGraphListURIPrefixKernel implements GraphKernel<RDFData>, Featur
 		Set<Statement> stmts = RDFUtils.getStatements4Depth(dataset, instances, depth, inference);
 		stmts.removeAll(blackList);
 		graph = RDFUtils.statements2Graph(stmts, RDFUtils.REGULAR_LITERALS, instances, true);
-	}
-
-	public long getComputationTime() {
-		return kernel.getComputationTime();
-	}
+	}	
 }

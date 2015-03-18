@@ -1,5 +1,6 @@
 package org.data2semantics.mustard.weisfeilerlehman;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -13,16 +14,16 @@ import java.util.Set;
  */
 public class MapLabel {
 	private StringBuilder[] map;
-	private Map<Integer, String> prevNBH;
-	private Map<Integer, Boolean> sameAsPrev;
+	private String[] prevNBH;
+	private boolean[] sameAsPrev;
 	private Set<Integer> keySet;
 
 
 	public MapLabel(int mapSize) {
 		map = new StringBuilder[mapSize];
-		prevNBH = new HashMap<Integer, String>();
-		sameAsPrev = new HashMap<Integer, Boolean>();
-		keySet = new HashSet<Integer>();
+		prevNBH = new String[mapSize];
+		sameAsPrev = new boolean[mapSize];
+		keySet = new HashSet<Integer>(mapSize);
 	}
 
 
@@ -34,14 +35,26 @@ public class MapLabel {
 		return keySet;
 	}
 
+	/**
+	 * TODO rewrite put() and get(), to one method append(index, string) to be in line with StringLabel
+	 * 
+	 * @param key
+	 * @param value
+	 */
 	public void put(Integer key, StringBuilder value) {
 		if (key >= map.length) {
 			StringBuilder[] map2 = new StringBuilder[key+1]; 
+			String[] prevNBH2 = new String[key+1];
+			boolean[] sameAsPrev2 = new boolean[key+1];
 			for (int i = 0; i < map.length; i++) {
 				map2[i] = map[i];
+				prevNBH2[i] = prevNBH[i];
+				sameAsPrev2[i] = sameAsPrev[i];
 			}
 
 			map = map2;
+			prevNBH = prevNBH2;
+			sameAsPrev = sameAsPrev2;
 		}
 
 		if (map[key] == null) {
@@ -64,24 +77,23 @@ public class MapLabel {
 
 	@Override
 	public String toString() {
-		return map.toString();
+		return Arrays.toString(map);
 	}
 
 	public void putPrevNBH(Integer key, String value) {
-		prevNBH.put(key, value);
+		prevNBH[key] = value;
 	}
 
 	public String getPrevNBH(Integer key) {
-		return prevNBH.get(key);
+		return prevNBH[key];
 	}
 
 	public void putSameAsPrev(Integer key, Boolean value) {
-		sameAsPrev.put(key, value);
+		sameAsPrev[key] = value;
 	}
 
 	public boolean getSameAsPrev(Integer key) {
-		Boolean ret = sameAsPrev.get(key);
-		return (ret == null) ? false : ret;
+		return sameAsPrev[key];
 	}
 }
 

@@ -41,6 +41,7 @@ public class WeisfeilerLehmanDTGraphMapLabelIterator extends WeisfeilerLehmanIte
 
 					if (trackPrevNBH) {
 						node.label().putPrevNBH(k, "");
+						node.label().putSameAsPrev(k, false);
 					}
 
 					//node.label().put(k, new StringBuilder(lab));
@@ -60,6 +61,7 @@ public class WeisfeilerLehmanDTGraphMapLabelIterator extends WeisfeilerLehmanIte
 
 					if (trackPrevNBH) {
 						link.tag().putPrevNBH(k, "");
+						link.tag().putSameAsPrev(k, false);
 					}		
 
 					//link.tag().put(k, new StringBuilder(lab));
@@ -138,16 +140,7 @@ public class WeisfeilerLehmanDTGraphMapLabelIterator extends WeisfeilerLehmanIte
 		List<String> keysV = new ArrayList<String>(bucketsV.keySet());
 		Collections.sort(keysV);
 
-		/*
-		for (DTGraph<MapLabel,MapLabel> graph : graphs) {
-			for (DTNode<MapLabel,MapLabel> node : graph.nodes()) {
-				for (int k : node.label().keySet()) {
-					node.label().clear(k);
-				}
-			}
-		}
-		*/
-
+		
 		// 3. Relabel to the labels in the buckets
 		for (String keyV : keysV) {
 			// Process vertices
@@ -189,7 +182,15 @@ public class WeisfeilerLehmanDTGraphMapLabelIterator extends WeisfeilerLehmanIte
 						edge.tag().clear(i);
 						edge.tag().get(i).append(label);
 						//edge.tag().put(i, new StringBuilder(label));
+					} else { // retain old label
+						String old = edge.tag().get(i).toString();
+						if (old.contains("_")) {
+							old = old.substring(0, old.indexOf("_"));
+							edge.tag().clear(i);
+							edge.tag().get(i).append(old);
+						} 
 					}
+					
 				}
 			}
 
@@ -217,6 +218,13 @@ public class WeisfeilerLehmanDTGraphMapLabelIterator extends WeisfeilerLehmanIte
 						vertex.label().clear(i);
 						vertex.label().get(i).append(label);
 						//vertex.label().put(i, new StringBuilder(label));
+					} else { // retain old label
+						String old = vertex.label().get(i).toString();
+						if (old.contains("_")) {
+							old = old.substring(0, old.indexOf("_"));
+							vertex.label().clear(i);
+							vertex.label().get(i).append(old);
+						} 
 					}
 				}
 			}

@@ -1,6 +1,9 @@
 package org.data2semantics.mustard.learners.libsvm;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -116,9 +119,17 @@ public class LibSVM {
 
 		double score = 0, bestScore = 0, bestC = 0, bestP = 0;
 		Kernel bestSetting = null;
-
+		
+		// Some sorting of the keys of the svmProbs map, so that CV always generates the same results
+		List<Kernel> settings = new ArrayList<Kernel>(svmProbs.keySet());
+		Collections.sort(settings, new Comparator<Kernel>() {
+			public int compare(Kernel o1, Kernel o2) {
+				return o1.getLabel().compareTo(o2.getLabel());
+			}
+		});
+		
 		// kernel/featurevectors selection
-		for (Kernel setting : svmProbs.keySet()) {
+		for (Kernel setting : settings) {
 			if (bestSetting == null) {
 				bestSetting = setting;
 			}
