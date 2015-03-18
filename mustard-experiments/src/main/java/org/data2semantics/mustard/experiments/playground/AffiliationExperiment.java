@@ -533,7 +533,7 @@ public class AffiliationExperiment {
 
 
 
-		///* WL Fast
+		/* WL Fast
 		for (boolean inf : inference) {
 			resTable.newRow("WL Fast: " + inf);		 
 
@@ -585,7 +585,7 @@ public class AffiliationExperiment {
 		}
 		//*/
 
-		///* WL Fast One Graph
+		/* WL Fast One Graph
 		for (boolean inf : inference) {
 			resTable.newRow("WL Fast OneGraph: " + inf);		 
 
