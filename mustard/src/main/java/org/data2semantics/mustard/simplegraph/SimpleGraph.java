@@ -3,15 +3,15 @@ package org.data2semantics.mustard.simplegraph;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Graph<V,W> {
+public class SimpleGraph<V,W> {
 
 	private List<Node> _nodes = new ArrayList<Node>();
 	
-	public List<Node> getNodes() { return _nodes; }
-	public List<Link> getLinks() {
+	public List<Node> nodes() { return _nodes; }
+	public List<Link> links() {
 		List<Link> links = new ArrayList<Link>();
-		for (Node node : getNodes()) {
-			links.addAll(node.getOutLinks());
+		for (Node node : nodes()) {
+			links.addAll(node.outLinks());
 		}
 		return links;
 	}
@@ -28,8 +28,12 @@ public class Graph<V,W> {
 			this._label = label;
 		}
 		
-		public List<Link> getInLinks()  { return _in_links; }
-		public List<Link> getOutLinks() { return _out_links; }
+		public List<Link> inLinks()  { return _in_links; }
+		public List<Link> outLinks() { return _out_links; }
+		
+		public V label() {
+			return _label;
+		}
 	}
 	
 	public class Link {
@@ -48,5 +52,9 @@ public class Graph<V,W> {
 		
 		public Node from() { return _from; }
 		public Node to()   { return _to;   }
+		
+		public W tag() {
+			return _tag;
+		}
 	}
 }
