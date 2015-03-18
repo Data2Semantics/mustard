@@ -137,7 +137,7 @@ public class AffiliationExperiment {
 		RDFData data = ds.getRDFData();
 		List<Double> target = ds.getTarget();
 
-		//computeGraphStatistics(tripleStore, ds, inference, depths);
+		computeGraphStatistics(tripleStore, ds, inference, depths);
 
 
 		/*
@@ -563,13 +563,15 @@ public class AffiliationExperiment {
 		for (boolean inf : inference) {
 			resTable.newRow("WL Geo Prob: " + inf);		 
 
-			for (int d : depths) {
+			int[] blu = {1,2};
+			
+			for (int d : blu) {
 				List<RDFWLSubTreeGeoProbKernel> kernels = new ArrayList<RDFWLSubTreeGeoProbKernel>();	
 				if (depthTimesTwo) {
-					kernels.add(new RDFWLSubTreeGeoProbKernel(6, 3, inf, reverseWL, false, (double) d, true));
+					kernels.add(new RDFWLSubTreeGeoProbKernel((d+2)*2, d+2, inf, reverseWL, false, (double) d, true));
 				} else {
 					for (int dd : iterationsWL) {
-						kernels.add(new RDFWLSubTreeGeoProbKernel(dd, 3, inf, reverseWL, false, (double) d, true));
+						kernels.add(new RDFWLSubTreeGeoProbKernel(dd, d+2, inf, reverseWL, false, (double) d, true));
 					}
 				}
 

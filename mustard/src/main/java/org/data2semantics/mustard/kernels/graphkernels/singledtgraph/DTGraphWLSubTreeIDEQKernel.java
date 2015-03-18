@@ -267,12 +267,12 @@ public class DTGraphWLSubTreeIDEQKernel implements GraphKernel<SingleDTGraph>, F
 			for (DTNode<StringLabel,StringLabel> vertex : vertexIndexMap.keySet()) {
 				depth = vertexIndexMap.get(vertex);
 				if ((depth * 2) + 1 == currentIt && !noSubGraphs) {
-					for (DTLink<StringLabel,StringLabel> edge : vertex.linksOut()) { // check if one of its children are on ignore
-						if (!edgeIgnoreMap.containsKey(edge) || edgeIgnoreMap.get(edge)) {
+				//	for (DTLink<StringLabel,StringLabel> edge : vertex.linksOut()) { // check if one of its children are on ignore
+				//		if (!edgeIgnoreMap.containsKey(edge) || edgeIgnoreMap.get(edge)) {
 							vertexIgnoreMap.put(vertex, true);
-							break;
-						}
-					}
+				//			break;
+				//		}
+				//	}
 				}
 
 				if ((!noDuplicateNBH || !vertex.label().isSameAsPrev()) && !vertexIgnoreMap.get(vertex)) { // (depth * 2) >= currentIt
@@ -284,9 +284,9 @@ public class DTGraphWLSubTreeIDEQKernel implements GraphKernel<SingleDTGraph>, F
 			for (DTLink<StringLabel,StringLabel> edge : edgeIndexMap.keySet()) {
 				depth = edgeIndexMap.get(edge);
 				if ((depth * 2) + 2 == currentIt && !noSubGraphs) {
-					if (vertexIgnoreMap.get(edge.to())) {
+				//	if (vertexIgnoreMap.get(edge.to())) {
 						edgeIgnoreMap.put(edge, true);
-					}
+				//	}
 				}
 
 				if ((!noDuplicateNBH || !edge.tag().isSameAsPrev()) && !edgeIgnoreMap.get(edge)) { //edge are actually at d*2 - 1 // ((depth * 2)+1) >= currentIt)
