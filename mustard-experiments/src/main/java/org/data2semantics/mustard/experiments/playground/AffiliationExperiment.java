@@ -70,7 +70,7 @@ public class AffiliationExperiment {
 		ds.create();
 
 		System.out.println(ds.getRDFData().getInstances());
-
+		
 		List<EvaluationFunction> evalFuncs = new ArrayList<EvaluationFunction>();
 		evalFuncs.add(new Accuracy());
 		evalFuncs.add(new F1());
@@ -137,7 +137,7 @@ public class AffiliationExperiment {
 		RDFData data = ds.getRDFData();
 		List<Double> target = ds.getTarget();
 
-		computeGraphStatistics(tripleStore, ds, inference, depths);
+		//computeGraphStatistics(tripleStore, ds, inference, depths);
 
 
 		/*
@@ -160,7 +160,7 @@ public class AffiliationExperiment {
 		}
 		//*/
 
-		///* The baseline experiment, BoW (or BoL if you prefer)
+		/* The baseline experiment, BoW (or BoL if you prefer)
 		for (boolean inf : inference) {
 			resTable.newRow("Baseline BoL: " + inf);		 
 			for (int d : depths) {

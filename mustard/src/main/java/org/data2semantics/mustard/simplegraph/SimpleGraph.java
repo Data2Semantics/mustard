@@ -23,7 +23,7 @@ public class SimpleGraph<V,W> {
 		private List<Link> _in_links  = new ArrayList<Link>();
 		private List<Link> _out_links = new ArrayList<Link>();
 		
-		private Node(V label) {
+		public Node(V label) {
 			_nodes.add(this);
 			this._label = label;
 		}
@@ -42,7 +42,7 @@ public class SimpleGraph<V,W> {
 		private Node _from;
 		private Node _to;
 		
-		private Link(Node from, Node to, W tag) { 
+		public Link(Node from, Node to, W tag) { 
 			_from = from;
 			_to   = to;
 			_tag  = tag;
