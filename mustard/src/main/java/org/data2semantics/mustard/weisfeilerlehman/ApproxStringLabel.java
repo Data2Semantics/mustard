@@ -1,5 +1,11 @@
 package org.data2semantics.mustard.weisfeilerlehman;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+
 /**
  * Wrapper class for StringBuilder, to enable save usage in nodes graph library.
  * The usage is now save, because the hashcode() is different for each StringLabel object, regardless of content.
@@ -11,10 +17,14 @@ package org.data2semantics.mustard.weisfeilerlehman;
 public class ApproxStringLabel {
 	private StringBuilder sb;
 	private String prevNBH;
+	private Set<String> prevNBHs;
 	private int sameAsPrev;
 	private String lastAdded;
 	private int lastAddedCount;
 	private int depth;
+	
+	private List<String> iterations;
+	private Set<Integer> instanceIndexSet;
 	
 	public ApproxStringLabel() {
 		this(new String());
@@ -25,6 +35,9 @@ public class ApproxStringLabel {
 		this.lastAdded = "";
 		this.lastAddedCount = 0;
 		this.depth = depth;
+		this.iterations = new ArrayList<String>();
+		this.instanceIndexSet = new HashSet<Integer>();
+		this.prevNBHs = new HashSet<String>();
 	}
 	
 	public ApproxStringLabel(String s) {
@@ -52,6 +65,10 @@ public class ApproxStringLabel {
 	public String toString() {
 		return sb.toString();
 	}
+	
+	public Set<String> getPrevNBHs() {
+		 return prevNBHs;
+	}
 
 	public String getPrevNBH() {
 		return prevNBH;
@@ -59,6 +76,7 @@ public class ApproxStringLabel {
 
 	public void setPrevNBH(String prevNBH) {
 		this.prevNBH = prevNBH;
+		this.prevNBHs.add(prevNBH);
 	}
 
 	public int getSameAsPrev() {
@@ -80,4 +98,21 @@ public class ApproxStringLabel {
 	public int getDepth() {
 		return depth;
 	}
+	
+	public void addIteration(String it) {
+		iterations.add(it);
+	}
+	
+	public List<String> getIterations() {
+		 return iterations;
+	}
+	
+	public void addInstanceIndex(int index) {
+		instanceIndexSet.add(index);
+	}
+	
+	public Set<Integer> getInstanceIndexSet() {
+		return instanceIndexSet;
+	}
+ 
 }

@@ -26,6 +26,7 @@ import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFTreeWLSubTreeI
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFTreeWalkCountKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFTreeWLSubTreeKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFRootWLSubTreeKernel;
+import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFWLSubTreeGeoProbApproxKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFWLSubTreeGeoProbKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFWLSubTreeIDEQApproxKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFWLSubTreeKernel;
@@ -70,7 +71,7 @@ public class AffiliationExperiment {
 		ds.create();
 
 		System.out.println(ds.getRDFData().getInstances());
-		
+
 		List<EvaluationFunction> evalFuncs = new ArrayList<EvaluationFunction>();
 		evalFuncs.add(new Accuracy());
 		evalFuncs.add(new F1());
@@ -125,10 +126,10 @@ public class AffiliationExperiment {
 		//int[][] maxPrevNBHs = {{1},{2},{100000}};
 		int[][] maxPrevNBHs = {{6}};
 		//int[][] maxCards    = {{1},{2},{100000}};
-		int[][] maxCards    = {{1}};
-		int[][] minFreqs    = {{1},{2},{4},{8},{16}};
-		
-		
+		int[][] maxCards    = {{1000}};
+		int[][] minFreqs    = {{0}}; // {{1},{2},{4},{8},{16}};
+
+
 		int[] baseMaxPrevNBH = {6};
 		int[] baseMaxCard = {100000};
 		int[] baseMinFreq = {0};
@@ -558,34 +559,6 @@ public class AffiliationExperiment {
 			}
 		}
 		//*/
-		
-		///* WL Geo Prob
-		for (boolean inf : inference) {
-			resTable.newRow("WL Geo Prob: " + inf);		 
-
-			int[] blu = {1,2};
-			
-			for (int d : blu) {
-				List<RDFWLSubTreeGeoProbKernel> kernels = new ArrayList<RDFWLSubTreeGeoProbKernel>();	
-				if (depthTimesTwo) {
-					kernels.add(new RDFWLSubTreeGeoProbKernel((d+2)*2, d+2, inf, reverseWL, false, (double) d, true));
-				} else {
-					for (int dd : iterationsWL) {
-						kernels.add(new RDFWLSubTreeGeoProbKernel(dd, d+2, inf, reverseWL, false, (double) d, true));
-					}
-				}
-
-				//Collections.shuffle(target);
-				SimpleGraphKernelExperiment<RDFData> exp = new SimpleGraphKernelExperiment<RDFData>(kernels, data, target, svmParms, seeds, evalFuncs);
-
-				exp.run();
-
-				for (Result res : exp.getResults()) {
-					resTable.addResult(res);
-				}
-			}
-		}
-		//*/
 
 		/* WL Fast One Graph
 		for (boolean inf : inference) {
@@ -613,6 +586,70 @@ public class AffiliationExperiment {
 		}
 		//*/
 
+		
+		///* WL Geo Prob
+		for (boolean inf : inference) {
+			resTable.newRow("WL Geo Prob: " + inf);		 
+
+			int[] blu = {1,2,3};
+
+			for (int d : blu) {
+				List<RDFWLSubTreeGeoProbKernel> kernels = new ArrayList<RDFWLSubTreeGeoProbKernel>();	
+				if (depthTimesTwo) {
+					kernels.add(new RDFWLSubTreeGeoProbKernel(d*2, d, inf, false, (double) d, true));
+				} else {
+					for (int dd : iterationsWL) {
+						kernels.add(new RDFWLSubTreeGeoProbKernel(dd, d, inf, false, (double) d, true));
+					}
+				}
+
+				//Collections.shuffle(target);
+				SimpleGraphKernelExperiment<RDFData> exp = new SimpleGraphKernelExperiment<RDFData>(kernels, data, target, svmParms, seeds, evalFuncs);
+
+				exp.run();
+
+				for (Result res : exp.getResults()) {
+					resTable.addResult(res);
+				}
+			}
+		}
+		//*/
+
+		///* WL Geo Prob Approx
+		for (boolean inf : inference) {
+			resTable.newRow("WL Geo Prob Approx: " + inf);		 
+
+			for (int d : depths) {
+				List<RDFWLSubTreeGeoProbApproxKernel> kernels = new ArrayList<RDFWLSubTreeGeoProbApproxKernel>();	
+				for (int[] minFreq : minFreqs) {
+					for (int[] maxCard : maxCards) {
+						for (int[] maxPrevNBH : maxPrevNBHs) {
+							for (double depthDiffWeight : depthDiffWeights) {
+								if (depthTimesTwo) {
+									kernels.add(new RDFWLSubTreeGeoProbApproxKernel((d+1)*2, d+1, inf, (double) d, depthDiffWeight, maxPrevNBH, maxCard, minFreq, true));						
+								} else {
+									for (int dd : iterationsWL) {
+										kernels.add(new RDFWLSubTreeGeoProbApproxKernel(dd, d, inf, (double) d, depthDiffWeight, maxPrevNBH, maxCard, minFreq, true));
+									}
+								}
+							}
+						}
+					}
+				}
+
+				//Collections.shuffle(target);
+				SimpleGraphKernelExperiment<RDFData> exp = new SimpleGraphKernelExperiment<RDFData>(kernels, data, target, svmParms, seeds, evalFuncs);
+
+				exp.run();
+
+				for (Result res : exp.getResults()) {
+					resTable.addResult(res);
+				}
+			}
+		}
+		//*/
+
+		
 
 		/* WL Fast Approx
 		for (boolean inf : inference) {

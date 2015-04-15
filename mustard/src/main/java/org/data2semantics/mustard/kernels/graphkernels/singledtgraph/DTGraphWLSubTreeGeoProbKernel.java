@@ -51,7 +51,6 @@ public class DTGraphWLSubTreeGeoProbKernel implements GraphKernel<SingleDTGraph>
 	private int depth;
 	private int iterations;
 	private boolean normalize;
-	private boolean reverse;
 	private boolean iterationWeighting;
 
 	private long compTime;
@@ -62,8 +61,7 @@ public class DTGraphWLSubTreeGeoProbKernel implements GraphKernel<SingleDTGraph>
 	private Map<Integer, Double> probs;
 
 
-	public DTGraphWLSubTreeGeoProbKernel(int iterations, int depth, boolean reverse, boolean iterationWeighting, double mean, boolean normalize) {
-		this.reverse = reverse;
+	public DTGraphWLSubTreeGeoProbKernel(int iterations, int depth, boolean iterationWeighting, double mean, boolean normalize) {
 		this.iterationWeighting = iterationWeighting;
 		this.normalize = normalize;
 		this.depth = depth;
@@ -109,7 +107,7 @@ public class DTGraphWLSubTreeGeoProbKernel implements GraphKernel<SingleDTGraph>
 
 		System.out.println("DTGraph init (ms): " + (System.currentTimeMillis() - tic2));
 
-		WeisfeilerLehmanIterator<SimpleGraph<StringLabel,StringLabel>> wl = new WeisfeilerLehmanSimpleGraphIterator(reverse, true);
+		WeisfeilerLehmanIterator<SimpleGraph<StringLabel,StringLabel>> wl = new WeisfeilerLehmanSimpleGraphIterator(true);
 
 		List<SimpleGraph<StringLabel,StringLabel>> gList = new ArrayList<SimpleGraph<StringLabel,StringLabel>>();
 		gList.add(rdfGraph);
@@ -218,7 +216,7 @@ public class DTGraphWLSubTreeGeoProbKernel implements GraphKernel<SingleDTGraph>
 				newFrontV = new ArrayList<DTNode<String,String>>();
 				for (DTNode<String,String> qV : frontV) {
 					for (DTLink<String,String> edge : qV.linksOut()) {
-						if (!vertexIndexMap.containsKey(vOldNewMap.get(edge.to())) || !reverse) { // we have not seen it for this instance or labels travel to the fringe vertices, in which case we want to have the lowest depth encounter
+						if (!vertexIndexMap.containsKey(vOldNewMap.get(edge.to()))) { // we have not seen it for this instance or labels travel to the fringe vertices, in which case we want to have the lowest depth encounter
 							if (vOldNewMap.containsKey(edge.to())) { // This vertex has been added to rdfGraph						
 								vertexIndexMap.put(vOldNewMap.get(edge.to()), j);
 								//vertexIgnoreMap.put(vOldNewMap.get(edge.to()), false);
@@ -235,7 +233,7 @@ public class DTGraphWLSubTreeGeoProbKernel implements GraphKernel<SingleDTGraph>
 							}
 						}
 
-						if (!edgeIndexMap.containsKey(eOldNewMap.get(edge)) || !reverse) { // see comment for vertices
+						if (!edgeIndexMap.containsKey(eOldNewMap.get(edge))) { // see comment for vertices
 							if (eOldNewMap.containsKey(edge)) {
 								// Process the edge, if we haven't seen it before
 								edgeIndexMap.put(eOldNewMap.get(edge), j);
@@ -288,7 +286,7 @@ public class DTGraphWLSubTreeGeoProbKernel implements GraphKernel<SingleDTGraph>
 
 			for (SimpleGraph<StringLabel,StringLabel>.Node vertex : vertexIndexMap.keySet()) {
 				depth = vertexIndexMap.get(vertex);
-
+ 
 				if (!vertex.label().isSameAsPrev() && (depth * 2) >= currentIt) { 
 					index = Integer.parseInt(vertex.label().toString());
 					featureVectors[i].setValue(index, featureVectors[i].getValue(index) + getProb(((this.depth - depth) * 2) + currentIt)); // depth counts only vertices, we want it combined vert + edges here

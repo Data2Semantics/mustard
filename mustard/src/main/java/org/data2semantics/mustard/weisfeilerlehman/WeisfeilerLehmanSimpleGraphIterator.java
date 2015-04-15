@@ -10,16 +10,10 @@ import org.data2semantics.mustard.simplegraph.SimpleGraph;
 
 public class WeisfeilerLehmanSimpleGraphIterator extends WeisfeilerLehmanIterator<SimpleGraph<StringLabel,StringLabel>> {
 	private boolean reverse;
-	private boolean trackPrevNBH;
-
+	
 	public WeisfeilerLehmanSimpleGraphIterator(boolean reverse) {
-		this(reverse, false);
-	}
-
-	public WeisfeilerLehmanSimpleGraphIterator(boolean reverse, boolean trackPrevNBH) {
 		super();
 		this.reverse = reverse;
-		this.trackPrevNBH = trackPrevNBH;
 	}
 
 	@Override
@@ -34,11 +28,8 @@ public class WeisfeilerLehmanSimpleGraphIterator extends WeisfeilerLehmanIterato
 				node.label().clear();
 				node.label().append(lab);
 				
-				if (trackPrevNBH) {
-					node.label().setPrevNBH("");
-					node.label().setSameAsPrev(false);
-				}
-				
+				node.label().setPrevNBH("");
+				node.label().setSameAsPrev(false);			
 			}
 			for (SimpleGraph<StringLabel,StringLabel>.Link link : graph.links()) {
 				String lab = labelDict.get(link.tag().toString());
@@ -49,10 +40,8 @@ public class WeisfeilerLehmanSimpleGraphIterator extends WeisfeilerLehmanIterato
 				link.tag().clear();
 				link.tag().append(lab);
 				
-				if (trackPrevNBH) {
-					link.tag().setPrevNBH("");
-					link.tag().setSameAsPrev(false);
-				}
+				link.tag().setPrevNBH("");
+				link.tag().setSameAsPrev(false);
 			}
 		}
 	}
@@ -138,7 +127,7 @@ public class WeisfeilerLehmanSimpleGraphIterator extends WeisfeilerLehmanIterato
 		String label;
 		for (SimpleGraph<StringLabel,StringLabel> graph : graphs) {
 			for (SimpleGraph<StringLabel,StringLabel>.Link edge : graph.links()) {
-				if (trackPrevNBH) {
+				//if (trackPrevNBH) {
 					String nb = edge.tag().toString();
 					nb = nb.substring(nb.indexOf("_"));
 
@@ -146,7 +135,7 @@ public class WeisfeilerLehmanSimpleGraphIterator extends WeisfeilerLehmanIterato
 						edge.tag().setSameAsPrev(true);
 					}
 					edge.tag().setPrevNBH(nb);
-				}
+				//}
 
 				if (!edge.tag().isSameAsPrev()) {
 					label = labelDict.get(edge.tag().toString());						
@@ -167,7 +156,7 @@ public class WeisfeilerLehmanSimpleGraphIterator extends WeisfeilerLehmanIterato
 			}
 
 			for (SimpleGraph<StringLabel,StringLabel>.Node vertex : graph.nodes()) {
-				if (trackPrevNBH) {
+				//if (trackPrevNBH) {
 					String nb = vertex.label().toString();
 					if (nb.contains("_")) {
 						nb = nb.substring(nb.indexOf("_"));
@@ -179,7 +168,7 @@ public class WeisfeilerLehmanSimpleGraphIterator extends WeisfeilerLehmanIterato
 						vertex.label().setSameAsPrev(true);
 					}				
 					vertex.label().setPrevNBH(nb);
-				}
+				//}
 
 				if (!vertex.label().isSameAsPrev()) {
 					label = labelDict.get(vertex.label().toString());

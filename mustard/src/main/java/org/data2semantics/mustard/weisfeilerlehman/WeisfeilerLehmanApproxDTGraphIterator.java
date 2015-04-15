@@ -38,6 +38,8 @@ public class WeisfeilerLehmanApproxDTGraphIterator extends WeisfeilerLehmanAppro
 
 				node.label().setPrevNBH("");
 				node.label().setSameAsPrev(0);
+				
+				node.label().addIteration(lab);
 
 			}
 			for (DTLink<ApproxStringLabel,ApproxStringLabel> link : graph.links()) {
@@ -51,6 +53,8 @@ public class WeisfeilerLehmanApproxDTGraphIterator extends WeisfeilerLehmanAppro
 
 				link.tag().setPrevNBH("");
 				link.tag().setSameAsPrev(0);
+				
+				link.tag().addIteration(lab);
 			}
 		}
 	}
@@ -198,6 +202,8 @@ public class WeisfeilerLehmanApproxDTGraphIterator extends WeisfeilerLehmanAppro
 						edge.tag().append(old);
 					} 
 				}
+				
+				edge.tag().addIteration(edge.tag().toString());
 			}
 
 			for (DTNode<ApproxStringLabel,ApproxStringLabel> vertex : graph.nodes()) {
@@ -230,8 +236,10 @@ public class WeisfeilerLehmanApproxDTGraphIterator extends WeisfeilerLehmanAppro
 						old = old.substring(0, old.indexOf("_"));
 						vertex.label().clear();
 						vertex.label().append(old);
-					} 
+					}
 				}
+				
+				vertex.label().addIteration(vertex.label().toString());
 			}
 		}
 	}

@@ -4,40 +4,44 @@ import java.util.List;
 import java.util.Set;
 
 import org.data2semantics.mustard.kernels.ComputationTimeTracker;
-import org.data2semantics.mustard.kernels.FeatureInspector;
 import org.data2semantics.mustard.kernels.KernelUtils;
 import org.data2semantics.mustard.kernels.data.RDFData;
 import org.data2semantics.mustard.kernels.data.SingleDTGraph;
 import org.data2semantics.mustard.kernels.graphkernels.FeatureVectorKernel;
 import org.data2semantics.mustard.kernels.graphkernels.GraphKernel;
-import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphWLSubTreeGeoProbKernel;
-import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphWLSubTreeIDEQKernel;
+import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphTreeWLSubTreeIDEQApproxKernel;
+import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphWLSubTreeGeoProbApproxKernel;
+import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphWLSubTreeIDEQApproxKernel;
 import org.data2semantics.mustard.learners.SparseVector;
 import org.data2semantics.mustard.rdf.RDFDataSet;
 import org.data2semantics.mustard.rdf.RDFUtils;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 
-public class RDFWLSubTreeGeoProbKernel implements GraphKernel<RDFData>, FeatureVectorKernel<RDFData>, ComputationTimeTracker, FeatureInspector {
+public class RDFWLSubTreeGeoProbApproxKernel implements GraphKernel<RDFData>, FeatureVectorKernel<RDFData>, ComputationTimeTracker {
 	private int depth;
 	private boolean inference;
-	private DTGraphWLSubTreeGeoProbKernel kernel;
+	private DTGraphWLSubTreeGeoProbApproxKernel kernel;
 	private SingleDTGraph graph;
-
-	public RDFWLSubTreeGeoProbKernel(int iterations, int depth, boolean inference, boolean iterationWeighting, double mean, boolean normalize) {
+	
+	public RDFWLSubTreeGeoProbApproxKernel(int iterations, int depth, boolean inference, double mean, double depthDiffWeight, int[] maxPrevNBHs, int[] maxLabelCards, int[] minFreqs, boolean normalize) {
 		super();
 		this.depth = depth;
 		this.inference = inference;
 
-		kernel = new DTGraphWLSubTreeGeoProbKernel(iterations, depth, iterationWeighting, mean, normalize);
+		kernel = new DTGraphWLSubTreeGeoProbApproxKernel(iterations, depth, mean, depthDiffWeight, maxPrevNBHs, maxLabelCards, minFreqs, normalize);
 	}
-	
+
 	public String getLabel() {
 		return KernelUtils.createLabel(this) + "_" + kernel.getLabel();			
 	}
 
 	public void setNormalize(boolean normalize) {
 		kernel.setNormalize(normalize);
+	}
+
+	public long getComputationTime() {
+		return kernel.getComputationTime();
 	}
 
 	public SparseVector[] computeFeatureVectors(RDFData data) {
@@ -51,23 +55,8 @@ public class RDFWLSubTreeGeoProbKernel implements GraphKernel<RDFData>, FeatureV
 	}
 
 	private void init(RDFDataSet dataset, List<Resource> instances, List<Statement> blackList) {
-		long tic = System.currentTimeMillis();
-		
 		Set<Statement> stmts = RDFUtils.getStatements4Depth(dataset, instances, depth, inference);
 		stmts.removeAll(blackList);
-		graph = RDFUtils.statements2Graph(stmts, RDFUtils.REGULAR_LITERALS, instances, true);
-		
-		System.out.println("RDF init (ms): " + (System.currentTimeMillis() - tic));
-	}
-
-	public long getComputationTime() {
-		return kernel.getComputationTime();
-	}
-
-	public List<String> getFeatureDescriptions(List<Integer> indicesSV) {
-		return kernel.getFeatureDescriptions(indicesSV);
-	}
-	
-	
-	
+		graph = RDFUtils.statements2Graph(stmts, RDFUtils.REGULAR_LITERALS, instances, false); // we don't want to set the instances node labels to the identical root label
+	}	
 }
