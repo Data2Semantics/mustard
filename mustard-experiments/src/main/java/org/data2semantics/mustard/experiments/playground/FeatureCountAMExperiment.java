@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Random;
 import org.data2semantics.mustard.kernels.data.RDFData;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFWLSubTreeKernel;
-import org.data2semantics.mustard.learners.SparseVector;
+import org.data2semantics.mustard.kernels.SparseVector;
 import org.data2semantics.mustard.learners.evaluation.utils.EvaluationUtils;
 import org.data2semantics.mustard.rdf.DataSetUtils;
 import org.data2semantics.mustard.rdf.RDFDataSet;

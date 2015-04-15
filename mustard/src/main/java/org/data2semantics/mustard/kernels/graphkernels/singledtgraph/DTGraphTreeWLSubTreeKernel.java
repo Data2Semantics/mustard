@@ -4,17 +4,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 import org.data2semantics.mustard.kernels.ComputationTimeTracker;
 import org.data2semantics.mustard.kernels.KernelUtils;
+import org.data2semantics.mustard.kernels.SparseVector;
 import org.data2semantics.mustard.kernels.data.SingleDTGraph;
 import org.data2semantics.mustard.kernels.graphkernels.FeatureVectorKernel;
 import org.data2semantics.mustard.kernels.graphkernels.GraphKernel;
-import org.data2semantics.mustard.learners.SparseVector;
 import org.data2semantics.mustard.utils.Pair;
 import org.data2semantics.mustard.weisfeilerlehman.MapLabel;
-
 import org.data2semantics.mustard.weisfeilerlehman.WeisfeilerLehmanDTGraphMapLabelIterator;
 import org.data2semantics.mustard.weisfeilerlehman.WeisfeilerLehmanIterator;
 import org.nodes.DTGraph;

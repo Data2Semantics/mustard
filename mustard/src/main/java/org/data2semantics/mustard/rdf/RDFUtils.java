@@ -13,7 +13,6 @@ import org.data2semantics.mustard.kernels.KernelUtils;
 import org.data2semantics.mustard.kernels.data.GraphList;
 import org.data2semantics.mustard.kernels.data.SingleDTGraph;
 import org.data2semantics.mustard.weisfeilerlehman.ApproxStringLabel;
-import org.data2semantics.mustard.weisfeilerlehman.StringLabel;
 import org.nodes.DTGraph;
 import org.nodes.DTLink;
 import org.nodes.DTNode;
@@ -23,7 +22,6 @@ import org.nodes.util.Pair;
 import org.openrdf.model.Literal;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
-import org.openrdf.model.Value;
 import org.openrdf.model.ValueFactory;
 import org.openrdf.model.impl.ValueFactoryImpl;
 

@@ -13,7 +13,7 @@ import org.data2semantics.mustard.experiments.data.AIFBDataSet;
 import org.data2semantics.mustard.experiments.data.ClassificationDataSet;
 import org.data2semantics.mustard.experiments.rescal.RESCALInput;
 import org.data2semantics.mustard.experiments.rescal.RESCALKernel.StreamHandler;
-import org.data2semantics.mustard.learners.SparseVector;
+import org.data2semantics.mustard.kernels.SparseVector;
 import org.data2semantics.mustard.rdf.RDFDataSet;
 import org.data2semantics.mustard.rdf.RDFFileDataSet;
 import org.data2semantics.mustard.rdf.RDFUtils;

@@ -2,30 +2,24 @@ package org.data2semantics.mustard.kernels.graphkernels.singledtgraph;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.data2semantics.mustard.kernels.ComputationTimeTracker;
 import org.data2semantics.mustard.kernels.FeatureInspector;
 import org.data2semantics.mustard.kernels.KernelUtils;
+import org.data2semantics.mustard.kernels.SparseVector;
 import org.data2semantics.mustard.kernels.data.SingleDTGraph;
 import org.data2semantics.mustard.kernels.graphkernels.FeatureVectorKernel;
 import org.data2semantics.mustard.kernels.graphkernels.GraphKernel;
-import org.data2semantics.mustard.learners.SparseVector;
 import org.data2semantics.mustard.simplegraph.SimpleGraph;
 import org.data2semantics.mustard.weisfeilerlehman.StringLabel;
 import org.data2semantics.mustard.weisfeilerlehman.WLUtils;
-import org.data2semantics.mustard.weisfeilerlehman.WeisfeilerLehmanApproxDTGraphIterator;
-import org.data2semantics.mustard.weisfeilerlehman.WeisfeilerLehmanApproxIterator;
-import org.data2semantics.mustard.weisfeilerlehman.WeisfeilerLehmanDTGraphIterator;
 import org.data2semantics.mustard.weisfeilerlehman.WeisfeilerLehmanIterator;
 import org.data2semantics.mustard.weisfeilerlehman.WeisfeilerLehmanSimpleGraphIterator;
 import org.nodes.DTGraph;
 import org.nodes.DTLink;
 import org.nodes.DTNode;
-import org.nodes.LightDTGraph;
 
 /**
  * This class implements a WL kernel directly on an RDF graph. The difference with a normal WL kernel is that subgraphs are not 

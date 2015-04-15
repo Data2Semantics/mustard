@@ -1,7 +1,7 @@
 package org.data2semantics.mustard.learners.utils;
 
+import org.data2semantics.mustard.kernels.SparseVector;
 import org.data2semantics.mustard.learners.Prediction;
-import org.data2semantics.mustard.learners.SparseVector;
 
 public class CVUtils {
 	public static int splitPoint(int length, double splitFrac) {

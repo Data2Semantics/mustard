@@ -7,10 +7,10 @@ import java.util.Map;
 
 import org.data2semantics.mustard.kernels.ComputationTimeTracker;
 import org.data2semantics.mustard.kernels.KernelUtils;
+import org.data2semantics.mustard.kernels.SparseVector;
 import org.data2semantics.mustard.kernels.data.GraphList;
 import org.data2semantics.mustard.kernels.graphkernels.FeatureVectorKernel;
 import org.data2semantics.mustard.kernels.graphkernels.GraphKernel;
-import org.data2semantics.mustard.learners.SparseVector;
 import org.nodes.DTGraph;
 import org.nodes.DTLink;
 import org.nodes.DTNode;

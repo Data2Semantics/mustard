@@ -9,12 +9,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.data2semantics.mustard.learners.Prediction;
-import org.data2semantics.mustard.learners.SparseVector;
 import org.data2semantics.mustard.learners.utils.CVUtils;
 import org.data2semantics.mustard.learners.utils.ParameterIterator;
 import org.data2semantics.mustard.learners.utils.Stratifier;
 import org.data2semantics.mustard.kernels.Kernel;
 import org.data2semantics.mustard.kernels.KernelUtils;
+import org.data2semantics.mustard.kernels.SparseVector;
 
 
 /**

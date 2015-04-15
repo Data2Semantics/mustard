@@ -1,6 +1,6 @@
 package org.data2semantics.mustard.rdfvault;
 
-import org.data2semantics.mustard.learners.SparseVector;
+import org.data2semantics.mustard.kernels.SparseVector;
 import org.data2semantics.mustard.rdfvault.StringTree.PrefixStatistics;
 import org.junit.Test;
 

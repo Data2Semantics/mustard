@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.data2semantics.mustard.learners.SparseVector;
+import org.data2semantics.mustard.kernels.SparseVector;
 import org.openrdf.model.Resource;
 
 

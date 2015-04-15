@@ -12,8 +12,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.data2semantics.mustard.kernels.Kernel;
+import org.data2semantics.mustard.kernels.SparseVector;
 import org.data2semantics.mustard.learners.Prediction;
-import org.data2semantics.mustard.learners.SparseVector;
 import org.data2semantics.mustard.learners.libsvm.LibSVM;
 import org.data2semantics.mustard.learners.utils.CVUtils;
 import org.data2semantics.mustard.learners.utils.ParameterIterator;

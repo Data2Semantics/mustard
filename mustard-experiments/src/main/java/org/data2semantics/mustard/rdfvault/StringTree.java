@@ -3,7 +3,7 @@ package org.data2semantics.mustard.rdfvault;
 import java.util.Arrays;
 import java.util.HashMap;
 
-import org.data2semantics.mustard.learners.SparseVector;
+import org.data2semantics.mustard.kernels.SparseVector;
 
 /**
  * An implementation of Patricia tries over Strings that implements {@link Vault Vault&lt;String&gt;}.

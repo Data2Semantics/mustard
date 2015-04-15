@@ -1,4 +1,4 @@
-package org.data2semantics.mustard.learners;
+package org.data2semantics.mustard.kernels;
 
 import java.util.Set;
 import java.util.TreeMap;

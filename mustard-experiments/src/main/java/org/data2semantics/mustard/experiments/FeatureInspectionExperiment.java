@@ -12,7 +12,7 @@ import org.data2semantics.mustard.kernels.FeatureInspector;
 import org.data2semantics.mustard.kernels.Kernel;
 import org.data2semantics.mustard.kernels.data.GraphData;
 import org.data2semantics.mustard.kernels.graphkernels.FeatureVectorKernel;
-import org.data2semantics.mustard.learners.SparseVector;
+import org.data2semantics.mustard.kernels.SparseVector;
 import org.data2semantics.mustard.learners.liblinear.LibLINEAR;
 import org.data2semantics.mustard.learners.liblinear.LibLINEARModel;
 import org.data2semantics.mustard.learners.liblinear.LibLINEARParameters;

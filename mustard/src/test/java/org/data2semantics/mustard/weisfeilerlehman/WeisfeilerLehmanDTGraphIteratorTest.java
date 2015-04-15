@@ -1,7 +1,5 @@
 package org.data2semantics.mustard.weisfeilerlehman;
 
-import static org.junit.Assert.*;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;

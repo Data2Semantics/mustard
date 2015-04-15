@@ -1,8 +1,8 @@
 package org.data2semantics.mustard.kernels.graphkernels;
 
 import org.data2semantics.mustard.kernels.Kernel;
+import org.data2semantics.mustard.kernels.SparseVector;
 import org.data2semantics.mustard.kernels.data.GraphData;
-import org.data2semantics.mustard.learners.SparseVector;
 
 
 /**

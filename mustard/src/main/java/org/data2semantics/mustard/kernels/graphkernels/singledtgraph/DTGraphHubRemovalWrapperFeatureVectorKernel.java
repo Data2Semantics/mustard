@@ -1,16 +1,15 @@
 package org.data2semantics.mustard.kernels.graphkernels.singledtgraph;
 
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.data2semantics.mustard.kernels.KernelUtils;
+import org.data2semantics.mustard.kernels.SparseVector;
 import org.data2semantics.mustard.kernels.data.SingleDTGraph;
 import org.data2semantics.mustard.kernels.graphkernels.FeatureVectorKernel;
 import org.data2semantics.mustard.kernels.graphkernels.GraphKernel;
-import org.data2semantics.mustard.learners.SparseVector;
 import org.data2semantics.mustard.utils.HubUtils;
 import org.data2semantics.mustard.utils.LabelTagPair;
 

@@ -9,10 +9,10 @@ import java.util.Set;
 
 import org.data2semantics.mustard.kernels.ComputationTimeTracker;
 import org.data2semantics.mustard.kernels.KernelUtils;
+import org.data2semantics.mustard.kernels.SparseVector;
 import org.data2semantics.mustard.kernels.data.SingleDTGraph;
 import org.data2semantics.mustard.kernels.graphkernels.FeatureVectorKernel;
 import org.data2semantics.mustard.kernels.graphkernels.GraphKernel;
-import org.data2semantics.mustard.learners.SparseVector;
 import org.data2semantics.mustard.weisfeilerlehman.ApproxStringLabel;
 import org.data2semantics.mustard.weisfeilerlehman.WeisfeilerLehmanApproxDTGraphIterator;
 import org.data2semantics.mustard.weisfeilerlehman.WeisfeilerLehmanApproxIterator;

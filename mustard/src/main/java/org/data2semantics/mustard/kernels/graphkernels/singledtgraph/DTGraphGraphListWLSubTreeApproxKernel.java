@@ -6,12 +6,12 @@ import java.util.List;
 import org.data2semantics.mustard.kernels.ComputationTimeTracker;
 import org.data2semantics.mustard.kernels.FeatureInspector;
 import org.data2semantics.mustard.kernels.KernelUtils;
+import org.data2semantics.mustard.kernels.SparseVector;
 import org.data2semantics.mustard.kernels.data.GraphList;
 import org.data2semantics.mustard.kernels.data.SingleDTGraph;
 import org.data2semantics.mustard.kernels.graphkernels.FeatureVectorKernel;
 import org.data2semantics.mustard.kernels.graphkernels.GraphKernel;
 import org.data2semantics.mustard.kernels.graphkernels.graphlist.WLSubTreeApproxKernel;
-import org.data2semantics.mustard.learners.SparseVector;
 import org.data2semantics.mustard.rdf.RDFUtils;
 import org.data2semantics.mustard.weisfeilerlehman.ApproxStringLabel;
 import org.nodes.DTGraph;
@@ -38,7 +38,7 @@ public class DTGraphGraphListWLSubTreeApproxKernel implements GraphKernel<Single
 		return kernel.getComputationTime();
 	}
 
-	public SparseVector[] computeFeatureVectors(SingleDTGraph data) {
+	public org.data2semantics.mustard.kernels.SparseVector[] computeFeatureVectors(SingleDTGraph data) {
 		GraphList<DTGraph<ApproxStringLabel,ApproxStringLabel>> graphs = RDFUtils.getSubGraphsApproxStringLabel(data.getGraph(), data.getInstances(), depth);				
 		SparseVector[] ret =  kernel.computeFeatureVectors(graphs);
 		return ret;

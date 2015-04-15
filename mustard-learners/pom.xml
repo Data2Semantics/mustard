@@ -3,4 +3,11 @@
   <groupId>dat2semantics</groupId>
   <artifactId>mustard-learners</artifactId>
   <version>0.0.1-SNAPSHOT</version>
+  <dependencies>
+  	<dependency>
+  		<groupId>data2semantics</groupId>
+  		<artifactId>mustard</artifactId>
+  		<version>0.0.1-SNAPSHOT</version>
+  	</dependency>
+  </dependencies>
 </project>

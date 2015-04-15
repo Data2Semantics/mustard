@@ -1,7 +1,5 @@
 package org.data2semantics.mustard.rdf;
 
-import static org.junit.Assert.*;
-
 import java.util.HashSet;
 
 import org.junit.Test;
