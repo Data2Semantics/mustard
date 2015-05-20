@@ -185,7 +185,6 @@ public class DTGraphRootWalkCountKernel implements GraphKernel<SingleDTGraph>, F
 				desc.add(WalkCountUtils.getFeatureDecription(reverseLabelDict, reversePathDict, index));
 			}
 			return desc;
-		}}
-	
-	
+		}
+	}	
 }

@@ -4,34 +4,35 @@ import java.util.List;
 import java.util.Set;
 
 import org.data2semantics.mustard.kernels.ComputationTimeTracker;
-import org.data2semantics.mustard.kernels.FeatureInspector;
 import org.data2semantics.mustard.kernels.KernelUtils;
 import org.data2semantics.mustard.kernels.SparseVector;
 import org.data2semantics.mustard.kernels.data.RDFData;
 import org.data2semantics.mustard.kernels.data.SingleDTGraph;
 import org.data2semantics.mustard.kernels.graphkernels.FeatureVectorKernel;
 import org.data2semantics.mustard.kernels.graphkernels.GraphKernel;
-import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphGraphListWalkCountKernel;
+import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphTreeWalkCountIDEQKernelMkII;
+import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphTreeWalkCountKernelMkII;
 import org.data2semantics.mustard.rdf.RDFDataSet;
 import org.data2semantics.mustard.rdf.RDFUtils;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 
-public class RDFGraphListWalkCountKernel implements GraphKernel<RDFData>, FeatureVectorKernel<RDFData>, ComputationTimeTracker, FeatureInspector {
+public class RDFTreeWalkCountIDEQKernelMkII implements GraphKernel<RDFData>, FeatureVectorKernel<RDFData>, ComputationTimeTracker {
 	private int depth;
 	private boolean inference;
-	private DTGraphGraphListWalkCountKernel kernel;
+	private DTGraphTreeWalkCountIDEQKernelMkII kernel;
 	private SingleDTGraph graph;
 
-	public RDFGraphListWalkCountKernel(int pathLength, int depth,  boolean inference, boolean normalize) {
+	public RDFTreeWalkCountIDEQKernelMkII(int pathLength, int depth, boolean inference, boolean normalize) {
 		super();
 		this.depth = depth;
 		this.inference = inference;
-		kernel = new DTGraphGraphListWalkCountKernel(pathLength, depth, normalize);
+
+		kernel = new DTGraphTreeWalkCountIDEQKernelMkII(pathLength, depth, normalize);
 	}
 
 	public String getLabel() {
-		return KernelUtils.createLabel(this) + "_" + kernel.getLabel();		
+		return KernelUtils.createLabel(this) + "_" + kernel.getLabel();			
 	}
 
 	public void setNormalize(boolean normalize) {
@@ -56,9 +57,5 @@ public class RDFGraphListWalkCountKernel implements GraphKernel<RDFData>, Featur
 		Set<Statement> stmts = RDFUtils.getStatements4Depth(dataset, instances, depth, inference);
 		stmts.removeAll(blackList);
 		graph = RDFUtils.statements2Graph(stmts, RDFUtils.REGULAR_LITERALS, instances, true);
-	}
-
-	public List<String> getFeatureDescriptions(List<Integer> indicesSV) {
-		return kernel.getFeatureDescriptions(indicesSV);
 	}	
 }

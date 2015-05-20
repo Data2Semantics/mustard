@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.data2semantics.mustard.kernels.ComputationTimeTracker;
+import org.data2semantics.mustard.kernels.FeatureInspector;
 import org.data2semantics.mustard.kernels.KernelUtils;
 import org.data2semantics.mustard.kernels.SparseVector;
 import org.data2semantics.mustard.kernels.data.SingleDTGraph;
@@ -13,6 +14,7 @@ import org.data2semantics.mustard.kernels.graphkernels.FeatureVectorKernel;
 import org.data2semantics.mustard.kernels.graphkernels.GraphKernel;
 import org.data2semantics.mustard.utils.Pair;
 import org.data2semantics.mustard.weisfeilerlehman.MapLabel;
+import org.data2semantics.mustard.weisfeilerlehman.WLUtils;
 import org.data2semantics.mustard.weisfeilerlehman.WeisfeilerLehmanDTGraphMapLabelIterator;
 import org.data2semantics.mustard.weisfeilerlehman.WeisfeilerLehmanIterator;
 import org.nodes.DTGraph;
@@ -30,7 +32,7 @@ import org.nodes.LightDTGraph;
  * @author Gerben
  *
  */
-public class DTGraphTreeWLSubTreeKernel implements GraphKernel<SingleDTGraph>, FeatureVectorKernel<SingleDTGraph>, ComputationTimeTracker {
+public class DTGraphTreeWLSubTreeKernel implements GraphKernel<SingleDTGraph>, FeatureVectorKernel<SingleDTGraph>, ComputationTimeTracker, FeatureInspector {
 
 	private Map<DTNode<MapLabel,MapLabel>, List<Pair<DTNode<MapLabel,MapLabel>, Integer>>> instanceVertexIndexMap;
 	private Map<DTNode<MapLabel,MapLabel>, List<Pair<DTLink<MapLabel,MapLabel>, Integer>>> instanceEdgeIndexMap;
@@ -45,6 +47,8 @@ public class DTGraphTreeWLSubTreeKernel implements GraphKernel<SingleDTGraph>, F
 	private boolean iterationWeighting;
 	private boolean trackPrevNBH;
 	private long compTime;
+	
+	private Map<String,String> dict;
 
 	public DTGraphTreeWLSubTreeKernel(int iterations, int depth, boolean reverse, boolean iterationWeighting, boolean trackPrevNBH, boolean normalize) {
 		this.reverse = reverse;
@@ -113,6 +117,12 @@ public class DTGraphTreeWLSubTreeKernel implements GraphKernel<SingleDTGraph>, F
 		}
 		
 		compTime = System.currentTimeMillis() - tic;
+		
+		// Set the reverse label dict, to reverse engineer the features
+		dict = new HashMap<String,String>();
+		for (String key : wl.getLabelDict().keySet()) {
+			dict.put(wl.getLabelDict().get(key), key);
+		}
 		
 		if (this.normalize) {
 			featureVectors = KernelUtils.normalize(featureVectors);
@@ -237,4 +247,20 @@ public class DTGraphTreeWLSubTreeKernel implements GraphKernel<SingleDTGraph>, F
 			}
 		}
 	}
+
+
+	public List<String> getFeatureDescriptions(List<Integer> indicesSV) {
+		if (dict == null) {
+			throw new RuntimeException("Should run computeFeatureVectors first");
+		} else {
+			List<String> desc = new ArrayList<String>();
+			
+			for (int index : indicesSV) {
+				desc.add(WLUtils.getFeatureDecription(dict, index));
+			}
+			return desc;
+		}
+	}
+	
+	
 }

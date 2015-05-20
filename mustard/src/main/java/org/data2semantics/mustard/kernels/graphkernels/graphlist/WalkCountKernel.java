@@ -6,11 +6,13 @@ import java.util.List;
 import java.util.Map;
 
 import org.data2semantics.mustard.kernels.ComputationTimeTracker;
+import org.data2semantics.mustard.kernels.FeatureInspector;
 import org.data2semantics.mustard.kernels.KernelUtils;
 import org.data2semantics.mustard.kernels.SparseVector;
 import org.data2semantics.mustard.kernels.data.GraphList;
 import org.data2semantics.mustard.kernels.graphkernels.FeatureVectorKernel;
 import org.data2semantics.mustard.kernels.graphkernels.GraphKernel;
+import org.data2semantics.mustard.utils.WalkCountUtils;
 import org.nodes.DTGraph;
 import org.nodes.DTLink;
 import org.nodes.DTNode;
@@ -22,12 +24,14 @@ import org.nodes.LightDTGraph;
  * 
  * @author Gerben *
  */
-public class WalkCountKernel implements GraphKernel<GraphList<DTGraph<String,String>>>, FeatureVectorKernel<GraphList<DTGraph<String,String>>>, ComputationTimeTracker {
+public class WalkCountKernel implements GraphKernel<GraphList<DTGraph<String,String>>>, FeatureVectorKernel<GraphList<DTGraph<String,String>>>, ComputationTimeTracker, FeatureInspector {
 	private int depth;
 	private long compTime;
 	protected boolean normalize;
 	private Map<String, Integer> pathDict;
 	private Map<String, Integer> labelDict;
+	private Map<Integer, String> reversePathDict;
+	private Map<Integer, String> reverseLabelDict;
 
 
 	/**
@@ -86,6 +90,16 @@ public class WalkCountKernel implements GraphKernel<GraphList<DTGraph<String,Str
 		}
 		
 		compTime = System.currentTimeMillis() - tic;
+		
+		reversePathDict = new HashMap<Integer,String>();	
+		for (String key : pathDict.keySet()) {
+			reversePathDict.put(pathDict.get(key), key);
+		}
+		
+		reverseLabelDict = new HashMap<Integer,String>();	
+		for (String key : labelDict.keySet()) {
+			reverseLabelDict.put(labelDict.get(key), key);
+		}
 
 		if (normalize) {
 			featureVectors = KernelUtils.normalize(featureVectors);
@@ -156,4 +170,18 @@ public class WalkCountKernel implements GraphKernel<GraphList<DTGraph<String,Str
 		}
 		return newGraphs;
 	}
+
+	public List<String> getFeatureDescriptions(List<Integer> indicesSV) {
+		if (labelDict == null) {
+			throw new RuntimeException("Should run computeFeatureVectors first");
+		} else {
+			List<String> desc = new ArrayList<String>();
+			
+			for (int index : indicesSV) {
+				desc.add(WalkCountUtils.getFeatureDecription(reverseLabelDict, reversePathDict, index));
+			}
+			return desc;
+		}
+	}
+	
 }

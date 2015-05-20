@@ -45,7 +45,6 @@ public class DTGraphGraphListWLSubTreeKernel implements GraphKernel<SingleDTGrap
 		return ret;
 	}
 
-
 	public double[][] compute(SingleDTGraph data) {
 		SparseVector[] featureVectors = computeFeatureVectors(data);
 		double[][] kernel = KernelUtils.initMatrix(data.getInstances().size(), data.getInstances().size());

@@ -2,7 +2,10 @@ package org.data2semantics.mustard.kernels.graphkernels.singledtgraph;
 
 
 
+import java.util.List;
+
 import org.data2semantics.mustard.kernels.ComputationTimeTracker;
+import org.data2semantics.mustard.kernels.FeatureInspector;
 import org.data2semantics.mustard.kernels.KernelUtils;
 import org.data2semantics.mustard.kernels.SparseVector;
 import org.data2semantics.mustard.kernels.data.GraphList;
@@ -23,17 +26,15 @@ import org.nodes.DTGraph;
  * @author Gerben
  *
  */
-public class DTGraphGraphListWalkCountKernel implements GraphKernel<SingleDTGraph>, FeatureVectorKernel<SingleDTGraph>, ComputationTimeTracker {
+public class DTGraphGraphListWalkCountKernel implements GraphKernel<SingleDTGraph>, FeatureVectorKernel<SingleDTGraph>, ComputationTimeTracker, FeatureInspector {
 
 	private int depth;
-	private int pathLength;
-	private boolean normalize;
 	private long compTime;
+	private WalkCountKernel kernel;
 
 	public DTGraphGraphListWalkCountKernel(int pathLength, int depth, boolean normalize) {
-		this.normalize = normalize;
 		this.depth = depth;
-		this.pathLength = pathLength;
+		this.kernel = new WalkCountKernel(pathLength, normalize);
 	}
 
 	public String getLabel() {
@@ -41,10 +42,8 @@ public class DTGraphGraphListWalkCountKernel implements GraphKernel<SingleDTGrap
 	}
 
 	public void setNormalize(boolean normalize) {
-		this.normalize = normalize;
+		this.kernel.setNormalize(normalize);
 	}
-
-
 
 	public long getComputationTime() {
 		return compTime;
@@ -52,7 +51,6 @@ public class DTGraphGraphListWalkCountKernel implements GraphKernel<SingleDTGrap
 
 	public SparseVector[] computeFeatureVectors(SingleDTGraph data) {
 		GraphList<DTGraph<String,String>> graphs = RDFUtils.getSubGraphs(data.getGraph(), data.getInstances(), depth);		
-		WalkCountKernel kernel = new WalkCountKernel(pathLength, normalize);
 		SparseVector[] ret = kernel.computeFeatureVectors(graphs);
 		compTime = kernel.getComputationTime();
 		return ret;
@@ -66,4 +64,9 @@ public class DTGraphGraphListWalkCountKernel implements GraphKernel<SingleDTGrap
 		compTime += System.currentTimeMillis() - tic;
 		return kernel;
 	}
+
+	public List<String> getFeatureDescriptions(List<Integer> indicesSV) {
+		return kernel.getFeatureDescriptions(indicesSV);
+	}
+
 }

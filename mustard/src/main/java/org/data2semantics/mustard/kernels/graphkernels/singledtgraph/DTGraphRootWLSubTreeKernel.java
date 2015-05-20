@@ -5,12 +5,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.data2semantics.mustard.kernels.FeatureInspector;
 import org.data2semantics.mustard.kernels.KernelUtils;
 import org.data2semantics.mustard.kernels.SparseVector;
 import org.data2semantics.mustard.kernels.data.SingleDTGraph;
 import org.data2semantics.mustard.kernels.graphkernels.FeatureVectorKernel;
 import org.data2semantics.mustard.kernels.graphkernels.GraphKernel;
 import org.data2semantics.mustard.weisfeilerlehman.MapLabel;
+import org.data2semantics.mustard.weisfeilerlehman.WLUtils;
 import org.data2semantics.mustard.weisfeilerlehman.WeisfeilerLehmanDTGraphMapLabelIterator;
 import org.data2semantics.mustard.weisfeilerlehman.WeisfeilerLehmanIterator;
 import org.nodes.DTGraph;
@@ -26,7 +28,7 @@ import org.nodes.LightDTGraph;
  * @author Gerben
  *
  */
-public class DTGraphRootWLSubTreeKernel implements GraphKernel<SingleDTGraph>, FeatureVectorKernel<SingleDTGraph> {
+public class DTGraphRootWLSubTreeKernel implements GraphKernel<SingleDTGraph>, FeatureVectorKernel<SingleDTGraph> , FeatureInspector {
 
 	private Map<DTNode<MapLabel,MapLabel>, Map<DTNode<MapLabel,MapLabel>, Integer>> instanceVertexIndexMap;
 	private Map<DTNode<MapLabel,MapLabel>, Map<DTLink<MapLabel,MapLabel>, Integer>> instanceEdgeIndexMap;
@@ -38,6 +40,8 @@ public class DTGraphRootWLSubTreeKernel implements GraphKernel<SingleDTGraph>, F
 	private int iterations;
 	private boolean normalize;
 	private boolean iterationWeighting;
+	
+	private Map<String, String> dict;
 
 
 	public DTGraphRootWLSubTreeKernel(int iterations, boolean iterationWeighting, boolean normalize) {
@@ -93,6 +97,12 @@ public class DTGraphRootWLSubTreeKernel implements GraphKernel<SingleDTGraph>, F
 		}
 		if (this.normalize) {
 			featureVectors = KernelUtils.normalize(featureVectors);
+		}
+		
+		// Set the reverse label dict, to reverse engineer the features
+		dict = new HashMap<String,String>();
+		for (String key : wl.getLabelDict().keySet()) {
+			dict.put(wl.getLabelDict().get(key), key);
 		}
 
 		return featureVectors;
@@ -210,4 +220,20 @@ public class DTGraphRootWLSubTreeKernel implements GraphKernel<SingleDTGraph>, F
 			}
 		}
 	}
+
+
+	public List<String> getFeatureDescriptions(List<Integer> indicesSV) {
+		if (dict == null) {
+			throw new RuntimeException("Should run computeFeatureVectors first");
+		} else {
+			List<String> desc = new ArrayList<String>();
+			
+			for (int index : indicesSV) {
+				desc.add(WLUtils.getFeatureDecription(dict, index));
+			}
+			return desc;
+		}
+	}
+	
+	
 }

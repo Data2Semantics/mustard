@@ -23,14 +23,17 @@ import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFGraphListWLSub
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFRootWalkCountKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFTreeWLSubTreeIDEQApproxKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFTreeWLSubTreeIDEQKernel;
+import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFTreeWalkCountIDEQKernelMkII;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFTreeWalkCountKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFTreeWLSubTreeKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFRootWLSubTreeKernel;
+import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFTreeWalkCountKernelMkII;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFWLSubTreeGeoProbApproxKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFWLSubTreeGeoProbKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFWLSubTreeIDEQApproxKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFWLSubTreeKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFWLSubTreeIDEQKernel;
+import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFWalkCountIDEQKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFWalkCountKernel;
 import org.data2semantics.mustard.learners.evaluation.AUCPR;
 import org.data2semantics.mustard.learners.evaluation.AUCROC;
@@ -277,7 +280,7 @@ public class AffiliationExperiment {
 		}
 		//*/
 
-		/* Path Count Tree
+		///* Path Count Tree
 		for (boolean inf : inference) {
 			resTable.newRow("Path Count Tree: " + inf);		 
 			for (int d : depths) {
@@ -304,7 +307,61 @@ public class AffiliationExperiment {
 		}
 		//*/
 
-		/* Path Count Fast
+		///* Path Count Tree
+		for (boolean inf : inference) {
+			resTable.newRow("Path Count Tree MkII: " + inf);		 
+			for (int d : depths) {
+
+				List<RDFTreeWalkCountKernelMkII> kernels = new ArrayList<RDFTreeWalkCountKernelMkII>();	
+
+				if (depthTimesTwo) {
+					kernels.add(new RDFTreeWalkCountKernelMkII(d*2, d, inf, true));
+				} else {
+					for (int dd : iterationsWL) {
+						kernels.add(new RDFTreeWalkCountKernelMkII(dd, d, inf, true));
+					}
+				}
+
+				//Collections.shuffle(target);
+				SimpleGraphKernelExperiment<RDFData> exp = new SimpleGraphKernelExperiment<RDFData>(kernels, data, target, svmParms, seeds, evalFuncs);
+
+				exp.run();
+
+				for (Result res : exp.getResults()) {
+					resTable.addResult(res);
+				}
+			}
+		}
+		//*/
+
+		///* Path Count Tree
+		for (boolean inf : inference) {
+			resTable.newRow("Path Count Tree IDEQ: " + inf);		 
+			for (int d : depths) {
+
+				List<RDFTreeWalkCountIDEQKernelMkII> kernels = new ArrayList<RDFTreeWalkCountIDEQKernelMkII>();	
+
+				if (depthTimesTwo) {
+					kernels.add(new RDFTreeWalkCountIDEQKernelMkII(d*2, d, inf, true));
+				} else {
+					for (int dd : iterationsWL) {
+						kernels.add(new RDFTreeWalkCountIDEQKernelMkII(dd, d, inf, true));
+					}
+				}
+
+				//Collections.shuffle(target);
+				SimpleGraphKernelExperiment<RDFData> exp = new SimpleGraphKernelExperiment<RDFData>(kernels, data, target, svmParms, seeds, evalFuncs);
+
+				exp.run();
+
+				for (Result res : exp.getResults()) {
+					resTable.addResult(res);
+				}
+			}
+		}
+		//*/
+
+		///* Path Count Fast
 		for (boolean inf : inference) {
 			resTable.newRow("Path Count Fast: " + inf);		 
 			for (int d : depths) {
@@ -316,6 +373,33 @@ public class AffiliationExperiment {
 				} else {
 					for (int dd : iterationsWL) {
 						kernels.add(new RDFWalkCountKernel(dd, d, inf, true));
+					}
+				}
+
+				//Collections.shuffle(target);
+				SimpleGraphKernelExperiment<RDFData> exp = new SimpleGraphKernelExperiment<RDFData>(kernels, data, target, svmParms, seeds, evalFuncs);
+
+				exp.run();
+
+				for (Result res : exp.getResults()) {
+					resTable.addResult(res);
+				}
+			}
+		}
+		//*/
+
+		///* Path Count Fast
+		for (boolean inf : inference) {
+			resTable.newRow("Path Count Fast IDEQ: " + inf);		 
+			for (int d : depths) {
+
+				List<RDFWalkCountIDEQKernel> kernels = new ArrayList<RDFWalkCountIDEQKernel>();	
+
+				if (depthTimesTwo) {
+					kernels.add(new RDFWalkCountIDEQKernel(d*2, d, inf, true));
+				} else {
+					for (int dd : iterationsWL) {
+						kernels.add(new RDFWalkCountIDEQKernel(dd, d, inf, true));
 					}
 				}
 
@@ -532,11 +616,36 @@ public class AffiliationExperiment {
 		}
 		//*/
 
-
-
-		/* WL Fast
+		///* WL Fast
 		for (boolean inf : inference) {
 			resTable.newRow("WL Fast: " + inf);		 
+
+			for (int d : depths) {
+				List<RDFWLSubTreeKernel> kernels = new ArrayList<RDFWLSubTreeKernel>();	
+				if (depthTimesTwo) {
+					kernels.add(new RDFWLSubTreeKernel(d*2, d, inf, reverseWL, false, true, true));
+				} else {
+					for (int dd : iterationsWL) {
+						kernels.add(new RDFWLSubTreeKernel(dd, d, inf, reverseWL, false, true, true));
+					}
+				}
+
+				//Collections.shuffle(target);
+				SimpleGraphKernelExperiment<RDFData> exp = new SimpleGraphKernelExperiment<RDFData>(kernels, data, target, svmParms, seeds, evalFuncs);
+
+				exp.run();
+
+				for (Result res : exp.getResults()) {
+					resTable.addResult(res);
+				}
+			}
+		}
+		//*/
+
+
+		///* WL Fast
+		for (boolean inf : inference) {
+			resTable.newRow("WL Fast IDEQ: " + inf);		 
 
 			for (int d : depths) {
 				List<RDFWLSubTreeIDEQKernel> kernels = new ArrayList<RDFWLSubTreeIDEQKernel>();	
@@ -586,8 +695,8 @@ public class AffiliationExperiment {
 		}
 		//*/
 
-		
-		///* WL Geo Prob
+
+		/* WL Geo Prob
 		for (boolean inf : inference) {
 			resTable.newRow("WL Geo Prob: " + inf);		 
 
@@ -615,7 +724,7 @@ public class AffiliationExperiment {
 		}
 		//*/
 
-		///* WL Geo Prob Approx
+		/* WL Geo Prob Approx
 		for (boolean inf : inference) {
 			resTable.newRow("WL Geo Prob Approx: " + inf);		 
 
@@ -649,7 +758,7 @@ public class AffiliationExperiment {
 		}
 		//*/
 
-		
+
 
 		/* WL Fast Approx
 		for (boolean inf : inference) {
