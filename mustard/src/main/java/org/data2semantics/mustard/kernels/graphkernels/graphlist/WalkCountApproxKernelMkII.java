@@ -77,10 +77,11 @@ public class WalkCountApproxKernelMkII implements GraphKernel<GraphList<DTGraph<
 
 		long tic = System.currentTimeMillis();
 
+		Integer index = null;
+		
 		for (int i = 0; i < featureVectors.length; i++) {
 			// initial count
-			// Count paths
-			Integer index = null;
+			// Count paths		
 			for (DTNode<PathStringLabel,PathStringLabel> v : graphs.get(i).nodes()) {
 				for (String path : v.label().getPaths()) {
 					index = pathDict.get(path);
@@ -103,13 +104,16 @@ public class WalkCountApproxKernelMkII implements GraphKernel<GraphList<DTGraph<
 					featureVectors[i].setValue(index, featureVectors[i].getValue(index) + 1);
 				}
 			}
+		}
+
+		computeLabelFreqs(graphs);	
+
+		// loop to create longer and longer paths
+		for (int j = 0; j < depth; j++) {
+			computePathFreqs(graphs);	
 			
-			computeLabelFreqs(graphs);	
-
-			// loop to create longer and longer paths
-			for (int j = 0; j < depth; j++) {
-				computePathFreqs(graphs);	
-
+			for (int i = 0; i < featureVectors.length; i++) {
+				
 				// Build new paths
 				for (DTNode<PathStringLabel,PathStringLabel> v : graphs.get(i).nodes()) {
 					for (DTLink<PathStringLabel,PathStringLabel> e : v.linksOut()) {
@@ -133,7 +137,6 @@ public class WalkCountApproxKernelMkII implements GraphKernel<GraphList<DTGraph<
 						}
 						featureVectors[i].setValue(index, featureVectors[i].getValue(index) + 1);
 					}
-
 				}
 
 				for (DTLink<PathStringLabel,PathStringLabel> e : graphs.get(i).links()) {	

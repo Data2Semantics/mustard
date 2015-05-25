@@ -71,10 +71,11 @@ public class WalkCountKernelMkII implements GraphKernel<GraphList<DTGraph<String
 
 		long tic = System.currentTimeMillis();
 
+		Integer index = null;
+		
 		for (int i = 0; i < featureVectors.length; i++) {
 			// initial count
 			// Count paths
-			Integer index = null;
 			for (DTNode<PathStringLabel,PathStringLabel> v : graphs.get(i).nodes()) {
 				for (String path : v.label().getPaths()) {
 					index = pathDict.get(path);
@@ -97,10 +98,12 @@ public class WalkCountKernelMkII implements GraphKernel<GraphList<DTGraph<String
 					featureVectors[i].setValue(index, featureVectors[i].getValue(index) + 1);
 				}
 			}
+		}
 
 
-			// loop to create longer and longer paths
-			for (int j = 0; j < depth; j++) {
+		// loop to create longer and longer paths
+		for (int j = 0; j < depth; j++) {
+			for (int i = 0; i < featureVectors.length; i++) {
 
 				// Build new paths
 				for (DTNode<PathStringLabel,PathStringLabel> v : graphs.get(i).nodes()) {
