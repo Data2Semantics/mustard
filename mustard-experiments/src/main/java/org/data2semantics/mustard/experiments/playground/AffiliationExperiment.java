@@ -20,9 +20,12 @@ import org.data2semantics.mustard.kernels.graphkernels.graphlist.WalkCountKernel
 import org.data2semantics.mustard.kernels.graphkernels.graphlist.WLSubTreeKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFGraphListWLSubTreeApproxKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFGraphListWLSubTreeKernel;
+import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFGraphListWalkCountApproxKernelMkII;
+import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFGraphListWalkCountKernelMkII;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFRootWalkCountKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFTreeWLSubTreeIDEQApproxKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFTreeWLSubTreeIDEQKernel;
+import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFTreeWalkCountIDEQApproxKernelMkII;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFTreeWalkCountIDEQKernelMkII;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFTreeWalkCountKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFTreeWLSubTreeKernel;
@@ -33,6 +36,7 @@ import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFWLSubTreeGeoPr
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFWLSubTreeIDEQApproxKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFWLSubTreeKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFWLSubTreeIDEQKernel;
+import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFWalkCountIDEQApproxKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFWalkCountIDEQKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFWalkCountKernel;
 import org.data2semantics.mustard.learners.evaluation.AUCPR;
@@ -115,7 +119,7 @@ public class AffiliationExperiment {
 		boolean reverseWL = true; // WL should be in reverse mode, which means regular subtrees
 		boolean[] inference = {false,true};
 
-		int[] depths = {1,2,3};
+		int[] depths = {1,2};
 		int[] pathDepths = {0,1,2,3,4,5,6};
 		int[] iterationsWL = {0,1,2,3,4,5,6};
 
@@ -130,7 +134,7 @@ public class AffiliationExperiment {
 		int[][] maxPrevNBHs = {{6}};
 		//int[][] maxCards    = {{1},{2},{100000}};
 		int[][] maxCards    = {{1000}};
-		int[][] minFreqs    = {{0}}; // {{1},{2},{4},{8},{16}};
+		int[][] minFreqs    = {{1}}; // {{1},{2},{4},{8},{16}};
 
 
 		int[] baseMaxPrevNBH = {6};
@@ -280,7 +284,7 @@ public class AffiliationExperiment {
 		}
 		//*/
 
-		///* Path Count Tree
+		/* Path Count Tree
 		for (boolean inf : inference) {
 			resTable.newRow("Path Count Tree: " + inf);		 
 			for (int d : depths) {
@@ -307,7 +311,7 @@ public class AffiliationExperiment {
 		}
 		//*/
 
-		///* Path Count Tree
+		/* Path Count Tree
 		for (boolean inf : inference) {
 			resTable.newRow("Path Count Tree MkII: " + inf);		 
 			for (int d : depths) {
@@ -361,7 +365,34 @@ public class AffiliationExperiment {
 		}
 		//*/
 
-		///* Path Count Fast
+		///* Path Count Tree Approx
+		for (boolean inf : inference) {
+			resTable.newRow("Path Count Tree IDEQ Approx: " + inf);		 
+			for (int d : depths) {
+
+				List<RDFTreeWalkCountIDEQApproxKernelMkII> kernels = new ArrayList<RDFTreeWalkCountIDEQApproxKernelMkII>();	
+
+				if (depthTimesTwo) {
+					kernels.add(new RDFTreeWalkCountIDEQApproxKernelMkII(d*2, d, inf, 1, true));
+				} else {
+					for (int dd : iterationsWL) {
+						kernels.add(new RDFTreeWalkCountIDEQApproxKernelMkII(dd, d, inf, 1, true));
+					}
+				}
+
+				//Collections.shuffle(target);
+				SimpleGraphKernelExperiment<RDFData> exp = new SimpleGraphKernelExperiment<RDFData>(kernels, data, target, svmParms, seeds, evalFuncs);
+
+				exp.run();
+
+				for (Result res : exp.getResults()) {
+					resTable.addResult(res);
+				}
+			}
+		}
+		//*/
+		
+		/* Path Count Fast
 		for (boolean inf : inference) {
 			resTable.newRow("Path Count Fast: " + inf);		 
 			for (int d : depths) {
@@ -400,6 +431,87 @@ public class AffiliationExperiment {
 				} else {
 					for (int dd : iterationsWL) {
 						kernels.add(new RDFWalkCountIDEQKernel(dd, d, inf, true));
+					}
+				}
+
+				//Collections.shuffle(target);
+				SimpleGraphKernelExperiment<RDFData> exp = new SimpleGraphKernelExperiment<RDFData>(kernels, data, target, svmParms, seeds, evalFuncs);
+
+				exp.run();
+
+				for (Result res : exp.getResults()) {
+					resTable.addResult(res);
+				}
+			}
+		}
+		//*/
+		
+		///* Path Count Fast Approx
+		for (boolean inf : inference) {
+			resTable.newRow("Path Count Fast IDEQ Approx: " + inf);		 
+			for (int d : depths) {
+
+				List<RDFWalkCountIDEQApproxKernel> kernels = new ArrayList<RDFWalkCountIDEQApproxKernel>();	
+
+				if (depthTimesTwo) {
+					kernels.add(new RDFWalkCountIDEQApproxKernel(d*2, d, inf, 1, true));
+				} else {
+					for (int dd : iterationsWL) {
+						kernels.add(new RDFWalkCountIDEQApproxKernel(dd, d, inf, 1, true));
+					}
+				}
+
+				//Collections.shuffle(target);
+				SimpleGraphKernelExperiment<RDFData> exp = new SimpleGraphKernelExperiment<RDFData>(kernels, data, target, svmParms, seeds, evalFuncs);
+
+				exp.run();
+
+				for (Result res : exp.getResults()) {
+					resTable.addResult(res);
+				}
+			}
+		}
+		//*/
+		
+		///* Path Count Full
+		for (boolean inf : inference) {
+			resTable.newRow("Path Count Full: " + inf);		 
+			for (int d : depths) {
+
+				List<RDFGraphListWalkCountKernelMkII> kernels = new ArrayList<RDFGraphListWalkCountKernelMkII>();	
+
+				if (depthTimesTwo) {
+					kernels.add(new RDFGraphListWalkCountKernelMkII(d*2, d, inf, true));
+				} else {
+					for (int dd : iterationsWL) {
+						kernels.add(new RDFGraphListWalkCountKernelMkII(dd, d, inf, true));
+					}
+				}
+
+				//Collections.shuffle(target);
+				SimpleGraphKernelExperiment<RDFData> exp = new SimpleGraphKernelExperiment<RDFData>(kernels, data, target, svmParms, seeds, evalFuncs);
+
+				exp.run();
+
+				for (Result res : exp.getResults()) {
+					resTable.addResult(res);
+				}
+			}
+		}
+		//*/
+		
+		///* Path Count Full Approx
+		for (boolean inf : inference) {
+			resTable.newRow("Path Count Full Approx: " + inf);		 
+			for (int d : depths) {
+
+				List<RDFGraphListWalkCountApproxKernelMkII> kernels = new ArrayList<RDFGraphListWalkCountApproxKernelMkII>();	
+
+				if (depthTimesTwo) {
+					kernels.add(new RDFGraphListWalkCountApproxKernelMkII(d*2, d, inf, 1, true));
+				} else {
+					for (int dd : iterationsWL) {
+						kernels.add(new RDFGraphListWalkCountApproxKernelMkII(dd, d, inf, 1, true));
 					}
 				}
 
@@ -616,7 +728,7 @@ public class AffiliationExperiment {
 		}
 		//*/
 
-		///* WL Fast
+		/* WL Fast
 		for (boolean inf : inference) {
 			resTable.newRow("WL Fast: " + inf);		 
 
@@ -643,7 +755,7 @@ public class AffiliationExperiment {
 		//*/
 
 
-		///* WL Fast
+		/* WL Fast
 		for (boolean inf : inference) {
 			resTable.newRow("WL Fast IDEQ: " + inf);		 
 

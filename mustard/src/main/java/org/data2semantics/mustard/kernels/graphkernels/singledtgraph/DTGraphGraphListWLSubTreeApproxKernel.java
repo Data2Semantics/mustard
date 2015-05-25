@@ -40,10 +40,8 @@ public class DTGraphGraphListWLSubTreeApproxKernel implements GraphKernel<Single
 
 	public org.data2semantics.mustard.kernels.SparseVector[] computeFeatureVectors(SingleDTGraph data) {
 		GraphList<DTGraph<ApproxStringLabel,ApproxStringLabel>> graphs = RDFUtils.getSubGraphsApproxStringLabel(data.getGraph(), data.getInstances(), depth);				
-		SparseVector[] ret =  kernel.computeFeatureVectors(graphs);
-		return ret;
+		return kernel.computeFeatureVectors(graphs);
 	}
-
 
 	public double[][] compute(SingleDTGraph data) {
 		GraphList<DTGraph<ApproxStringLabel,ApproxStringLabel>> graphs = RDFUtils.getSubGraphsApproxStringLabel(data.getGraph(), data.getInstances(), depth);				
