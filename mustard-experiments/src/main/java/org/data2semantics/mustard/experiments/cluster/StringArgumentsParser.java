@@ -11,7 +11,9 @@ import org.data2semantics.mustard.experiments.data.ClassificationDataSet;
 import org.data2semantics.mustard.kernels.data.SingleDTGraph;
 import org.data2semantics.mustard.kernels.graphkernels.FeatureVectorKernel;
 import org.data2semantics.mustard.kernels.graphkernels.GraphKernel;
+import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphGraphListWLSubTreeApproxKernel;
 import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphGraphListWLSubTreeKernel;
+import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphGraphListWalkCountApproxKernelMkII;
 import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphGraphListWalkCountKernel;
 import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphHubRemovalWrapperFeatureVectorKernel;
 import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphHubRemovalWrapperKernel;
@@ -19,9 +21,13 @@ import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphInte
 import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphIntersectionSubTreeKernel;
 import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphRootWLSubTreeKernel;
 import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphRootWalkCountKernel;
+import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphTreeWLSubTreeIDEQApproxKernel;
+import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphTreeWalkCountIDEQApproxKernelMkII;
 import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphTreeWalkCountKernel;
 import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphTreeWLSubTreeKernel;
+import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphWLSubTreeIDEQApproxKernel;
 import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphWLSubTreeKernel;
+import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphWalkCountIDEQApproxKernel;
 import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphWalkCountKernel;
 import org.data2semantics.mustard.rdf.RDFDataSet;
 import org.data2semantics.mustard.rdf.RDFFileDataSet;
@@ -142,6 +148,12 @@ public class StringArgumentsParser {
 		if (kernel.equals("TreeSubtrees")) {
 			return treeSubtrees(kernelParms);
 		}
+		if (kernel.equals("TreeWalksApprox")) {
+			return treeWalksApprox(kernelParms);
+		}
+		if (kernel.equals("TreeSubtreesApprox")) {
+			return treeSubtreesApprox(kernelParms);
+		}
 		if (kernel.equals("TreeWalksRoot")) {
 			return treeWalksRoot(kernelParms);
 		}
@@ -159,6 +171,18 @@ public class StringArgumentsParser {
 		}
 		if (kernel.equals("GraphSubtreesFast")) {
 			return graphSubtreesFast(kernelParms);
+		}
+		if (kernel.equals("GraphWalksApprox")) {
+			return graphWalksApprox(kernelParms);
+		}
+		if (kernel.equals("GraphWalksFastApprox")) {
+			return graphWalksFastApprox(kernelParms);
+		}
+		if (kernel.equals("GraphSubtreesApprox")) {
+			return graphSubtreesApprox(kernelParms);
+		}
+		if (kernel.equals("GraphSubtreesFastApprox")) {
+			return graphSubtreesFastApprox(kernelParms);
 		}
 		if (kernel.equals("IntersectionSubTree")) {
 			return intersectionSubTree(kernelParms);
@@ -209,6 +233,12 @@ public class StringArgumentsParser {
 		if (kernel.equals("TreeSubtrees")) {
 			return treeSubtrees(kernelParms);
 		}
+		if (kernel.equals("TreeWalksApprox")) {
+			return treeWalksApprox(kernelParms);
+		}
+		if (kernel.equals("TreeSubtreesApprox")) {
+			return treeSubtreesApprox(kernelParms);
+		}
 		if (kernel.equals("TreeWalksRoot")) {
 			return treeWalksRoot(kernelParms);
 		}
@@ -226,6 +256,18 @@ public class StringArgumentsParser {
 		}
 		if (kernel.equals("GraphSubtreesFast")) {
 			return graphSubtreesFast(kernelParms);
+		}
+		if (kernel.equals("GraphWalksApprox")) {
+			return graphWalksApprox(kernelParms);
+		}
+		if (kernel.equals("GraphWalksFastApprox")) {
+			return graphWalksFastApprox(kernelParms);
+		}
+		if (kernel.equals("GraphSubtreesApprox")) {
+			return graphSubtreesApprox(kernelParms);
+		}
+		if (kernel.equals("GraphSubtreesFastApprox")) {
+			return graphSubtreesFastApprox(kernelParms);
 		}
 		if (kernel.equals("URIPrefix")) {
 			return graphURIPrefix(kernelParms);
@@ -655,6 +697,334 @@ public class StringArgumentsParser {
 		}
 		return kernels;
 	}
+	
+	
+	/**
+	 * -kernel TreeSubtreesApprox
+	 * -kernelParm1 numIterations (int)
+	 * -kernelParm2 depth (int)
+	 * -kernelParm3 minFreq (int)
+	 * -kernelParm4 maxCard (int)
+	 * 
+	 * @return
+	 */
+	public static List<DTGraphTreeWLSubTreeIDEQApproxKernel> treeSubtreesApprox(String[] parms) {
+		List<DTGraphTreeWLSubTreeIDEQApproxKernel> kernels = new ArrayList<DTGraphTreeWLSubTreeIDEQApproxKernel>();
+		
+		int[] pathLengths = new int[1];
+		boolean dTT = false;
+		if (parms[0].equals("depthTimesTwo")) {
+			dTT = true;
+		} else if (parms[0].startsWith("[")) {
+			pathLengths = parseIntArray(parms[0]);
+		} else {
+			pathLengths[0] = Integer.parseInt(parms[0]); 
+		}
+		int[] depths = new int[1];
+		if (parms[1].startsWith("[")) {
+			depths = parseIntArray(parms[1]);
+		} else {
+			depths[0] = Integer.parseInt(parms[1]); 
+		}
+		
+		int[] minFreqs = new int[1];
+		if (parms[2].startsWith("[")) {
+			minFreqs = parseIntArray(parms[2]);
+		} else {
+			minFreqs[0] = Integer.parseInt(parms[2]);
+		}
+		
+		int[] maxCards = new int[1];
+		if (parms[3].startsWith("[")) {
+			maxCards = parseIntArray(parms[3]);
+		} else {
+			maxCards[0] = Integer.parseInt(parms[3]);
+		}
+		
+		for (int depth : depths) {
+			for (int p : pathLengths) {
+				if (dTT) { // if depth times two, then pathLengths has one element
+					p = depth * 2;
+				}
+				for (int minFreq : minFreqs) {
+					for (int maxCard : maxCards) {
+						int[] mpn = {p};
+						int[] mc = {maxCard};
+						int[] mf = {minFreq};
+						// new RDFWLSubTreeIDEQApproxKernel(d*2, d, inf, reverseWL, false, true, false, depthWeight, depthDiffWeight, maxPrevNBH, maxCard, minFreq, true)
+						kernels.add(new DTGraphTreeWLSubTreeIDEQApproxKernel(p, depth, true, false, true, false, 1.0, 1.0, mpn, mc, mf, true));
+					}
+				}
+			}
+		}
+		return kernels;
+	}
+	
+	/**
+	 * -kernel GraphSubtreesApprox
+	 * -kernelParm1 numIterations (int)
+	 * -kernelParm2 depth (int)
+	 * -kernelParm3 minFreq (int)
+	 * -kernelParm4 maxCard (int)
+	 * 
+	 * @return
+	 */
+	public static List<DTGraphGraphListWLSubTreeApproxKernel> graphSubtreesApprox(String[] parms) {
+		List<DTGraphGraphListWLSubTreeApproxKernel> kernels = new ArrayList<DTGraphGraphListWLSubTreeApproxKernel>();
+		
+		int[] pathLengths = new int[1];
+		boolean dTT = false;
+		if (parms[0].equals("depthTimesTwo")) {
+			dTT = true;
+		} else if (parms[0].startsWith("[")) {
+			pathLengths = parseIntArray(parms[0]);
+		} else {
+			pathLengths[0] = Integer.parseInt(parms[0]); 
+		}
+		int[] depths = new int[1];
+		if (parms[1].startsWith("[")) {
+			depths = parseIntArray(parms[1]);
+		} else {
+			depths[0] = Integer.parseInt(parms[1]); 
+		}
+		
+		int[] minFreqs = new int[1];
+		if (parms[2].startsWith("[")) {
+			minFreqs = parseIntArray(parms[2]);
+		} else {
+			minFreqs[0] = Integer.parseInt(parms[2]);
+		}
+		
+		int[] maxCards = new int[1];
+		if (parms[3].startsWith("[")) {
+			maxCards = parseIntArray(parms[3]);
+		} else {
+			maxCards[0] = Integer.parseInt(parms[3]);
+		}
+		
+		for (int depth : depths) {
+			for (int p : pathLengths) {
+				if (dTT) { // if depth times two, then pathLengths has one element
+					p = depth * 2;
+				}
+				for (int minFreq : minFreqs) {
+					for (int maxCard : maxCards) {
+						int[] mpn = {p};
+						int[] mc = {maxCard};
+						int[] mf = {minFreq};
+						// new RDFWLSubTreeIDEQApproxKernel(d*2, d, inf, reverseWL, false, true, false, depthWeight, depthDiffWeight, maxPrevNBH, maxCard, minFreq, true)
+						kernels.add(new DTGraphGraphListWLSubTreeApproxKernel(p, depth, true, true, 1.0, 1.0, mpn, mc, mf, true));
+					}
+				}
+			}
+		}
+		return kernels;
+	}
+	
+	
+	/**
+	 * -kernel GraphSubtreesFastApprox
+	 * -kernelParm1 numIterations (int)
+	 * -kernelParm2 depth (int)
+	 * -kernelParm3 minFreq (int)
+	 * -kernelParm4 maxCard (int)
+	 * 
+	 * @return
+	 */
+	public static List<DTGraphWLSubTreeIDEQApproxKernel> graphSubtreesFastApprox(String[] parms) {
+		List<DTGraphWLSubTreeIDEQApproxKernel> kernels = new ArrayList<DTGraphWLSubTreeIDEQApproxKernel>();
+		
+		int[] pathLengths = new int[1];
+		boolean dTT = false;
+		if (parms[0].equals("depthTimesTwo")) {
+			dTT = true;
+		} else if (parms[0].startsWith("[")) {
+			pathLengths = parseIntArray(parms[0]);
+		} else {
+			pathLengths[0] = Integer.parseInt(parms[0]); 
+		}
+		int[] depths = new int[1];
+		if (parms[1].startsWith("[")) {
+			depths = parseIntArray(parms[1]);
+		} else {
+			depths[0] = Integer.parseInt(parms[1]); 
+		}
+		
+		int[] minFreqs = new int[1];
+		if (parms[2].startsWith("[")) {
+			minFreqs = parseIntArray(parms[2]);
+		} else {
+			minFreqs[0] = Integer.parseInt(parms[2]);
+		}
+		
+		int[] maxCards = new int[1];
+		if (parms[3].startsWith("[")) {
+			maxCards = parseIntArray(parms[3]);
+		} else {
+			maxCards[0] = Integer.parseInt(parms[3]);
+		}
+		
+		for (int depth : depths) {
+			for (int p : pathLengths) {
+				if (dTT) { // if depth times two, then pathLengths has one element
+					p = depth * 2;
+				}
+				for (int minFreq : minFreqs) {
+					for (int maxCard : maxCards) {
+						int[] mpn = {p};
+						int[] mc = {maxCard};
+						int[] mf = {minFreq};
+						// new RDFWLSubTreeIDEQApproxKernel(d*2, d, inf, reverseWL, false, true, false, depthWeight, depthDiffWeight, maxPrevNBH, maxCard, minFreq, true)
+						kernels.add(new DTGraphWLSubTreeIDEQApproxKernel(p, depth, true, false, true, false, 1.0, 1.0, mpn, mc, mf, true));
+					}
+				}
+			}
+		}
+		return kernels;
+	}
+	
+	
+	/**
+	 * -kernel TreeWalksApprox
+	 * -kernelParm1 maxWalkLength (int)
+	 * -kernelParm2 depth (int)
+	 * -kernelParm3 minFreq (int)
+	 * 
+	 * @return
+	 */
+	public static List<DTGraphTreeWalkCountIDEQApproxKernelMkII> treeWalksApprox(String[] parms) {
+		List<DTGraphTreeWalkCountIDEQApproxKernelMkII> kernels = new ArrayList<DTGraphTreeWalkCountIDEQApproxKernelMkII>();
+		int[] pathLengths = new int[1];
+		boolean dTT = false;
+		if (parms[0].equals("depthTimesTwo")) {
+			dTT = true;
+		} else if (parms[0].startsWith("[")) {
+			pathLengths = parseIntArray(parms[0]);
+		} else {
+			pathLengths[0] = Integer.parseInt(parms[0]); 
+		}
+		int[] depths = new int[1];
+		if (parms[1].startsWith("[")) {
+			depths = parseIntArray(parms[1]);
+		} else {
+			depths[0] = Integer.parseInt(parms[1]); 
+		}
+		
+		int[] minFreqs = new int[1];
+		if (parms[2].startsWith("[")) {
+			minFreqs = parseIntArray(parms[2]);
+		} else {
+			minFreqs[0] = Integer.parseInt(parms[2]);
+		}
+		
+		for (int depth : depths) {			
+			for (int p : pathLengths) {
+				if (dTT) { // if depth times two, then pathLengths has one element
+					p = depth * 2;
+				}
+				for (int minFreq : minFreqs) {
+					kernels.add(new DTGraphTreeWalkCountIDEQApproxKernelMkII(p, depth, minFreq, true));
+				}
+			}
+		}
+		return kernels;
+	}
+	
+	
+	/**
+	 * -kernel GraphWalksFastApprox
+	 * -kernelParm1 maxWalkLength (int)
+	 * -kernelParm2 depth (int)
+	 * -kernelParm3 minFreq (int)
+	 * 
+	 * @return
+	 */
+	public static List<DTGraphWalkCountIDEQApproxKernel> graphWalksFastApprox(String[] parms) {
+		List<DTGraphWalkCountIDEQApproxKernel> kernels = new ArrayList<DTGraphWalkCountIDEQApproxKernel>();
+		int[] pathLengths = new int[1];
+		boolean dTT = false;
+		if (parms[0].equals("depthTimesTwo")) {
+			dTT = true;
+		} else if (parms[0].startsWith("[")) {
+			pathLengths = parseIntArray(parms[0]);
+		} else {
+			pathLengths[0] = Integer.parseInt(parms[0]); 
+		}
+		int[] depths = new int[1];
+		if (parms[1].startsWith("[")) {
+			depths = parseIntArray(parms[1]);
+		} else {
+			depths[0] = Integer.parseInt(parms[1]); 
+		}
+		
+		int[] minFreqs = new int[1];
+		if (parms[2].startsWith("[")) {
+			minFreqs = parseIntArray(parms[2]);
+		} else {
+			minFreqs[0] = Integer.parseInt(parms[2]);
+		}
+		
+		for (int depth : depths) {			
+			for (int p : pathLengths) {
+				if (dTT) { // if depth times two, then pathLengths has one element
+					p = depth * 2;
+				}
+				for (int minFreq : minFreqs) {
+					kernels.add(new DTGraphWalkCountIDEQApproxKernel(p, depth, minFreq, true));
+				}
+			}
+		}
+		return kernels;
+	}
+	
+	
+	/**
+	 * -kernel GraphWalksApprox
+	 * -kernelParm1 maxWalkLength (int)
+	 * -kernelParm2 depth (int)
+	 * -kernelParm3 minFreq (int)
+	 * 
+	 * @return
+	 */
+	public static List<DTGraphGraphListWalkCountApproxKernelMkII> graphWalksApprox(String[] parms) {
+		List<DTGraphGraphListWalkCountApproxKernelMkII> kernels = new ArrayList<DTGraphGraphListWalkCountApproxKernelMkII>();
+		int[] pathLengths = new int[1];
+		boolean dTT = false;
+		if (parms[0].equals("depthTimesTwo")) {
+			dTT = true;
+		} else if (parms[0].startsWith("[")) {
+			pathLengths = parseIntArray(parms[0]);
+		} else {
+			pathLengths[0] = Integer.parseInt(parms[0]); 
+		}
+		int[] depths = new int[1];
+		if (parms[1].startsWith("[")) {
+			depths = parseIntArray(parms[1]);
+		} else {
+			depths[0] = Integer.parseInt(parms[1]); 
+		}
+		
+		int[] minFreqs = new int[1];
+		if (parms[2].startsWith("[")) {
+			minFreqs = parseIntArray(parms[2]);
+		} else {
+			minFreqs[0] = Integer.parseInt(parms[2]);
+		}
+		
+		for (int depth : depths) {			
+			for (int p : pathLengths) {
+				if (dTT) { // if depth times two, then pathLengths has one element
+					p = depth * 2;
+				}
+				for (int minFreq : minFreqs) {
+					kernels.add(new DTGraphGraphListWalkCountApproxKernelMkII(p, depth, minFreq, true));
+				}
+			}
+		}
+		return kernels;
+	}
+	
+	
 
 	/**
 	 * -kernel IntersectionSubTree
