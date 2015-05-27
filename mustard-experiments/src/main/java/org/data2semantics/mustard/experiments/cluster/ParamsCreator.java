@@ -7,6 +7,7 @@ import java.util.List;
 
 /**
  * Bit of scripting to print parameter strings to use with Stopos on the Lisa cluster. Hack to what you need :)
+ * Intended to be executed from Eclipse or other IDE
  * 
  * @author Gerben
  *

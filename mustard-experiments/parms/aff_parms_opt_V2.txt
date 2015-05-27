@@ -1,0 +1,24 @@
+-inference false -depth 3 -kernel GraphBoL -kernelParm1 [1,2,3]
+-inference true -depth 3 -kernel GraphBoL -kernelParm1 [1,2,3]
+-inference false -depth 3 -kernel TreeBoL -kernelParm1 [1,2,3]
+-inference true -depth 3 -kernel TreeBoL -kernelParm1 [1,2,3]
+-inference false -depth 3 -kernel TreeWalksRoot -kernelParm1 [2,4,6] 
+-inference true -depth 3 -kernel TreeWalksRoot -kernelParm1 [2,4,6] 
+-inference false -depth 3 -kernel TreeWalks -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3]
+-inference true -depth 3 -kernel TreeWalks -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3]
+-inference false -depth 3 -kernel GraphWalks -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3]
+-inference true -depth 3 -kernel GraphWalks -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3]
+-inference false -depth 3 -kernel GraphWalksFast -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3]
+-inference true -depth 3 -kernel GraphWalksFast -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3]
+-inference false -depth 3 -kernel TreeSubtreesRoot -kernelParm1 [2,4,6]
+-inference true -depth 3 -kernel TreeSubtreesRoot -kernelParm1 [2,4,6]
+-inference false -depth 3 -kernel TreeSubtrees -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 true -kernelParm4 true
+-inference true -depth 3 -kernel TreeSubtrees -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 true -kernelParm4 true
+-inference false -depth 3 -kernel GraphSubtrees -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 true -kernelParm4 true
+-inference true -depth 3 -kernel GraphSubtrees -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 true -kernelParm4 true
+-inference false -depth 3 -kernel GraphSubtreesFast -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 true -kernelParm4 true
+-inference true -depth 3 -kernel GraphSubtreesFast -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 true -kernelParm4 true
+-inference false -depth 3 -kernel IntersectionSubTree -kernelParm1 1 -kernelParm2 [1,2,3] 
+-inference true -depth 3 -kernel IntersectionSubTree -kernelParm1 1 -kernelParm2 [1,2,3]
+-inference false -depth 3 -kernel IntersectionPartialSubTree -kernelParm1 0.1 -kernelParm2 [1,2,3] 
+-inference true -depth 3 -kernel IntersectionPartialSubTree -kernelParm1 0.1 -kernelParm2 [1,2,3] 

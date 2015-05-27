@@ -7,10 +7,11 @@ import java.util.List;
 
 public class LocalExecutor {
 	// parameter settings file 
-	private static final String parmsFile = "../src/main/java/org/data2semantics/mustard/experiments/JWS2015/parms_non_opt_sub.txt";
+	//private static final String parmsFile = "../src/main/java/org/data2semantics/mustard/experiments/JWS2015/parms_non_opt_sub.txt";
+	private static final String parmsFile = "../../parms/aff_parms_opt_V2.txt";
 	
 	// regular affiliation prediction
-	//private static final String prefix = "-dataset AIFB -file ../datasets/aifb-fixed_complete.n3";
+	private static final String prefix = "-dataset AIFB -file ../../datasets/aifb-fixed_complete.n3";
 	
 	// affiliation prediction with hub removal
 	//private static final String prefix = "-optHubs true -minHubs [10,20,40,80,10000000] -dataset AIFB -file datasets/aifb-fixed_complete.n3";
@@ -19,7 +20,7 @@ public class LocalExecutor {
 	//private static final String prefix = "-blankLabels true -dataset AIFB -file datasets/aifb-fixed_complete.n3";
 		
 	// regular lithogenesis prediction
-	private static final String prefix = "-dataset LITHO -file C:\\Users\\Gerben\\Dropbox\\data_bgs_ac_uk_ALL";
+	//private static final String prefix = "-dataset LITHO -file C:\\Users\\Gerben\\Dropbox\\data_bgs_ac_uk_ALL";
 	
 	// litho with hub removal
 	//private static final String prefix = "-optHubs true -minHubs [10,20,40,80,10000000] -dataset LITHO -file C:\\Users\\Gerben\\Dropbox\\data_bgs_ac_uk_ALL";

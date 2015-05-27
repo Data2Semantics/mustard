@@ -282,7 +282,7 @@ public class StringArgumentsParser {
 		sb.append("_splitLiterals");
 		sb.append(splitLiterals);
 
-		
+
 		return sb.toString();
 	}
 
@@ -306,12 +306,12 @@ public class StringArgumentsParser {
 	public boolean isBlankLabels() {
 		return blankLabels;
 	}
-	
+
 	public boolean isSplitLiterals() {
 		return splitLiterals;
 	}
-	
-	
+
+
 	/**
 	 * -kernel URIPrefix
 	 * -kernelParm1 depth (int)
@@ -320,11 +320,19 @@ public class StringArgumentsParser {
 	 */
 	public static List<DTGraphGraphListURIPrefixKernel> graphURIPrefix(String[] parms) {
 		List<DTGraphGraphListURIPrefixKernel> kernels = new ArrayList<DTGraphGraphListURIPrefixKernel>();
-		int depth = Integer.parseInt(parms[0]);	
-		kernels.add(new DTGraphGraphListURIPrefixKernel(1.0, depth, true));
+		int[] depths = new int[1];
+		if (parms[0].startsWith("[")) {
+			depths = parseIntArray(parms[0]);
+		} else {
+			depths[0] = Integer.parseInt(parms[0]); 
+		}
+
+		for (int depth : depths) {
+			kernels.add(new DTGraphGraphListURIPrefixKernel(1.0, depth, true));
+		}
 		return kernels;
 	}
-	
+
 
 	/**
 	 * -kernel GraphBoL
@@ -334,8 +342,16 @@ public class StringArgumentsParser {
 	 */
 	public static List<DTGraphWLSubTreeKernel> graphBagOfLabels(String[] parms) {
 		List<DTGraphWLSubTreeKernel> kernels = new ArrayList<DTGraphWLSubTreeKernel>();
-		int depth = Integer.parseInt(parms[0]);	
-		kernels.add(new DTGraphWLSubTreeKernel(0, depth, false, false, true));
+		int[] depths = new int[1];
+		if (parms[0].startsWith("[")) {
+			depths = parseIntArray(parms[0]);
+		} else {
+			depths[0] = Integer.parseInt(parms[0]); 
+		}
+
+		for (int depth : depths) {
+			kernels.add(new DTGraphWLSubTreeKernel(0, depth, false, false, true));
+		}
 		return kernels;
 	}
 
@@ -347,8 +363,16 @@ public class StringArgumentsParser {
 	 */
 	public static List<DTGraphTreeWLSubTreeKernel> treeBagOfLabels(String[] parms) {
 		List<DTGraphTreeWLSubTreeKernel> kernels = new ArrayList<DTGraphTreeWLSubTreeKernel>();
-		int depth = Integer.parseInt(parms[0]);	
-		kernels.add( new DTGraphTreeWLSubTreeKernel(0, depth, false, false, true));
+		int[] depths = new int[1];
+		if (parms[0].startsWith("[")) {
+			depths = parseIntArray(parms[0]);
+		} else {
+			depths[0] = Integer.parseInt(parms[0]); 
+		}
+
+		for (int depth : depths) {
+			kernels.add( new DTGraphTreeWLSubTreeKernel(0, depth, false, false, true));
+		}
 		return kernels; 
 	}
 
@@ -362,16 +386,27 @@ public class StringArgumentsParser {
 	public static List<DTGraphTreeWalkCountKernel> treeWalks(String[] parms) {
 		List<DTGraphTreeWalkCountKernel> kernels = new ArrayList<DTGraphTreeWalkCountKernel>();
 		int[] pathLengths = new int[1];
-
-		if (parms[0].startsWith("[")) {
+		boolean dTT = false;
+		if (parms[0].equals("depthTimesTwo")) {
+			dTT = true;
+		} else if (parms[0].startsWith("[")) {
 			pathLengths = parseIntArray(parms[0]);
 		} else {
 			pathLengths[0] = Integer.parseInt(parms[0]); 
 		}
-		int depth = Integer.parseInt(parms[1]);
-		for (int p : pathLengths) {
-			kernels.add(new DTGraphTreeWalkCountKernel(p, depth, true));
-
+		int[] depths = new int[1];
+		if (parms[1].startsWith("[")) {
+			depths = parseIntArray(parms[1]);
+		} else {
+			depths[0] = Integer.parseInt(parms[1]); 
+		}
+		for (int depth : depths) {			
+			for (int p : pathLengths) {
+				if (dTT) { // if depth times two, then pathLengths has one element
+					p = depth * 2;
+				}
+				kernels.add(new DTGraphTreeWalkCountKernel(p, depth, true));
+			}
 		}
 		return kernels;
 	}
@@ -391,6 +426,7 @@ public class StringArgumentsParser {
 		} else {
 			pathLengths[0] = Integer.parseInt(parms[0]); 
 		}
+
 		for (int p : pathLengths) {
 			kernels.add(new DTGraphRootWalkCountKernel(p, true));
 		}
@@ -407,16 +443,29 @@ public class StringArgumentsParser {
 	public static List<DTGraphGraphListWalkCountKernel> graphWalks(String[] parms) {
 		List<DTGraphGraphListWalkCountKernel> kernels = new ArrayList<DTGraphGraphListWalkCountKernel>();
 		int[] pathLengths = new int[1];
-
-		if (parms[0].startsWith("[")) {
+		boolean dTT = false;
+		if (parms[0].equals("depthTimesTwo")) {
+			dTT = true;
+		} else if (parms[0].startsWith("[")) {
 			pathLengths = parseIntArray(parms[0]);
 		} else {
 			pathLengths[0] = Integer.parseInt(parms[0]); 
 		}
-		int depth = Integer.parseInt(parms[1]);
-		for (int p : pathLengths) {
-			kernels.add(new DTGraphGraphListWalkCountKernel(p, depth, true));
+		int[] depths = new int[1];
+		if (parms[1].startsWith("[")) {
+			depths = parseIntArray(parms[1]);
+		} else {
+			depths[0] = Integer.parseInt(parms[1]); 
+		}
 
+		for (int depth : depths) {
+			for (int p : pathLengths) {
+				if (dTT) { // if depth times two, then pathLengths has one element
+					p = depth * 2;
+				}
+				kernels.add(new DTGraphGraphListWalkCountKernel(p, depth, true));
+
+			}
 		}
 		return kernels;
 	}
@@ -431,16 +480,29 @@ public class StringArgumentsParser {
 	public static List<DTGraphWalkCountKernel> graphWalksFast(String[] parms) {
 		List<DTGraphWalkCountKernel> kernels = new ArrayList<DTGraphWalkCountKernel>();
 		int[] pathLengths = new int[1];
-
-		if (parms[0].startsWith("[")) {
+		boolean dTT = false;
+		if (parms[0].equals("depthTimesTwo")) {
+			dTT = true;
+		} else if (parms[0].startsWith("[")) {
 			pathLengths = parseIntArray(parms[0]);
 		} else {
 			pathLengths[0] = Integer.parseInt(parms[0]); 
 		}
-		int depth = Integer.parseInt(parms[1]);
-		for (int p : pathLengths) {
-			kernels.add(new DTGraphWalkCountKernel(p, depth, true));
+		int[] depths = new int[1];
+		if (parms[1].startsWith("[")) {
+			depths = parseIntArray(parms[1]);
+		} else {
+			depths[0] = Integer.parseInt(parms[1]); 
+		}
 
+		for (int depth : depths) {
+			for (int p : pathLengths) {
+				if (dTT) { // if depth times two, then pathLengths has one element
+					p = depth * 2;
+				}
+				kernels.add(new DTGraphWalkCountKernel(p, depth, true));
+
+			}
 		}
 		return kernels;
 	}
@@ -458,18 +520,31 @@ public class StringArgumentsParser {
 	public static List<DTGraphTreeWLSubTreeKernel> treeSubtrees(String[] parms) {
 		List<DTGraphTreeWLSubTreeKernel> kernels = new ArrayList<DTGraphTreeWLSubTreeKernel>();
 		int[] pathLengths = new int[1];
-
-		if (parms[0].startsWith("[")) {
+		boolean dTT = false;
+		if (parms[0].equals("depthTimesTwo")) {
+			dTT = true;
+		} else if (parms[0].startsWith("[")) {
 			pathLengths = parseIntArray(parms[0]);
 		} else {
 			pathLengths[0] = Integer.parseInt(parms[0]); 
 		}
-		int depth = Integer.parseInt(parms[1]);
+		int[] depths = new int[1];
+		if (parms[1].startsWith("[")) {
+			depths = parseIntArray(parms[1]);
+		} else {
+			depths[0] = Integer.parseInt(parms[1]); 
+		}
+
 		boolean trackPrev = parms[2] == null ? false : Boolean.parseBoolean(parms[2]);
 		boolean reverse = parms[3] == null ? true : Boolean.parseBoolean(parms[3]);
-		for (int p : pathLengths) {
-			kernels.add(new DTGraphTreeWLSubTreeKernel(p, depth, reverse, false, trackPrev, true));
 
+		for (int depth : depths) {
+			for (int p : pathLengths) {
+				if (dTT) { // if depth times two, then pathLengths has one element
+					p = depth * 2;
+				}
+				kernels.add(new DTGraphTreeWLSubTreeKernel(p, depth, reverse, false, trackPrev, true));
+			}
 		}
 		return kernels;
 	}
@@ -508,18 +583,31 @@ public class StringArgumentsParser {
 	public static List<DTGraphGraphListWLSubTreeKernel> graphSubtrees(String[] parms) {
 		List<DTGraphGraphListWLSubTreeKernel> kernels = new ArrayList<DTGraphGraphListWLSubTreeKernel>();
 		int[] pathLengths = new int[1];
-
-		if (parms[0].startsWith("[")) {
+		boolean dTT = false;
+		if (parms[0].equals("depthTimesTwo")) {
+			dTT = true;
+		} else if (parms[0].startsWith("[")) {
 			pathLengths = parseIntArray(parms[0]);
 		} else {
 			pathLengths[0] = Integer.parseInt(parms[0]); 
 		}
-		int depth = Integer.parseInt(parms[1]);
+		int[] depths = new int[1];
+		if (parms[1].startsWith("[")) {
+			depths = parseIntArray(parms[1]);
+		} else {
+			depths[0] = Integer.parseInt(parms[1]); 
+		}
+
 		boolean trackPrev = parms[2] == null ? false : Boolean.parseBoolean(parms[2]);
 		boolean reverse = parms[3] == null ? true : Boolean.parseBoolean(parms[3]);
-		for (int p : pathLengths) {
-			kernels.add(new DTGraphGraphListWLSubTreeKernel(p, depth, reverse, trackPrev, true));
 
+		for (int depth : depths) {
+			for (int p : pathLengths) {
+				if (dTT) { // if depth times two, then pathLengths has one element
+					p = depth * 2;
+				}
+				kernels.add(new DTGraphGraphListWLSubTreeKernel(p, depth, reverse, trackPrev, true));
+			}
 		}
 		return kernels;
 	}
@@ -536,18 +624,31 @@ public class StringArgumentsParser {
 	public static List<DTGraphWLSubTreeKernel> graphSubtreesFast(String[] parms) {
 		List<DTGraphWLSubTreeKernel> kernels = new ArrayList<DTGraphWLSubTreeKernel>();
 		int[] pathLengths = new int[1];
-
-		if (parms[0].startsWith("[")) {
+		boolean dTT = false;
+		if (parms[0].equals("depthTimesTwo")) {
+			dTT = true;
+		} else if (parms[0].startsWith("[")) {
 			pathLengths = parseIntArray(parms[0]);
 		} else {
 			pathLengths[0] = Integer.parseInt(parms[0]); 
 		}
-		int depth = Integer.parseInt(parms[1]);
+		int[] depths = new int[1];
+		if (parms[1].startsWith("[")) {
+			depths = parseIntArray(parms[1]);
+		} else {
+			depths[0] = Integer.parseInt(parms[1]); 
+		}
+
 		boolean trackPrev = parms[2] == null ? false : Boolean.parseBoolean(parms[2]);
 		boolean reverse = parms[3] == null ? true : Boolean.parseBoolean(parms[3]);
-		for (int p : pathLengths) {
-			kernels.add(new DTGraphWLSubTreeKernel(p, depth, reverse, false, trackPrev, true));
 
+		for (int depth : depths) {
+			for (int p : pathLengths) {
+				if (dTT) { // if depth times two, then pathLengths has one element
+					p = depth * 2;
+				}
+				kernels.add(new DTGraphWLSubTreeKernel(p, depth, reverse, false, trackPrev, true));
+			}
 		}
 		return kernels;
 	}
@@ -562,21 +663,28 @@ public class StringArgumentsParser {
 	public static List<DTGraphIntersectionSubTreeKernel> intersectionSubTree(String[] parms) {
 		List<DTGraphIntersectionSubTreeKernel> kernels = new ArrayList<DTGraphIntersectionSubTreeKernel>();
 		double[] df = new double[1];
-
 		if (parms[0].startsWith("[")) {
 			df = parseDoubleArray(parms[0]);
 		} else {
 			df[0] = Double.parseDouble(parms[0]); 
 		}
-		int depth = Integer.parseInt(parms[1]);
 
-		for (double d : df) {
-			kernels.add(new DTGraphIntersectionSubTreeKernel(depth, d, true));
+		int[] depths = new int[1];
+		if (parms[1].startsWith("[")) {
+			depths = parseIntArray(parms[1]);
+		} else {
+			depths[0] = Integer.parseInt(parms[1]); 
+		}
 
+		for (int depth : depths) {
+			for (double d : df) {
+				kernels.add(new DTGraphIntersectionSubTreeKernel(depth, d, true));
+
+			}
 		}
 		return kernels;
 	}
-	
+
 	/**
 	 * -kernel IntersectionPartialSubTree
 	 * -kernelParm1 discountFactor (double)
@@ -587,17 +695,23 @@ public class StringArgumentsParser {
 	public static List<DTGraphIntersectionPartialSubTreeKernel> intersectionPartialSubTree(String[] parms) {
 		List<DTGraphIntersectionPartialSubTreeKernel> kernels = new ArrayList<DTGraphIntersectionPartialSubTreeKernel>();
 		double[] df = new double[1];
-
 		if (parms[0].startsWith("[")) {
 			df = parseDoubleArray(parms[0]);
 		} else {
 			df[0] = Double.parseDouble(parms[0]); 
 		}
-		int depth = Integer.parseInt(parms[1]);
+		int[] depths = new int[1];
+		if (parms[1].startsWith("[")) {
+			depths = parseIntArray(parms[1]);
+		} else {
+			depths[0] = Integer.parseInt(parms[1]); 
+		}
 
-		for (double d : df) {
-			kernels.add(new DTGraphIntersectionPartialSubTreeKernel(depth, d, true));
+		for (int depth : depths) {
+			for (double d : df) {
+				kernels.add(new DTGraphIntersectionPartialSubTreeKernel(depth, d, true));
 
+			}
 		}
 		return kernels;
 	}
