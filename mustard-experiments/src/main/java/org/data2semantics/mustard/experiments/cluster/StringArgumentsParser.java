@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.data2semantics.mustard.experiments.data.AIFBDataSet;
 import org.data2semantics.mustard.experiments.data.BGSLithoDataSet;
+import org.data2semantics.mustard.experiments.data.MutagDataSet;
 import org.data2semantics.mustard.experiments.data.SubsetDataSet;
 import org.data2semantics.mustard.experiments.data.ClassificationDataSet;
 import org.data2semantics.mustard.kernels.data.SingleDTGraph;
@@ -29,7 +30,7 @@ import org.openrdf.rio.RDFFormat;
 
 
 /**
- * Parser for String[] args, for cluster experiments. 
+ * Parser for String[] args, for cluster experiments. It has grown into quite an ugly beast!
  * 
  * TODO For the future, what kernel to create should be done via reflection, instead of using String arguments.
  * 
@@ -234,26 +235,28 @@ public class StringArgumentsParser {
 
 
 	public ClassificationDataSet createDataSet() {
+		ClassificationDataSet ds = null;
 		if (dataset.equals("AIFB")) {
 			RDFDataSet tripleStore = new RDFFileDataSet(getDataFile(), RDFFormat.forFileName(getDataFile()));
-			ClassificationDataSet ds = new AIFBDataSet(tripleStore);
-			ds.create();
-			return ds;
+			ds = new AIFBDataSet(tripleStore);
 		}
 		if (dataset.equals("LITHO")) {
 			RDFDataSet tripleStore = new RDFFileDataSet(getDataFile(), RDFFormat.NTRIPLES);
-			ClassificationDataSet ds = new BGSLithoDataSet(tripleStore);
-			ds.create();
-			return ds;
+			ds = new BGSLithoDataSet(tripleStore);
 		}
 		if (dataset.equals("AM") || dataset.equals("BGS")) {
-			ClassificationDataSet ds = new SubsetDataSet(getDataFile());
-			ds.create();
-			return ds;
+			ds = new SubsetDataSet(getDataFile());
 		}
 
-		return null;
-
+		if (dataset.equals("MUTAG")) {
+			RDFDataSet tripleStore = new RDFFileDataSet(getDataFile(), RDFFormat.forFileName(getDataFile()));
+			ds = new MutagDataSet(tripleStore);
+		}
+		
+		if (ds != null) {
+			ds.create();
+		}
+		return ds;
 	}
 
 
