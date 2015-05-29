@@ -12,9 +12,16 @@ import org.nodes.DNode;
 public class DTGraphIntersectionPartialSubTreeKernel extends
 		DTGraphIntersectionSubTreeKernel {
 
+	// Store them also in this class to generate a good label for the kernel
+	private int depth; 
+	private double discountFactor;
+	private boolean normalize;
 
 	public DTGraphIntersectionPartialSubTreeKernel(int depth, double discountFactor, boolean normalize) {
 		super(depth, discountFactor, normalize);
+		this.depth = depth;
+		this.discountFactor = discountFactor;
+		this.normalize = normalize;
 	}
 
 	@Override
