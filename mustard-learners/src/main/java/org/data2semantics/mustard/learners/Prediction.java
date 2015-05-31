@@ -1,5 +1,7 @@
 package org.data2semantics.mustard.learners;
 
+import org.data2semantics.mustard.kernels.Kernel;
+
 
 /**
  * Wrapper class for LibSVM/LibLINEAR prediction, this class stores all the different possible predictions
@@ -15,6 +17,7 @@ public class Prediction implements Comparable<Prediction> {
 	private int index;
 	private int fold;
 	private boolean probabilities;
+	private Kernel usedKernel;
 	
 	public Prediction(double label, int index) {
 		this.label = label;
@@ -59,6 +62,14 @@ public class Prediction implements Comparable<Prediction> {
 
 	public void setFold(int fold) {
 		this.fold = fold;
+	}
+	
+	public Kernel getUsedKernel() {
+		return usedKernel;
+	}
+
+	public void setUsedKernel(Kernel usedKernel) {
+		this.usedKernel = usedKernel;
 	}
 
 	public boolean isProbabilities() {

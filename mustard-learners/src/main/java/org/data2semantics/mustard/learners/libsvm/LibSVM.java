@@ -241,24 +241,24 @@ public class LibSVM {
 
 	private static Prediction[] testSVMModel(LibSVMModel model, Map<Kernel, svm_node[][]> testNodesMap) {
 		svm_node[][] testNodes = testNodesMap.get(model.getKernelSetting());
-		Prediction[] pred = new Prediction[testNodes.length];	
+		Prediction[] pred = new Prediction[testNodes.length];
+		double[] decVal = null;
 
 		for (int i = 0 ; i < testNodes.length; i++) {
 			if (!model.hasProbabilities()) {
-				double[] decVal = new double[model.getModel().nr_class*(model.getModel().nr_class-1)/2];
+				decVal = new double[model.getModel().nr_class*(model.getModel().nr_class-1)/2];
 				pred[i] = new Prediction(svm.svm_predict_values(model.getModel(), testNodes[i], decVal), i);
-				pred[i].setDecisionValue(decVal);
-				pred[i].setClassLabels(model.getModel().label);
 				pred[i].setPairWise(true);
 				pred[i].setProbabilities(false);
 			} else {
-				double[] decVal = new double[model.getModel().nr_class];
+				decVal = new double[model.getModel().nr_class];
 				pred[i] = new Prediction(svm.svm_predict_probability(model.getModel(), testNodes[i], decVal), i);
-				pred[i].setDecisionValue(decVal);
-				pred[i].setClassLabels(model.getModel().label);
 				pred[i].setPairWise(false);
 				pred[i].setProbabilities(true);
 			}
+			pred[i].setDecisionValue(decVal);
+			pred[i].setClassLabels(model.getModel().label);
+			pred[i].setUsedKernel(model.getKernelSetting());		
 		}
 		return pred;
 	}

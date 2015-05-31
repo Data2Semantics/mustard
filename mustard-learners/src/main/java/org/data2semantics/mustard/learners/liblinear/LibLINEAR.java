@@ -181,6 +181,7 @@ public class LibLINEAR {
 			pred[i].setDecisionValue(decVal);
 			pred[i].setClassLabels(model.getModel().getLabels());
 			pred[i].setPairWise(false); // LibLINEAR does not do pairwise multiclass prediction, but 1 vs all
+			pred[i].setUsedKernel(model.getKernelSetting());
 		}
 		return pred;
 	}
