@@ -88,7 +88,7 @@ public class DTGraphTreeWLSubTreeIDEQApproxKernel implements GraphKernel<SingleD
 		WeisfeilerLehmanApproxIterator<DTGraph<ApproxStringLabel,ApproxStringLabel>,String> wl = new WeisfeilerLehmanApproxDTGraphIterator(reverse, 1, 1, 1);
 
 		double numK = (minFreqs.length) * (maxLabelCards.length) * (maxPrevNBHs.length); // number of different kernels that have to be computed computed	
-				
+
 		long tic = System.currentTimeMillis();
 
 		for (int minFreq : minFreqs) {
@@ -102,7 +102,7 @@ public class DTGraphTreeWLSubTreeIDEQApproxKernel implements GraphKernel<SingleD
 					wl.setMaxLabelCard(maxCard);
 					wl.setMinFreq(minFreq);
 					wl.setMaxPrevNBH(maxPrevNBH);
-					
+
 					double weight = 1.0 / numK;
 					//if (iterationWeighting) {
 					//	weight = Math.sqrt(1.0 / (iterations + 1));
@@ -116,8 +116,8 @@ public class DTGraphTreeWLSubTreeIDEQApproxKernel implements GraphKernel<SingleD
 						//	weight = Math.sqrt((2.0 + i) / (iterations + 1));
 						//}
 						weight = (1.0 + ((i+1) * ((numK-1.0) / iterations))) / numK;
-						
-						computeLabelFreqs(rdfGraph, instanceVertices);
+
+						computeLabelFreqs(rdfGraph, instanceVertices, i+1);
 						wl.wlIterate(gList, labelFreq);
 						computeFVs(rdfGraph, instanceVertices, weight, featureVectors, wl.getLabelDict().size()-1, i+1);
 					}
@@ -241,12 +241,12 @@ public class DTGraphTreeWLSubTreeIDEQApproxKernel implements GraphKernel<SingleD
 
 			vertexIndexMap = instanceVertexIndexMap.get(instances.get(i));
 			for (Pair<DTNode<ApproxStringLabel,ApproxStringLabel>, Integer> vertex : vertexIndexMap) {
-				if ((!noDuplicateNBH || vertex.getFirst().label().getSameAsPrev() == 0)  && (noSubGraphs || (depth * 2) >= currentIt)) {
+				if ((!noDuplicateNBH || vertex.getFirst().label().getSameAsPrev() == 0)  && (noSubGraphs || (vertex.getSecond() * 2) >= currentIt)) {
 					index = Integer.parseInt(vertex.getFirst().label().toString());
 
 					for (int j = 0; j <= this.depth; j++) {
 						int index2 = (index * (this.depth+1)) + j;
-						double weight2 = weight / Math.pow(depthDiffWeight,Math.abs(j-depth)); // farther away depths get lower weight, the distance is abs(j-depth)
+						double weight2 = weight / Math.pow(depthDiffWeight,Math.abs(j-vertex.getSecond())); // farther away depths get lower weight, the distance is abs(j-depth)
 						weight2 = weight2 / Math.pow(depthWeight, j);
 						featureVectors[i].setValue(index2, featureVectors[i].getValue(index2) + weight2);
 					}
@@ -254,12 +254,12 @@ public class DTGraphTreeWLSubTreeIDEQApproxKernel implements GraphKernel<SingleD
 			}
 			edgeIndexMap = instanceEdgeIndexMap.get(instances.get(i));
 			for (Pair<DTLink<ApproxStringLabel,ApproxStringLabel>, Integer> edge : edgeIndexMap) {
-				if ((!noDuplicateNBH || edge.getFirst().tag().getSameAsPrev() == 0) && (noSubGraphs || ((depth * 2)+1) >= currentIt)) {
+				if ((!noDuplicateNBH || edge.getFirst().tag().getSameAsPrev() == 0) && (noSubGraphs || ((edge.getSecond() * 2)+1) >= currentIt)) {
 					index = Integer.parseInt(edge.getFirst().tag().toString());
 
 					for (int j = 0; j <= this.depth; j++) {
 						int index2 = (index * (this.depth+1)) + j;
-						double weight2 = weight / Math.pow(depthDiffWeight,Math.abs(j-depth)); // farther away depths get lower weight, the distance is abs(j-depth)
+						double weight2 = weight / Math.pow(depthDiffWeight,Math.abs(j-edge.getSecond())); // farther away depths get lower weight, the distance is abs(j-depth)
 						weight2 = weight2 / Math.pow(depthWeight, j);
 						featureVectors[i].setValue(index2, featureVectors[i].getValue(index2) + weight2);
 					}
@@ -268,7 +268,7 @@ public class DTGraphTreeWLSubTreeIDEQApproxKernel implements GraphKernel<SingleD
 		}
 	}
 
-	private void computeLabelFreqs(DTGraph<ApproxStringLabel,ApproxStringLabel> graph, List<DTNode<ApproxStringLabel,ApproxStringLabel>> instances) {
+	private void computeLabelFreqs(DTGraph<ApproxStringLabel,ApproxStringLabel> graph, List<DTNode<ApproxStringLabel,ApproxStringLabel>> instances, int currentIt) {
 		List<Pair<DTNode<ApproxStringLabel,ApproxStringLabel>, Integer>> vertexIndexMap;
 		List<Pair<DTLink<ApproxStringLabel,ApproxStringLabel>, Integer>> edgeIndexMap;
 
@@ -284,9 +284,11 @@ public class DTGraphTreeWLSubTreeIDEQApproxKernel implements GraphKernel<SingleD
 				if (!labelFreq.containsKey(lab)) {
 					labelFreq.put(lab, 0);
 				} 
-				if (!seen.contains(lab)) {
-					labelFreq.put(lab, labelFreq.get(lab) + 1);
-					seen.add(lab);
+				if (vertex.getSecond() * 2 >= currentIt - 3) { // should be still in the instance.
+					if (!seen.contains(lab)) {
+						labelFreq.put(lab, labelFreq.get(lab) + 1);
+						seen.add(lab);
+					}
 				}
 			}
 			edgeIndexMap = instanceEdgeIndexMap.get(instances.get(i));
@@ -295,9 +297,11 @@ public class DTGraphTreeWLSubTreeIDEQApproxKernel implements GraphKernel<SingleD
 				if (!labelFreq.containsKey(lab)) {
 					labelFreq.put(lab, 0);
 				} 
-				if (!seen.contains(lab)) {
-					labelFreq.put(lab, labelFreq.get(lab) + 1);
-					seen.add(lab);
+				if (edge.getSecond() * 2 >= currentIt-2) { // should be still in the instance.
+					if (!seen.contains(lab)) {
+						labelFreq.put(lab, labelFreq.get(lab) + 1);
+						seen.add(lab);
+					}
 				}
 			}
 		}

@@ -26,7 +26,7 @@ import org.nodes.LightDTGraph;
  * @author Gerben
  *
  */
-public class DTGraphWLSubTreeIDEQApproxKernel implements GraphKernel<SingleDTGraph>, FeatureVectorKernel<SingleDTGraph>, ComputationTimeTracker {
+public class DTGraphRootWLSubTreeIDEQApproxKernel implements GraphKernel<SingleDTGraph>, FeatureVectorKernel<SingleDTGraph>, ComputationTimeTracker {
 
 	private Map<DTNode<ApproxStringLabel,ApproxStringLabel>, Map<DTNode<ApproxStringLabel,ApproxStringLabel>, Integer>> instanceVertexIndexMap;
 	private Map<DTNode<ApproxStringLabel,ApproxStringLabel>, Map<DTLink<ApproxStringLabel,ApproxStringLabel>, Integer>> instanceEdgeIndexMap;
@@ -37,35 +37,23 @@ public class DTGraphWLSubTreeIDEQApproxKernel implements GraphKernel<SingleDTGra
 	private int depth;
 	private int iterations;
 	private boolean normalize;
-	private boolean reverse;
-	private boolean iterationWeighting;
-	private boolean noDuplicateNBH;
-	private boolean noSubGraphs;
 
 	private int[] maxPrevNBHs;
 	private int[] maxLabelCards;
 	private int[] minFreqs;
 
-	private double depthWeight;
-	private double depthDiffWeight;
 
 	private Map<String,Integer> labelFreq;
 
 	private long compTime;
 
-	public DTGraphWLSubTreeIDEQApproxKernel(int iterations, int depth, boolean reverse, boolean iterationWeighting, boolean noDuplicateNBH, boolean noSubGraphs, double depthWeight, double depthDiffWeight, int[] maxPrevNBHs, int[] maxLabelCards, int[] minFreqs, boolean normalize) {
-		this.reverse = reverse;
-		this.iterationWeighting = iterationWeighting;
-		this.noDuplicateNBH = noDuplicateNBH;	
-		this.noSubGraphs = noSubGraphs;
+	public DTGraphRootWLSubTreeIDEQApproxKernel(int iterations, int[] maxPrevNBHs, int[] maxLabelCards, int[] minFreqs, boolean normalize) {
 		this.normalize = normalize;
-		this.depth = depth;
+		this.depth = (int) Math.round(iterations / 2.0);
 		this.iterations = iterations;
 		this.maxPrevNBHs = maxPrevNBHs;
 		this.maxLabelCards = maxLabelCards;
 		this.minFreqs = minFreqs;
-		this.depthWeight = depthWeight;
-		this.depthDiffWeight = depthDiffWeight;
 	}
 
 	public String getLabel() {
@@ -89,7 +77,7 @@ public class DTGraphWLSubTreeIDEQApproxKernel implements GraphKernel<SingleDTGra
 			featureVectors[i] = new SparseVector();
 		}
 
-		WeisfeilerLehmanApproxIterator<DTGraph<ApproxStringLabel,ApproxStringLabel>,String> wl = new WeisfeilerLehmanApproxDTGraphIterator(reverse, 1, 1, 1);
+		WeisfeilerLehmanApproxIterator<DTGraph<ApproxStringLabel,ApproxStringLabel>,String> wl = new WeisfeilerLehmanApproxDTGraphIterator(true, 1, 1, 1);
 
 		double numK = (minFreqs.length) * (maxLabelCards.length) * (maxPrevNBHs.length); // number of different kernels that have to be computed computed	
 
@@ -207,7 +195,7 @@ public class DTGraphWLSubTreeIDEQApproxKernel implements GraphKernel<SingleDTGra
 				for (DTNode<String,String> qV : frontV) {
 					for (DTLink<String,String> edge : qV.linksOut()) {
 						if (vOldNewMap.containsKey(edge.to())) { // This vertex has been added to rdfGraph						
-							if (!vertexIndexMap.containsKey(vOldNewMap.get(edge.to())) || !reverse) { // we have not seen it for this instance or labels travel to the fringe vertices, in which case we want to have the lowest depth encounter
+							if (!vertexIndexMap.containsKey(vOldNewMap.get(edge.to()))) { // we have not seen it for this instance or labels travel to the fringe vertices, in which case we want to have the lowest depth encounter
 								vertexIndexMap.put(vOldNewMap.get(edge.to()), j);
 							}
 							vOldNewMap.get(edge.to()).label().clear();
@@ -222,7 +210,7 @@ public class DTGraphWLSubTreeIDEQApproxKernel implements GraphKernel<SingleDTGra
 
 						if (eOldNewMap.containsKey(edge)) {
 							// Process the edge, if we haven't seen it before
-							if (!edgeIndexMap.containsKey(eOldNewMap.get(edge)) || !reverse) { // see comment for vertices
+							if (!edgeIndexMap.containsKey(eOldNewMap.get(edge))) { // see comment for vertices
 								edgeIndexMap.put(eOldNewMap.get(edge), j);
 							}
 							eOldNewMap.get(edge).tag().clear();
@@ -299,35 +287,16 @@ public class DTGraphWLSubTreeIDEQApproxKernel implements GraphKernel<SingleDTGra
 	private void computeFVs(DTGraph<ApproxStringLabel,ApproxStringLabel> graph, List<DTNode<ApproxStringLabel,ApproxStringLabel>> instances, double weight, SparseVector[] featureVectors, int lastIndex, int currentIt) {
 		int index, depth;
 		Map<DTNode<ApproxStringLabel,ApproxStringLabel>, Integer> vertexIndexMap;
-		Map<DTLink<ApproxStringLabel,ApproxStringLabel>, Integer> edgeIndexMap;
 
 		for (int i = 0; i < instances.size(); i++) {
-			featureVectors[i].setLastIndex((lastIndex * (this.depth+1)) + this.depth);
+			featureVectors[i].setLastIndex(lastIndex);
 
 			vertexIndexMap = instanceVertexIndexMap.get(instances.get(i));
 			for (DTNode<ApproxStringLabel,ApproxStringLabel> vertex : vertexIndexMap.keySet()) {
 				depth = vertexIndexMap.get(vertex);
-				if ((!noDuplicateNBH || vertex.label().getSameAsPrev() == 0) && (noSubGraphs || (depth * 2) >= currentIt)) { //
-					index = Integer.parseInt(vertex.label().toString());				
-					for (int j = 0; j <= this.depth; j++) {
-						int index2 = (index * (this.depth+1)) + j;
-						double weight2 = weight / Math.pow(depthDiffWeight,Math.abs(j-depth)); // farther away depths get lower weight, the distance is abs(j-depth)
-						weight2 = weight2 / Math.pow(depthWeight, j);
-						featureVectors[i].setValue(index2, featureVectors[i].getValue(index2) + weight2);
-					}
-				}
-			}
-			edgeIndexMap = instanceEdgeIndexMap.get(instances.get(i));
-			for (DTLink<ApproxStringLabel,ApproxStringLabel> edge : edgeIndexMap.keySet()) {
-				depth = edgeIndexMap.get(edge);
-				if ((!noDuplicateNBH || edge.tag().getSameAsPrev() == 0) && (noSubGraphs || ((depth * 2)+1) >= currentIt)) { //edge are actually at d*2 + 1 // 
-					index = Integer.parseInt(edge.tag().toString());
-					for (int j = 0; j <= this.depth; j++) {
-						int index2 = (index * (this.depth+1)) + j;
-						double weight2 = weight / Math.pow(depthDiffWeight,Math.abs(j-depth)); // farther away depths get lower weight, the distance is abs(j-depth)
-						weight2 = weight2 / Math.pow(depthWeight, j);
-						featureVectors[i].setValue(index2, featureVectors[i].getValue(index2) + weight2);
-					}
+				if (depth == this.depth && vertex.label().getSameAsPrev() == 0) {
+					index = Integer.parseInt(vertex.label().toString());
+					featureVectors[i].setValue(index, featureVectors[i].getValue(index) + weight);
 				}
 			}
 		}

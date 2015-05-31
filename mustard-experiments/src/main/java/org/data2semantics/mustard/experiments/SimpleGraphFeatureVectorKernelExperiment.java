@@ -91,6 +91,17 @@ public class SimpleGraphFeatureVectorKernelExperiment<D extends GraphData> exten
 					res.getScores()[j] = res.getEval().computeScore(target, pred);
 				}
 			}
+			
+			for (Prediction p : pred) {
+				if (!usedKernels.containsKey(p.getUsedKernel())) {
+					usedKernels.put(p.getUsedKernel(), 0.0);
+				}
+				usedKernels.put(p.getUsedKernel(), usedKernels.get(p.getUsedKernel()) + 1.0);
+			}
+		}
+		
+		for (Kernel k : usedKernels.keySet()) {
+			usedKernels.put(k, usedKernels.get(k) / (seeds.length * labels.size()));
 		}
 
 		double[] comp = { toc - tic };

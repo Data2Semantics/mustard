@@ -14,9 +14,15 @@ import org.data2semantics.mustard.experiments.utils.ResultsTable;
 
 public class CombinedResults {
 	private Map<String, Map<String, Map<Integer, List<Result>>>> combinedMap;
+	private Map<String, Map<String, Double>> usedKernelsMap;
 
 	public CombinedResults() {
 		combinedMap = new TreeMap<String, Map<String, Map<Integer, List<Result>>>>();
+		usedKernelsMap = new TreeMap<String, Map<String,Double>>();
+	}
+	
+	public Map<String, Map<String, Double>> getUsedKernelsMap() {
+		return usedKernelsMap;
 	}
 
 	public void readDirectory(String dir) {
@@ -31,38 +37,49 @@ public class CombinedResults {
 
 				if (!combinedMap.containsKey(id)) {
 					combinedMap.put(id, new TreeMap<String, Map<Integer,List<Result>>>());
+					usedKernelsMap.put(id, new TreeMap<String,Double>());
 				}
 				readLine = read.readLine();
 
+				boolean readingUsedKernels = false;
 				while (readLine != null) {
-					Result res = new Result(readLine);
+					if (readLine.equals("Used Kernels")) {
+						readingUsedKernels = true;
+						readLine = read.readLine();
+					}
+					if (!readingUsedKernels) {
+						Result res = new Result(readLine);
 
-					if (!combinedMap.get(id).containsKey(res.getLabel())) {
-						combinedMap.get(id).put(res.getLabel(), new TreeMap<Integer, List<Result>>());
-					}
-					if (!combinedMap.get(id).get(res.getLabel()).containsKey(seed)) {
-						combinedMap.get(id).get(res.getLabel()).put(seed, new ArrayList<Result>());
-					}
-					List<Result> results = combinedMap.get(id).get(res.getLabel()).get(seed);
-					results.add(res);
-		
-					if (res.getLabel().equals("Accuracy")) {
-						res.setHigherIsBetter(true);
-					}
-					if (res.getLabel().equals("F1")) {
-						res.setHigherIsBetter(true);
-					}
-					if (res.getLabel().equals("Precision")) {
-						res.setHigherIsBetter(true);
-					}
-					if (res.getLabel().equals("Recall")) {
-						res.setHigherIsBetter(true);
-					}
-					if (res.getLabel().equals("AUC-ROC")) {
-						res.setHigherIsBetter(true);
-					}
-					if (res.getLabel().equals("AUC-PR")) {
-						res.setHigherIsBetter(true);
+						if (!combinedMap.get(id).containsKey(res.getLabel())) {
+							combinedMap.get(id).put(res.getLabel(), new TreeMap<Integer, List<Result>>());
+						}
+						if (!combinedMap.get(id).get(res.getLabel()).containsKey(seed)) {
+							combinedMap.get(id).get(res.getLabel()).put(seed, new ArrayList<Result>());
+						}
+						List<Result> results = combinedMap.get(id).get(res.getLabel()).get(seed);
+						results.add(res);
+
+						if (res.getLabel().equals("Accuracy")) {
+							res.setHigherIsBetter(true);
+						}
+						if (res.getLabel().equals("F1")) {
+							res.setHigherIsBetter(true);
+						}
+						if (res.getLabel().equals("Precision")) {
+							res.setHigherIsBetter(true);
+						}
+						if (res.getLabel().equals("Recall")) {
+							res.setHigherIsBetter(true);
+						}
+						if (res.getLabel().equals("AUC-ROC")) {
+							res.setHigherIsBetter(true);
+						}
+						if (res.getLabel().equals("AUC-PR")) {
+							res.setHigherIsBetter(true);
+						}
+					} else {
+						String[] uk = readLine.split(":");
+						usedKernelsMap.get(id).put(uk[0],Double.parseDouble(uk[1]));
 					}
 					readLine = read.readLine();
 				}
@@ -75,23 +92,23 @@ public class CombinedResults {
 
 	public Map<String, ResultsTable> generateTables(int splits) {
 		Map<String, ResultsTable> tables = new TreeMap<String, ResultsTable>();
-		
+
 		for (String id : combinedMap.keySet()) {
 			String[] idSplits = id.split("_");
 			String tableId = "";
 			for (int i = (idSplits.length - splits); i < idSplits.length; i++) {
 				tableId += idSplits[i];
 			}
-			
+
 			if (id.startsWith("Tree")) {
 				tableId = "Tree" + tableId;
 			}
-			
+
 			if (!tables.containsKey(tableId)) {
 				tables.put(tableId, new ResultsTable());
 			}
 			ResultsTable table = tables.get(tableId);
-			
+
 			table.newRow(id);
 			for (String label : combinedMap.get(id).keySet()) {
 				Result res = null;
@@ -129,40 +146,50 @@ public class CombinedResults {
 	public static void main(String[] args) {
 		CombinedResults res = new CombinedResults();
 
-		res.readDirectory("am_results_2015");
-		
+		res.readDirectory("results_litho_V3");
+
 		//res.readDirectory("C:\\Users\\Gerben\\Dropbox\\D2S\\workspace_TeX\\JWS\\results_bgs_hubs");
-		Map<String, ResultsTable> tables = res.generateTables(4);
-		
+		Map<String, ResultsTable> tables = res.generateTables(3);
+
 		CombinedResults res2 = new CombinedResults();
-		
-		res2.readDirectory("aff_results_split_literals");
+
+		//res2.readDirectory("aff_results_split_literals");
 		//res2.readDirectory("C:\\Users\\Gerben\\Dropbox\\D2S\\workspace_TeX\\JWS\\results_bgs");
 		Map<String, ResultsTable> tables2 = null;
 		//Map<String, ResultsTable> tables2 = res2.generateTables(3);
-		
-		
+
+
 		List<Result> overallBest = new ArrayList<Result>();
-		
+
 		for (String key : tables.keySet()) {
 			overallBest = tables.get(key).getBestResults(overallBest); // update overall best results
 		}
-		
+
 		for (String key : tables.keySet()) {
 			tables.get(key).addCompResults(overallBest); // add overall best results
 			tables.get(key).addCompResults(tables.get(key).getBestResults()); // add local best results
 			tables.get(key).setSignificanceTest(ResultsTable.SigTest.PAIRED_TTEST);
-			tables.get(key).setDigits(2);
+			tables.get(key).setDigits(3);
 			tables.get(key).setShowStdDev(true);
 			//tables.get(key).setLatex(true);
 			//labelless hack
 			//String key2 = key.substring(0, key.length()-4) + "false";
-			
+
 			if (tables2 != null) {
 				tables.get(key).setCompareTable(tables2.get(key));
 			}
-			
+
 			System.out.println(tables.get(key));
+		}
+		
+		for (String key : res.getUsedKernelsMap().keySet()) {
+			Map<String, Double> uk = res.getUsedKernelsMap().get(key);
+			
+			System.out.println(key + "-->");
+			for (String kernel : uk.keySet()) {
+				System.out.println(kernel + ":" + uk.get(kernel) + ", ");
+			}
+			System.out.print("\n");
 		}
 	}
 }

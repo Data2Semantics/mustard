@@ -4,12 +4,14 @@ import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.data2semantics.mustard.experiments.SimpleGraphFeatureVectorKernelExperiment;
 import org.data2semantics.mustard.experiments.SimpleGraphKernelExperiment;
 import org.data2semantics.mustard.experiments.data.ClassificationDataSet;
 import org.data2semantics.mustard.experiments.utils.Result;
+import org.data2semantics.mustard.kernels.Kernel;
 import org.data2semantics.mustard.kernels.data.SingleDTGraph;
 import org.data2semantics.mustard.kernels.graphkernels.FeatureVectorKernel;
 import org.data2semantics.mustard.kernels.graphkernels.GraphKernel;
@@ -38,9 +40,9 @@ public class ClusterExperiment {
 		SingleDTGraph graph;
 		
 		if (parser.isSplitLiterals()) {
-			graph = RDFUtils.statements2Graph(stmts, RDFUtils.REGULAR_SPLIT_LITERALS, ds.getRDFData().getInstances(), true);
+			graph = RDFUtils.statements2Graph(stmts, RDFUtils.REGULAR_SPLIT_LITERALS, ds.getRDFData().getInstances(), !parser.isLeaveRootLabel());
 		} else {
-			graph = RDFUtils.statements2Graph(stmts, RDFUtils.REGULAR_LITERALS, ds.getRDFData().getInstances(), true);
+			graph = RDFUtils.statements2Graph(stmts, RDFUtils.REGULAR_LITERALS, ds.getRDFData().getInstances(), !parser.isLeaveRootLabel());
 		}
 
 		// Blank the labels if that parm is set
@@ -59,6 +61,7 @@ public class ClusterExperiment {
 		double[] cs = {1,10,100,1000};
 
 		List<Result> results = null;
+		Map<Kernel, Double> usedKernels = null;
 
 		if (parser.getSubset() == 0) { // if we are not dealing with subsets, we do LibSVM
 			//Setup the SVM	
@@ -73,6 +76,7 @@ public class ClusterExperiment {
 			System.out.println("Running: " + parser.getSaveFileString());
 			exp.run();
 			results = exp.getResults();
+			usedKernels = exp.getUsedKernels();
 
 		} else { // LibLINEAR
 			//Setup the SVM	
@@ -86,6 +90,7 @@ public class ClusterExperiment {
 			System.out.println("Running: " + parser.getSaveFileString());
 			exp.run();
 			results = exp.getResults();
+			usedKernels = exp.getUsedKernels();
 		}
 
 
@@ -100,6 +105,16 @@ public class ClusterExperiment {
 				fw.write(res.toString());
 				fw.write("\n");
 			}
+			System.out.println("Used Kernels");
+			fw.write("Used Kernels");
+			fw.write("\n");
+			
+			for (Kernel k : usedKernels.keySet()) {
+				System.out.println(k.getLabel() + ":" + usedKernels.get(k));
+				fw.write(k.getLabel() + ":" + usedKernels.get(k));
+				fw.write("\n");
+			}
+			
 			fw.close();
 		} catch (Exception e) {
 			throw new RuntimeException(e);

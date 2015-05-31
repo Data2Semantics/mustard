@@ -357,6 +357,8 @@ public class AffiliationExperiment {
 				SimpleGraphKernelExperiment<RDFData> exp = new SimpleGraphKernelExperiment<RDFData>(kernels, data, target, svmParms, seeds, evalFuncs);
 
 				exp.run();
+				
+				System.out.println(exp.getUsedKernels());
 
 				for (Result res : exp.getResults()) {
 					resTable.addResult(res);
@@ -528,7 +530,7 @@ public class AffiliationExperiment {
 		//*/
 
 
-		/* WL
+		///* WL
 		for (boolean inf : inference) {
 			resTable.newRow("WL: " + inf);		 
 
@@ -559,7 +561,7 @@ public class AffiliationExperiment {
 		//*/
 
 
-		/* WL EdgeSets
+		///* WL EdgeSets
 		for (boolean inf : inference) {
 			resTable.newRow("WL Approx: " + inf);		 
 			for (int d : depths) {
@@ -872,7 +874,7 @@ public class AffiliationExperiment {
 
 
 
-		/* WL Fast Approx
+		///* WL Fast Approx
 		for (boolean inf : inference) {
 			resTable.newRow("WL Fast Approx: " + inf);		 
 

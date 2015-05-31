@@ -1,12 +1,16 @@
--inference false -depth 3 -kernel TreeWalksApprox -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [1,2,4,8]
--inference true -depth 3 -kernel TreeWalksApprox -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [1,2,4,8]
--inference false -depth 3 -kernel GraphWalksApprox -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [1,2,4,8]
--inference true -depth 3 -kernel GraphWalksApprox -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [1,2,4,8]
--inference false -depth 3 -kernel GraphWalksFastApprox -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [1,2,4,8]
--inference true -depth 3 -kernel GraphWalksFastApprox -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [1,2,4,8]
--inference false -depth 3 -kernel TreeSubtreesApprox -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [1,2,4,8] -kernelParm4 1
--inference true -depth 3 -kernel TreeSubtreesApprox -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [1,2,4,8] -kernelParm4 1
--inference false -depth 3 -kernel GraphSubtreesApprox -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [1,2,4,8] -kernelParm4 1
--inference true -depth 3 -kernel GraphSubtreesApprox -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [1,2,4,8] -kernelParm4 1
--inference false -depth 3 -kernel GraphSubtreesFastApprox -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [1,2,4,8] -kernelParm4 1
--inference true -depth 3 -kernel GraphSubtreesFastApprox -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [1,2,4,8] -kernelParm4 1
+-inference false -depth 3 -kernel TreeWalksRootApprox -kernelParm1 [2,4,6] -kernelParm2 [0,2,4,8,16,32]
+-inference true -depth 3 -kernel TreeWalksRootApprox -kernelParm1 [2,4,6] -kernelParm2 [0,2,4,8,16,32]
+-inference false -depth 3 -kernel TreeWalksApprox -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32]
+-inference true -depth 3 -kernel TreeWalksApprox -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32]
+-inference false -depth 3 -kernel GraphWalksApprox -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32]
+-inference true -depth 3 -kernel GraphWalksApprox -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32]
+-inference false -depth 3 -kernel GraphWalksFastApprox -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32]
+-inference true -depth 3 -kernel GraphWalksFastApprox -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32]
+-inference false -depth 3 -kernel TreeSubtreesRootApprox -kernelParm1 [2,4,6] -kernelParm2 [0,2,4,8,16,32] -kernelParm3 1
+-inference true -depth 3 -kernel TreeSubtreesRootApprox -kernelParm1 [2,4,6] -kernelParm2 [0,2,4,8,16,32] -kernelParm3 1
+-inference false -depth 3 -kernel TreeSubtreesApprox -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 1
+-inference true -depth 3 -kernel TreeSubtreesApprox -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 1
+-inference false -depth 3 -kernel GraphSubtreesApprox -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 1
+-inference true -depth 3 -kernel GraphSubtreesApprox -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 1
+-inference false -depth 3 -kernel GraphSubtreesFastApprox -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 1
+-inference true -depth 3 -kernel GraphSubtreesFastApprox -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 1
