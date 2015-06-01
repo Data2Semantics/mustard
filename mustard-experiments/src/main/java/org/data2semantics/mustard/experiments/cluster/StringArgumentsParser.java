@@ -156,10 +156,10 @@ public class StringArgumentsParser {
 		if (kernel.equals("TreeSubtrees")) {
 			return treeSubtrees(kernelParms);
 		}
-		if (kernel.equals("TreeWalksApprox")) {
+		if (kernel.equals("TreeWalks_Approx")) {
 			return treeWalksApprox(kernelParms);
 		}
-		if (kernel.equals("TreeSubtreesApprox")) {
+		if (kernel.equals("TreeSubtrees_Approx")) {
 			return treeSubtreesApprox(kernelParms);
 		}
 		if (kernel.equals("TreeWalksRoot")) {
@@ -180,22 +180,22 @@ public class StringArgumentsParser {
 		if (kernel.equals("GraphSubtreesFast")) {
 			return graphSubtreesFast(kernelParms);
 		}
-		if (kernel.equals("GraphWalksApprox")) {
+		if (kernel.equals("GraphWalks_Approx")) {
 			return graphWalksApprox(kernelParms);
 		}
-		if (kernel.equals("GraphWalksFastApprox")) {
+		if (kernel.equals("GraphWalksFast_Approx")) {
 			return graphWalksFastApprox(kernelParms);
 		}
-		if (kernel.equals("GraphSubtreesApprox")) {
+		if (kernel.equals("GraphSubtrees_Approx")) {
 			return graphSubtreesApprox(kernelParms);
 		}
-		if (kernel.equals("GraphSubtreesFastApprox")) {
+		if (kernel.equals("GraphSubtreesFast_Approx")) {
 			return graphSubtreesFastApprox(kernelParms);
 		}
-		if (kernel.equals("TreeWalksRootApprox")) {
+		if (kernel.equals("TreeWalksRoot_Approx")) {
 			return treeWalksRootApprox(kernelParms);
 		}
-		if (kernel.equals("TreeSubtreesRootApprox")) {
+		if (kernel.equals("TreeSubtreesRoot_Approx")) {
 			return treeSubtreesRootApprox(kernelParms);
 		}
 		if (kernel.equals("IntersectionSubTree")) {
@@ -247,10 +247,10 @@ public class StringArgumentsParser {
 		if (kernel.equals("TreeSubtrees")) {
 			return treeSubtrees(kernelParms);
 		}
-		if (kernel.equals("TreeWalksApprox")) {
+		if (kernel.equals("TreeWalks_Approx")) {
 			return treeWalksApprox(kernelParms);
 		}
-		if (kernel.equals("TreeSubtreesApprox")) {
+		if (kernel.equals("TreeSubtrees_Approx")) {
 			return treeSubtreesApprox(kernelParms);
 		}
 		if (kernel.equals("TreeWalksRoot")) {
@@ -271,22 +271,22 @@ public class StringArgumentsParser {
 		if (kernel.equals("GraphSubtreesFast")) {
 			return graphSubtreesFast(kernelParms);
 		}
-		if (kernel.equals("GraphWalksApprox")) {
+		if (kernel.equals("GraphWalks_Approx")) {
 			return graphWalksApprox(kernelParms);
 		}
-		if (kernel.equals("GraphWalksFastApprox")) {
+		if (kernel.equals("GraphWalksFast_Approx")) {
 			return graphWalksFastApprox(kernelParms);
 		}
-		if (kernel.equals("GraphSubtreesApprox")) {
+		if (kernel.equals("GraphSubtrees_Approx")) {
 			return graphSubtreesApprox(kernelParms);
 		}
-		if (kernel.equals("GraphSubtreesFastApprox")) {
+		if (kernel.equals("GraphSubtreesFast_Approx")) {
 			return graphSubtreesFastApprox(kernelParms);
 		}
-		if (kernel.equals("TreeWalksRootApprox")) {
+		if (kernel.equals("TreeWalksRoot_Approx")) {
 			return treeWalksRootApprox(kernelParms);
 		}
-		if (kernel.equals("TreeSubtreesRootApprox")) {
+		if (kernel.equals("TreeSubtreesRoot_Approx")) {
 			return treeSubtreesRootApprox(kernelParms);
 		}
 		if (kernel.equals("URIPrefix")) {
