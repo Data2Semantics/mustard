@@ -145,10 +145,18 @@ public class Stratifier {
 						if (!used[i]) { free[i] = true; }
 					}
 				}
+				
+				// Check if there is still a free fold which did not get anything during uneven fold correction
+				boolean onlyDouble = true;
+				for (int i = 0 ; i < numFolds; i++) {
+					if (free[i] && !foldCheck.get(i).contains(entry.getKey())) {
+						onlyDouble = false;
+					}
+				}
 
 				if (free[fold]	// fold free?
 						&& folds[fold] < foldEnds[fold] // still space?
-								&& !foldCheck.get(fold).contains(entry.getKey())) { // this fold did not get anything with this label yet during the uneven fold correction
+								&& (onlyDouble || !foldCheck.get(fold).contains(entry.getKey()))) { // this fold did not get anything with this label yet during the uneven fold correction, or that is the only option left
 
 					indices.set(folds[fold], entry.getValue().get(0));
 					entry.getValue().remove(0);
