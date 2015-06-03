@@ -88,7 +88,7 @@ public class ParamsCreator {
 		
 		private void init() {
 			if (kernel.equals("GraphBoL") || kernel.equals("TreeBoL") || kernel.equals("URIPrefix")) {
-				settings.add("-kernel " + kernel + " -kernelParm1 " + depth);
+				settings.add("-kernel " + kernel + " -kernelParm1 " + getItsDepth(depth));
 			}
 			else if (kernel.equals("TreeWalksRoot") || kernel.equals("TreeSubtreesRoot")) {
 				settings.add("-kernel " + kernel + " -kernelParm1 " + getIts(depth));

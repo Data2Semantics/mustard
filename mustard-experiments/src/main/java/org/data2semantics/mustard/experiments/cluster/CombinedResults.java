@@ -146,10 +146,10 @@ public class CombinedResults {
 	public static void main(String[] args) {
 		CombinedResults res = new CombinedResults();
 
-		res.readDirectory("results_aff_V3");
+		res.readDirectory("c:\\jws\\bgs\\regular\\");
 
 		//res.readDirectory("C:\\Users\\Gerben\\Dropbox\\D2S\\workspace_TeX\\JWS\\results_bgs_hubs");
-		Map<String, ResultsTable> tables = res.generateTables(3);
+		Map<String, ResultsTable> tables = res.generateTables(4);
 
 		CombinedResults res2 = new CombinedResults();
 
