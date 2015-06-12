@@ -79,7 +79,14 @@ public class CombinedResults {
 						}
 					} else {
 						String[] uk = readLine.split(":");
-						usedKernelsMap.get(id).put(uk[0],Double.parseDouble(uk[1]));
+						int idx = uk[0].indexOf("_compTime");
+						idx = (idx < 0) ? uk[0].length() : idx;
+						String kid = uk[0].substring(0, idx);
+						if (!usedKernelsMap.get(id).containsKey(kid)) {
+							usedKernelsMap.get(id).put(kid,Double.parseDouble(uk[1]));
+						} else {
+							usedKernelsMap.get(id).put(kid,usedKernelsMap.get(id).get(kid) + Double.parseDouble(uk[1]));
+						}
 					}
 					readLine = read.readLine();
 				}
@@ -102,6 +109,14 @@ public class CombinedResults {
 
 			if (id.startsWith("Tree")) {
 				tableId = "Tree" + tableId;
+			}
+			
+			if (id.contains("Fast")) {
+				tableId = "Fast" + tableId;
+			}
+			
+			if (id.contains("Root_") || id.contains("Intersection")) {
+				tableId = "Root" + tableId;
 			}
 
 			if (!tables.containsKey(tableId)) {
@@ -145,18 +160,20 @@ public class CombinedResults {
 	 */
 	public static void main(String[] args) {
 		CombinedResults res = new CombinedResults();
+		int splits = 4;
+		
+		res.readDirectory("c:\\jws\\am\\approx\\");
 
-		res.readDirectory("c:\\jws\\bgs\\regular\\");
-
+		
 		//res.readDirectory("C:\\Users\\Gerben\\Dropbox\\D2S\\workspace_TeX\\JWS\\results_bgs_hubs");
-		Map<String, ResultsTable> tables = res.generateTables(4);
+		Map<String, ResultsTable> tables = res.generateTables(splits);
 
 		CombinedResults res2 = new CombinedResults();
 
-		//res2.readDirectory("aff_results_split_literals");
+		res2.readDirectory("c:\\jws\\am\\regular_comp\\");
 		//res2.readDirectory("C:\\Users\\Gerben\\Dropbox\\D2S\\workspace_TeX\\JWS\\results_bgs");
 		Map<String, ResultsTable> tables2 = null;
-		//Map<String, ResultsTable> tables2 = res2.generateTables(3);
+		//Map<String, ResultsTable> tables2 = res2.generateTables(splits);
 
 
 		List<Result> overallBest = new ArrayList<Result>();
@@ -171,7 +188,7 @@ public class CombinedResults {
 			tables.get(key).setSignificanceTest(ResultsTable.SigTest.PAIRED_TTEST);
 			tables.get(key).setDigits(3);
 			tables.get(key).setShowStdDev(true);
-			//tables.get(key).setLatex(true);
+			tables.get(key).setLatex(true);
 			//labelless hack
 			//String key2 = key.substring(0, key.length()-4) + "false";
 
@@ -186,8 +203,12 @@ public class CombinedResults {
 			Map<String, Double> uk = res.getUsedKernelsMap().get(key);
 			
 			System.out.println(key + "-->");
+			double sum = 0;
 			for (String kernel : uk.keySet()) {
-				System.out.println(kernel + ":" + uk.get(kernel) + ", ");
+				sum += uk.get(kernel);
+			}	
+			for (String kernel : uk.keySet()) {
+				System.out.println(kernel + "  :  " + (uk.get(kernel) / sum));
 			}
 			System.out.print("\n");
 		}

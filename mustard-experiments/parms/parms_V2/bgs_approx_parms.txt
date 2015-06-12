@@ -1,240 +1,240 @@
--file BGSsubset1false -subset 1 -inference false -depth 3 -kernel TreeWalksRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,4,8,16,32,64]
--file BGSsubset1false -subset 1 -inference false -depth 3 -kernel TreeSubtreesRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,4,8,16,32,64] -kernelParm3 1
--file BGSsubset1false -subset 1 -inference false -depth 3 -kernel GraphWalksFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64]
--file BGSsubset1false -subset 1 -inference false -depth 3 -kernel TreeWalks_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64]
--file BGSsubset1false -subset 1 -inference false -depth 3 -kernel GraphSubtreesFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 1
--file BGSsubset1false -subset 1 -inference false -depth 3 -kernel GraphSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 1
--file BGSsubset1false -subset 1 -inference false -depth 3 -kernel TreeSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 1
--file BGSsubset1true -subset 1 -inference true -depth 3 -kernel TreeWalksRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,4,8,16,32,64]
--file BGSsubset1true -subset 1 -inference true -depth 3 -kernel TreeSubtreesRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,4,8,16,32,64] -kernelParm3 1
--file BGSsubset1true -subset 1 -inference true -depth 3 -kernel GraphWalksFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64]
--file BGSsubset1true -subset 1 -inference true -depth 3 -kernel TreeWalks_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64]
--file BGSsubset1true -subset 1 -inference true -depth 3 -kernel GraphSubtreesFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 1
--file BGSsubset1true -subset 1 -inference true -depth 3 -kernel GraphSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 1
--file BGSsubset1true -subset 1 -inference true -depth 3 -kernel TreeSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 1
--file BGSsubset2false -subset 2 -inference false -depth 3 -kernel TreeWalksRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,4,8,16,32,64]
--file BGSsubset2false -subset 2 -inference false -depth 3 -kernel TreeSubtreesRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,4,8,16,32,64] -kernelParm3 1
--file BGSsubset2false -subset 2 -inference false -depth 3 -kernel GraphWalksFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64]
--file BGSsubset2false -subset 2 -inference false -depth 3 -kernel TreeWalks_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64]
--file BGSsubset2false -subset 2 -inference false -depth 3 -kernel GraphSubtreesFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 1
--file BGSsubset2false -subset 2 -inference false -depth 3 -kernel GraphSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 1
--file BGSsubset2false -subset 2 -inference false -depth 3 -kernel TreeSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 1
--file BGSsubset2true -subset 2 -inference true -depth 3 -kernel TreeWalksRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,4,8,16,32,64]
--file BGSsubset2true -subset 2 -inference true -depth 3 -kernel TreeSubtreesRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,4,8,16,32,64] -kernelParm3 1
--file BGSsubset2true -subset 2 -inference true -depth 3 -kernel GraphWalksFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64]
--file BGSsubset2true -subset 2 -inference true -depth 3 -kernel TreeWalks_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64]
--file BGSsubset2true -subset 2 -inference true -depth 3 -kernel GraphSubtreesFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 1
--file BGSsubset2true -subset 2 -inference true -depth 3 -kernel GraphSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 1
--file BGSsubset2true -subset 2 -inference true -depth 3 -kernel TreeSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 1
--file BGSsubset3false -subset 3 -inference false -depth 3 -kernel TreeWalksRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,4,8,16,32,64]
--file BGSsubset3false -subset 3 -inference false -depth 3 -kernel TreeSubtreesRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,4,8,16,32,64] -kernelParm3 1
--file BGSsubset3false -subset 3 -inference false -depth 3 -kernel GraphWalksFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64]
--file BGSsubset3false -subset 3 -inference false -depth 3 -kernel TreeWalks_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64]
--file BGSsubset3false -subset 3 -inference false -depth 3 -kernel GraphSubtreesFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 1
--file BGSsubset3false -subset 3 -inference false -depth 3 -kernel GraphSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 1
--file BGSsubset3false -subset 3 -inference false -depth 3 -kernel TreeSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 1
--file BGSsubset3true -subset 3 -inference true -depth 3 -kernel TreeWalksRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,4,8,16,32,64]
--file BGSsubset3true -subset 3 -inference true -depth 3 -kernel TreeSubtreesRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,4,8,16,32,64] -kernelParm3 1
--file BGSsubset3true -subset 3 -inference true -depth 3 -kernel GraphWalksFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64]
--file BGSsubset3true -subset 3 -inference true -depth 3 -kernel TreeWalks_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64]
--file BGSsubset3true -subset 3 -inference true -depth 3 -kernel GraphSubtreesFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 1
--file BGSsubset3true -subset 3 -inference true -depth 3 -kernel GraphSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 1
--file BGSsubset3true -subset 3 -inference true -depth 3 -kernel TreeSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 1
--file BGSsubset4false -subset 4 -inference false -depth 3 -kernel TreeWalksRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,4,8,16,32,64]
--file BGSsubset4false -subset 4 -inference false -depth 3 -kernel TreeSubtreesRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,4,8,16,32,64] -kernelParm3 1
--file BGSsubset4false -subset 4 -inference false -depth 3 -kernel GraphWalksFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64]
--file BGSsubset4false -subset 4 -inference false -depth 3 -kernel TreeWalks_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64]
--file BGSsubset4false -subset 4 -inference false -depth 3 -kernel GraphSubtreesFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 1
--file BGSsubset4false -subset 4 -inference false -depth 3 -kernel GraphSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 1
--file BGSsubset4false -subset 4 -inference false -depth 3 -kernel TreeSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 1
--file BGSsubset4true -subset 4 -inference true -depth 3 -kernel TreeWalksRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,4,8,16,32,64]
--file BGSsubset4true -subset 4 -inference true -depth 3 -kernel TreeSubtreesRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,4,8,16,32,64] -kernelParm3 1
--file BGSsubset4true -subset 4 -inference true -depth 3 -kernel GraphWalksFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64]
--file BGSsubset4true -subset 4 -inference true -depth 3 -kernel TreeWalks_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64]
--file BGSsubset4true -subset 4 -inference true -depth 3 -kernel GraphSubtreesFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 1
--file BGSsubset4true -subset 4 -inference true -depth 3 -kernel GraphSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 1
--file BGSsubset4true -subset 4 -inference true -depth 3 -kernel TreeSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 1
--file BGSsubset5false -subset 5 -inference false -depth 3 -kernel TreeWalksRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,4,8,16,32,64]
--file BGSsubset5false -subset 5 -inference false -depth 3 -kernel TreeSubtreesRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,4,8,16,32,64] -kernelParm3 1
--file BGSsubset5false -subset 5 -inference false -depth 3 -kernel GraphWalksFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64]
--file BGSsubset5false -subset 5 -inference false -depth 3 -kernel TreeWalks_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64]
--file BGSsubset5false -subset 5 -inference false -depth 3 -kernel GraphSubtreesFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 1
--file BGSsubset5false -subset 5 -inference false -depth 3 -kernel GraphSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 1
--file BGSsubset5false -subset 5 -inference false -depth 3 -kernel TreeSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 1
--file BGSsubset5true -subset 5 -inference true -depth 3 -kernel TreeWalksRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,4,8,16,32,64]
--file BGSsubset5true -subset 5 -inference true -depth 3 -kernel TreeSubtreesRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,4,8,16,32,64] -kernelParm3 1
--file BGSsubset5true -subset 5 -inference true -depth 3 -kernel GraphWalksFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64]
--file BGSsubset5true -subset 5 -inference true -depth 3 -kernel TreeWalks_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64]
--file BGSsubset5true -subset 5 -inference true -depth 3 -kernel GraphSubtreesFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 1
--file BGSsubset5true -subset 5 -inference true -depth 3 -kernel GraphSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 1
--file BGSsubset5true -subset 5 -inference true -depth 3 -kernel TreeSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 1
--file BGSsubset6false -subset 6 -inference false -depth 3 -kernel TreeWalksRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,4,8,16,32,64]
--file BGSsubset6false -subset 6 -inference false -depth 3 -kernel TreeSubtreesRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,4,8,16,32,64] -kernelParm3 1
--file BGSsubset6false -subset 6 -inference false -depth 3 -kernel GraphWalksFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64]
--file BGSsubset6false -subset 6 -inference false -depth 3 -kernel TreeWalks_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64]
--file BGSsubset6false -subset 6 -inference false -depth 3 -kernel GraphSubtreesFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 1
--file BGSsubset6false -subset 6 -inference false -depth 3 -kernel GraphSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 1
--file BGSsubset6false -subset 6 -inference false -depth 3 -kernel TreeSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 1
--file BGSsubset6true -subset 6 -inference true -depth 3 -kernel TreeWalksRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,4,8,16,32,64]
--file BGSsubset6true -subset 6 -inference true -depth 3 -kernel TreeSubtreesRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,4,8,16,32,64] -kernelParm3 1
--file BGSsubset6true -subset 6 -inference true -depth 3 -kernel GraphWalksFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64]
--file BGSsubset6true -subset 6 -inference true -depth 3 -kernel TreeWalks_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64]
--file BGSsubset6true -subset 6 -inference true -depth 3 -kernel GraphSubtreesFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 1
--file BGSsubset6true -subset 6 -inference true -depth 3 -kernel GraphSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 1
--file BGSsubset6true -subset 6 -inference true -depth 3 -kernel TreeSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 1
--file BGSsubset7false -subset 7 -inference false -depth 3 -kernel TreeWalksRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,4,8,16,32,64]
--file BGSsubset7false -subset 7 -inference false -depth 3 -kernel TreeSubtreesRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,4,8,16,32,64] -kernelParm3 1
--file BGSsubset7false -subset 7 -inference false -depth 3 -kernel GraphWalksFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64]
--file BGSsubset7false -subset 7 -inference false -depth 3 -kernel TreeWalks_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64]
--file BGSsubset7false -subset 7 -inference false -depth 3 -kernel GraphSubtreesFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 1
--file BGSsubset7false -subset 7 -inference false -depth 3 -kernel GraphSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 1
--file BGSsubset7false -subset 7 -inference false -depth 3 -kernel TreeSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 1
--file BGSsubset7true -subset 7 -inference true -depth 3 -kernel TreeWalksRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,4,8,16,32,64]
--file BGSsubset7true -subset 7 -inference true -depth 3 -kernel TreeSubtreesRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,4,8,16,32,64] -kernelParm3 1
--file BGSsubset7true -subset 7 -inference true -depth 3 -kernel GraphWalksFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64]
--file BGSsubset7true -subset 7 -inference true -depth 3 -kernel TreeWalks_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64]
--file BGSsubset7true -subset 7 -inference true -depth 3 -kernel GraphSubtreesFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 1
--file BGSsubset7true -subset 7 -inference true -depth 3 -kernel GraphSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 1
--file BGSsubset7true -subset 7 -inference true -depth 3 -kernel TreeSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 1
--file BGSsubset8false -subset 8 -inference false -depth 3 -kernel TreeWalksRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,4,8,16,32,64]
--file BGSsubset8false -subset 8 -inference false -depth 3 -kernel TreeSubtreesRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,4,8,16,32,64] -kernelParm3 1
--file BGSsubset8false -subset 8 -inference false -depth 3 -kernel GraphWalksFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64]
--file BGSsubset8false -subset 8 -inference false -depth 3 -kernel TreeWalks_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64]
--file BGSsubset8false -subset 8 -inference false -depth 3 -kernel GraphSubtreesFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 1
--file BGSsubset8false -subset 8 -inference false -depth 3 -kernel GraphSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 1
--file BGSsubset8false -subset 8 -inference false -depth 3 -kernel TreeSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 1
--file BGSsubset8true -subset 8 -inference true -depth 3 -kernel TreeWalksRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,4,8,16,32,64]
--file BGSsubset8true -subset 8 -inference true -depth 3 -kernel TreeSubtreesRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,4,8,16,32,64] -kernelParm3 1
--file BGSsubset8true -subset 8 -inference true -depth 3 -kernel GraphWalksFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64]
--file BGSsubset8true -subset 8 -inference true -depth 3 -kernel TreeWalks_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64]
--file BGSsubset8true -subset 8 -inference true -depth 3 -kernel GraphSubtreesFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 1
--file BGSsubset8true -subset 8 -inference true -depth 3 -kernel GraphSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 1
--file BGSsubset8true -subset 8 -inference true -depth 3 -kernel TreeSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 1
--file BGSsubset9false -subset 9 -inference false -depth 3 -kernel TreeWalksRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,4,8,16,32,64]
--file BGSsubset9false -subset 9 -inference false -depth 3 -kernel TreeSubtreesRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,4,8,16,32,64] -kernelParm3 1
--file BGSsubset9false -subset 9 -inference false -depth 3 -kernel GraphWalksFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64]
--file BGSsubset9false -subset 9 -inference false -depth 3 -kernel TreeWalks_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64]
--file BGSsubset9false -subset 9 -inference false -depth 3 -kernel GraphSubtreesFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 1
--file BGSsubset9false -subset 9 -inference false -depth 3 -kernel GraphSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 1
--file BGSsubset9false -subset 9 -inference false -depth 3 -kernel TreeSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 1
--file BGSsubset9true -subset 9 -inference true -depth 3 -kernel TreeWalksRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,4,8,16,32,64]
--file BGSsubset9true -subset 9 -inference true -depth 3 -kernel TreeSubtreesRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,4,8,16,32,64] -kernelParm3 1
--file BGSsubset9true -subset 9 -inference true -depth 3 -kernel GraphWalksFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64]
--file BGSsubset9true -subset 9 -inference true -depth 3 -kernel TreeWalks_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64]
--file BGSsubset9true -subset 9 -inference true -depth 3 -kernel GraphSubtreesFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 1
--file BGSsubset9true -subset 9 -inference true -depth 3 -kernel GraphSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 1
--file BGSsubset9true -subset 9 -inference true -depth 3 -kernel TreeSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 1
--file BGSsubset10false -subset 10 -inference false -depth 3 -kernel TreeWalksRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,4,8,16,32,64]
--file BGSsubset10false -subset 10 -inference false -depth 3 -kernel TreeSubtreesRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,4,8,16,32,64] -kernelParm3 1
--file BGSsubset10false -subset 10 -inference false -depth 3 -kernel GraphWalksFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64]
--file BGSsubset10false -subset 10 -inference false -depth 3 -kernel TreeWalks_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64]
--file BGSsubset10false -subset 10 -inference false -depth 3 -kernel GraphSubtreesFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 1
--file BGSsubset10false -subset 10 -inference false -depth 3 -kernel GraphSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 1
--file BGSsubset10false -subset 10 -inference false -depth 3 -kernel TreeSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 1
--file BGSsubset10true -subset 10 -inference true -depth 3 -kernel TreeWalksRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,4,8,16,32,64]
--file BGSsubset10true -subset 10 -inference true -depth 3 -kernel TreeSubtreesRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,4,8,16,32,64] -kernelParm3 1
--file BGSsubset10true -subset 10 -inference true -depth 3 -kernel GraphWalksFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64]
--file BGSsubset10true -subset 10 -inference true -depth 3 -kernel TreeWalks_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64]
--file BGSsubset10true -subset 10 -inference true -depth 3 -kernel GraphSubtreesFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 1
--file BGSsubset10true -subset 10 -inference true -depth 3 -kernel GraphSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 1
--file BGSsubset10true -subset 10 -inference true -depth 3 -kernel TreeSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 1
--file BGSsubset1false -subset 1 -inference false -depth 3 -kernel TreeSubtreesRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,4,8,16,32,64] -kernelParm3 10000
--file BGSsubset1false -subset 1 -inference false -depth 3 -kernel GraphSubtreesFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 10000
--file BGSsubset1false -subset 1 -inference false -depth 3 -kernel GraphSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 10000
--file BGSsubset1false -subset 1 -inference false -depth 3 -kernel TreeSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 10000
--file BGSsubset1true -subset 1 -inference true -depth 3 -kernel TreeSubtreesRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,4,8,16,32,64] -kernelParm3 10000
--file BGSsubset1true -subset 1 -inference true -depth 3 -kernel GraphSubtreesFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 10000
--file BGSsubset1true -subset 1 -inference true -depth 3 -kernel GraphSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 10000
--file BGSsubset1true -subset 1 -inference true -depth 3 -kernel TreeSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 10000
--file BGSsubset2false -subset 2 -inference false -depth 3 -kernel TreeSubtreesRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,4,8,16,32,64] -kernelParm3 10000
--file BGSsubset2false -subset 2 -inference false -depth 3 -kernel GraphSubtreesFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 10000
--file BGSsubset2false -subset 2 -inference false -depth 3 -kernel GraphSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 10000
--file BGSsubset2false -subset 2 -inference false -depth 3 -kernel TreeSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 10000
--file BGSsubset2true -subset 2 -inference true -depth 3 -kernel TreeSubtreesRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,4,8,16,32,64] -kernelParm3 10000
--file BGSsubset2true -subset 2 -inference true -depth 3 -kernel GraphSubtreesFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 10000
--file BGSsubset2true -subset 2 -inference true -depth 3 -kernel GraphSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 10000
--file BGSsubset2true -subset 2 -inference true -depth 3 -kernel TreeSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 10000
--file BGSsubset3false -subset 3 -inference false -depth 3 -kernel TreeSubtreesRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,4,8,16,32,64] -kernelParm3 10000
--file BGSsubset3false -subset 3 -inference false -depth 3 -kernel GraphSubtreesFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 10000
--file BGSsubset3false -subset 3 -inference false -depth 3 -kernel GraphSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 10000
--file BGSsubset3false -subset 3 -inference false -depth 3 -kernel TreeSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 10000
--file BGSsubset3true -subset 3 -inference true -depth 3 -kernel TreeSubtreesRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,4,8,16,32,64] -kernelParm3 10000
--file BGSsubset3true -subset 3 -inference true -depth 3 -kernel GraphSubtreesFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 10000
--file BGSsubset3true -subset 3 -inference true -depth 3 -kernel GraphSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 10000
--file BGSsubset3true -subset 3 -inference true -depth 3 -kernel TreeSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 10000
--file BGSsubset4false -subset 4 -inference false -depth 3 -kernel TreeSubtreesRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,4,8,16,32,64] -kernelParm3 10000
--file BGSsubset4false -subset 4 -inference false -depth 3 -kernel GraphSubtreesFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 10000
--file BGSsubset4false -subset 4 -inference false -depth 3 -kernel GraphSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 10000
--file BGSsubset4false -subset 4 -inference false -depth 3 -kernel TreeSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 10000
--file BGSsubset4true -subset 4 -inference true -depth 3 -kernel TreeSubtreesRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,4,8,16,32,64] -kernelParm3 10000
--file BGSsubset4true -subset 4 -inference true -depth 3 -kernel GraphSubtreesFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 10000
--file BGSsubset4true -subset 4 -inference true -depth 3 -kernel GraphSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 10000
--file BGSsubset4true -subset 4 -inference true -depth 3 -kernel TreeSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 10000
--file BGSsubset5false -subset 5 -inference false -depth 3 -kernel TreeSubtreesRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,4,8,16,32,64] -kernelParm3 10000
--file BGSsubset5false -subset 5 -inference false -depth 3 -kernel GraphSubtreesFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 10000
--file BGSsubset5false -subset 5 -inference false -depth 3 -kernel GraphSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 10000
--file BGSsubset5false -subset 5 -inference false -depth 3 -kernel TreeSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 10000
--file BGSsubset5true -subset 5 -inference true -depth 3 -kernel TreeSubtreesRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,4,8,16,32,64] -kernelParm3 10000
--file BGSsubset5true -subset 5 -inference true -depth 3 -kernel GraphSubtreesFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 10000
--file BGSsubset5true -subset 5 -inference true -depth 3 -kernel GraphSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 10000
--file BGSsubset5true -subset 5 -inference true -depth 3 -kernel TreeSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 10000
--file BGSsubset6false -subset 6 -inference false -depth 3 -kernel TreeSubtreesRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,4,8,16,32,64] -kernelParm3 10000
--file BGSsubset6false -subset 6 -inference false -depth 3 -kernel GraphSubtreesFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 10000
--file BGSsubset6false -subset 6 -inference false -depth 3 -kernel GraphSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 10000
--file BGSsubset6false -subset 6 -inference false -depth 3 -kernel TreeSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 10000
--file BGSsubset6true -subset 6 -inference true -depth 3 -kernel TreeSubtreesRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,4,8,16,32,64] -kernelParm3 10000
--file BGSsubset6true -subset 6 -inference true -depth 3 -kernel GraphSubtreesFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 10000
--file BGSsubset6true -subset 6 -inference true -depth 3 -kernel GraphSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 10000
--file BGSsubset6true -subset 6 -inference true -depth 3 -kernel TreeSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 10000
--file BGSsubset7false -subset 7 -inference false -depth 3 -kernel TreeSubtreesRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,4,8,16,32,64] -kernelParm3 10000
--file BGSsubset7false -subset 7 -inference false -depth 3 -kernel GraphSubtreesFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 10000
--file BGSsubset7false -subset 7 -inference false -depth 3 -kernel GraphSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 10000
--file BGSsubset7false -subset 7 -inference false -depth 3 -kernel TreeSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 10000
--file BGSsubset7true -subset 7 -inference true -depth 3 -kernel TreeSubtreesRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,4,8,16,32,64] -kernelParm3 10000
--file BGSsubset7true -subset 7 -inference true -depth 3 -kernel GraphSubtreesFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 10000
--file BGSsubset7true -subset 7 -inference true -depth 3 -kernel GraphSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 10000
--file BGSsubset7true -subset 7 -inference true -depth 3 -kernel TreeSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 10000
--file BGSsubset8false -subset 8 -inference false -depth 3 -kernel TreeSubtreesRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,4,8,16,32,64] -kernelParm3 10000
--file BGSsubset8false -subset 8 -inference false -depth 3 -kernel GraphSubtreesFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 10000
--file BGSsubset8false -subset 8 -inference false -depth 3 -kernel GraphSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 10000
--file BGSsubset8false -subset 8 -inference false -depth 3 -kernel TreeSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 10000
--file BGSsubset8true -subset 8 -inference true -depth 3 -kernel TreeSubtreesRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,4,8,16,32,64] -kernelParm3 10000
--file BGSsubset8true -subset 8 -inference true -depth 3 -kernel GraphSubtreesFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 10000
--file BGSsubset8true -subset 8 -inference true -depth 3 -kernel GraphSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 10000
--file BGSsubset8true -subset 8 -inference true -depth 3 -kernel TreeSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 10000
--file BGSsubset9false -subset 9 -inference false -depth 3 -kernel TreeSubtreesRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,4,8,16,32,64] -kernelParm3 10000
--file BGSsubset9false -subset 9 -inference false -depth 3 -kernel GraphSubtreesFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 10000
--file BGSsubset9false -subset 9 -inference false -depth 3 -kernel GraphSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 10000
--file BGSsubset9false -subset 9 -inference false -depth 3 -kernel TreeSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 10000
--file BGSsubset9true -subset 9 -inference true -depth 3 -kernel TreeSubtreesRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,4,8,16,32,64] -kernelParm3 10000
--file BGSsubset9true -subset 9 -inference true -depth 3 -kernel GraphSubtreesFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 10000
--file BGSsubset9true -subset 9 -inference true -depth 3 -kernel GraphSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 10000
--file BGSsubset9true -subset 9 -inference true -depth 3 -kernel TreeSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 10000
--file BGSsubset10false -subset 10 -inference false -depth 3 -kernel TreeSubtreesRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,4,8,16,32,64] -kernelParm3 10000
--file BGSsubset10false -subset 10 -inference false -depth 3 -kernel GraphSubtreesFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 10000
--file BGSsubset10false -subset 10 -inference false -depth 3 -kernel GraphSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 10000
--file BGSsubset10false -subset 10 -inference false -depth 3 -kernel TreeSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 10000
--file BGSsubset10true -subset 10 -inference true -depth 3 -kernel TreeSubtreesRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,4,8,16,32,64] -kernelParm3 10000
--file BGSsubset10true -subset 10 -inference true -depth 3 -kernel GraphSubtreesFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 10000
--file BGSsubset10true -subset 10 -inference true -depth 3 -kernel GraphSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 10000
--file BGSsubset10true -subset 10 -inference true -depth 3 -kernel TreeSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,4,8,16,32,64] -kernelParm4 10000
--file BGSsubset1false -subset 1 -inference false -depth 2 -kernel GraphWalks_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2] -kernelParm3 [0,4,8,16,32,64]
--file BGSsubset1true -subset 1 -inference true -depth 2 -kernel GraphWalks_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2] -kernelParm3 [0,4,8,16,32,64]
--file BGSsubset2false -subset 2 -inference false -depth 2 -kernel GraphWalks_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2] -kernelParm3 [0,4,8,16,32,64]
--file BGSsubset2true -subset 2 -inference true -depth 2 -kernel GraphWalks_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2] -kernelParm3 [0,4,8,16,32,64]
--file BGSsubset3false -subset 3 -inference false -depth 2 -kernel GraphWalks_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2] -kernelParm3 [0,4,8,16,32,64]
--file BGSsubset3true -subset 3 -inference true -depth 2 -kernel GraphWalks_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2] -kernelParm3 [0,4,8,16,32,64]
--file BGSsubset4false -subset 4 -inference false -depth 2 -kernel GraphWalks_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2] -kernelParm3 [0,4,8,16,32,64]
--file BGSsubset4true -subset 4 -inference true -depth 2 -kernel GraphWalks_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2] -kernelParm3 [0,4,8,16,32,64]
--file BGSsubset5false -subset 5 -inference false -depth 2 -kernel GraphWalks_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2] -kernelParm3 [0,4,8,16,32,64]
--file BGSsubset5true -subset 5 -inference true -depth 2 -kernel GraphWalks_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2] -kernelParm3 [0,4,8,16,32,64]
--file BGSsubset6false -subset 6 -inference false -depth 2 -kernel GraphWalks_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2] -kernelParm3 [0,4,8,16,32,64]
--file BGSsubset6true -subset 6 -inference true -depth 2 -kernel GraphWalks_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2] -kernelParm3 [0,4,8,16,32,64]
--file BGSsubset7false -subset 7 -inference false -depth 2 -kernel GraphWalks_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2] -kernelParm3 [0,4,8,16,32,64]
--file BGSsubset7true -subset 7 -inference true -depth 2 -kernel GraphWalks_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2] -kernelParm3 [0,4,8,16,32,64]
--file BGSsubset8false -subset 8 -inference false -depth 2 -kernel GraphWalks_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2] -kernelParm3 [0,4,8,16,32,64]
--file BGSsubset8true -subset 8 -inference true -depth 2 -kernel GraphWalks_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2] -kernelParm3 [0,4,8,16,32,64]
--file BGSsubset9false -subset 9 -inference false -depth 2 -kernel GraphWalks_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2] -kernelParm3 [0,4,8,16,32,64]
--file BGSsubset9true -subset 9 -inference true -depth 2 -kernel GraphWalks_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2] -kernelParm3 [0,4,8,16,32,64]
--file BGSsubset10false -subset 10 -inference false -depth 2 -kernel GraphWalks_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2] -kernelParm3 [0,4,8,16,32,64]
--file BGSsubset10true -subset 10 -inference true -depth 2 -kernel GraphWalks_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2] -kernelParm3 [0,4,8,16,32,64]
+-file BGSsubset1false -subset 1 -inference false -depth 3 -kernel TreeWalksRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,2,4,8,16,32]
+-file BGSsubset1false -subset 1 -inference false -depth 3 -kernel TreeSubtreesRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,2,4,8,16,32] -kernelParm3 1
+-file BGSsubset1false -subset 1 -inference false -depth 3 -kernel GraphWalksFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32]
+-file BGSsubset1false -subset 1 -inference false -depth 3 -kernel TreeWalks_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32]
+-file BGSsubset1false -subset 1 -inference false -depth 3 -kernel GraphSubtreesFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 1
+-file BGSsubset1false -subset 1 -inference false -depth 3 -kernel GraphSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 1
+-file BGSsubset1false -subset 1 -inference false -depth 3 -kernel TreeSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 1
+-file BGSsubset1true -subset 1 -inference true -depth 3 -kernel TreeWalksRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,2,4,8,16,32]
+-file BGSsubset1true -subset 1 -inference true -depth 3 -kernel TreeSubtreesRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,2,4,8,16,32] -kernelParm3 1
+-file BGSsubset1true -subset 1 -inference true -depth 3 -kernel GraphWalksFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32]
+-file BGSsubset1true -subset 1 -inference true -depth 3 -kernel TreeWalks_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32]
+-file BGSsubset1true -subset 1 -inference true -depth 3 -kernel GraphSubtreesFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 1
+-file BGSsubset1true -subset 1 -inference true -depth 3 -kernel GraphSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 1
+-file BGSsubset1true -subset 1 -inference true -depth 3 -kernel TreeSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 1
+-file BGSsubset2false -subset 2 -inference false -depth 3 -kernel TreeWalksRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,2,4,8,16,32]
+-file BGSsubset2false -subset 2 -inference false -depth 3 -kernel TreeSubtreesRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,2,4,8,16,32] -kernelParm3 1
+-file BGSsubset2false -subset 2 -inference false -depth 3 -kernel GraphWalksFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32]
+-file BGSsubset2false -subset 2 -inference false -depth 3 -kernel TreeWalks_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32]
+-file BGSsubset2false -subset 2 -inference false -depth 3 -kernel GraphSubtreesFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 1
+-file BGSsubset2false -subset 2 -inference false -depth 3 -kernel GraphSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 1
+-file BGSsubset2false -subset 2 -inference false -depth 3 -kernel TreeSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 1
+-file BGSsubset2true -subset 2 -inference true -depth 3 -kernel TreeWalksRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,2,4,8,16,32]
+-file BGSsubset2true -subset 2 -inference true -depth 3 -kernel TreeSubtreesRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,2,4,8,16,32] -kernelParm3 1
+-file BGSsubset2true -subset 2 -inference true -depth 3 -kernel GraphWalksFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32]
+-file BGSsubset2true -subset 2 -inference true -depth 3 -kernel TreeWalks_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32]
+-file BGSsubset2true -subset 2 -inference true -depth 3 -kernel GraphSubtreesFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 1
+-file BGSsubset2true -subset 2 -inference true -depth 3 -kernel GraphSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 1
+-file BGSsubset2true -subset 2 -inference true -depth 3 -kernel TreeSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 1
+-file BGSsubset3false -subset 3 -inference false -depth 3 -kernel TreeWalksRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,2,4,8,16,32]
+-file BGSsubset3false -subset 3 -inference false -depth 3 -kernel TreeSubtreesRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,2,4,8,16,32] -kernelParm3 1
+-file BGSsubset3false -subset 3 -inference false -depth 3 -kernel GraphWalksFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32]
+-file BGSsubset3false -subset 3 -inference false -depth 3 -kernel TreeWalks_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32]
+-file BGSsubset3false -subset 3 -inference false -depth 3 -kernel GraphSubtreesFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 1
+-file BGSsubset3false -subset 3 -inference false -depth 3 -kernel GraphSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 1
+-file BGSsubset3false -subset 3 -inference false -depth 3 -kernel TreeSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 1
+-file BGSsubset3true -subset 3 -inference true -depth 3 -kernel TreeWalksRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,2,4,8,16,32]
+-file BGSsubset3true -subset 3 -inference true -depth 3 -kernel TreeSubtreesRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,2,4,8,16,32] -kernelParm3 1
+-file BGSsubset3true -subset 3 -inference true -depth 3 -kernel GraphWalksFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32]
+-file BGSsubset3true -subset 3 -inference true -depth 3 -kernel TreeWalks_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32]
+-file BGSsubset3true -subset 3 -inference true -depth 3 -kernel GraphSubtreesFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 1
+-file BGSsubset3true -subset 3 -inference true -depth 3 -kernel GraphSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 1
+-file BGSsubset3true -subset 3 -inference true -depth 3 -kernel TreeSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 1
+-file BGSsubset4false -subset 4 -inference false -depth 3 -kernel TreeWalksRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,2,4,8,16,32]
+-file BGSsubset4false -subset 4 -inference false -depth 3 -kernel TreeSubtreesRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,2,4,8,16,32] -kernelParm3 1
+-file BGSsubset4false -subset 4 -inference false -depth 3 -kernel GraphWalksFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32]
+-file BGSsubset4false -subset 4 -inference false -depth 3 -kernel TreeWalks_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32]
+-file BGSsubset4false -subset 4 -inference false -depth 3 -kernel GraphSubtreesFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 1
+-file BGSsubset4false -subset 4 -inference false -depth 3 -kernel GraphSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 1
+-file BGSsubset4false -subset 4 -inference false -depth 3 -kernel TreeSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 1
+-file BGSsubset4true -subset 4 -inference true -depth 3 -kernel TreeWalksRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,2,4,8,16,32]
+-file BGSsubset4true -subset 4 -inference true -depth 3 -kernel TreeSubtreesRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,2,4,8,16,32] -kernelParm3 1
+-file BGSsubset4true -subset 4 -inference true -depth 3 -kernel GraphWalksFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32]
+-file BGSsubset4true -subset 4 -inference true -depth 3 -kernel TreeWalks_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32]
+-file BGSsubset4true -subset 4 -inference true -depth 3 -kernel GraphSubtreesFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 1
+-file BGSsubset4true -subset 4 -inference true -depth 3 -kernel GraphSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 1
+-file BGSsubset4true -subset 4 -inference true -depth 3 -kernel TreeSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 1
+-file BGSsubset5false -subset 5 -inference false -depth 3 -kernel TreeWalksRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,2,4,8,16,32]
+-file BGSsubset5false -subset 5 -inference false -depth 3 -kernel TreeSubtreesRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,2,4,8,16,32] -kernelParm3 1
+-file BGSsubset5false -subset 5 -inference false -depth 3 -kernel GraphWalksFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32]
+-file BGSsubset5false -subset 5 -inference false -depth 3 -kernel TreeWalks_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32]
+-file BGSsubset5false -subset 5 -inference false -depth 3 -kernel GraphSubtreesFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 1
+-file BGSsubset5false -subset 5 -inference false -depth 3 -kernel GraphSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 1
+-file BGSsubset5false -subset 5 -inference false -depth 3 -kernel TreeSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 1
+-file BGSsubset5true -subset 5 -inference true -depth 3 -kernel TreeWalksRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,2,4,8,16,32]
+-file BGSsubset5true -subset 5 -inference true -depth 3 -kernel TreeSubtreesRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,2,4,8,16,32] -kernelParm3 1
+-file BGSsubset5true -subset 5 -inference true -depth 3 -kernel GraphWalksFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32]
+-file BGSsubset5true -subset 5 -inference true -depth 3 -kernel TreeWalks_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32]
+-file BGSsubset5true -subset 5 -inference true -depth 3 -kernel GraphSubtreesFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 1
+-file BGSsubset5true -subset 5 -inference true -depth 3 -kernel GraphSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 1
+-file BGSsubset5true -subset 5 -inference true -depth 3 -kernel TreeSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 1
+-file BGSsubset6false -subset 6 -inference false -depth 3 -kernel TreeWalksRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,2,4,8,16,32]
+-file BGSsubset6false -subset 6 -inference false -depth 3 -kernel TreeSubtreesRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,2,4,8,16,32] -kernelParm3 1
+-file BGSsubset6false -subset 6 -inference false -depth 3 -kernel GraphWalksFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32]
+-file BGSsubset6false -subset 6 -inference false -depth 3 -kernel TreeWalks_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32]
+-file BGSsubset6false -subset 6 -inference false -depth 3 -kernel GraphSubtreesFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 1
+-file BGSsubset6false -subset 6 -inference false -depth 3 -kernel GraphSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 1
+-file BGSsubset6false -subset 6 -inference false -depth 3 -kernel TreeSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 1
+-file BGSsubset6true -subset 6 -inference true -depth 3 -kernel TreeWalksRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,2,4,8,16,32]
+-file BGSsubset6true -subset 6 -inference true -depth 3 -kernel TreeSubtreesRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,2,4,8,16,32] -kernelParm3 1
+-file BGSsubset6true -subset 6 -inference true -depth 3 -kernel GraphWalksFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32]
+-file BGSsubset6true -subset 6 -inference true -depth 3 -kernel TreeWalks_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32]
+-file BGSsubset6true -subset 6 -inference true -depth 3 -kernel GraphSubtreesFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 1
+-file BGSsubset6true -subset 6 -inference true -depth 3 -kernel GraphSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 1
+-file BGSsubset6true -subset 6 -inference true -depth 3 -kernel TreeSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 1
+-file BGSsubset7false -subset 7 -inference false -depth 3 -kernel TreeWalksRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,2,4,8,16,32]
+-file BGSsubset7false -subset 7 -inference false -depth 3 -kernel TreeSubtreesRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,2,4,8,16,32] -kernelParm3 1
+-file BGSsubset7false -subset 7 -inference false -depth 3 -kernel GraphWalksFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32]
+-file BGSsubset7false -subset 7 -inference false -depth 3 -kernel TreeWalks_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32]
+-file BGSsubset7false -subset 7 -inference false -depth 3 -kernel GraphSubtreesFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 1
+-file BGSsubset7false -subset 7 -inference false -depth 3 -kernel GraphSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 1
+-file BGSsubset7false -subset 7 -inference false -depth 3 -kernel TreeSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 1
+-file BGSsubset7true -subset 7 -inference true -depth 3 -kernel TreeWalksRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,2,4,8,16,32]
+-file BGSsubset7true -subset 7 -inference true -depth 3 -kernel TreeSubtreesRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,2,4,8,16,32] -kernelParm3 1
+-file BGSsubset7true -subset 7 -inference true -depth 3 -kernel GraphWalksFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32]
+-file BGSsubset7true -subset 7 -inference true -depth 3 -kernel TreeWalks_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32]
+-file BGSsubset7true -subset 7 -inference true -depth 3 -kernel GraphSubtreesFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 1
+-file BGSsubset7true -subset 7 -inference true -depth 3 -kernel GraphSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 1
+-file BGSsubset7true -subset 7 -inference true -depth 3 -kernel TreeSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 1
+-file BGSsubset8false -subset 8 -inference false -depth 3 -kernel TreeWalksRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,2,4,8,16,32]
+-file BGSsubset8false -subset 8 -inference false -depth 3 -kernel TreeSubtreesRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,2,4,8,16,32] -kernelParm3 1
+-file BGSsubset8false -subset 8 -inference false -depth 3 -kernel GraphWalksFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32]
+-file BGSsubset8false -subset 8 -inference false -depth 3 -kernel TreeWalks_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32]
+-file BGSsubset8false -subset 8 -inference false -depth 3 -kernel GraphSubtreesFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 1
+-file BGSsubset8false -subset 8 -inference false -depth 3 -kernel GraphSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 1
+-file BGSsubset8false -subset 8 -inference false -depth 3 -kernel TreeSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 1
+-file BGSsubset8true -subset 8 -inference true -depth 3 -kernel TreeWalksRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,2,4,8,16,32]
+-file BGSsubset8true -subset 8 -inference true -depth 3 -kernel TreeSubtreesRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,2,4,8,16,32] -kernelParm3 1
+-file BGSsubset8true -subset 8 -inference true -depth 3 -kernel GraphWalksFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32]
+-file BGSsubset8true -subset 8 -inference true -depth 3 -kernel TreeWalks_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32]
+-file BGSsubset8true -subset 8 -inference true -depth 3 -kernel GraphSubtreesFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 1
+-file BGSsubset8true -subset 8 -inference true -depth 3 -kernel GraphSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 1
+-file BGSsubset8true -subset 8 -inference true -depth 3 -kernel TreeSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 1
+-file BGSsubset9false -subset 9 -inference false -depth 3 -kernel TreeWalksRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,2,4,8,16,32]
+-file BGSsubset9false -subset 9 -inference false -depth 3 -kernel TreeSubtreesRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,2,4,8,16,32] -kernelParm3 1
+-file BGSsubset9false -subset 9 -inference false -depth 3 -kernel GraphWalksFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32]
+-file BGSsubset9false -subset 9 -inference false -depth 3 -kernel TreeWalks_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32]
+-file BGSsubset9false -subset 9 -inference false -depth 3 -kernel GraphSubtreesFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 1
+-file BGSsubset9false -subset 9 -inference false -depth 3 -kernel GraphSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 1
+-file BGSsubset9false -subset 9 -inference false -depth 3 -kernel TreeSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 1
+-file BGSsubset9true -subset 9 -inference true -depth 3 -kernel TreeWalksRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,2,4,8,16,32]
+-file BGSsubset9true -subset 9 -inference true -depth 3 -kernel TreeSubtreesRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,2,4,8,16,32] -kernelParm3 1
+-file BGSsubset9true -subset 9 -inference true -depth 3 -kernel GraphWalksFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32]
+-file BGSsubset9true -subset 9 -inference true -depth 3 -kernel TreeWalks_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32]
+-file BGSsubset9true -subset 9 -inference true -depth 3 -kernel GraphSubtreesFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 1
+-file BGSsubset9true -subset 9 -inference true -depth 3 -kernel GraphSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 1
+-file BGSsubset9true -subset 9 -inference true -depth 3 -kernel TreeSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 1
+-file BGSsubset10false -subset 10 -inference false -depth 3 -kernel TreeWalksRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,2,4,8,16,32]
+-file BGSsubset10false -subset 10 -inference false -depth 3 -kernel TreeSubtreesRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,2,4,8,16,32] -kernelParm3 1
+-file BGSsubset10false -subset 10 -inference false -depth 3 -kernel GraphWalksFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32]
+-file BGSsubset10false -subset 10 -inference false -depth 3 -kernel TreeWalks_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32]
+-file BGSsubset10false -subset 10 -inference false -depth 3 -kernel GraphSubtreesFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 1
+-file BGSsubset10false -subset 10 -inference false -depth 3 -kernel GraphSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 1
+-file BGSsubset10false -subset 10 -inference false -depth 3 -kernel TreeSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 1
+-file BGSsubset10true -subset 10 -inference true -depth 3 -kernel TreeWalksRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,2,4,8,16,32]
+-file BGSsubset10true -subset 10 -inference true -depth 3 -kernel TreeSubtreesRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,2,4,8,16,32] -kernelParm3 1
+-file BGSsubset10true -subset 10 -inference true -depth 3 -kernel GraphWalksFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32]
+-file BGSsubset10true -subset 10 -inference true -depth 3 -kernel TreeWalks_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32]
+-file BGSsubset10true -subset 10 -inference true -depth 3 -kernel GraphSubtreesFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 1
+-file BGSsubset10true -subset 10 -inference true -depth 3 -kernel GraphSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 1
+-file BGSsubset10true -subset 10 -inference true -depth 3 -kernel TreeSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 1
+-file BGSsubset1false -subset 1 -inference false -depth 3 -kernel TreeSubtreesRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,2,4,8,16,32] -kernelParm3 10000
+-file BGSsubset1false -subset 1 -inference false -depth 3 -kernel GraphSubtreesFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 10000
+-file BGSsubset1false -subset 1 -inference false -depth 3 -kernel GraphSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 10000
+-file BGSsubset1false -subset 1 -inference false -depth 3 -kernel TreeSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 10000
+-file BGSsubset1true -subset 1 -inference true -depth 3 -kernel TreeSubtreesRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,2,4,8,16,32] -kernelParm3 10000
+-file BGSsubset1true -subset 1 -inference true -depth 3 -kernel GraphSubtreesFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 10000
+-file BGSsubset1true -subset 1 -inference true -depth 3 -kernel GraphSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 10000
+-file BGSsubset1true -subset 1 -inference true -depth 3 -kernel TreeSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 10000
+-file BGSsubset2false -subset 2 -inference false -depth 3 -kernel TreeSubtreesRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,2,4,8,16,32] -kernelParm3 10000
+-file BGSsubset2false -subset 2 -inference false -depth 3 -kernel GraphSubtreesFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 10000
+-file BGSsubset2false -subset 2 -inference false -depth 3 -kernel GraphSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 10000
+-file BGSsubset2false -subset 2 -inference false -depth 3 -kernel TreeSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 10000
+-file BGSsubset2true -subset 2 -inference true -depth 3 -kernel TreeSubtreesRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,2,4,8,16,32] -kernelParm3 10000
+-file BGSsubset2true -subset 2 -inference true -depth 3 -kernel GraphSubtreesFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 10000
+-file BGSsubset2true -subset 2 -inference true -depth 3 -kernel GraphSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 10000
+-file BGSsubset2true -subset 2 -inference true -depth 3 -kernel TreeSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 10000
+-file BGSsubset3false -subset 3 -inference false -depth 3 -kernel TreeSubtreesRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,2,4,8,16,32] -kernelParm3 10000
+-file BGSsubset3false -subset 3 -inference false -depth 3 -kernel GraphSubtreesFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 10000
+-file BGSsubset3false -subset 3 -inference false -depth 3 -kernel GraphSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 10000
+-file BGSsubset3false -subset 3 -inference false -depth 3 -kernel TreeSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 10000
+-file BGSsubset3true -subset 3 -inference true -depth 3 -kernel TreeSubtreesRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,2,4,8,16,32] -kernelParm3 10000
+-file BGSsubset3true -subset 3 -inference true -depth 3 -kernel GraphSubtreesFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 10000
+-file BGSsubset3true -subset 3 -inference true -depth 3 -kernel GraphSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 10000
+-file BGSsubset3true -subset 3 -inference true -depth 3 -kernel TreeSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 10000
+-file BGSsubset4false -subset 4 -inference false -depth 3 -kernel TreeSubtreesRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,2,4,8,16,32] -kernelParm3 10000
+-file BGSsubset4false -subset 4 -inference false -depth 3 -kernel GraphSubtreesFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 10000
+-file BGSsubset4false -subset 4 -inference false -depth 3 -kernel GraphSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 10000
+-file BGSsubset4false -subset 4 -inference false -depth 3 -kernel TreeSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 10000
+-file BGSsubset4true -subset 4 -inference true -depth 3 -kernel TreeSubtreesRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,2,4,8,16,32] -kernelParm3 10000
+-file BGSsubset4true -subset 4 -inference true -depth 3 -kernel GraphSubtreesFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 10000
+-file BGSsubset4true -subset 4 -inference true -depth 3 -kernel GraphSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 10000
+-file BGSsubset4true -subset 4 -inference true -depth 3 -kernel TreeSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 10000
+-file BGSsubset5false -subset 5 -inference false -depth 3 -kernel TreeSubtreesRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,2,4,8,16,32] -kernelParm3 10000
+-file BGSsubset5false -subset 5 -inference false -depth 3 -kernel GraphSubtreesFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 10000
+-file BGSsubset5false -subset 5 -inference false -depth 3 -kernel GraphSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 10000
+-file BGSsubset5false -subset 5 -inference false -depth 3 -kernel TreeSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 10000
+-file BGSsubset5true -subset 5 -inference true -depth 3 -kernel TreeSubtreesRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,2,4,8,16,32] -kernelParm3 10000
+-file BGSsubset5true -subset 5 -inference true -depth 3 -kernel GraphSubtreesFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 10000
+-file BGSsubset5true -subset 5 -inference true -depth 3 -kernel GraphSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 10000
+-file BGSsubset5true -subset 5 -inference true -depth 3 -kernel TreeSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 10000
+-file BGSsubset6false -subset 6 -inference false -depth 3 -kernel TreeSubtreesRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,2,4,8,16,32] -kernelParm3 10000
+-file BGSsubset6false -subset 6 -inference false -depth 3 -kernel GraphSubtreesFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 10000
+-file BGSsubset6false -subset 6 -inference false -depth 3 -kernel GraphSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 10000
+-file BGSsubset6false -subset 6 -inference false -depth 3 -kernel TreeSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 10000
+-file BGSsubset6true -subset 6 -inference true -depth 3 -kernel TreeSubtreesRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,2,4,8,16,32] -kernelParm3 10000
+-file BGSsubset6true -subset 6 -inference true -depth 3 -kernel GraphSubtreesFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 10000
+-file BGSsubset6true -subset 6 -inference true -depth 3 -kernel GraphSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 10000
+-file BGSsubset6true -subset 6 -inference true -depth 3 -kernel TreeSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 10000
+-file BGSsubset7false -subset 7 -inference false -depth 3 -kernel TreeSubtreesRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,2,4,8,16,32] -kernelParm3 10000
+-file BGSsubset7false -subset 7 -inference false -depth 3 -kernel GraphSubtreesFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 10000
+-file BGSsubset7false -subset 7 -inference false -depth 3 -kernel GraphSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 10000
+-file BGSsubset7false -subset 7 -inference false -depth 3 -kernel TreeSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 10000
+-file BGSsubset7true -subset 7 -inference true -depth 3 -kernel TreeSubtreesRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,2,4,8,16,32] -kernelParm3 10000
+-file BGSsubset7true -subset 7 -inference true -depth 3 -kernel GraphSubtreesFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 10000
+-file BGSsubset7true -subset 7 -inference true -depth 3 -kernel GraphSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 10000
+-file BGSsubset7true -subset 7 -inference true -depth 3 -kernel TreeSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 10000
+-file BGSsubset8false -subset 8 -inference false -depth 3 -kernel TreeSubtreesRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,2,4,8,16,32] -kernelParm3 10000
+-file BGSsubset8false -subset 8 -inference false -depth 3 -kernel GraphSubtreesFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 10000
+-file BGSsubset8false -subset 8 -inference false -depth 3 -kernel GraphSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 10000
+-file BGSsubset8false -subset 8 -inference false -depth 3 -kernel TreeSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 10000
+-file BGSsubset8true -subset 8 -inference true -depth 3 -kernel TreeSubtreesRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,2,4,8,16,32] -kernelParm3 10000
+-file BGSsubset8true -subset 8 -inference true -depth 3 -kernel GraphSubtreesFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 10000
+-file BGSsubset8true -subset 8 -inference true -depth 3 -kernel GraphSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 10000
+-file BGSsubset8true -subset 8 -inference true -depth 3 -kernel TreeSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 10000
+-file BGSsubset9false -subset 9 -inference false -depth 3 -kernel TreeSubtreesRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,2,4,8,16,32] -kernelParm3 10000
+-file BGSsubset9false -subset 9 -inference false -depth 3 -kernel GraphSubtreesFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 10000
+-file BGSsubset9false -subset 9 -inference false -depth 3 -kernel GraphSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 10000
+-file BGSsubset9false -subset 9 -inference false -depth 3 -kernel TreeSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 10000
+-file BGSsubset9true -subset 9 -inference true -depth 3 -kernel TreeSubtreesRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,2,4,8,16,32] -kernelParm3 10000
+-file BGSsubset9true -subset 9 -inference true -depth 3 -kernel GraphSubtreesFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 10000
+-file BGSsubset9true -subset 9 -inference true -depth 3 -kernel GraphSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 10000
+-file BGSsubset9true -subset 9 -inference true -depth 3 -kernel TreeSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 10000
+-file BGSsubset10false -subset 10 -inference false -depth 3 -kernel TreeSubtreesRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,2,4,8,16,32] -kernelParm3 10000
+-file BGSsubset10false -subset 10 -inference false -depth 3 -kernel GraphSubtreesFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 10000
+-file BGSsubset10false -subset 10 -inference false -depth 3 -kernel GraphSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 10000
+-file BGSsubset10false -subset 10 -inference false -depth 3 -kernel TreeSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 10000
+-file BGSsubset10true -subset 10 -inference true -depth 3 -kernel TreeSubtreesRoot_Approx -kernelParm1 [2,4,6] -kernelParm2 [0,2,4,8,16,32] -kernelParm3 10000
+-file BGSsubset10true -subset 10 -inference true -depth 3 -kernel GraphSubtreesFast_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 10000
+-file BGSsubset10true -subset 10 -inference true -depth 3 -kernel GraphSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 10000
+-file BGSsubset10true -subset 10 -inference true -depth 3 -kernel TreeSubtrees_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2,3] -kernelParm3 [0,2,4,8,16,32] -kernelParm4 10000
+-file BGSsubset1false -subset 1 -inference false -depth 2 -kernel GraphWalks_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2] -kernelParm3 [0,2,4,8,16,32]
+-file BGSsubset1true -subset 1 -inference true -depth 2 -kernel GraphWalks_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2] -kernelParm3 [0,2,4,8,16,32]
+-file BGSsubset2false -subset 2 -inference false -depth 2 -kernel GraphWalks_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2] -kernelParm3 [0,2,4,8,16,32]
+-file BGSsubset2true -subset 2 -inference true -depth 2 -kernel GraphWalks_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2] -kernelParm3 [0,2,4,8,16,32]
+-file BGSsubset3false -subset 3 -inference false -depth 2 -kernel GraphWalks_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2] -kernelParm3 [0,2,4,8,16,32]
+-file BGSsubset3true -subset 3 -inference true -depth 2 -kernel GraphWalks_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2] -kernelParm3 [0,2,4,8,16,32]
+-file BGSsubset4false -subset 4 -inference false -depth 2 -kernel GraphWalks_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2] -kernelParm3 [0,2,4,8,16,32]
+-file BGSsubset4true -subset 4 -inference true -depth 2 -kernel GraphWalks_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2] -kernelParm3 [0,2,4,8,16,32]
+-file BGSsubset5false -subset 5 -inference false -depth 2 -kernel GraphWalks_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2] -kernelParm3 [0,2,4,8,16,32]
+-file BGSsubset5true -subset 5 -inference true -depth 2 -kernel GraphWalks_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2] -kernelParm3 [0,2,4,8,16,32]
+-file BGSsubset6false -subset 6 -inference false -depth 2 -kernel GraphWalks_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2] -kernelParm3 [0,2,4,8,16,32]
+-file BGSsubset6true -subset 6 -inference true -depth 2 -kernel GraphWalks_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2] -kernelParm3 [0,2,4,8,16,32]
+-file BGSsubset7false -subset 7 -inference false -depth 2 -kernel GraphWalks_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2] -kernelParm3 [0,2,4,8,16,32]
+-file BGSsubset7true -subset 7 -inference true -depth 2 -kernel GraphWalks_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2] -kernelParm3 [0,2,4,8,16,32]
+-file BGSsubset8false -subset 8 -inference false -depth 2 -kernel GraphWalks_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2] -kernelParm3 [0,2,4,8,16,32]
+-file BGSsubset8true -subset 8 -inference true -depth 2 -kernel GraphWalks_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2] -kernelParm3 [0,2,4,8,16,32]
+-file BGSsubset9false -subset 9 -inference false -depth 2 -kernel GraphWalks_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2] -kernelParm3 [0,2,4,8,16,32]
+-file BGSsubset9true -subset 9 -inference true -depth 2 -kernel GraphWalks_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2] -kernelParm3 [0,2,4,8,16,32]
+-file BGSsubset10false -subset 10 -inference false -depth 2 -kernel GraphWalks_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2] -kernelParm3 [0,2,4,8,16,32]
+-file BGSsubset10true -subset 10 -inference true -depth 2 -kernel GraphWalks_Approx -kernelParm1 depthTimesTwo -kernelParm2 [1,2] -kernelParm3 [0,2,4,8,16,32]
