@@ -160,9 +160,11 @@ public class CombinedResults {
 	 */
 	public static void main(String[] args) {
 		CombinedResults res = new CombinedResults();
+
 		int splits = 4;
 		
 		res.readDirectory("c:\\jws\\am\\approx\\");
+
 
 		
 		//res.readDirectory("C:\\Users\\Gerben\\Dropbox\\D2S\\workspace_TeX\\JWS\\results_bgs_hubs");
