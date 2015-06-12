@@ -30,10 +30,14 @@ import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphGrap
 import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphGraphListWalkCountKernel;
 import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphGraphListWalkCountKernelMkII;
 import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphRootWalkCountKernel;
+import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphTreeWLSubTreeIDEQKernel;
 import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphTreeWLSubTreeKernel;
+import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphTreeWalkCountIDEQKernelMkII;
 import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphTreeWalkCountKernel;
 import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphTreeWalkCountKernelMkII;
+import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphWLSubTreeIDEQKernel;
 import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphWLSubTreeKernel;
+import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphWalkCountIDEQKernel;
 import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphWalkCountKernel;
 import org.data2semantics.mustard.learners.evaluation.Accuracy;
 import org.data2semantics.mustard.learners.evaluation.EvaluationFunction;
@@ -49,7 +53,7 @@ import org.openrdf.model.Statement;
 import org.openrdf.rio.RDFFormat;
 
 public class ThemeComputationTimeExperiment {
-	private static String BGS_FOLDER =  "C:\\Users\\Gerben\\Dropbox\\data_bgs_ac_uk_ALL";
+	private static String BGS_FOLDER =  "C:\\Users\\Gerben\\onedrive\\d2s\\data_bgs_ac_uk_ALL";
 
 	/**
 	 * @param args
@@ -70,7 +74,7 @@ public class ThemeComputationTimeExperiment {
 		
 		int minClassSize = 0;
 		int maxNumClasses = 100;
-		int[] depths = {2};
+		int[] depths = {3};
 		boolean[] inference = {true};
 
 	
@@ -253,6 +257,40 @@ public class ThemeComputationTimeExperiment {
 			}
 			//*/
 			
+			///* RDF WC	IDEQ
+			for (boolean inf : inference) {
+				resTableRDFWC.newRow("RDF WC IDEQ: " + inf);		 
+				for (int d : depths) {
+
+					List<Result> tempRes = new ArrayList<Result>();
+					for (long sDS : seedsDataset) {
+						Pair<SingleDTGraph, List<Double>> p = cache.get(sDS).get(inf).get(d);
+						SingleDTGraph data = p.getFirst();
+
+						List<DTGraphWalkCountIDEQKernel> kernels = new ArrayList<DTGraphWalkCountIDEQKernel>();	
+						kernels.add(new DTGraphWalkCountIDEQKernel(d*2, d, true));
+
+						GraphFeatureVectorKernelComputationTimeExperiment<SingleDTGraph> exp = new GraphFeatureVectorKernelComputationTimeExperiment<SingleDTGraph>(kernels, data, null);
+
+						exp.run();
+						if (tempRes.isEmpty()) {
+							for (Result res : exp.getResults()) {
+								tempRes.add(res);
+							}
+						} else {
+							for (int i = 0; i < tempRes.size(); i++) {
+								tempRes.get(i).addResult(exp.getResults().get(i));
+							}
+						}
+					}
+
+					for (Result res : tempRes) {
+						resTableRDFWC.addResult(res);
+					}
+				}
+			}
+			//*/
+			
 			///* Tree WC MkII	
 			for (boolean inf : inference) {
 				resTableTreeWCMkII.newRow("Tree WC MkII: " + inf);		 
@@ -285,7 +323,41 @@ public class ThemeComputationTimeExperiment {
 					}
 				}
 			}
-			//*/		
+			//*/	
+			
+			///* Tree WC MkII IDEQ	
+			for (boolean inf : inference) {
+				resTableTreeWCMkII.newRow("Tree WC MkII: " + inf);		 
+				for (int d : depths) {
+
+					List<Result> tempRes = new ArrayList<Result>();
+					for (long sDS : seedsDataset) {
+						Pair<SingleDTGraph, List<Double>> p = cache.get(sDS).get(inf).get(d);
+						SingleDTGraph data = p.getFirst();
+
+						List<DTGraphTreeWalkCountIDEQKernelMkII> kernels = new ArrayList<DTGraphTreeWalkCountIDEQKernelMkII>();	
+						kernels.add(new DTGraphTreeWalkCountIDEQKernelMkII(d*2, d, true));
+
+						GraphFeatureVectorKernelComputationTimeExperiment<SingleDTGraph> exp = new GraphFeatureVectorKernelComputationTimeExperiment<SingleDTGraph>(kernels, data, null);
+
+						exp.run();
+						if (tempRes.isEmpty()) {
+							for (Result res : exp.getResults()) {
+								tempRes.add(res);
+							}
+						} else {
+							for (int i = 0; i < tempRes.size(); i++) {
+								tempRes.get(i).addResult(exp.getResults().get(i));
+							}
+						}
+					}
+
+					for (Result res : tempRes) {
+						resTableTreeWCMkII.addResult(res);
+					}
+				}
+			}
+			//*/
 			
 			///* Regular WL 
 			for (boolean inf : inference) {
@@ -355,6 +427,40 @@ public class ThemeComputationTimeExperiment {
 			}
 			//*/
 			
+			///* RDF WL	IDEQ	
+			for (boolean inf : inference) {
+				resTableRDFWL.newRow("RDF WL IDEQ: " + inf);		 
+				for (int d : depths) {
+
+					List<Result> tempRes = new ArrayList<Result>();
+					for (long sDS : seedsDataset) {
+						Pair<SingleDTGraph, List<Double>> p = cache.get(sDS).get(inf).get(d);
+						SingleDTGraph data = p.getFirst();
+
+						List<DTGraphWLSubTreeIDEQKernel> kernels = new ArrayList<DTGraphWLSubTreeIDEQKernel>();	
+						kernels.add(new DTGraphWLSubTreeIDEQKernel(d*2, d, reverseWL, false, trackPrevNBH, false, true));
+
+						GraphFeatureVectorKernelComputationTimeExperiment<SingleDTGraph> exp = new GraphFeatureVectorKernelComputationTimeExperiment<SingleDTGraph>(kernels, data, null);
+
+						exp.run();
+						if (tempRes.isEmpty()) {
+							for (Result res : exp.getResults()) {
+								tempRes.add(res);
+							}
+						} else {
+							for (int i = 0; i < tempRes.size(); i++) {
+								tempRes.get(i).addResult(exp.getResults().get(i));
+							}
+						}
+					}
+
+					for (Result res : tempRes) {
+						resTableRDFWL.addResult(res);
+					}
+				}
+			}
+			//*/
+			
 			///* Tree WL		
 			for (boolean inf : inference) {
 				resTableTreeWL.newRow("Tree WL: " + inf);		 
@@ -367,6 +473,40 @@ public class ThemeComputationTimeExperiment {
 
 						List<DTGraphTreeWLSubTreeKernel> kernels = new ArrayList<DTGraphTreeWLSubTreeKernel>();	
 						kernels.add(new DTGraphTreeWLSubTreeKernel(d*2, d, reverseWL, false, trackPrevNBH, true));
+
+						GraphFeatureVectorKernelComputationTimeExperiment<SingleDTGraph> exp = new GraphFeatureVectorKernelComputationTimeExperiment<SingleDTGraph>(kernels, data, null);
+
+						exp.run();
+						if (tempRes.isEmpty()) {
+							for (Result res : exp.getResults()) {
+								tempRes.add(res);
+							}
+						} else {
+							for (int i = 0; i < tempRes.size(); i++) {
+								tempRes.get(i).addResult(exp.getResults().get(i));
+							}
+						}
+					}
+
+					for (Result res : tempRes) {
+						resTableTreeWL.addResult(res);
+					}
+				}
+			}
+			//*/
+			
+			///* Tree WL IDEQ		
+			for (boolean inf : inference) {
+				resTableTreeWL.newRow("Tree WL: " + inf);		 
+				for (int d : depths) {
+
+					List<Result> tempRes = new ArrayList<Result>();
+					for (long sDS : seedsDataset) {
+						Pair<SingleDTGraph, List<Double>> p = cache.get(sDS).get(inf).get(d);
+						SingleDTGraph data = p.getFirst();
+
+						List<DTGraphTreeWLSubTreeIDEQKernel> kernels = new ArrayList<DTGraphTreeWLSubTreeIDEQKernel>();	
+						kernels.add(new DTGraphTreeWLSubTreeIDEQKernel(d*2, d, reverseWL, false, trackPrevNBH, false, true));
 
 						GraphFeatureVectorKernelComputationTimeExperiment<SingleDTGraph> exp = new GraphFeatureVectorKernelComputationTimeExperiment<SingleDTGraph>(kernels, data, null);
 

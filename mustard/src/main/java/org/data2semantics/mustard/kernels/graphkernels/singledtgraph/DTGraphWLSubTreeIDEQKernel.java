@@ -36,9 +36,6 @@ public class DTGraphWLSubTreeIDEQKernel implements GraphKernel<SingleDTGraph>, F
 	private Map<DTNode<StringLabel,StringLabel>, Map<DTNode<StringLabel,StringLabel>, Integer>> instanceVertexIndexMap;
 	private Map<DTNode<StringLabel,StringLabel>, Map<DTLink<StringLabel,StringLabel>, Integer>> instanceEdgeIndexMap;
 
-	private Map<DTNode<StringLabel,StringLabel>, Map<DTNode<StringLabel,StringLabel>, Boolean>> instanceVertexIgnoreMap;
-	private Map<DTNode<StringLabel,StringLabel>, Map<DTLink<StringLabel,StringLabel>, Boolean>> instanceEdgeIgnoreMap;
-
 	private DTGraph<StringLabel,StringLabel> rdfGraph;
 	private List<DTNode<StringLabel,StringLabel>> instanceVertices;
 
@@ -153,8 +150,6 @@ public class DTGraphWLSubTreeIDEQKernel implements GraphKernel<SingleDTGraph>, F
 		instanceVertices        = new ArrayList<DTNode<StringLabel,StringLabel>>();
 		instanceVertexIndexMap  = new HashMap<DTNode<StringLabel,StringLabel>, Map<DTNode<StringLabel,StringLabel>, Integer>>();
 		instanceEdgeIndexMap    = new HashMap<DTNode<StringLabel,StringLabel>, Map<DTLink<StringLabel,StringLabel>, Integer>>();
-		instanceVertexIgnoreMap = new HashMap<DTNode<StringLabel,StringLabel>, Map<DTNode<StringLabel,StringLabel>, Boolean>>();
-		instanceEdgeIgnoreMap   = new HashMap<DTNode<StringLabel,StringLabel>, Map<DTLink<StringLabel,StringLabel>, Boolean>>();
 
 		for (DTNode<String,String> oldStartV : instances) {				
 			vertexIndexMap = new HashMap<DTNode<StringLabel,StringLabel>, Integer>();
@@ -176,9 +171,7 @@ public class DTGraphWLSubTreeIDEQKernel implements GraphKernel<SingleDTGraph>, F
 
 			instanceVertexIndexMap.put(startV, vertexIndexMap);
 			instanceEdgeIndexMap.put(startV, edgeIndexMap);
-			instanceVertexIgnoreMap.put(startV, vertexIgnoreMap);
-			instanceEdgeIgnoreMap.put(startV, edgeIgnoreMap);
-
+		
 			frontV = new ArrayList<DTNode<String,String>>();
 			frontV.add(oldStartV);
 
@@ -256,22 +249,11 @@ public class DTGraphWLSubTreeIDEQKernel implements GraphKernel<SingleDTGraph>, F
 			featureVectors[i].setLastIndex(lastIndex);
 
 			vertexIndexMap = instanceVertexIndexMap.get(instances.get(i));
-			vertexIgnoreMap = instanceVertexIgnoreMap.get(instances.get(i));
 			edgeIndexMap = instanceEdgeIndexMap.get(instances.get(i));
-			edgeIgnoreMap = instanceEdgeIgnoreMap.get(instances.get(i));
-
+	
 			for (DTNode<StringLabel,StringLabel> vertex : vertexIndexMap.keySet()) {
 				depth = vertexIndexMap.get(vertex);
-				if ((depth * 2) + 1 == currentIt && !noSubGraphs) {
-				//	for (DTLink<StringLabel,StringLabel> edge : vertex.linksOut()) { // check if one of its children are on ignore
-				//		if (!edgeIgnoreMap.containsKey(edge) || edgeIgnoreMap.get(edge)) {
-							vertexIgnoreMap.put(vertex, true);
-				//			break;
-				//		}
-				//	}
-				}
-
-				if ((!noDuplicateNBH || !vertex.label().isSameAsPrev()) && !vertexIgnoreMap.get(vertex)) { // (depth * 2) >= currentIt
+				if ((!noDuplicateNBH || !vertex.label().isSameAsPrev()) && (noSubGraphs || (depth * 2) >=  currentIt)) { // (depth * 2) >= currentIt
 					index = Integer.parseInt(vertex.label().toString());
 					featureVectors[i].setValue(index, featureVectors[i].getValue(index) + weight);
 				}
@@ -279,13 +261,7 @@ public class DTGraphWLSubTreeIDEQKernel implements GraphKernel<SingleDTGraph>, F
 
 			for (DTLink<StringLabel,StringLabel> edge : edgeIndexMap.keySet()) {
 				depth = edgeIndexMap.get(edge);
-				if ((depth * 2) + 2 == currentIt && !noSubGraphs) {
-				//	if (vertexIgnoreMap.get(edge.to())) {
-						edgeIgnoreMap.put(edge, true);
-				//	}
-				}
-
-				if ((!noDuplicateNBH || !edge.tag().isSameAsPrev()) && !edgeIgnoreMap.get(edge)) { //edge are actually at d*2 - 1 // ((depth * 2)+1) >= currentIt)
+				if ((!noDuplicateNBH || !edge.tag().isSameAsPrev()) && (noSubGraphs || ((depth * 2)+1) >=  currentIt)) { //edge are actually at d*2 - 1 // ((depth * 2)+1) >= currentIt)
 					index = Integer.parseInt(edge.tag().toString());
 					featureVectors[i].setValue(index, featureVectors[i].getValue(index) + weight);
 				}

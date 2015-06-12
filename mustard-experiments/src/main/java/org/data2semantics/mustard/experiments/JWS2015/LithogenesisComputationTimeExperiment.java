@@ -28,10 +28,15 @@ import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFGraphListWalkC
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFHubRemovalWrapperFeatureVectorKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFIntersectionSubTreeKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFRootWalkCountKernel;
+import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFTreeWLSubTreeIDEQKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFTreeWLSubTreeKernel;
+import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFTreeWalkCountIDEQKernelMkII;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFTreeWalkCountKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFTreeWalkCountKernelMkII;
+import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFWLSubTreeIDEQKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFWLSubTreeKernel;
+import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFWalkCountIDEQKernel;
+import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFWalkCountIDEQKernel;
 import org.data2semantics.mustard.kernels.graphkernels.rdfdata.RDFWalkCountKernel;
 import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphGraphListWLSubTreeKernel;
 import org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphTreeWLSubTreeKernel;
@@ -52,7 +57,7 @@ import org.openrdf.model.Statement;
 import org.openrdf.rio.RDFFormat;
 
 public class LithogenesisComputationTimeExperiment {
-	private static String BGS_FOLDER =  "C:\\Users\\Gerben\\Dropbox\\data_bgs_ac_uk_ALL";
+	private static String BGS_FOLDER =  "C:\\Users\\Gerben\\onedrive\\d2s\\data_bgs_ac_uk_ALL";
 
 	/**
 	 * @param args
@@ -260,6 +265,40 @@ public class LithogenesisComputationTimeExperiment {
 			}
 		}
 		//*/
+		
+		///* RDF Walk Count IDEQ
+		for (boolean inf : inference) {			 
+			for (int d : depths) {
+				for (double frac : fractions) {
+					resTable.newRow("RDF Walk Count IDEQ: " + inf);	
+					List<Result> tempRes = new ArrayList<Result>();
+					for (long seed : seeds) {
+						RDFData dataSub = createRandomSubset(data, frac, seed);
+
+						List<RDFWalkCountIDEQKernel> kernels = new ArrayList<RDFWalkCountIDEQKernel>();	
+						kernels.add(new RDFWalkCountIDEQKernel(d*2, d, inf, true));
+
+						GraphKernelComputationTimeExperiment<RDFData> exp = new GraphKernelComputationTimeExperiment<RDFData>(kernels, dataSub, null);
+
+						exp.run();
+
+						if (tempRes.isEmpty()) {
+							for (Result res : exp.getResults()) {
+								tempRes.add(res);
+							}
+						} else {
+							for (int i = 0; i < tempRes.size(); i++) {
+								tempRes.get(i).addResult(exp.getResults().get(i));
+							}
+						}
+					}
+					for (Result res : tempRes) {
+						resTable.addResult(res);
+					}
+				}
+			}
+		}
+		//*/
 
 		///* RDF Tree Walk Count MkII
 		for (boolean inf : inference) {			 
@@ -294,6 +333,40 @@ public class LithogenesisComputationTimeExperiment {
 			}
 		}
 		//*/
+		
+		///* RDF Tree Walk Count MkII IDEQ
+				for (boolean inf : inference) {			 
+					for (int d : depths) {
+						for (double frac : fractions) {
+							resTable.newRow("RDF Tree Walk Count IDEQ MkII: " + inf);	
+							List<Result> tempRes = new ArrayList<Result>();
+							for (long seed : seeds) {
+								RDFData dataSub = createRandomSubset(data, frac, seed);
+
+								List<RDFTreeWalkCountIDEQKernelMkII> kernels = new ArrayList<RDFTreeWalkCountIDEQKernelMkII>();	
+								kernels.add(new RDFTreeWalkCountIDEQKernelMkII(d*2, d, inf, true));
+
+								GraphKernelComputationTimeExperiment<RDFData> exp = new GraphKernelComputationTimeExperiment<RDFData>(kernels, dataSub, null);
+
+								exp.run();
+
+								if (tempRes.isEmpty()) {
+									for (Result res : exp.getResults()) {
+										tempRes.add(res);
+									}
+								} else {
+									for (int i = 0; i < tempRes.size(); i++) {
+										tempRes.get(i).addResult(exp.getResults().get(i));
+									}
+								}
+							}
+							for (Result res : tempRes) {
+								resTable.addResult(res);
+							}
+						}
+					}
+				}
+				//*/
 
 
 		///* Regular WL 
@@ -363,6 +436,40 @@ public class LithogenesisComputationTimeExperiment {
 			}
 		}
 		//*/
+		
+		///* RDF WL IDEQ
+		for (boolean inf : inference) {	 
+			for (int d : depths) {
+				for (double frac : fractions) {
+					resTable.newRow("RDF WL IDEQ: " + inf);	
+					List<Result> tempRes = new ArrayList<Result>();
+					for (long seed : seeds) {
+						RDFData dataSub = createRandomSubset(data, frac, seed);
+
+						List<RDFWLSubTreeIDEQKernel> kernels = new ArrayList<RDFWLSubTreeIDEQKernel>();	
+						kernels.add(new RDFWLSubTreeIDEQKernel(d*2, d, inf, reverseWL, false, trackPrevNBH, false, true));
+
+						GraphKernelComputationTimeExperiment<RDFData> exp = new GraphKernelComputationTimeExperiment<RDFData>(kernels, dataSub, null);
+
+						exp.run();
+
+						if (tempRes.isEmpty()) {
+							for (Result res : exp.getResults()) {
+								tempRes.add(res);
+							}
+						} else {
+							for (int i = 0; i < tempRes.size(); i++) {
+								tempRes.get(i).addResult(exp.getResults().get(i));
+							}
+						}
+					}
+					for (Result res : tempRes) {
+						resTable.addResult(res);
+					}
+				}
+			}
+		}
+		//*/
 
 
 		///* Tree WL 
@@ -376,6 +483,40 @@ public class LithogenesisComputationTimeExperiment {
 
 						List<RDFTreeWLSubTreeKernel> kernels = new ArrayList<RDFTreeWLSubTreeKernel>();	
 						kernels.add(new RDFTreeWLSubTreeKernel(d*2, d, inf, reverseWL, trackPrevNBH, true));
+
+						GraphKernelComputationTimeExperiment<RDFData> exp = new GraphKernelComputationTimeExperiment<RDFData>(kernels, dataSub, null);
+
+						exp.run();
+
+						if (tempRes.isEmpty()) {
+							for (Result res : exp.getResults()) {
+								tempRes.add(res);
+							}
+						} else {
+							for (int i = 0; i < tempRes.size(); i++) {
+								tempRes.get(i).addResult(exp.getResults().get(i));
+							}
+						}
+					}
+					for (Result res : tempRes) {
+						resTable.addResult(res);
+					}
+				}
+			}
+		}
+		//*/
+		
+		///* Tree WL IDEQ
+		for (boolean inf : inference) {	 
+			for (int d : depths) {
+				for (double frac : fractions) {
+					resTable.newRow("RDF WL Tree IDEQ: " + inf);	
+					List<Result> tempRes = new ArrayList<Result>();
+					for (long seed : seeds) {
+						RDFData dataSub = createRandomSubset(data, frac, seed);
+
+						List<RDFTreeWLSubTreeIDEQKernel> kernels = new ArrayList<RDFTreeWLSubTreeIDEQKernel>();	
+						kernels.add(new RDFTreeWLSubTreeIDEQKernel(d*2, d, inf, reverseWL, false, trackPrevNBH, false, true));
 
 						GraphKernelComputationTimeExperiment<RDFData> exp = new GraphKernelComputationTimeExperiment<RDFData>(kernels, dataSub, null);
 

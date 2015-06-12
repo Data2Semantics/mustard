@@ -18,11 +18,12 @@ public class ParamsCreator {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		String filePrefix = "BGSsubset";
+		String filePrefix = "../datasets/AMsubset";
 		String[] subsets = {"1","2","3","4","5","6","7","8","9","10"};
 		String[] infs = {"false","true"};
-		int[] depths = {2};
+		int[] depths = {1};
 		boolean opt = true; //"URIPrefix"
+		String[] kernels = {"TreeBoL", "GraphBoL"};
 		//String[] kernels = {"TreeBoL", "GraphBoL", "TreeWalksRoot", "TreeSubtreesRoot",
 		//		"GraphWalksFast", "TreeWalks",
 		//		"GraphSubtreesFast", "GraphSubtrees", "TreeSubtrees"}; 
@@ -35,15 +36,15 @@ public class ParamsCreator {
 		
 		//String[] kernels = {"TreeSubtreesRoot_Approx", "GraphSubtreesFast_Approx", "GraphSubtrees_Approx", "TreeSubtrees_Approx"}; 
 				
-		String[] kernels = {"GraphWalks_Approx"};
+		//String[] kernels = {"GraphWalks_Approx"};
 		
 
 		for (String subset : subsets) {
 			for (String inf : infs) {
 				for (int depth : depths) {
 					for (String kernel : kernels) {
-						//KernelParms kps = new KernelParms(kernel, depth, opt);
-						KernelParms kps = new KernelParms(kernel, depth, opt, "[0,4,8,16,32,64]", "10000");
+						KernelParms kps = new KernelParms(kernel, depth, opt);
+						//KernelParms kps = new KernelParms(kernel, depth, opt, "[0,4,8,16,32,64]", "10000");
 						
 						for (String kp : kps) {
 							System.out.println("-file " + filePrefix + subset + inf + " -subset " + subset + " -inference " + inf + " -depth " + depth + " " + kp);

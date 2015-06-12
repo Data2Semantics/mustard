@@ -146,7 +146,7 @@ public class CombinedResults {
 	public static void main(String[] args) {
 		CombinedResults res = new CombinedResults();
 
-		res.readDirectory("c:\\jws\\bgs\\regular\\");
+		res.readDirectory("results_litho_V3");
 
 		//res.readDirectory("C:\\Users\\Gerben\\Dropbox\\D2S\\workspace_TeX\\JWS\\results_bgs_hubs");
 		Map<String, ResultsTable> tables = res.generateTables(4);
