@@ -25,7 +25,7 @@ import org.openrdf.rio.Rio;
  */
 public class SubSetCreator {
 	private static final String AM_FOLDER =  "C:\\Users\\Gerben\\Dropbox\\AM_data";
-	private static final String BGS_FOLDER =  "C:\\Users\\Gerben\\Dropbox\\data_bgs_ac_uk_ALL";
+	private static final String BGS_FOLDER =  "C:\\Users\\Gerben\\onedrive\\d2s\\data_bgs_ac_uk_ALL";
 
 	/**
 	 * @param args
@@ -33,18 +33,18 @@ public class SubSetCreator {
 	public static void main(String[] args) {
 		boolean[] inference = {false, true};
 		long[] seeds = {1,2,3,4,5,6,7,8,9,10};
-		double fraction = 0.02;
+		double fraction = 0.05;
 		int minSize = 0;
-		int maxClasses = 15;
-		int depth = 2;
+		int maxClasses = 3;
+		int depth = 3;
 		
-		/*
-		String saveDir = "datasets/BGSsubset";
+		///*
+		String saveDir = "datasets/BGS_small/BGSsubset";
 		String loadDir = BGS_FOLDER;
 		RDFFormat format = RDFFormat.NTRIPLES;
 		//*/
 	
-		///*
+		/*
 		String saveDir = "datasets/AMsubset";
 		String loadDir = AM_FOLDER;
 		RDFFormat format = RDFFormat.TURTLE;
@@ -53,9 +53,9 @@ public class SubSetCreator {
 		
 		RDFDataSet tripleStore = new RDFFileDataSet(loadDir, format);
 
-		//LargeClassificationDataSet ds = new BGSDataSet(tripleStore, "http://data.bgs.ac.uk/ref/Lexicon/hasTheme", 10, 0.05, 5, 3);
+		LargeClassificationDataSet ds = new BGSDataSet(tripleStore, "http://data.bgs.ac.uk/ref/Lexicon/hasTheme", 10, 0.05, 5, 3);
 
-		LargeClassificationDataSet ds = new AMDataSet(tripleStore,  10, 0.05, 5, 3, true);
+		//LargeClassificationDataSet ds = new AMDataSet(tripleStore,  10, 0.05, 5, 3, true);
 
 		
 		for (long seed : seeds) {

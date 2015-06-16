@@ -118,7 +118,7 @@ public class CombinedResults {
 			if (id.contains("Root_") || id.contains("Intersection")) {
 				tableId = "Root" + tableId;
 			}
-
+			
 			if (!tables.containsKey(tableId)) {
 				tables.put(tableId, new ResultsTable());
 			}
@@ -163,7 +163,7 @@ public class CombinedResults {
 
 		int splits = 4;
 		
-		res.readDirectory("c:\\jws\\am\\approx\\");
+		res.readDirectory("c:\\jws\\am\\regular\\");
 
 
 		
@@ -172,7 +172,7 @@ public class CombinedResults {
 
 		CombinedResults res2 = new CombinedResults();
 
-		res2.readDirectory("c:\\jws\\am\\regular_comp\\");
+		res2.readDirectory("c:\\jws\\am\\regular\\");
 		//res2.readDirectory("C:\\Users\\Gerben\\Dropbox\\D2S\\workspace_TeX\\JWS\\results_bgs");
 		Map<String, ResultsTable> tables2 = null;
 		//Map<String, ResultsTable> tables2 = res2.generateTables(splits);
@@ -191,11 +191,17 @@ public class CombinedResults {
 			tables.get(key).setDigits(3);
 			tables.get(key).setShowStdDev(true);
 			tables.get(key).setLatex(true);
+			
+			String key2 = key;
+			
 			//labelless hack
+			key2 = key.replace("blankLabelstrue", "blankLabelsfalse");
+			
+			//leaveRootLabel hack
 			//String key2 = key.substring(0, key.length()-4) + "false";
 
 			if (tables2 != null) {
-				tables.get(key).setCompareTable(tables2.get(key));
+				tables.get(key).setCompareTable(tables2.get(key2));
 			}
 
 			System.out.println(tables.get(key));

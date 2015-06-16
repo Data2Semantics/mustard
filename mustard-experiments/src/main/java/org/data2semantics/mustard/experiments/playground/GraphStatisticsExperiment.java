@@ -12,6 +12,7 @@ import org.data2semantics.mustard.experiments.data.BGSDataSet;
 import org.data2semantics.mustard.experiments.data.BGSLithoDataSet;
 import org.data2semantics.mustard.experiments.data.ClassificationDataSet;
 import org.data2semantics.mustard.experiments.data.LargeClassificationDataSet;
+import org.data2semantics.mustard.experiments.data.MutagDataSet;
 import org.data2semantics.mustard.experiments.data.SubsetDataSet;
 import org.data2semantics.mustard.kernels.data.GraphList;
 import org.data2semantics.mustard.kernels.data.SingleDTGraph;
@@ -41,18 +42,18 @@ public class GraphStatisticsExperiment {
 		//RDFDataSet tripleStore = new RDFFileDataSet(BGS_FOLDER, RDFFormat.NTRIPLES);
 		//ClassificationDataSet ds = new BGSLithoDataSet(tripleStore);
 		
-		//RDFDataSet tripleStore = new RDFFileDataSet("datasets/carcinogenesis.owl", RDFFormat.forFileName("datasets/carcinogenesis.owl"));
-		//ClassificationDataSet ds = new BGSLithoDataSet(tripleStore);
+		RDFDataSet tripleStore = new RDFFileDataSet("datasets/carcinogenesis.owl", RDFFormat.forFileName("datasets/carcinogenesis.owl"));
+		ClassificationDataSet ds = new MutagDataSet(tripleStore);
 
-		//ds.create();
-
-
-
-		//boolean[] inference = {false, true};
-		//int[] depths = {1};
+		ds.create();
 
 
-		/*
+
+		boolean[] inference = {false, true};
+		int[] depths = {1};
+
+
+		
 		for (boolean inf : inference) {
 			for (int depth : depths) {
 
@@ -69,14 +70,15 @@ public class GraphStatisticsExperiment {
 			}
 
 		}
-		*/
 		
+		/*
 		int[] depths = {1};
 
 		String[] subsets = {"datasets/AMsubset1false", "datasets/AMsubset2false", "datasets/AMsubset3false", "datasets/AMsubset4false", 
 				"datasets/AMsubset5false", "datasets/AMsubset6false", "datasets/AMsubset7false",
 				"datasets/AMsubset8false", "datasets/AMsubset9false", "datasets/AMsubset10false"};
 		
+		*/
 		
 		/*
 		String[] subsets = {"datasets/AMsubset1true", "datasets/AMsubset2true", "datasets/AMsubset3true", "datasets/AMsubset4true", 
@@ -94,6 +96,7 @@ public class GraphStatisticsExperiment {
 				//*/
 		
 	
+		/*
 		for (int depth : depths) {
 			GraphList<DTGraph<String,String>> graphs = new GraphList<DTGraph<String,String>>(new ArrayList<DTGraph<String,String>>());
 			GraphList<DTGraph<String,String>> trees = new GraphList<DTGraph<String,String>>(new ArrayList<DTGraph<String,String>>());
@@ -112,6 +115,7 @@ public class GraphStatisticsExperiment {
 			System.out.println("Graph, depth: " + depth + ", " + computeGraphStatistics(graphs));		
 			System.out.println("Tree, depth: " + depth + ", " + computeGraphStatistics(trees));
 		}
+		*/
 	}
 
 	private static String computeGraphStatistics(GraphList<DTGraph<String,String>> graphs) {

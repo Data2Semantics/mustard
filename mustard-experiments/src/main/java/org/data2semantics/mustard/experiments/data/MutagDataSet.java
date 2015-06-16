@@ -42,8 +42,9 @@ public class MutagDataSet implements ClassificationDataSet {
 
 		Map<Value, Double> labelMap = new HashMap<Value,Double>();
 		target = EvaluationUtils.createTarget(labels, labelMap);
-
+		
 		System.out.println("Label mapping: " + labelMap);
+		System.out.println("Class count: " + EvaluationUtils.computeClassCounts(target));
 
 		data = new RDFData(tripleStore, instances, blackList);
 		
