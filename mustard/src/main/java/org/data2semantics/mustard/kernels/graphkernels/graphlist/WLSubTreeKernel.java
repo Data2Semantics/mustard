@@ -23,22 +23,28 @@ import org.nodes.LightDTGraph;
 
 
 /**
- * Class implementing the Weisfeiler-Lehman graph kernel for DTGraphs
+ * Class implementing the Weisfeiler-Lehman graph kernel for Directed vertex and edge labelled graphs (i.e. DTGraphs)
+ * - iterations, determines the number of iterations of the WL algorithm, note that it takes a label 2 iterations from vertex to vertex, since edges also have labels
+ * - reverse, determines the direction that the labels 'travel' along the edges. When reverse=true, they go in the opposite direction of the direction of the edge.
+ * 			  This is however the logical direction since the algorithm now determines subtrees in the graphs.
+ * - noDuplicateSubtrees, two different iterations of the WL algorithm can give a different label to the same subtree, counting the same subtree twice, setting this to true prevents this
+ * - normalize, if true, the kernel/featurevectors are normalized
  * 
- * @author Gerben *
+ * 
+ * @author Gerben s
  */
 public class WLSubTreeKernel implements GraphKernel<GraphList<DTGraph<String,String>>>, FeatureVectorKernel<GraphList<DTGraph<String,String>>>, ComputationTimeTracker, FeatureInspector {
 	private int iterations;
 	protected boolean normalize;
 	private boolean reverse;
-	private boolean trackPrevNBH;
+	private boolean noDuplicateSubtrees;
 	private long compTime;
 	
 	private Map<String,String> dict;
 
-	public WLSubTreeKernel(int iterations, boolean reverse, boolean trackPrevNBH, boolean normalize) {
+	public WLSubTreeKernel(int iterations, boolean reverse, boolean noDuplicateSubtrees, boolean normalize) {
 		this.reverse = reverse;
-		this.trackPrevNBH = trackPrevNBH;
+		this.noDuplicateSubtrees = noDuplicateSubtrees;
 		this.normalize = normalize;
 		this.iterations = iterations;
 	}
@@ -66,7 +72,7 @@ public class WLSubTreeKernel implements GraphKernel<GraphList<DTGraph<String,Str
 			featureVectors[i] = new SparseVector();
 		}
 
-		WeisfeilerLehmanIterator<DTGraph<StringLabel,StringLabel>> wl = new WeisfeilerLehmanDTGraphIterator(reverse, trackPrevNBH);
+		WeisfeilerLehmanIterator<DTGraph<StringLabel,StringLabel>> wl = new WeisfeilerLehmanDTGraphIterator(reverse, noDuplicateSubtrees);
 
 		long tic = System.currentTimeMillis();
 		

@@ -25,8 +25,13 @@ import org.nodes.LightDTGraph;
  * This class implements a WL kernel directly on an RDF graph. The difference with a normal WL kernel is that subgraphs are not 
  * explicitly extracted. However we use the idea of subgraph implicitly by tracking for each vertex/edge the distance from an instance vertex.
  * For one thing, this leads to the fact that 1 black list is applied to the entire RDF graph, instead of 1 (small) blacklist per graph. 
+ * See also {@link WLSubTreeKernel}
  * 
- *
+ * - iterations, the number of iterations of the WL algorithm
+ * - depth, the depth of the neighborhoods of the instance nodes
+ * - reverse, which directions the labels travel (reverse=true is the natural direction)
+ * - noDuplicateSubtrees, if true, different labels describing the same subtree (in different iterations) will not occur
+ * - normalize, whether the kernel/featurevectors is/are normalized
  * 
  * @author Gerben
  *
