@@ -148,10 +148,10 @@ public class LithogenesisExperiment {
 				List<RDFRootWLSubTreeKernel> kernels = new ArrayList<RDFRootWLSubTreeKernel>();	
 
 				if (depthTimesTwo) {
-					kernels.add(new RDFRootWLSubTreeKernel(d*2, inf, false, true));
+					kernels.add(new RDFRootWLSubTreeKernel(d*2, inf, true));
 				} else {
 					for (int dd : iterationsWL) {
-						kernels.add(new RDFRootWLSubTreeKernel(dd, inf, false, true));
+						kernels.add(new RDFRootWLSubTreeKernel(dd, inf, true));
 					}
 				}
 
@@ -237,11 +237,11 @@ public class LithogenesisExperiment {
 				List<WLSubTreeKernel> kernels = new ArrayList<WLSubTreeKernel>();
 
 				if (depthTimesTwo) {
-					WLSubTreeKernel kernel = new WLSubTreeKernel(d*2, reverseWL, true);			
+					WLSubTreeKernel kernel = new WLSubTreeKernel(d*2, reverseWL, false, true);			
 					kernels.add(kernel);
 				} else {
 					for (int dd : iterationsWL) {
-						WLSubTreeKernel kernel = new WLSubTreeKernel(dd, reverseWL, true);			
+						WLSubTreeKernel kernel = new WLSubTreeKernel(dd, reverseWL, false, true);			
 						kernels.add(kernel);
 					}
 				}

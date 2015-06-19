@@ -9,5 +9,11 @@ package org.data2semantics.mustard.kernels.data;
  *
  */
 public interface GraphData {
+	
+	/**
+	 * Indicates how many instances there are in the graph data, in terms of the learning task
+	 * 
+	 * @return
+	 */
 	public int numInstances();
 }

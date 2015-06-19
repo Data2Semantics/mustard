@@ -19,11 +19,6 @@ import org.nodes.UNode;
 
 /**
  * Class implementing the Weisfeiler-Lehman graph kernel for general Undirected graphs.
- * The current implementation can be made more efficient, since the compute function for test examples recomputes the label dictionary, instead
- * of reusing the one created during training. This makes the applicability of the implementation slightly more general.
- * 
- * TODO include a boolean for saving the labelDict to speed up computation of the kernel in the test phase.
- * 
  * 
  * @author Gerben
  *

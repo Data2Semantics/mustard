@@ -121,7 +121,7 @@ public class ThemeExperiment {
 
 
 					List<DTGraphWLSubTreeKernel> kernelsBaseline = new ArrayList<DTGraphWLSubTreeKernel>();	
-					kernelsBaseline.add(new DTGraphWLSubTreeKernel(d*2, d, reverseWL, false, false, true));
+					kernelsBaseline.add(new DTGraphWLSubTreeKernel(d*2, d, reverseWL, false, true));
 
 					//Collections.shuffle(target);
 					SimpleGraphFeatureVectorKernelExperiment<SingleDTGraph> exp = new SimpleGraphFeatureVectorKernelExperiment<SingleDTGraph>(kernelsBaseline, data, target, svmParms, seeds, evalFuncs);

@@ -215,10 +215,10 @@ public class CategoryExperiment {
 					List<DTGraphRootWLSubTreeKernel> kernels = new ArrayList<DTGraphRootWLSubTreeKernel>();	
 
 					if (depthTimesTwo) {
-						kernels.add(new DTGraphRootWLSubTreeKernel(d*2, false, true));
+						kernels.add(new DTGraphRootWLSubTreeKernel(d*2, true));
 					} else {
 						for (int dd : pathDepths) {
-							kernels.add(new DTGraphRootWLSubTreeKernel(dd, false, true));
+							kernels.add(new DTGraphRootWLSubTreeKernel(dd, true));
 						}
 					}
 
@@ -348,10 +348,10 @@ public class CategoryExperiment {
 					List<WLSubTreeKernel> kernels = new ArrayList<WLSubTreeKernel>();
 
 					if (depthTimesTwo) {
-						kernels.add(new WLSubTreeKernel(d*2, reverseWL, true));
+						kernels.add(new WLSubTreeKernel(d*2, reverseWL, false, true));
 					} else {
 						for (int dd : pathDepths) {
-							kernels.add(new WLSubTreeKernel(dd, reverseWL, true));
+							kernels.add(new WLSubTreeKernel(dd, reverseWL, false, true));
 						}
 					}	
 				

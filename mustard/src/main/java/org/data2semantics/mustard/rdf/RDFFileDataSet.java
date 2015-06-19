@@ -6,9 +6,9 @@ import java.io.FileFilter;
 import org.openrdf.rio.RDFFormat;
 
 
-public class RDFFileDataSet extends RDFSingleDataSet 
-{
-	
+public class RDFFileDataSet extends RDFSingleDataSet {	
+	private static final long serialVersionUID = 8578119583094453090L;
+
 	public RDFFileDataSet(String filename, RDFFormat fileFormat) {
 			this(new File(filename), fileFormat);
 	}

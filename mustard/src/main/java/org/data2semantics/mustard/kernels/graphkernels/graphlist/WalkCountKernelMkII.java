@@ -18,27 +18,21 @@ import org.nodes.LightDTGraph;
 
 
 /**
- *
+ * Another implementation of the WalkCountKernel (hence the MkII) using a different strategy to iterate over the walks. This strategy is similar to WL algorithm.
  * 
  * @author Gerben *
  */
 public class WalkCountKernelMkII implements GraphKernel<GraphList<DTGraph<String,String>>>, FeatureVectorKernel<GraphList<DTGraph<String,String>>>, ComputationTimeTracker {
-	private int depth;
+	private int pathLength;
 	protected boolean normalize;
 	private long compTime;
 	private Map<String, Integer> pathDict;
 	private Map<String, Integer> labelDict;
 
 
-	/**
-	 * Construct a PathCountKernel
-	 * 
-	 * @param iterations
-	 * @param normalize
-	 */
-	public WalkCountKernelMkII(int depth, boolean normalize) {
+	public WalkCountKernelMkII(int pathLength, boolean normalize) {
 		this.normalize = normalize;
-		this.depth = depth;
+		this.pathLength = pathLength;
 	}	
 
 	public WalkCountKernelMkII(int depth) {
@@ -102,7 +96,7 @@ public class WalkCountKernelMkII implements GraphKernel<GraphList<DTGraph<String
 
 
 		// loop to create longer and longer paths
-		for (int j = 0; j < depth; j++) {
+		for (int j = 0; j < pathLength; j++) {
 			for (int i = 0; i < featureVectors.length; i++) {
 
 				// Build new paths

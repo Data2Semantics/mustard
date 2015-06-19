@@ -20,10 +20,10 @@ public class DTGraphGraphListWLSubTreeKernel implements GraphKernel<SingleDTGrap
 	private long compTime;
 	private WLSubTreeKernel kernel;
 
-	public DTGraphGraphListWLSubTreeKernel(int iterations, int depth, boolean reverse, boolean trackPrevNBH, boolean normalize) {
+	public DTGraphGraphListWLSubTreeKernel(int iterations, int depth, boolean reverse, boolean noDuplicateSubtrees, boolean normalize) {
 		this.depth = depth;
 		
-		kernel = new WLSubTreeKernel(iterations, reverse, trackPrevNBH, normalize);	
+		kernel = new WLSubTreeKernel(iterations, reverse, noDuplicateSubtrees, normalize);	
 	}
 
 	public String getLabel() {

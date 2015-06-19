@@ -138,7 +138,7 @@ public class ComputationTimeLargeExperiment {
 						SingleDTGraph data = p.getFirst();
 
 						List<DTGraphWLSubTreeKernel> kernels = new ArrayList<DTGraphWLSubTreeKernel>();	
-						kernels.add(new DTGraphWLSubTreeKernel(0, d, reverseWL, false, trackPrevNBH, true));
+						kernels.add(new DTGraphWLSubTreeKernel(0, d, reverseWL, trackPrevNBH, true));
 
 						GraphFeatureVectorKernelComputationTimeExperiment<SingleDTGraph> exp = new GraphFeatureVectorKernelComputationTimeExperiment<SingleDTGraph>(kernels, data, null);
 
@@ -172,7 +172,7 @@ public class ComputationTimeLargeExperiment {
 						SingleDTGraph data = p.getFirst();
 
 						List<DTGraphTreeWLSubTreeKernel> kernels = new ArrayList<DTGraphTreeWLSubTreeKernel>();	
-						kernels.add(new DTGraphTreeWLSubTreeKernel(0, d, reverseWL, false, trackPrevNBH, true));
+						kernels.add(new DTGraphTreeWLSubTreeKernel(0, d, reverseWL, trackPrevNBH, true));
 
 						GraphFeatureVectorKernelComputationTimeExperiment<SingleDTGraph> exp = new GraphFeatureVectorKernelComputationTimeExperiment<SingleDTGraph>(kernels, data, null);
 
@@ -379,7 +379,7 @@ public class ComputationTimeLargeExperiment {
 						SingleDTGraph data = p.getFirst();
 
 						List<DTGraphWLSubTreeKernel> kernels = new ArrayList<DTGraphWLSubTreeKernel>();	
-						kernels.add(new DTGraphWLSubTreeKernel(d*2, d, reverseWL, false, trackPrevNBH, true));
+						kernels.add(new DTGraphWLSubTreeKernel(d*2, d, reverseWL, trackPrevNBH, true));
 
 						GraphFeatureVectorKernelComputationTimeExperiment<SingleDTGraph> exp = new GraphFeatureVectorKernelComputationTimeExperiment<SingleDTGraph>(kernels, data, null);
 
@@ -413,7 +413,7 @@ public class ComputationTimeLargeExperiment {
 						SingleDTGraph data = p.getFirst();
 
 						List<DTGraphTreeWLSubTreeKernel> kernels = new ArrayList<DTGraphTreeWLSubTreeKernel>();	
-						kernels.add(new DTGraphTreeWLSubTreeKernel(d*2, d, reverseWL, false, trackPrevNBH, true));
+						kernels.add(new DTGraphTreeWLSubTreeKernel(d*2, d, reverseWL, trackPrevNBH, true));
 
 						GraphFeatureVectorKernelComputationTimeExperiment<SingleDTGraph> exp = new GraphFeatureVectorKernelComputationTimeExperiment<SingleDTGraph>(kernels, data, null);
 

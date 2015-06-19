@@ -43,13 +43,11 @@ public class DTGraphWLSubTreeGeoProbApproxKernel implements GraphKernel<SingleDT
 	private double mean;
 	private Map<Integer, Double> probs;
 
-	private double depthDiffWeight;
-
 	private Map<String,Integer> labelFreq;
 
 	private long compTime;
 
-	public DTGraphWLSubTreeGeoProbApproxKernel(int iterations, int depth, double mean, double depthDiffWeight, int[] maxPrevNBHs, int[] maxLabelCards, int[] minFreqs, boolean normalize) {
+	public DTGraphWLSubTreeGeoProbApproxKernel(int iterations, int depth, double mean, int[] maxPrevNBHs, int[] maxLabelCards, int[] minFreqs, boolean normalize) {
 		this.normalize = normalize;
 		this.depth = depth;
 		this.iterations = iterations;
@@ -57,7 +55,6 @@ public class DTGraphWLSubTreeGeoProbApproxKernel implements GraphKernel<SingleDT
 		this.maxLabelCards = maxLabelCards;
 		this.minFreqs = minFreqs;
 		this.mean = mean;
-		this.depthDiffWeight = depthDiffWeight;
 	}
 
 	public String getLabel() {
@@ -239,7 +236,7 @@ public class DTGraphWLSubTreeGeoProbApproxKernel implements GraphKernel<SingleDT
 			Set<DTNode<ApproxStringLabel,ApproxStringLabel>> seenNodes = new HashSet<DTNode<ApproxStringLabel,ApproxStringLabel>>();
 			Set<DTLink<ApproxStringLabel,ApproxStringLabel>> seenLinks = new HashSet<DTLink<ApproxStringLabel,ApproxStringLabel>>();
 			
-			featureVectors[i].setLastIndex((lastIndex * (this.depth+1)) + this.depth);
+			featureVectors[i].setLastIndex(lastIndex);
 
 			// process inst i
 			setFV(featureVectors[i], instances.get(i).label().getIterations(), 0);
@@ -283,11 +280,7 @@ public class DTGraphWLSubTreeGeoProbApproxKernel implements GraphKernel<SingleDT
 			if (!s.equals("") && !prev.contains(s)) { // check for previous NBH and if the label is empty, since empty means do nothing
 				int index = Integer.parseInt(s);	
 				double weight = getProb(veDepth + it);
-				for (int j = 0; j <= this.depth; j++) {
-					int index2 = (index * (this.depth+1)) + j;
-					double weight2 = weight / Math.pow(depthDiffWeight,Math.abs(j-(veDepth/2.0))); // farther away depths get lower weight, the distance is abs(j-depth)
-					fv.setValue(index2, fv.getValue(index2) + weight2);
-				}
+				fv.setValue(index, fv.getValue(index) + weight);
 				prev.add(s);
 			}
 			it++;

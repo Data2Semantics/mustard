@@ -12,6 +12,7 @@ import org.openrdf.model.Value;
 import org.openrdf.repository.sparql.SPARQLRepository;
 
 public class RDFSparqlDataSet extends RDFSingleDataSet {
+	private static final long serialVersionUID = -4044064372906037138L;
 	private List<String> nameSpaces;
 	private File logFile;
 	private boolean fake; // use this to test of things work, by writing the potential subjects to a logFile

@@ -11,6 +11,7 @@ import org.openrdf.model.URI;
 import org.openrdf.model.Value;
 
 public class RDFMultiDataSet extends RDFDataSet {
+	private static final long serialVersionUID = 5959426528335298053L;
 	private List<RDFDataSet> datasets;
 	
 	public RDFMultiDataSet() {

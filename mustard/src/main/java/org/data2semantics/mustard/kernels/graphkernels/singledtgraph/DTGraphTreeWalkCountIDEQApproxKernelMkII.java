@@ -334,7 +334,6 @@ public class DTGraphTreeWalkCountIDEQApproxKernelMkII implements GraphKernel<Sin
 	private void computePathFreqs(DTGraph<PathStringLabel,PathStringLabel> graph, List<DTNode<PathStringLabel,PathStringLabel>> instances, int currentIt) {
 		List<Pair<DTNode<PathStringLabel,PathStringLabel>,Integer>> vertexIndexMap;
 		List<Pair<DTLink<PathStringLabel,PathStringLabel>,Integer>> edgeIndexMap;
-		List<String> labels;
 
 		// Build a new label Frequencies map
 		pathFreq = new HashMap<String, Integer>();

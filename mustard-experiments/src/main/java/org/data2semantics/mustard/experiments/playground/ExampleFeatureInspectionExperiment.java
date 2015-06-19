@@ -53,7 +53,7 @@ public class ExampleFeatureInspectionExperiment {
 		for (boolean inf : inference) {
 			for (int d : depths) {
 				List<RDFWLSubTreeKernel> kernels = new ArrayList<RDFWLSubTreeKernel>();	
-				kernels.add(new RDFWLSubTreeKernel(d*2, d, inf, reverseWL, false, true, true));
+				kernels.add(new RDFWLSubTreeKernel(d*2, d, inf, reverseWL, true, true));
 
 				FeatureInspectionExperiment<RDFData,RDFWLSubTreeKernel> exp = new FeatureInspectionExperiment<RDFData,RDFWLSubTreeKernel>(kernels, data, target, svmParms, maxFeatures);
 				exp.run();

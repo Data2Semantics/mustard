@@ -5,6 +5,7 @@ import java.io.Serializable;
 import org.data2semantics.mustard.learners.Prediction;
 
 public class SingleClassAccuracy implements EvaluationFunction, Serializable {
+	private static final long serialVersionUID = -7472116182091479284L;
 	private double clazz;
 	
 	public SingleClassAccuracy(double clazz) {

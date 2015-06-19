@@ -14,6 +14,7 @@ import org.openrdf.model.Statement;
  *
  */
 public class RDFData implements GraphData, Serializable {
+	private static final long serialVersionUID = -6267540751250144084L;
 	private RDFDataSet dataset;
 	private List<Resource> instances;
 	private List<Statement> blackList;

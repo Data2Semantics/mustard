@@ -13,8 +13,15 @@ import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
 
-public abstract class RDFDataSet implements Serializable
-{
+
+/**
+ * Abstract class that defines an RDF dataset with some necessary methods
+ * 
+ * @author Gerben
+ *
+ */
+public abstract class RDFDataSet implements Serializable {
+	private static final long serialVersionUID = -1478501093710185561L;
 	private String label;
 
 	public RDFDataSet() {

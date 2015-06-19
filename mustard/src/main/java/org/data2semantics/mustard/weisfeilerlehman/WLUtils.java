@@ -5,6 +5,14 @@ import java.util.Map;
 public class WLUtils {
 	
 	
+	
+	/**
+	 * Function to get a string representation of the subtree described by the given index 
+	 * 
+	 * @param reverseDict
+	 * @param index
+	 * @return
+	 */
 	public static String getFeatureDecription(Map<String,String> reverseDict, int index) {
 		return getFeatureDescriptionRec(reverseDict, Integer.toString(index), false);
 	}

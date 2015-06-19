@@ -183,7 +183,6 @@ public class DTGraphTreeWalkCountKernel implements GraphKernel<SingleDTGraph>, F
 			instanceVertices.add(null);
 		}
 
-		LightDTGraph<String,String> newGraph = new LightDTGraph<String,String>();
 		for (DTNode<String,String> vertex : graph.nodes()) {
 			if (!labelDict.containsKey(vertex.label())) {
 				labelDict.put(vertex.label(), labelDict.size());
@@ -191,9 +190,9 @@ public class DTGraphTreeWalkCountKernel implements GraphKernel<SingleDTGraph>, F
 			String lab = "_" + Integer.toString(labelDict.get(vertex.label()));
 
 			if (instanceIndexMap.containsKey(vertex)) {
-				instanceVertices.set(instanceIndexMap.get(vertex), newGraph.add(lab));
+				instanceVertices.set(instanceIndexMap.get(vertex), rdfGraph.add(lab));
 			} else {
-				newGraph.add(lab);
+				rdfGraph.add(lab);
 			}
 
 
@@ -204,7 +203,7 @@ public class DTGraphTreeWalkCountKernel implements GraphKernel<SingleDTGraph>, F
 			}
 			String lab = "_" + Integer.toString(labelDict.get(edge.tag()));
 
-			newGraph.nodes().get(edge.from().index()).connect(newGraph.nodes().get(edge.to().index()), lab); // ?
+			rdfGraph.nodes().get(edge.from().index()).connect(rdfGraph.nodes().get(edge.to().index()), lab); // ?
 		}	
 	}
 

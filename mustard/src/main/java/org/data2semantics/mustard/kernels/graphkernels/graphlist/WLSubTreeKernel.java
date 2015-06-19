@@ -43,26 +43,9 @@ public class WLSubTreeKernel implements GraphKernel<GraphList<DTGraph<String,Str
 		this.iterations = iterations;
 	}
 
-	public WLSubTreeKernel(int iterations, boolean reverse, boolean normalize) {
-		this(iterations, reverse, false, normalize);
-	}
-
-
-	/**
-	 * Construct a WLSubTreeKernel. 
-	 * 
-	 * @param iterations
-	 * @param normalize
-	 */
 	public WLSubTreeKernel(int iterations, boolean normalize) {
-		this(iterations, false, false, normalize);
+		this(iterations, true, true, normalize);
 	}	
-
-
-	public WLSubTreeKernel(int iterations) {
-		this(iterations, true);
-	}
-
 
 	public String getLabel() {
 		return KernelUtils.createLabel(this);		

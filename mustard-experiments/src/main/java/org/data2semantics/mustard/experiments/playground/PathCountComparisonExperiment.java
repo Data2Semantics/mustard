@@ -197,7 +197,7 @@ public class PathCountComparisonExperiment {
 			List<RDFRootWLSubTreeKernel> kernelsWL = new ArrayList<RDFRootWLSubTreeKernel>();	
 
 			for (int dd : pathDepths) {
-				kernelsWL.add(new RDFRootWLSubTreeKernel(dd, inference, false, true));
+				kernelsWL.add(new RDFRootWLSubTreeKernel(dd, inference, true));
 			}
 	
 			//Collections.shuffle(target);

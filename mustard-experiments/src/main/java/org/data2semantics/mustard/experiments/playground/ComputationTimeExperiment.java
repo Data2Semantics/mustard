@@ -112,7 +112,7 @@ public class ComputationTimeExperiment {
 						RDFData dataSub = createRandomSubset(data, frac, seed);
 
 						List<RDFWLSubTreeKernel> kernels = new ArrayList<RDFWLSubTreeKernel>();	
-						kernels.add(new RDFWLSubTreeKernel(d*2, d, inf, reverseWL, false, trackPrevNBH, true));
+						kernels.add(new RDFWLSubTreeKernel(d*2, d, inf, reverseWL, trackPrevNBH, true));
 
 						GraphKernelComputationTimeExperiment<RDFData> exp = new GraphKernelComputationTimeExperiment<RDFData>(kernels, dataSub, null);
 
@@ -146,7 +146,7 @@ public class ComputationTimeExperiment {
 						RDFData dataSub = createRandomSubset(data, frac, seed);
 
 						List<RDFWLSubTreeKernel> kernels = new ArrayList<RDFWLSubTreeKernel>();	
-						kernels.add(new RDFWLSubTreeKernel(0, d, inf, reverseWL, false, trackPrevNBH, true));
+						kernels.add(new RDFWLSubTreeKernel(0, d, inf, reverseWL, trackPrevNBH, true));
 
 						GraphKernelComputationTimeExperiment<RDFData> exp = new GraphKernelComputationTimeExperiment<RDFData>(kernels, dataSub, null);
 
@@ -180,7 +180,7 @@ public class ComputationTimeExperiment {
 						RDFData dataSub = createRandomSubset(data, frac, seed);
 
 						List<RDFTreeWLSubTreeKernel> kernels = new ArrayList<RDFTreeWLSubTreeKernel>();	
-						kernels.add(new RDFTreeWLSubTreeKernel(0, d, inf, reverseWL, false, trackPrevNBH, true));
+						kernels.add(new RDFTreeWLSubTreeKernel(0, d, inf, reverseWL, trackPrevNBH, true));
 
 						GraphKernelComputationTimeExperiment<RDFData> exp = new GraphKernelComputationTimeExperiment<RDFData>(kernels, dataSub, null);
 
@@ -388,7 +388,7 @@ public class ComputationTimeExperiment {
 						RDFData dataSub = createRandomSubset(data, frac, seed);
 
 						List<RDFWLSubTreeKernel> kernels = new ArrayList<RDFWLSubTreeKernel>();	
-						kernels.add(new RDFWLSubTreeKernel(d*2, d, inf, reverseWL, false, trackPrevNBH, true));
+						kernels.add(new RDFWLSubTreeKernel(d*2, d, inf, reverseWL, trackPrevNBH, true));
 
 						GraphKernelComputationTimeExperiment<RDFData> exp = new GraphKernelComputationTimeExperiment<RDFData>(kernels, dataSub, null);
 

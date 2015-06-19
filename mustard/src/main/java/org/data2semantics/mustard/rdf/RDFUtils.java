@@ -25,6 +25,13 @@ import org.openrdf.model.Statement;
 import org.openrdf.model.ValueFactory;
 import org.openrdf.model.impl.ValueFactoryImpl;
 
+
+/**
+ * Utility functions to go from RDF to graphs
+ * 
+ * @author Gerben
+ *
+ */
 public class RDFUtils {
 	// TODO replace these with an Enum
 	public static final int NO_LITERALS = 1;

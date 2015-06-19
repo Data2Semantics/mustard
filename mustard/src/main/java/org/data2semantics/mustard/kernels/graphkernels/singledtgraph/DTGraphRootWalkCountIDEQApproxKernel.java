@@ -15,7 +15,6 @@ import org.data2semantics.mustard.kernels.data.SingleDTGraph;
 import org.data2semantics.mustard.kernels.graphkernels.FeatureVectorKernel;
 import org.data2semantics.mustard.kernels.graphkernels.GraphKernel;
 import org.data2semantics.mustard.utils.WalkCountUtils;
-import org.data2semantics.mustard.weisfeilerlehman.ApproxStringLabel;
 import org.nodes.DTGraph;
 import org.nodes.DTLink;
 import org.nodes.DTNode;
@@ -351,7 +350,6 @@ public class DTGraphRootWalkCountIDEQApproxKernel implements GraphKernel<SingleD
 	private void computePathFreqs(DTGraph<PathStringLabel,PathStringLabel> graph, List<DTNode<PathStringLabel,PathStringLabel>> instances, int currentIt) {
 		Map<DTNode<PathStringLabel,PathStringLabel>, Integer> vertexIndexMap;
 		Map<DTLink<PathStringLabel,PathStringLabel>, Integer> edgeIndexMap;
-		List<String> labels;
 
 		// Build a new label Frequencies map
 		pathFreq = new HashMap<String, Integer>();

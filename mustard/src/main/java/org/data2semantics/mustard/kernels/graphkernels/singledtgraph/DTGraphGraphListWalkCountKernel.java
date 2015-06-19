@@ -17,11 +17,6 @@ import org.data2semantics.mustard.rdf.RDFUtils;
 import org.nodes.DTGraph;
 
 /**
- * This class implements a WL kernel directly on an RDF graph. The difference with a normal WL kernel is that subgraphs are not 
- * explicitly extracted. However we use the idea of subgraph implicitly by tracking for each vertex/edge the distance from an instance vertex.
- * For one thing, this leads to the fact that 1 black list is applied to the entire RDF graph, instead of 1 (small) blacklist per graph. 
- * 
- *
  * 
  * @author Gerben
  *

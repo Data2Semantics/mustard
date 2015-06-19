@@ -105,7 +105,7 @@ public class LithogenesisComputationTimeExperiment {
 						RDFData dataSub = createRandomSubset(data, frac, seed);
 
 						List<RDFWLSubTreeKernel> kernels = new ArrayList<RDFWLSubTreeKernel>();	
-						kernels.add(new RDFWLSubTreeKernel(d*2, d, inf, reverseWL, false, trackPrevNBH, true));
+						kernels.add(new RDFWLSubTreeKernel(d*2, d, inf, reverseWL, trackPrevNBH, true));
 
 						GraphKernelComputationTimeExperiment<RDFData> exp = new GraphKernelComputationTimeExperiment<RDFData>(kernels, dataSub, null);
 
@@ -139,7 +139,7 @@ public class LithogenesisComputationTimeExperiment {
 						RDFData dataSub = createRandomSubset(data, frac, seed);
 
 						List<RDFWLSubTreeKernel> kernels = new ArrayList<RDFWLSubTreeKernel>();	
-						kernels.add(new RDFWLSubTreeKernel(0, d, inf, reverseWL, false, trackPrevNBH, true));
+						kernels.add(new RDFWLSubTreeKernel(0, d, inf, reverseWL, trackPrevNBH, true));
 
 						GraphKernelComputationTimeExperiment<RDFData> exp = new GraphKernelComputationTimeExperiment<RDFData>(kernels, dataSub, null);
 
@@ -173,7 +173,7 @@ public class LithogenesisComputationTimeExperiment {
 						RDFData dataSub = createRandomSubset(data, frac, seed);
 
 						List<RDFTreeWLSubTreeKernel> kernels = new ArrayList<RDFTreeWLSubTreeKernel>();	
-						kernels.add(new RDFTreeWLSubTreeKernel(0, d, inf, reverseWL, false, trackPrevNBH, true));
+						kernels.add(new RDFTreeWLSubTreeKernel(0, d, inf, reverseWL, trackPrevNBH, true));
 
 						GraphKernelComputationTimeExperiment<RDFData> exp = new GraphKernelComputationTimeExperiment<RDFData>(kernels, dataSub, null);
 
@@ -413,7 +413,7 @@ public class LithogenesisComputationTimeExperiment {
 						RDFData dataSub = createRandomSubset(data, frac, seed);
 
 						List<RDFWLSubTreeKernel> kernels = new ArrayList<RDFWLSubTreeKernel>();	
-						kernels.add(new RDFWLSubTreeKernel(d*2, d, inf, reverseWL, false, trackPrevNBH, true));
+						kernels.add(new RDFWLSubTreeKernel(d*2, d, inf, reverseWL, trackPrevNBH, true));
 
 						GraphKernelComputationTimeExperiment<RDFData> exp = new GraphKernelComputationTimeExperiment<RDFData>(kernels, dataSub, null);
 
@@ -447,7 +447,7 @@ public class LithogenesisComputationTimeExperiment {
 						RDFData dataSub = createRandomSubset(data, frac, seed);
 
 						List<RDFWLSubTreeIDEQKernel> kernels = new ArrayList<RDFWLSubTreeIDEQKernel>();	
-						kernels.add(new RDFWLSubTreeIDEQKernel(d*2, d, inf, reverseWL, false, trackPrevNBH, false, true));
+						kernels.add(new RDFWLSubTreeIDEQKernel(d*2, d, inf, reverseWL, trackPrevNBH, true));
 
 						GraphKernelComputationTimeExperiment<RDFData> exp = new GraphKernelComputationTimeExperiment<RDFData>(kernels, dataSub, null);
 
@@ -516,7 +516,7 @@ public class LithogenesisComputationTimeExperiment {
 						RDFData dataSub = createRandomSubset(data, frac, seed);
 
 						List<RDFTreeWLSubTreeIDEQKernel> kernels = new ArrayList<RDFTreeWLSubTreeIDEQKernel>();	
-						kernels.add(new RDFTreeWLSubTreeIDEQKernel(d*2, d, inf, reverseWL, false, trackPrevNBH, false, true));
+						kernels.add(new RDFTreeWLSubTreeIDEQKernel(d*2, d, inf, reverseWL, trackPrevNBH, true));
 
 						GraphKernelComputationTimeExperiment<RDFData> exp = new GraphKernelComputationTimeExperiment<RDFData>(kernels, dataSub, null);
 

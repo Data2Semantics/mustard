@@ -23,12 +23,12 @@ public class RDFWLSubTreeGeoProbKernel implements GraphKernel<RDFData>, FeatureV
 	private DTGraphWLSubTreeGeoProbKernel kernel;
 	private SingleDTGraph graph;
 
-	public RDFWLSubTreeGeoProbKernel(int iterations, int depth, boolean inference, boolean iterationWeighting, double mean, boolean normalize) {
+	public RDFWLSubTreeGeoProbKernel(int iterations, int depth, boolean inference, double mean, boolean normalize) {
 		super();
 		this.depth = depth;
 		this.inference = inference;
 
-		kernel = new DTGraphWLSubTreeGeoProbKernel(iterations, depth, iterationWeighting, mean, normalize);
+		kernel = new DTGraphWLSubTreeGeoProbKernel(iterations, depth, mean, normalize);
 	}
 	
 	public String getLabel() {

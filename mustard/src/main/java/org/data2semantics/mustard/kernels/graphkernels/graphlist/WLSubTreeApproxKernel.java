@@ -33,14 +33,12 @@ public class WLSubTreeApproxKernel implements GraphKernel<GraphList<DTGraph<Appr
 	private int iterations;
 	protected boolean normalize;
 	private boolean reverse;
-	private boolean noDuplicateNBH;
+	private boolean noDuplicateSubtrees;
 
 	private int[] minFreqs;
 	private int[] maxLabelCards;
 	private int[] maxPrevNBHs;
 
-	private double depthWeight;
-	private double depthDiffWeight;
 	private int maxDepth;
 	private long compTime;
 
@@ -48,16 +46,14 @@ public class WLSubTreeApproxKernel implements GraphKernel<GraphList<DTGraph<Appr
 	private Map<String, Integer> labelFreq;
 
 
-	public WLSubTreeApproxKernel(int iterations, boolean reverse, boolean noDuplicateNBH, double depthWeight, double depthDiffWeight, int[] maxPrevNBHs, int[] maxLabelCards, int[] minFreqs, boolean normalize) {
+	public WLSubTreeApproxKernel(int iterations, boolean reverse, boolean noDuplicateSubtrees, int[] maxPrevNBHs, int[] maxLabelCards, int[] minFreqs, boolean normalize) {
 		this.reverse = reverse;
-		this.noDuplicateNBH = noDuplicateNBH;
+		this.noDuplicateSubtrees = noDuplicateSubtrees;
 		this.normalize = normalize;
 		this.iterations = iterations;
 		this.maxPrevNBHs = maxPrevNBHs;
 		this.maxLabelCards = maxLabelCards;
 		this.minFreqs = minFreqs;
-		this.depthWeight = depthWeight;
-		this.depthDiffWeight = depthDiffWeight;
 	}
 
 	public String getLabel() {
@@ -94,14 +90,14 @@ public class WLSubTreeApproxKernel implements GraphKernel<GraphList<DTGraph<Appr
 					wl.setMinFreq(minFreq);
 					wl.setMaxPrevNBH(maxPrevNBH);
 
-					computeFVs(graphs, featureVectors, 1.0 / numK, depthWeight, wl.getLabelDict().size()-1);
+					computeFVs(graphs, featureVectors, 1.0 / numK, wl.getLabelDict().size()-1);
 
 					for (int i = 0; i < this.iterations; i++) {
 						double weight = (1.0 + ((i+1) * ((numK-1.0) / iterations))) / numK;
 						
 						computeLabelFreqs(graphs);	
 						wl.wlIterate(graphs, labelFreq);
-						computeFVs(graphs, featureVectors, weight, depthWeight, wl.getLabelDict().size()-1);
+						computeFVs(graphs, featureVectors, weight, wl.getLabelDict().size()-1);
 					}
 				}
 			}
@@ -136,41 +132,25 @@ public class WLSubTreeApproxKernel implements GraphKernel<GraphList<DTGraph<Appr
 	 * @param startLabel
 	 * @param currentLabel
 	 */
-	private void computeFVs(List<DTGraph<ApproxStringLabel,ApproxStringLabel>> graphs, SparseVector[] featureVectors, double weight, double depthWeight, int lastIndex) {
+	private void computeFVs(List<DTGraph<ApproxStringLabel,ApproxStringLabel>> graphs, SparseVector[] featureVectors, double weight, int lastIndex) {
 		int index;
 
 		for (int i = 0; i < graphs.size(); i++) {
-			featureVectors[i].setLastIndex((lastIndex * (maxDepth+1)) + maxDepth);
+			featureVectors[i].setLastIndex(lastIndex);
 
-			// for each vertex, use the label as index into the feature vector and do a + 1,
 			for (DTNode<ApproxStringLabel,ApproxStringLabel> vertex : graphs.get(i).nodes()) {
 				String lab = vertex.label().toString();
-				if (!noDuplicateNBH || vertex.label().getSameAsPrev() == 0) {
+				if (!noDuplicateSubtrees || vertex.label().getSameAsPrev() == 0) {
 					index = Integer.parseInt(lab);
-
-					for (int j = 0; j <= maxDepth; j++) {
-						int index2 = (index * (maxDepth+1)) + j;
-						double weight2 = weight / Math.pow(depthDiffWeight,Math.abs(j-vertex.label().getDepth())); // farther away depths get lower weight, the distance is abs(j-depth)
-						weight2 = weight2 / Math.pow(depthWeight, j);
-						featureVectors[i].setValue(index2, featureVectors[i].getValue(index2) + weight2);
-					}
-
-					//featureVectors[i].setValue(index, featureVectors[i].getValue(index) + (weight / Math.pow((double) vertex.label().getDepth() + 1, depthWeight)));
+					featureVectors[i].setValue(index, featureVectors[i].getValue(index) + weight);
 				}
 			}
 
 			for (DTLink<ApproxStringLabel,ApproxStringLabel> edge : graphs.get(i).links()) {
 				String lab = edge.tag().toString();
-				if (!noDuplicateNBH || edge.tag().getSameAsPrev() == 0) {
+				if (!noDuplicateSubtrees || edge.tag().getSameAsPrev() == 0) {
 					index = Integer.parseInt(lab);
-
-					for (int j = 0; j <= maxDepth; j++) {
-						int index2 = (index * (maxDepth+1)) + j;
-						double weight2 = weight / Math.pow(depthDiffWeight,Math.abs(j-edge.tag().getDepth())); // farther away depths get lower weight, the distance is abs(j-depth)
-						weight2 = weight2 / Math.pow(depthWeight, j);
-						featureVectors[i].setValue(index2, featureVectors[i].getValue(index2) + weight2);
-					}
-					//featureVectors[i].setValue(index, featureVectors[i].getValue(index) + (weight / Math.pow((double) edge.tag().getDepth() + 1, depthWeight)));
+					featureVectors[i].setValue(index, featureVectors[i].getValue(index) + weight);
 				}
 			}
 		}

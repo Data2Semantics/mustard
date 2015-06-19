@@ -618,7 +618,7 @@ public class StringArgumentsParser {
 				if (dTT) { // if depth times two, then pathLengths has one element
 					p = depth * 2;
 				}
-				kernels.add(new DTGraphTreeWLSubTreeKernel(p, depth, reverse, false, trackPrev, true));
+				kernels.add(new DTGraphTreeWLSubTreeKernel(p, depth, reverse, trackPrev, true));
 			}
 		}
 		return kernels;
@@ -640,7 +640,7 @@ public class StringArgumentsParser {
 			pathLengths[0] = Integer.parseInt(parms[0]); 
 		}
 		for (int p : pathLengths) {
-			kernels.add(new DTGraphRootWLSubTreeKernel(p, false, true));
+			kernels.add(new DTGraphRootWLSubTreeKernel(p, true));
 
 		}
 		return kernels;
@@ -722,7 +722,7 @@ public class StringArgumentsParser {
 				if (dTT) { // if depth times two, then pathLengths has one element
 					p = depth * 2;
 				}
-				kernels.add(new DTGraphWLSubTreeKernel(p, depth, reverse, false, trackPrev, true));
+				kernels.add(new DTGraphWLSubTreeKernel(p, depth, reverse, trackPrev, true));
 			}
 		}
 		return kernels;
@@ -782,7 +782,7 @@ public class StringArgumentsParser {
 						int[] mc = {maxCard};
 						int[] mf = {minFreq};
 						// new RDFWLSubTreeIDEQApproxKernel(d*2, d, inf, reverseWL, false, true, false, depthWeight, depthDiffWeight, maxPrevNBH, maxCard, minFreq, true)
-						kernels.add(new DTGraphTreeWLSubTreeIDEQApproxKernel(p, depth, true, false, true, false, 1.0, 1.0, mpn, mc, mf, true));
+						kernels.add(new DTGraphTreeWLSubTreeIDEQApproxKernel(p, depth, true, true, mpn, mc, mf, true));
 					}
 				}
 			}
@@ -890,7 +890,7 @@ public class StringArgumentsParser {
 						int[] mc = {maxCard};
 						int[] mf = {minFreq};
 						// new RDFWLSubTreeIDEQApproxKernel(d*2, d, inf, reverseWL, false, true, false, depthWeight, depthDiffWeight, maxPrevNBH, maxCard, minFreq, true)
-						kernels.add(new DTGraphGraphListWLSubTreeApproxKernel(p, depth, true, true, 1.0, 1.0, mpn, mc, mf, true));
+						kernels.add(new DTGraphGraphListWLSubTreeApproxKernel(p, depth, true, true, mpn, mc, mf, true));
 					}
 				}
 			}
@@ -952,7 +952,7 @@ public class StringArgumentsParser {
 						int[] mc = {maxCard};
 						int[] mf = {minFreq};
 						// new RDFWLSubTreeIDEQApproxKernel(d*2, d, inf, reverseWL, false, true, false, depthWeight, depthDiffWeight, maxPrevNBH, maxCard, minFreq, true)
-						kernels.add(new DTGraphWLSubTreeIDEQApproxKernel(p, depth, true, false, true, false, 1.0, 1.0, mpn, mc, mf, true));
+						kernels.add(new DTGraphWLSubTreeIDEQApproxKernel(p, depth, true, true, mpn, mc, mf, true));
 					}
 				}
 			}

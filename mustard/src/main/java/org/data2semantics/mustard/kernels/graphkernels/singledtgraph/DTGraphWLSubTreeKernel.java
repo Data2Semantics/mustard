@@ -43,30 +43,22 @@ public class DTGraphWLSubTreeKernel implements GraphKernel<SingleDTGraph>, Featu
 	private int iterations;
 	private boolean normalize;
 	private boolean reverse;
-	private boolean iterationWeighting;
-	private boolean trackPrevNBH;
+	private boolean noDuplicateSubtrees;
 	
 	private long compTime;
 	private Map<String,String> dict;
 	
 
-	public DTGraphWLSubTreeKernel(int iterations, int depth, boolean reverse, boolean iterationWeighting, boolean trackPrevNBH, boolean normalize) {
+	public DTGraphWLSubTreeKernel(int iterations, int depth, boolean reverse, boolean noDuplicateSubtrees, boolean normalize) {
 		this.reverse = reverse;
-		this.iterationWeighting = iterationWeighting;
-		this.trackPrevNBH = trackPrevNBH;		
+		this.noDuplicateSubtrees = noDuplicateSubtrees;		
 		this.normalize = normalize;
 		this.depth = depth;
 		this.iterations = iterations;
 	}
-	
-
-	public DTGraphWLSubTreeKernel(int iterations, int depth, boolean reverse, boolean iterationWeighting, boolean normalize) {
-		this(iterations, depth, reverse, iterationWeighting, false, normalize);
-	}
-
 
 	public DTGraphWLSubTreeKernel(int iterations, int depth, boolean normalize) {
-		this(iterations, depth, false, false, false, normalize);
+		this(iterations, depth, true, true, normalize);
 	}
 
 	public String getLabel() {
@@ -95,7 +87,7 @@ public class DTGraphWLSubTreeKernel implements GraphKernel<SingleDTGraph>, Featu
 		}	
 
 		init(data.getGraph(), data.getInstances());
-		WeisfeilerLehmanIterator<DTGraph<MapLabel,MapLabel>> wl = new WeisfeilerLehmanDTGraphMapLabelIterator(reverse, trackPrevNBH);
+		WeisfeilerLehmanIterator<DTGraph<MapLabel,MapLabel>> wl = new WeisfeilerLehmanDTGraphMapLabelIterator(reverse, noDuplicateSubtrees);
 
 		List<DTGraph<MapLabel,MapLabel>> gList = new ArrayList<DTGraph<MapLabel,MapLabel>>();
 		gList.add(rdfGraph);
@@ -105,16 +97,10 @@ public class DTGraphWLSubTreeKernel implements GraphKernel<SingleDTGraph>, Featu
 		wl.wlInitialize(gList);
 
 		double weight = 1.0;
-		if (iterationWeighting) {
-			weight = Math.sqrt(1.0 / (iterations + 1));
-		}
 
 		computeFVs(rdfGraph, instanceVertices, weight, featureVectors, wl.getLabelDict().size()-1);
 
 		for (int i = 0; i < iterations; i++) {
-			if (iterationWeighting) {
-				weight = Math.sqrt((2.0 + i) / (iterations + 1));
-			}
 			wl.wlIterate(gList);
 			computeFVs(rdfGraph, instanceVertices, weight, featureVectors, wl.getLabelDict().size()-1);
 		}

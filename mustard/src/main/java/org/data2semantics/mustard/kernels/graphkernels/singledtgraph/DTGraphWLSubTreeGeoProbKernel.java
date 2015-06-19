@@ -22,10 +22,6 @@ import org.nodes.DTLink;
 import org.nodes.DTNode;
 
 /**
- * This class implements a WL kernel directly on an RDF graph. The difference with a normal WL kernel is that subgraphs are not 
- * explicitly extracted. However we use the idea of subgraph implicitly by tracking for each vertex/edge the distance from an instance vertex.
- * For one thing, this leads to the fact that 1 black list is applied to the entire RDF graph, instead of 1 (small) blacklist per graph. 
- * 
  *
  * 
  * @author Gerben
@@ -45,7 +41,6 @@ public class DTGraphWLSubTreeGeoProbKernel implements GraphKernel<SingleDTGraph>
 	private int depth;
 	private int iterations;
 	private boolean normalize;
-	private boolean iterationWeighting;
 
 	private long compTime;
 	private Map<String,String> dict;
@@ -55,8 +50,7 @@ public class DTGraphWLSubTreeGeoProbKernel implements GraphKernel<SingleDTGraph>
 	private Map<Integer, Double> probs;
 
 
-	public DTGraphWLSubTreeGeoProbKernel(int iterations, int depth, boolean iterationWeighting, double mean, boolean normalize) {
-		this.iterationWeighting = iterationWeighting;
+	public DTGraphWLSubTreeGeoProbKernel(int iterations, int depth, double mean, boolean normalize) {
 		this.normalize = normalize;
 		this.depth = depth;
 		this.iterations = iterations;
@@ -88,12 +82,14 @@ public class DTGraphWLSubTreeGeoProbKernel implements GraphKernel<SingleDTGraph>
 		p = 1.0 / (mean + 1.0); // mean is (1-p)/p
 
 
+		/*
 		System.out.println("Depth threshold info");
 
 		for (int i = 0; i < 20; i++) {
 			System.out.print(i + ": " + getCumProb(i) + ", ");
 		}
 		System.out.println("");
+		*/
 
 		long tic2 = System.currentTimeMillis();
 
@@ -111,18 +107,10 @@ public class DTGraphWLSubTreeGeoProbKernel implements GraphKernel<SingleDTGraph>
 		compTime = System.currentTimeMillis() - tic;
 
 		double weight = 1.0;
-		if (iterationWeighting) {
-			weight = Math.sqrt(1.0 / (iterations + 1));
-		}
-
 
 		computeFVs(rdfGraph, instanceVertices, weight, featureVectors, wl.getLabelDict().size()-1, 0);
 
 		for (int i = 0; i < iterations; i++) {
-			if (iterationWeighting) {
-				weight = Math.sqrt((2.0 + i) / (iterations + 1));
-			}
-
 			tic = System.currentTimeMillis();
 			wl.wlIterate(gList);
 			compTime += System.currentTimeMillis() - tic;

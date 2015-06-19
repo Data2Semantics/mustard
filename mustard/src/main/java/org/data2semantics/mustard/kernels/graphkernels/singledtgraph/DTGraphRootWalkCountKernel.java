@@ -13,7 +13,6 @@ import org.data2semantics.mustard.kernels.data.SingleDTGraph;
 import org.data2semantics.mustard.kernels.graphkernels.FeatureVectorKernel;
 import org.data2semantics.mustard.kernels.graphkernels.GraphKernel;
 import org.data2semantics.mustard.utils.WalkCountUtils;
-import org.data2semantics.mustard.weisfeilerlehman.WLUtils;
 import org.nodes.DTGraph;
 import org.nodes.DTLink;
 import org.nodes.DTNode;
@@ -150,7 +149,6 @@ public class DTGraphRootWalkCountKernel implements GraphKernel<SingleDTGraph>, F
 			instanceVertices.add(null);
 		}
 
-		LightDTGraph<String,String> newGraph = new LightDTGraph<String,String>();
 		for (DTNode<String,String> vertex : graph.nodes()) {
 			if (!labelDict.containsKey(vertex.label())) {
 				labelDict.put(vertex.label(), labelDict.size());
@@ -158,9 +156,9 @@ public class DTGraphRootWalkCountKernel implements GraphKernel<SingleDTGraph>, F
 			String lab = "_" + Integer.toString(labelDict.get(vertex.label()));
 
 			if (instanceIndexMap.containsKey(vertex)) {
-				instanceVertices.set(instanceIndexMap.get(vertex), newGraph.add(lab));
+				instanceVertices.set(instanceIndexMap.get(vertex), rdfGraph.add(lab));
 			} else {
-				newGraph.add(lab);
+				rdfGraph.add(lab);
 			}
 
 
@@ -171,7 +169,7 @@ public class DTGraphRootWalkCountKernel implements GraphKernel<SingleDTGraph>, F
 			}
 			String lab = "_" + Integer.toString(labelDict.get(edge.tag()));
 
-			newGraph.nodes().get(edge.from().index()).connect(newGraph.nodes().get(edge.to().index()), lab); // ?
+			rdfGraph.nodes().get(edge.from().index()).connect(rdfGraph.nodes().get(edge.to().index()), lab); // ?
 		}	
 	}
 

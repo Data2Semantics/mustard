@@ -18,8 +18,8 @@ import org.openrdf.repository.sail.SailRepository;
 import org.openrdf.sail.inferencer.fc.ForwardChainingRDFSInferencer;
 import org.openrdf.sail.memory.MemoryStore;
 
-public class RDFSingleDataSet extends RDFDataSet
-{
+public class RDFSingleDataSet extends RDFDataSet {
+	private static final long serialVersionUID = -6870742687474259735L;
 	protected transient Repository rdfRep;
 	private String label;
 

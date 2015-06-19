@@ -3,6 +3,16 @@ package org.data2semantics.mustard.kernels;
 import java.util.Set;
 import java.util.TreeMap;
 
+
+/**
+ * Class implementing a Sparse Vector using an interal TreeMap, for long sparse vectors this significantly improves the computation of a dot-product over the naive approach
+ * Note that SparseVector's start at index 0. Therefore a newly created SparseVector has lastIndex == -1. 
+ * The length of the SparseVector is lastIndex + 1 (if lastIndex is correctly set by the calling code).
+ * 
+ * 
+ * @author Gerben
+ *
+ */
 public class SparseVector {
 	private TreeMap<Integer, Double> vector;
 	private int[] indices;
@@ -14,7 +24,7 @@ public class SparseVector {
 	public SparseVector() {
 		vector = new TreeMap<Integer,Double>();
 		converted = false;
-		lastIndex = 0;
+		lastIndex = -1;
 	}
 	
 	public SparseVector(SparseVector v) {
@@ -25,14 +35,30 @@ public class SparseVector {
 		this.lastIndex = v.getLastIndex();
 	}
 	
+	
+	/**
+	 * Add the Sparsevector v to this vector in the form of concatenation, i.e. the first index of v is the lastindex of this vector + 1.
+	 * 
+	 * @param v
+	 */
 	public void addVector(SparseVector v) {
+		if (this.size() > 0 && lastIndex == -1) {
+			throw new RuntimeException("Vectors cannot be added. Vector is > 0, but lastIndex is not set.");
+		}
+				
 		for (int k : v.getIndices()) {
-			vector.put(k + lastIndex, v.getValue(k));
+			vector.put(k + lastIndex + 1, v.getValue(k));
 		}
 		this.lastIndex += v.getLastIndex();
 		converted = false;
 	}
 	
+	
+	/**
+	 * sum the two vectors
+	 * 
+	 * @param v
+	 */
 	public void sumVector(SparseVector v) {
 		for (int i : v.getIndices()) {
 			setValue(i, getValue(i) + v.getValue(i));
@@ -67,6 +93,12 @@ public class SparseVector {
 		return vector.keySet();
 	}
 	
+	
+	/**
+	 * returns the number of non-zero elements in the vector (i.e. the size of the internal Map)
+	 * 
+	 * @return
+	 */
 	public int size() {
 		return vector.size();
 	}
@@ -78,6 +110,7 @@ public class SparseVector {
 	
 	/**
 	 * Set the value of last index that is potentially used (can be 0 for this specific SparseVector). 
+	 * Note that the SparseVector does not do this itself, this is the responsibility of the user of the code
 	 * Needed when we want to use {@link addVector()}.
 	 * 
 	 * @param lastIndex
@@ -86,6 +119,13 @@ public class SparseVector {
 		this.lastIndex = lastIndex;
 	}
 
+	
+	/**
+	 * compute the dot product with the SparseVector v2
+	 * 
+	 * @param v2
+	 * @return
+	 */
 	public double dot(SparseVector v2) {
 		int i = 0, j = 0;
 		double ret = 0;

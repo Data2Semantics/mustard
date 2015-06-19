@@ -6,7 +6,6 @@ import java.util.List;
 import org.data2semantics.mustard.kernels.ComputationTimeTracker;
 import org.data2semantics.mustard.kernels.FeatureInspector;
 import org.data2semantics.mustard.kernels.KernelUtils;
-import org.data2semantics.mustard.kernels.SparseVector;
 import org.data2semantics.mustard.kernels.data.GraphList;
 import org.data2semantics.mustard.kernels.data.SingleDTGraph;
 import org.data2semantics.mustard.kernels.graphkernels.FeatureVectorKernel;
@@ -20,10 +19,10 @@ public class DTGraphGraphListWLSubTreeApproxKernel implements GraphKernel<Single
 	private int depth;
 	private WLSubTreeApproxKernel kernel;
 
-	public DTGraphGraphListWLSubTreeApproxKernel(int iterations, int depth, boolean reverse, boolean noDuplicateNBH, double depthWeight, double depthDiffWeight, int[] maxPrevNBHs, int[] maxLabelCards, int[] minFreqs, boolean normalize) {
+	public DTGraphGraphListWLSubTreeApproxKernel(int iterations, int depth, boolean reverse, boolean noDuplicateSubtrees, int[] maxPrevNBHs, int[] maxLabelCards, int[] minFreqs, boolean normalize) {
 		this.depth = depth;
 		
-		kernel = new WLSubTreeApproxKernel(iterations, reverse, noDuplicateNBH, depthWeight, depthDiffWeight, maxPrevNBHs, maxLabelCards, minFreqs, normalize);	
+		kernel = new WLSubTreeApproxKernel(iterations, reverse, noDuplicateSubtrees, maxPrevNBHs, maxLabelCards, minFreqs, normalize);	
 	}
 
 	public String getLabel() {

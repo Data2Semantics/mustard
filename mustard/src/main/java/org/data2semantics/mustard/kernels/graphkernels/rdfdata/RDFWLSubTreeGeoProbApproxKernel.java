@@ -22,12 +22,12 @@ public class RDFWLSubTreeGeoProbApproxKernel implements GraphKernel<RDFData>, Fe
 	private DTGraphWLSubTreeGeoProbApproxKernel kernel;
 	private SingleDTGraph graph;
 	
-	public RDFWLSubTreeGeoProbApproxKernel(int iterations, int depth, boolean inference, double mean, double depthDiffWeight, int[] maxPrevNBHs, int[] maxLabelCards, int[] minFreqs, boolean normalize) {
+	public RDFWLSubTreeGeoProbApproxKernel(int iterations, int depth, boolean inference, double mean, int[] maxPrevNBHs, int[] maxLabelCards, int[] minFreqs, boolean normalize) {
 		super();
 		this.depth = depth;
 		this.inference = inference;
 
-		kernel = new DTGraphWLSubTreeGeoProbApproxKernel(iterations, depth, mean, depthDiffWeight, maxPrevNBHs, maxLabelCards, minFreqs, normalize);
+		kernel = new DTGraphWLSubTreeGeoProbApproxKernel(iterations, depth, mean, maxPrevNBHs, maxLabelCards, minFreqs, normalize);
 	}
 
 	public String getLabel() {

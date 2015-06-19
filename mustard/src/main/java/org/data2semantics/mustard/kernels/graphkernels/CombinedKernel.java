@@ -7,7 +7,7 @@ import org.data2semantics.mustard.kernels.data.GraphData;
 
 
 /**
- * A simple RDF graph kernel to combine different RDF graph kernels, currently we do not even implement a weighing of the different kernels.
+ * A simple graph kernel to combine different graph kernels, currently we do not even implement a weighing of the different kernels.
  * 
  * @author Gerben
  *

@@ -20,12 +20,12 @@ import org.nodes.LightDTGraph;
 
 
 /**
- *
+ * Implementation of the WalkCount kernel, which counts all the walks up to the given pathLength in the graph.
  * 
  * @author Gerben *
  */
 public class WalkCountKernel implements GraphKernel<GraphList<DTGraph<String,String>>>, FeatureVectorKernel<GraphList<DTGraph<String,String>>>, ComputationTimeTracker, FeatureInspector {
-	private int depth;
+	private int pathLength;
 	private long compTime;
 	protected boolean normalize;
 	private Map<String, Integer> pathDict;
@@ -34,15 +34,9 @@ public class WalkCountKernel implements GraphKernel<GraphList<DTGraph<String,Str
 	private Map<Integer, String> reverseLabelDict;
 
 
-	/**
-	 * Construct a PathCountKernel
-	 * 
-	 * @param iterations
-	 * @param normalize
-	 */
-	public WalkCountKernel(int depth, boolean normalize) {
+	public WalkCountKernel(int pathLength, boolean normalize) {
 		this.normalize = normalize;
-		this.depth = depth;
+		this.pathLength = pathLength;
 	}	
 
 	public WalkCountKernel(int depth) {
@@ -76,11 +70,11 @@ public class WalkCountKernel implements GraphKernel<GraphList<DTGraph<String,Str
 		
 		for (int i = 0; i < featureVectors.length; i++) {
 			for (DTNode<String,String> v : graphs.get(i).nodes()) {
-				countPathRec(featureVectors[i], v, "", depth);
+				countPathRec(featureVectors[i], v, "", pathLength);
 			}
 
 			for (DTLink<String,String> e : graphs.get(i).links()) {
-				countPathRec(featureVectors[i], e, "", depth);
+				countPathRec(featureVectors[i], e, "", pathLength);
 			}
 		}
 

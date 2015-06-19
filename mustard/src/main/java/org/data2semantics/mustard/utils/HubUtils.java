@@ -20,8 +20,15 @@ import org.nodes.util.Functions.Dir;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 
-public class HubUtils {
 
+/**
+ * 
+ * Utility functions to do hub removal
+ * 
+ * @author Gerben
+ *
+ */
+public class HubUtils {
 
 	private static class LabelTagPairComparator<L,T> implements Comparator<LabelTagPair<L,T>> {
 		private Map<LabelTagPair<L,T>, Integer> counts;
@@ -182,33 +189,26 @@ public class HubUtils {
 		for (DTNode<String,String> node : oldGraph.getGraph().nodes()) {
 			String newLabel = null;
 			int lowestDepth = 0; //hubMap.size();
-			DTLink<String,String> remLink = null;
 			for (DTLink<String,String> inLink : node.linksIn()) {
 				LabelTagPair<String,String> rel = new LabelTagPair<String,String>(inLink.from().label(), inLink.tag(), Dir.OUT);
 				if (hubMap.containsKey(rel) && hubMap.get(rel) >= lowestDepth) {
 					newLabel = inLink.from().label() + inLink.tag();
 					lowestDepth = hubMap.get(rel);
-					remLink = inLink;
 				}
-				///*
 				if (hubMap.containsKey(rel)) {
 					toRemoveLinks.add(inLink);
 				}
-				//*/
-
+				
 			}
 			for (DTLink<String,String> outLink : node.linksOut()) {
 				LabelTagPair<String,String> rel = new LabelTagPair<String,String>(outLink.to().label(), outLink.tag(), Dir.IN);
 				if (hubMap.containsKey(rel) && hubMap.get(rel) >= lowestDepth) {
 					newLabel = outLink.tag() + outLink.to().label();;
 					lowestDepth = hubMap.get(rel);
-					remLink = outLink;
 				}
-				///*
 				if (hubMap.containsKey(rel)) {
 					toRemoveLinks.add(outLink);
 				}
-				//*/
 			}
 			if (newLabel == null) {
 				newLabel = node.label();
@@ -217,12 +217,6 @@ public class HubUtils {
 			if (iNodeMap.containsKey(node)) { // We also need to replace the instance nodes with new instance nodes in the simplified graph
 				newInstanceNodes.set(iNodeMap.get(node), newN);
 			}
-
-			/*
-			if (remLink != null ) {
-				toRemoveLinks.add(remLink);
-			}
-			//*/
 		}
 
 		for(DTLink<String,String> link : oldGraph.getGraph().links()) {

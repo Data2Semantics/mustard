@@ -97,7 +97,6 @@ public class SteveExperiment {
 		// iteration of WL (regular WL does this)
 		boolean trackPrevNBH = true;
 		boolean normalize = true;
-		boolean iterationWeigthing = false;
 		// always use inference (although in our case it has no effect)
 		boolean inference = true;
 		int[] depths = { 1, 2, 3 };
@@ -125,7 +124,7 @@ public class SteveExperiment {
 
 				// Define the kernel to use
 				List<DTGraphWLSubTreeKernel> kernels = new ArrayList<DTGraphWLSubTreeKernel>();
-				kernels.add(new DTGraphWLSubTreeKernel(depth * 2, depth, reverseWL, iterationWeigthing, trackPrevNBH,
+				kernels.add(new DTGraphWLSubTreeKernel(depth * 2, depth, reverseWL, trackPrevNBH,
 						normalize));
 
 				// Run the experiment

@@ -6,8 +6,9 @@ import java.net.URL;
 import org.openrdf.rio.RDFFormat;
 
 
-public class RDFURLDataSet extends RDFSingleDataSet 
-{
+public class RDFURLDataSet extends RDFSingleDataSet {
+	private static final long serialVersionUID = 171200231183686670L;
+
 	public RDFURLDataSet(String url, RDFFormat fileFormat) {
 		addFile(url, fileFormat);
 	}

@@ -22,12 +22,12 @@ public class RDFRootWLSubTreeKernel implements GraphKernel<RDFData>, FeatureVect
 	private DTGraphRootWLSubTreeKernel kernel;
 	private SingleDTGraph graph;
 
-	public RDFRootWLSubTreeKernel(int iterations, boolean inference, boolean iterationWeighting, boolean normalize) {
+	public RDFRootWLSubTreeKernel(int iterations, boolean inference, boolean normalize) {
 		super();
 		this.depth = (int) Math.round(iterations / 2.0);
 		this.inference = inference;
 
-		kernel = new DTGraphRootWLSubTreeKernel(iterations, iterationWeighting, normalize);
+		kernel = new DTGraphRootWLSubTreeKernel(iterations, normalize);
 	}
 
 	public String getLabel() {
