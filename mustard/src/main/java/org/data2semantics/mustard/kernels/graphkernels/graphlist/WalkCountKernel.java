@@ -20,7 +20,7 @@ import org.nodes.LightDTGraph;
 
 
 /**
- * Implementation of the WalkCount kernel, which counts all the walks up to the given pathLength in the graph.
+ * Implementation of the WalkCount kernel, which counts all the walks up to the given pathLength in the graphs.
  * 
  * @author Gerben *
  */

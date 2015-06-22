@@ -17,7 +17,7 @@
  * Some WalkCount kernels are affixed 'MkII' this indicates that it is a second variant for the same kernel, with a different algorithm to compute it.
  * Similarly for the 'IDEQ' infix (in this case the kernels are not necessarily equal for the WL algorithm).
  * 
- * TODO refactor all the wrapping done indivually per kernel into one generic wrapper class in the vein of the HubRemovalWrapper kernels.
+ * TODO refactor all the wrapping done individually per kernel into one generic wrapper class in the vein of the HubRemovalWrapper kernels.
  * 
  * TODO create a parameter class to use during the creation of a kernel, to avoid the long and incomprehensible list of parameters of the kernels.s
  * 
