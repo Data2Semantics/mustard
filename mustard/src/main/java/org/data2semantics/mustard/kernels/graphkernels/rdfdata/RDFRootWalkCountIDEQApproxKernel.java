@@ -23,7 +23,7 @@ public class RDFRootWalkCountIDEQApproxKernel implements GraphKernel<RDFData>, F
 	private DTGraphRootWalkCountIDEQApproxKernel kernel;
 	private SingleDTGraph graph;
 
-	public RDFRootWalkCountIDEQApproxKernel(int pathLength, int minFreq, boolean inference, boolean normalize) {
+	public RDFRootWalkCountIDEQApproxKernel(int pathLength, boolean inference, int minFreq, boolean normalize) {
 		super();
 		this.depth = (int) Math.round(pathLength / 2.0);;
 		this.inference = inference;

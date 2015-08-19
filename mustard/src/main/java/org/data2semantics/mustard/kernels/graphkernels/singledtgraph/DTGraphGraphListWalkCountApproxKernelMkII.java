@@ -2,7 +2,10 @@ package org.data2semantics.mustard.kernels.graphkernels.singledtgraph;
 
 
 
+import java.util.List;
+
 import org.data2semantics.mustard.kernels.ComputationTimeTracker;
+import org.data2semantics.mustard.kernels.FeatureInspector;
 import org.data2semantics.mustard.kernels.KernelUtils;
 import org.data2semantics.mustard.kernels.SparseVector;
 import org.data2semantics.mustard.kernels.data.GraphList;
@@ -18,7 +21,7 @@ import org.nodes.DTGraph;
  * @author Gerben
  *
  */
-public class DTGraphGraphListWalkCountApproxKernelMkII implements GraphKernel<SingleDTGraph>, FeatureVectorKernel<SingleDTGraph>, ComputationTimeTracker {
+public class DTGraphGraphListWalkCountApproxKernelMkII implements GraphKernel<SingleDTGraph>, FeatureVectorKernel<SingleDTGraph>, ComputationTimeTracker, FeatureInspector {
 
 	private int depth;
 	
@@ -44,6 +47,10 @@ public class DTGraphGraphListWalkCountApproxKernelMkII implements GraphKernel<Si
 	public SparseVector[] computeFeatureVectors(SingleDTGraph data) {
 		GraphList<DTGraph<String,String>> graphs = RDFUtils.getSubGraphs(data.getGraph(), data.getInstances(), depth);		
 		return kernel.computeFeatureVectors(graphs);
+	}
+	
+	public List<String> getFeatureDescriptions(List<Integer> indicesSV) {
+		return kernel.getFeatureDescriptions(indicesSV);
 	}
 
 	public double[][] compute(SingleDTGraph data) {

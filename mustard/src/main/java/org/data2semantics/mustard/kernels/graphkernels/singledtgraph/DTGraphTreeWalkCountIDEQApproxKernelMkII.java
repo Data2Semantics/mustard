@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.data2semantics.mustard.kernels.ComputationTimeTracker;
+import org.data2semantics.mustard.kernels.FeatureInspector;
 import org.data2semantics.mustard.kernels.KernelUtils;
 import org.data2semantics.mustard.kernels.SparseVector;
 import org.data2semantics.mustard.kernels.data.SingleDTGraph;
@@ -15,6 +16,7 @@ import org.data2semantics.mustard.kernels.graphkernels.FeatureVectorKernel;
 import org.data2semantics.mustard.kernels.graphkernels.GraphKernel;
 
 import org.data2semantics.mustard.utils.Pair;
+import org.data2semantics.mustard.utils.WalkCountUtils;
 import org.nodes.DTGraph;
 import org.nodes.DTLink;
 import org.nodes.DTNode;
@@ -25,7 +27,7 @@ import org.nodes.LightDTGraph;
  * @author Gerben
  *
  */
-public class DTGraphTreeWalkCountIDEQApproxKernelMkII implements GraphKernel<SingleDTGraph>, FeatureVectorKernel<SingleDTGraph>, ComputationTimeTracker {
+public class DTGraphTreeWalkCountIDEQApproxKernelMkII implements GraphKernel<SingleDTGraph>, FeatureVectorKernel<SingleDTGraph>, ComputationTimeTracker, FeatureInspector {
 
 	private Map<DTNode<PathStringLabel,PathStringLabel>, List<Pair<DTNode<PathStringLabel,PathStringLabel>, Integer>>> instanceVertexIndexMap;
 	private Map<DTNode<PathStringLabel,PathStringLabel>, List<Pair<DTLink<PathStringLabel,PathStringLabel>, Integer>>> instanceEdgeIndexMap;
@@ -41,6 +43,9 @@ public class DTGraphTreeWalkCountIDEQApproxKernelMkII implements GraphKernel<Sin
 
 	private Map<String, Integer> pathDict;
 	private Map<String, Integer> labelDict;
+	
+	private Map<Integer, String> reversePathDict;
+	private Map<Integer, String> reverseLabelDict;
 
 	private Map<String,Integer> labelFreq;
 	private Map<String,Integer> pathFreq;
@@ -153,6 +158,16 @@ public class DTGraphTreeWalkCountIDEQApproxKernelMkII implements GraphKernel<Sin
 		}
 
 		compTime = System.currentTimeMillis() - tic;
+		
+		reversePathDict = new HashMap<Integer,String>();	
+		for (String key : pathDict.keySet()) {
+			reversePathDict.put(pathDict.get(key), key);
+		}
+
+		reverseLabelDict = new HashMap<Integer,String>();	
+		for (String key : labelDict.keySet()) {
+			reverseLabelDict.put(labelDict.get(key), key);
+		}
 
 		if (this.normalize) {
 			featureVectors = KernelUtils.normalize(featureVectors);
@@ -369,6 +384,19 @@ public class DTGraphTreeWalkCountIDEQApproxKernelMkII implements GraphKernel<Sin
 					}
 				}
 			}
+		}
+	}
+	
+	public List<String> getFeatureDescriptions(List<Integer> indicesSV) {
+		if (labelDict == null) {
+			throw new RuntimeException("Should run computeFeatureVectors first");
+		} else {
+			List<String> desc = new ArrayList<String>();
+
+			for (int index : indicesSV) {
+				desc.add(WalkCountUtils.getFeatureDecription(reverseLabelDict, reversePathDict, index));
+			}
+			return desc;
 		}
 	}
 

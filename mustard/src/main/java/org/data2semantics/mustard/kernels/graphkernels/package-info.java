@@ -19,7 +19,7 @@
  * 
  * TODO refactor all the wrapping done individually per kernel into one generic wrapper class in the vein of the HubRemovalWrapper kernels.
  * 
- * TODO create a parameter class to use during the creation of a kernel, to avoid the long and incomprehensible list of parameters of the kernels.s
+ * TODO create a parameter class to use during the creation of a kernel, to avoid the long and incomprehensible list of parameters of the kernels.
  * 
  * TODO refactor all kernels to use the {@link SimpleGraph} graph representation to remove the dependency on the nodes library. Currently this graph is only
  * used in the experimental GeoProb kernels.

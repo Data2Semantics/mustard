@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.data2semantics.mustard.kernels.ComputationTimeTracker;
+import org.data2semantics.mustard.kernels.FeatureInspector;
 import org.data2semantics.mustard.kernels.KernelUtils;
 import org.data2semantics.mustard.kernels.SparseVector;
 import org.data2semantics.mustard.kernels.data.RDFData;
@@ -16,7 +17,7 @@ import org.data2semantics.mustard.rdf.RDFUtils;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 
-public class RDFWLSubTreeIDEQApproxKernel implements GraphKernel<RDFData>, FeatureVectorKernel<RDFData>, ComputationTimeTracker {
+public class RDFWLSubTreeIDEQApproxKernel implements GraphKernel<RDFData>, FeatureVectorKernel<RDFData>, ComputationTimeTracker, FeatureInspector {
 	private int depth;
 	private boolean inference;
 	private DTGraphWLSubTreeIDEQApproxKernel kernel;
@@ -52,6 +53,10 @@ public class RDFWLSubTreeIDEQApproxKernel implements GraphKernel<RDFData>, Featu
 		return kernel.compute(graph);
 	}
 
+	public List<String> getFeatureDescriptions(List<Integer> indicesSV) {
+		return kernel.getFeatureDescriptions(indicesSV);
+	}
+	
 	private void init(RDFDataSet dataset, List<Resource> instances, List<Statement> blackList) {
 		Set<Statement> stmts = RDFUtils.getStatements4Depth(dataset, instances, depth, inference);
 		stmts.removeAll(blackList);

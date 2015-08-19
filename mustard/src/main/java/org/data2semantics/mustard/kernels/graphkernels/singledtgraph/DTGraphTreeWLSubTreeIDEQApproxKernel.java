@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.data2semantics.mustard.kernels.ComputationTimeTracker;
+import org.data2semantics.mustard.kernels.FeatureInspector;
 import org.data2semantics.mustard.kernels.KernelUtils;
 import org.data2semantics.mustard.kernels.SparseVector;
 import org.data2semantics.mustard.kernels.data.SingleDTGraph;
@@ -15,6 +16,7 @@ import org.data2semantics.mustard.kernels.graphkernels.FeatureVectorKernel;
 import org.data2semantics.mustard.kernels.graphkernels.GraphKernel;
 import org.data2semantics.mustard.utils.Pair;
 import org.data2semantics.mustard.weisfeilerlehman.ApproxStringLabel;
+import org.data2semantics.mustard.weisfeilerlehman.WLUtils;
 import org.data2semantics.mustard.weisfeilerlehman.WeisfeilerLehmanApproxDTGraphIterator;
 import org.data2semantics.mustard.weisfeilerlehman.WeisfeilerLehmanApproxIterator;
 import org.nodes.DTGraph;
@@ -26,7 +28,7 @@ import org.nodes.LightDTGraph;
  * @author Gerben
  *
  */
-public class DTGraphTreeWLSubTreeIDEQApproxKernel implements GraphKernel<SingleDTGraph>, FeatureVectorKernel<SingleDTGraph>, ComputationTimeTracker {
+public class DTGraphTreeWLSubTreeIDEQApproxKernel implements GraphKernel<SingleDTGraph>, FeatureVectorKernel<SingleDTGraph>, ComputationTimeTracker, FeatureInspector {
 
 	private Map<DTNode<ApproxStringLabel,ApproxStringLabel>, List<Pair<DTNode<ApproxStringLabel,ApproxStringLabel>, Integer>>> instanceVertexIndexMap;
 	private Map<DTNode<ApproxStringLabel,ApproxStringLabel>, List<Pair<DTLink<ApproxStringLabel,ApproxStringLabel>, Integer>>> instanceEdgeIndexMap;
@@ -44,6 +46,8 @@ public class DTGraphTreeWLSubTreeIDEQApproxKernel implements GraphKernel<SingleD
 	private int[] maxLabelCards;
 	private int[] minFreqs;
 	private int[] maxPrevNBHs;
+	
+	private Map<String,String> dict;
 
 	private long compTime; // should be last, so that it is the last arg in the label
 
@@ -111,6 +115,12 @@ public class DTGraphTreeWLSubTreeIDEQApproxKernel implements GraphKernel<SingleD
 		}
 
 		compTime = System.currentTimeMillis() - tic;
+		
+		// Set the reverse label dict, to reverse engineer the features
+		dict = new HashMap<String,String>();
+		for (String key : wl.getLabelDict().keySet()) {
+			dict.put(wl.getLabelDict().get(key), key);
+		}
 
 		if (this.normalize) {
 			featureVectors = KernelUtils.normalize(featureVectors);
@@ -277,6 +287,19 @@ public class DTGraphTreeWLSubTreeIDEQApproxKernel implements GraphKernel<SingleD
 					}
 				}
 			}
+		}
+	}
+	
+	public List<String> getFeatureDescriptions(List<Integer> indices) {
+		if (dict == null) {
+			throw new RuntimeException("Should run computeFeatureVectors first");
+		} else {
+			List<String> desc = new ArrayList<String>();
+			
+			for (int index : indices) {
+				desc.add(WLUtils.getFeatureDecription(dict, index));
+			}
+			return desc;
 		}
 	}
 }

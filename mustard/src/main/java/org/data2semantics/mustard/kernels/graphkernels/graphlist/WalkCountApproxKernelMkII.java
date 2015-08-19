@@ -8,11 +8,13 @@ import java.util.Map;
 import java.util.Set;
 
 import org.data2semantics.mustard.kernels.ComputationTimeTracker;
+import org.data2semantics.mustard.kernels.FeatureInspector;
 import org.data2semantics.mustard.kernels.KernelUtils;
 import org.data2semantics.mustard.kernels.SparseVector;
 import org.data2semantics.mustard.kernels.data.GraphList;
 import org.data2semantics.mustard.kernels.graphkernels.FeatureVectorKernel;
 import org.data2semantics.mustard.kernels.graphkernels.GraphKernel;
+import org.data2semantics.mustard.utils.WalkCountUtils;
 import org.nodes.DTGraph;
 import org.nodes.DTLink;
 import org.nodes.DTNode;
@@ -24,7 +26,7 @@ import org.nodes.LightDTGraph;
  * 
  * @author Gerben *
  */
-public class WalkCountApproxKernelMkII implements GraphKernel<GraphList<DTGraph<String,String>>>, FeatureVectorKernel<GraphList<DTGraph<String,String>>>, ComputationTimeTracker {
+public class WalkCountApproxKernelMkII implements GraphKernel<GraphList<DTGraph<String,String>>>, FeatureVectorKernel<GraphList<DTGraph<String,String>>>, ComputationTimeTracker, FeatureInspector {
 	private int depth;
 	protected boolean normalize;
 	private int minFreq;
@@ -34,6 +36,9 @@ public class WalkCountApproxKernelMkII implements GraphKernel<GraphList<DTGraph<
 
 	private Map<String,Integer> labelFreq;
 	private Map<String,Integer> pathFreq;
+	
+	private Map<Integer, String> reversePathDict;
+	private Map<Integer, String> reverseLabelDict;
 
 	public WalkCountApproxKernelMkII(int depth, int minFreq, boolean normalize) {
 		this.normalize = normalize;
@@ -152,6 +157,16 @@ public class WalkCountApproxKernelMkII implements GraphKernel<GraphList<DTGraph<
 		}
 
 		compTime = System.currentTimeMillis() - tic;
+		
+		reversePathDict = new HashMap<Integer,String>();	
+		for (String key : pathDict.keySet()) {
+			reversePathDict.put(pathDict.get(key), key);
+		}
+
+		reverseLabelDict = new HashMap<Integer,String>();	
+		for (String key : labelDict.keySet()) {
+			reverseLabelDict.put(labelDict.get(key), key);
+		}
 
 		if (normalize) {
 			featureVectors = KernelUtils.normalize(featureVectors);
@@ -255,6 +270,19 @@ public class WalkCountApproxKernelMkII implements GraphKernel<GraphList<DTGraph<
 					}
 				}
 			}
+		}
+	}
+	
+	public List<String> getFeatureDescriptions(List<Integer> indicesSV) {
+		if (labelDict == null) {
+			throw new RuntimeException("Should run computeFeatureVectors first");
+		} else {
+			List<String> desc = new ArrayList<String>();
+
+			for (int index : indicesSV) {
+				desc.add(WalkCountUtils.getFeatureDecription(reverseLabelDict, reversePathDict, index));
+			}
+			return desc;
 		}
 	}
 
