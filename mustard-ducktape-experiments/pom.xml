@@ -1,6 +1,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>mustard-ducktape-experiments</groupId>
+  <groupId>data2semantics</groupId>
   <artifactId>mustard-ducktape-experiments</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <build>
@@ -24,11 +24,16 @@
   	</dependency>
   	<dependency>
   		<groupId>data2semantics</groupId>
-  		<artifactId>mustard</artifactId>
+  		<artifactId>mustard-kernels</artifactId>
+  		<version>0.0.1-SNAPSHOT</version>
+  	</dependency>
+  	  	<dependency>
+  		<groupId>data2semantics</groupId>
+  		<artifactId>mustard-learners</artifactId>
   		<version>0.0.1-SNAPSHOT</version>
   	</dependency>
   	<dependency>
-  		<groupId>dat2semantics</groupId>
+  		<groupId>data2semantics</groupId>
   		<artifactId>mustard-experiments</artifactId>
   		<version>0.0.1-SNAPSHOT</version>
   	</dependency>
