@@ -24,11 +24,13 @@
 			<artifactId>slf4j-log4j12</artifactId>
 			<version>1.7.7</version>
 		</dependency>
-		<dependency>
-			<groupId>data2semantics</groupId>
-			<artifactId>nodes</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
+
+			<dependency>
+	    <groupId>com.github.Data2Semantics</groupId>
+	    <artifactId>nodes</artifactId>
+	    <version>-SNAPSHOT</version>
+	</dependency>
+		
 	</dependencies>
 	
 	

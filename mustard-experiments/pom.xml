@@ -20,7 +20,7 @@
 			<version>1.7.7</version>
 		</dependency>
 		<dependency>
-			<groupId>dat2semantics</groupId>
+			<groupId>data2semantics</groupId>
 			<artifactId>mustard-learners</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
