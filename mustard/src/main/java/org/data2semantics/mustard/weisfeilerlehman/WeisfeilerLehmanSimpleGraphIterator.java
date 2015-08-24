@@ -59,7 +59,7 @@ public class WeisfeilerLehmanSimpleGraphIterator extends WeisfeilerLehmanIterato
 					if (!bucketsV.containsKey(edge.tag().toString())) {
 						bucketsV.put(edge.tag().toString(), new Bucket<SimpleGraph<StringLabel,StringLabel>.Node>(edge.tag().toString()));
 					}			
-					bucketsV.get(edge.tag().toString()).getContents().add(edge.from());
+					//bucketsV.get(edge.tag().toString()).getContents().add(edge.from());
 				}
 
 				// Add each incident edge to the bucket of the node label
@@ -77,7 +77,7 @@ public class WeisfeilerLehmanSimpleGraphIterator extends WeisfeilerLehmanIterato
 					if (!bucketsV.containsKey(edge.tag().toString())) {
 						bucketsV.put(edge.tag().toString(), new Bucket<SimpleGraph<StringLabel,StringLabel>.Node>(edge.tag().toString()));
 					}
-					bucketsV.get(edge.tag().toString()).getContents().add(edge.to());
+					//bucketsV.get(edge.tag().toString()).getContents().add(edge.to());
 				}
 
 				// Add each incident edge to the bucket of the node label
