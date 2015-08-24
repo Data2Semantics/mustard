@@ -22,9 +22,11 @@ Part of the kernels available in this library are also available in the Linked O
 
 Dependencies
 ------------
-Mustard depends on the `nodes` graph library which is part of the Data2Semantics github. Furtermore, it depends on on the SESAME triplestore (<http://rdf4j.org/>) and 'mustard-learners' depends on the Java version of LibLINEAR (<https://github.com/bwaldvogel/liblinear-java/>).
+Mustard depends on the `nodes` graph library which is part of the Data2Semantics github. Furtermore, it depends on the SESAME triplestore (<http://rdf4j.org/>) and 'mustard-learners' depends on the Java version of LibLINEAR (<https://github.com/bwaldvogel/liblinear-java/>).
 
-All the 4 projects are congfigured using Maven, which takes care of the dependencies. If you used without Maven then one should make sure that the correct JAR's are on the classpath.
+All the 4 projects are congfigured using Maven, which takes care of the dependencies. If you want to use them without Maven then you should make sure that the correct JAR's are on the classpath.
+
+If you want to use these 4 projects (or the `nodes` project) as Maven artifacts, then this can easily be achieved using the excellent JitPack service (<https://jitpack.io/>).
 
 
 JWS paper
