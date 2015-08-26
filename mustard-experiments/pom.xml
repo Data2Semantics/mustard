@@ -69,9 +69,6 @@
 		</plugins>
 
 	</build>
-	<parent>
-		<groupId>data2semantics</groupId>
-		<artifactId>mustard</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
-	</parent>
+	<groupId>data2semantics</groupId>
+	<version>0.0.1-SNAPSHOT</version>
 </project>
