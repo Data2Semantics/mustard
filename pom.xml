@@ -10,7 +10,6 @@
   <modules>
     <module>mustard</module>
     <module>mustard-learners</module>
-    <module>mustard-experiments</module>
   </modules>
   
   <build>
