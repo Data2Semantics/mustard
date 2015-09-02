@@ -12,14 +12,14 @@ import org.data2semantics.mustard.kernels.SparseVector;
 import org.data2semantics.mustard.kernels.data.SingleDTGraph;
 import org.data2semantics.mustard.kernels.graphkernels.FeatureVectorKernel;
 import org.data2semantics.mustard.kernels.graphkernels.GraphKernel;
-import org.data2semantics.mustard.simplegraph.SimpleGraph;
 import org.data2semantics.mustard.weisfeilerlehman.StringLabel;
 import org.data2semantics.mustard.weisfeilerlehman.WLUtils;
+import org.data2semantics.mustard.weisfeilerlehman.WeisfeilerLehmanDTGraphIterator;
 import org.data2semantics.mustard.weisfeilerlehman.WeisfeilerLehmanIterator;
-import org.data2semantics.mustard.weisfeilerlehman.WeisfeilerLehmanSimpleGraphIterator;
 import org.nodes.DTGraph;
 import org.nodes.DTLink;
 import org.nodes.DTNode;
+import org.nodes.LightDTGraph;
 
 /**
  *
@@ -29,14 +29,14 @@ import org.nodes.DTNode;
  */
 public class DTGraphWLSubTreeGeoProbKernel implements GraphKernel<SingleDTGraph>, FeatureVectorKernel<SingleDTGraph>, ComputationTimeTracker, FeatureInspector {
 
-	private Map<SimpleGraph<StringLabel,StringLabel>.Node, Map<SimpleGraph<StringLabel,StringLabel>.Node, Integer>> instanceVertexIndexMap;
-	private Map<SimpleGraph<StringLabel,StringLabel>.Node, Map<SimpleGraph<StringLabel,StringLabel>.Link, Integer>> instanceEdgeIndexMap;
+	private Map<DTNode<StringLabel,StringLabel>, Map<DTNode<StringLabel,StringLabel>, Integer>> instanceVertexIndexMap;
+	private Map<DTNode<StringLabel,StringLabel>, Map<DTLink<StringLabel,StringLabel>, Integer>> instanceEdgeIndexMap;
 
 	//private Map<DTNode<StringLabel,StringLabel>, Map<DTNode<StringLabel,StringLabel>, Boolean>> instanceVertexIgnoreMap;
 	//private Map<DTNode<StringLabel,StringLabel>, Map<DTLink<StringLabel,StringLabel>, Boolean>> instanceEdgeIgnoreMap;
 
-	private SimpleGraph<StringLabel,StringLabel> rdfGraph;
-	private List<SimpleGraph<StringLabel,StringLabel>.Node> instanceVertices;
+	private DTGraph<StringLabel,StringLabel> rdfGraph;
+	private List<DTNode<StringLabel,StringLabel>> instanceVertices;
 
 	private int depth;
 	private int iterations;
@@ -97,9 +97,9 @@ public class DTGraphWLSubTreeGeoProbKernel implements GraphKernel<SingleDTGraph>
 
 		System.out.println("DTGraph init (ms): " + (System.currentTimeMillis() - tic2));
 
-		WeisfeilerLehmanIterator<SimpleGraph<StringLabel,StringLabel>> wl = new WeisfeilerLehmanSimpleGraphIterator(true);
+		WeisfeilerLehmanIterator<DTGraph<StringLabel,StringLabel>> wl = new WeisfeilerLehmanDTGraphIterator(true);
 
-		List<SimpleGraph<StringLabel,StringLabel>> gList = new ArrayList<SimpleGraph<StringLabel,StringLabel>>();
+		List<DTGraph<StringLabel,StringLabel>> gList = new ArrayList<DTGraph<StringLabel,StringLabel>>();
 		gList.add(rdfGraph);
 
 		long tic = System.currentTimeMillis();
@@ -148,25 +148,25 @@ public class DTGraphWLSubTreeGeoProbKernel implements GraphKernel<SingleDTGraph>
 
 
 	private void init(DTGraph<String,String> graph, List<DTNode<String,String>> instances) {
-		SimpleGraph<StringLabel,StringLabel>.Node startV;
+		DTNode<StringLabel,StringLabel> startV;
 		List<DTNode<String,String>> frontV, newFrontV;
-		Map<SimpleGraph<StringLabel,StringLabel>.Node, Integer> vertexIndexMap;
-		Map<SimpleGraph<StringLabel,StringLabel>.Link, Integer> edgeIndexMap;
+		Map<DTNode<StringLabel,StringLabel>, Integer> vertexIndexMap;
+		Map<DTLink<StringLabel,StringLabel>, Integer> edgeIndexMap;
 		//Map<DTNode<StringLabel,StringLabel>, Boolean> vertexIgnoreMap;
 		//Map<DTLink<StringLabel,StringLabel>, Boolean> edgeIgnoreMap;
-		Map<DTNode<String,String>, SimpleGraph<StringLabel,StringLabel>.Node> vOldNewMap = new HashMap<DTNode<String,String>,SimpleGraph<StringLabel,StringLabel>.Node>();
-		Map<DTLink<String,String>, SimpleGraph<StringLabel,StringLabel>.Link> eOldNewMap = new HashMap<DTLink<String,String>,SimpleGraph<StringLabel,StringLabel>.Link>();
+		Map<DTNode<String,String>, DTNode<StringLabel,StringLabel>> vOldNewMap = new HashMap<DTNode<String,String>,DTNode<StringLabel,StringLabel>>();
+		Map<DTLink<String,String>, DTLink<StringLabel,StringLabel>> eOldNewMap = new HashMap<DTLink<String,String>,DTLink<StringLabel,StringLabel>>();
 
-		rdfGraph = new SimpleGraph<StringLabel,StringLabel>();
-		instanceVertices        = new ArrayList<SimpleGraph<StringLabel,StringLabel>.Node>();
-		instanceVertexIndexMap  = new HashMap<SimpleGraph<StringLabel,StringLabel>.Node, Map<SimpleGraph<StringLabel,StringLabel>.Node, Integer>>();
-		instanceEdgeIndexMap    = new HashMap<SimpleGraph<StringLabel,StringLabel>.Node, Map<SimpleGraph<StringLabel,StringLabel>.Link, Integer>>();
+		rdfGraph = new LightDTGraph<StringLabel,StringLabel>();
+		instanceVertices        = new ArrayList<DTNode<StringLabel,StringLabel>>();
+		instanceVertexIndexMap  = new HashMap<DTNode<StringLabel,StringLabel>, Map<DTNode<StringLabel,StringLabel>, Integer>>();
+		instanceEdgeIndexMap    = new HashMap<DTNode<StringLabel,StringLabel>, Map<DTLink<StringLabel,StringLabel>, Integer>>();
 		//instanceVertexIgnoreMap = new HashMap<DTNode<StringLabel,StringLabel>, Map<DTNode<StringLabel,StringLabel>, Boolean>>();
 		//instanceEdgeIgnoreMap   = new HashMap<DTNode<StringLabel,StringLabel>, Map<DTLink<StringLabel,StringLabel>, Boolean>>();
 
 		for (DTNode<String,String> oldStartV : instances) {				
-			vertexIndexMap = new HashMap<SimpleGraph<StringLabel,StringLabel>.Node, Integer>();
-			edgeIndexMap   = new HashMap<SimpleGraph<StringLabel,StringLabel>.Link, Integer>();
+			vertexIndexMap = new HashMap<DTNode<StringLabel,StringLabel>, Integer>();
+			edgeIndexMap   = new HashMap<DTLink<StringLabel,StringLabel>, Integer>();
 			//vertexIgnoreMap = new HashMap<DTNode<StringLabel,StringLabel>, Boolean>();
 			//edgeIgnoreMap   = new HashMap<DTLink<StringLabel,StringLabel>, Boolean>();
 
@@ -174,7 +174,7 @@ public class DTGraphWLSubTreeGeoProbKernel implements GraphKernel<SingleDTGraph>
 			if (vOldNewMap.containsKey(oldStartV)) {
 				startV = vOldNewMap.get(oldStartV);
 			} else { 
-				startV = rdfGraph.new Node(new StringLabel());
+				startV = rdfGraph.add(new StringLabel());
 				vOldNewMap.put(oldStartV, startV);
 			}
 			startV.label().clear();
@@ -206,7 +206,7 @@ public class DTGraphWLSubTreeGeoProbKernel implements GraphKernel<SingleDTGraph>
 							//vOldNewMap.get(edge.to()).label().clear();
 							//vOldNewMap.get(edge.to()).label().append(edge.to().label()); 
 							else {
-								SimpleGraph<StringLabel,StringLabel>.Node newN = rdfGraph.new Node(new StringLabel());
+								DTNode<StringLabel,StringLabel> newN = rdfGraph.add(new StringLabel());
 								newN.label().clear();
 								newN.label().append(edge.to().label());
 								vOldNewMap.put(edge.to(), newN);
@@ -224,7 +224,7 @@ public class DTGraphWLSubTreeGeoProbKernel implements GraphKernel<SingleDTGraph>
 							//eOldNewMap.get(edge).tag().clear();
 							//eOldNewMap.get(edge).tag().append(edge.tag());
 							else {
-								SimpleGraph<StringLabel,StringLabel>.Link newE = rdfGraph.new Link(vOldNewMap.get(qV), vOldNewMap.get(edge.to()), new StringLabel());
+								DTLink<StringLabel,StringLabel> newE = vOldNewMap.get(qV).connect(vOldNewMap.get(edge.to()), new StringLabel());
 								newE.tag().clear();
 								newE.tag().append(edge.tag());
 								eOldNewMap.put(edge, newE);
@@ -255,10 +255,10 @@ public class DTGraphWLSubTreeGeoProbKernel implements GraphKernel<SingleDTGraph>
 	 * @param weight
 	 * @param featureVectors
 	 */
-	private void computeFVs(SimpleGraph<StringLabel,StringLabel> graph, List<SimpleGraph<StringLabel,StringLabel>.Node> instances, double weight, SparseVector[] featureVectors, int lastIndex, int currentIt) {
+	private void computeFVs(DTGraph<StringLabel,StringLabel> graph, List<DTNode<StringLabel,StringLabel>> instances, double weight, SparseVector[] featureVectors, int lastIndex, int currentIt) {
 		int index, depth;
-		Map<SimpleGraph<StringLabel,StringLabel>.Node, Integer> vertexIndexMap;
-		Map<SimpleGraph<StringLabel,StringLabel>.Link, Integer> edgeIndexMap;
+		Map<DTNode<StringLabel,StringLabel>, Integer> vertexIndexMap;
+		Map<DTLink<StringLabel,StringLabel>, Integer> edgeIndexMap;
 
 		for (int i = 0; i < instances.size(); i++) {
 			featureVectors[i].setLastIndex(lastIndex);
@@ -266,7 +266,7 @@ public class DTGraphWLSubTreeGeoProbKernel implements GraphKernel<SingleDTGraph>
 			vertexIndexMap = instanceVertexIndexMap.get(instances.get(i));
 			edgeIndexMap = instanceEdgeIndexMap.get(instances.get(i));
 
-			for (SimpleGraph<StringLabel,StringLabel>.Node vertex : vertexIndexMap.keySet()) {
+			for (DTNode<StringLabel,StringLabel> vertex : vertexIndexMap.keySet()) {
 				depth = vertexIndexMap.get(vertex);
  
 				if (!vertex.label().isSameAsPrev() && (depth * 2) >= currentIt) { 
@@ -275,7 +275,7 @@ public class DTGraphWLSubTreeGeoProbKernel implements GraphKernel<SingleDTGraph>
 				}
 			}
 
-			for (SimpleGraph<StringLabel,StringLabel>.Link edge : edgeIndexMap.keySet()) {
+			for (DTLink<StringLabel,StringLabel> edge : edgeIndexMap.keySet()) {
 				depth = edgeIndexMap.get(edge);
 
 				if (!edge.tag().isSameAsPrev() && ((depth * 2)+1) >= currentIt) { 
