@@ -8,7 +8,7 @@
   <packaging>pom</packaging>
 
   <modules>
-    <module>mustard</module>
+    <module>mustard-kernels</module>
     <module>mustard-learners</module>
   </modules>
   
