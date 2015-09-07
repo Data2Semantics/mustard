@@ -20,7 +20,6 @@ Contents
 4. Dependencies
 5. JWS paper
 
-
 1. Usage
 --------
 The `mustard-kernels` and `mustard-learners` project can be used together to build classifiers for RDF datasets. Examples of how to do this can be found in `mustard-experiments`. Note that the library is currently mainly used for experimental comparisons between algorithms. 
