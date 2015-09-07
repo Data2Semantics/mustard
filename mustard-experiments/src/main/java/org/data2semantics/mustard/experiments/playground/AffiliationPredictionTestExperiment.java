@@ -56,7 +56,7 @@ public class AffiliationPredictionTestExperiment {
 		int maxHubs = 100;
 		List<Statement> all = dataset.getFullGraph();
 		all.removeAll(blackList);
-		List<DTNode<String,String>> hubs = HubUtils.findSigDegreeHubs(new HashSet<Statement>(all), instances, maxHubs);	
+		//List<DTNode<String,String>> hubs = HubUtils.findSigDegreeHubs(new HashSet<Statement>(all), instances, maxHubs);	
 		// ---
 
 

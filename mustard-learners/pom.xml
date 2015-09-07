@@ -7,6 +7,11 @@
   		<artifactId>mustard-kernels</artifactId>
   		<version>0.0.1-SNAPSHOT</version>
   	</dependency>
+  	<dependency>
+  		<groupId>de.bwaldvogel</groupId>
+  		<artifactId>liblinear</artifactId>
+  		<version>1.94</version>
+  	</dependency>
   </dependencies>
   <parent>
   	<groupId>data2semantics</groupId>
