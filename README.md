@@ -21,44 +21,68 @@ Contents
 5. JWS paper
 
 
-Usage
------
-
+1. Usage
+--------
 The `mustard-kernels` and `mustard-learners` project can be used together to build classifiers for RDF datasets. Examples of how to do this can be found in `mustard-experiments`. Note that the library is currently mainly used for experimental comparisons between algorithms. 
 
-The general set up to build a classifier is as follows.
+The general set up to build a classifier is as follows. Note that there are far more options and possibilities, the given example only contains the essentials.
 
-First, we need a dataset, for which we use the `RDFDataSet` class. 
+First, we need a dataset, for which we use the `RDFDataSet` class. Note that other files than N3 are also supported.
 ```java
 RDFDataSet tripleStore = new RDFFileDataSet("some_filename.n3", RDFFormat.N3);
 ```
-Note that other files than N3 are also supported.
 
-The instances that we want to build a classifier for are nodes/resources in this RDF graph. This list of instances can be supplied externally, or they could be extracted from the RDF, for example like this.
+The instances that we want to build a classifier for are nodes/resources in this RDF graph. This list of instances can be supplied externally, or they can be extracted from the RDF, for example as shown below, where all resources that have `some_relation` are extracted. Note that the object of this relation is used as labels for these instances.
 ```java
-List<Statement> stmts = tripleStore.getStatementsFromStrings(null, RDF.TYPE, some_class_uri);
+List<Statement> stmts = tripleStore.getStatements(null, some_relation, null);
 
 List<Resource> instances = new ArrayList<Resource>();
+List<Value> labels 	 = new ArrayList<Value>();
 
 for (Statement stmt : stmts) {
 	instances.add(stmt.getSubject());
+	labels.add(stmt.getObject());
 }
 ```
-In this example we extract all the resources that are of the type `some_class_uri`.
+In a real-world classification task, the labels are typically only known for a part of the instances, i.e. the trainset. For the instances for which this label is unknown (i.e. the testset) we want to predict it. In our running example we know the label for all the instances.
+
+After the instances we likely also need a blacklist, which is a list of statements that should be ignored. Typically, we need this because these statements include the actual labels of the instances, which we do not want in the training (RDF) graph. There is a simple utility method for this.
+```java
+List<Statement> blackList = DataSetUtils.createBlacklist(tripleStore, instances, labels);
+```
+
+With these object we can create an `RDFData` object, which can be used to compute a kernel matrix, as an example we take the `WLSubTreeKernel`, with some example parameters.
+```java
+RDFData data = new RDFData(tripleStore, instances, blackList);
+GraphKernel<RDFData> kernel = new RDFWLSubTreeKernel(4,2,true,true);
+double[][] matrix = kernel.compute(data);
+```
+
+This kernel matrix can be used to train a Support Vector Machine (SVM) classifier) as follows.
+```java
+Map<Value, Double> labelMap = new HashMap<Value,Double>();
+List<Double> target = EvaluationUtils.createTarget(labels, labelMap); // create a training target for LibSVM
+
+double[] cs = {1,10,100,1000};	// C values to optimize the SVM over
+LibSVMParameters svmParms = new LibSVMParameters(LibSVMParameters.C_SVC, cs);
+LibSVMModel model = LibSVM.trainSVMModel(matrix, target, svmParms);
+```
+
+This `model` can be used to make predictions using `LibSVM.testSVMModel()`. In a real-world scenario where not all the labels are known, the `KernelUtils` class contains utility functions to extract a test kernel matrix from a full square kernel matrix.
 
 
 
-Kernel documentation
---------------------
+2. Kernel documentation
+-----------------------
 Please see `/src/main/java/org/data2semantics/mustard/kernels/graphkernels/package-info.java` for the main documentation on the different graph kernels defined.
 
 
-LOD extension
--------------
+3. LOD extension
+----------------
 Part of the kernels available in this library are also available in the Linked Open Data extension, developed at the University of Mannheim, for the popular RapidMiner data mining software. See <http://dws.informatik.uni-mannheim.de/en/research/rapidminer-lod-extension/> and <http://dws.informatik.uni-mannheim.de/en/research/rapidminer-lod-extension/rapid-miner-lod-extension-example-using-kernels-for-feature-generation/>.
 
-Dependencies
-------------
+4. Dependencies
+---------------
 Mustard depends on the `nodes` graph library which is part of the Data2Semantics github. Furtermore, it depends on the SESAME triplestore (<http://rdf4j.org/>) and `mustard-learners` depends on the Java version of LibLINEAR (<https://github.com/bwaldvogel/liblinear-java/>).
 
 All the 4 projects are congfigured using Maven, which takes care of the dependencies. The first 2 projects (`mustard` and `mustard-learners`) are submodules of one maven parent project (see the `pom.xml` in the root dir of this project). If you want to use them without Maven then you should make sure that the correct JAR's are on the classpath.
@@ -66,8 +90,8 @@ All the 4 projects are congfigured using Maven, which takes care of the dependen
 If you want to use `mustard` and `mustard-learners` (or the `nodes` project) as Maven artifacts, then this can easily be achieved using the excellent JitPack service (<https://jitpack.io/>). Please see their documentation on multi module maven projects.
 
 
-JWS paper
----------
+5. JWS paper
+------------
 This library was used for the Journal of Web Semantics 2015 paper: [“Substructure Counting Graph Kernels for Machine Learning from RDF data”, GKD de Vries, S de Rooij](http://www.sciencedirect.com/science/article/pii/S1570826815000657).
 
 
