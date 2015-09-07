@@ -1,14 +1,51 @@
 mustard - Machine learning Using Svms To Analyse Rdf Data
-=======
+=========================================================
 
 Mustard is a machine learning library for learning from RDF data using kernel methods. Currently the library itself supports Support Vector Machines via the Java versions of the LibSVM and LibLINEAR libraries.
 
 This repository consists of 4 projects:
 
-- `mustard`, this is the heart of the library. It contains the graph kernels for RDF and the additional classes needed to handle RDF. This part of the library is the most well maintained and documented.
-- `mustard-learners` wraps LibSVM and LibLINEAR for use with the kernels defined in `mustard`.
+- `mustard-kernels`, this is the heart of the library. It contains the graph kernels for RDF and the additional classes needed to handle RDF. This part of the library is the most well maintained and documented.
+- `mustard-learners` wraps LibSVM and LibLINEAR for use with the kernels defined in `mustard`. Together with `mustard-kernels` you can build SVM classifiers for RDF data.
 - `mustard-experiments` contains experiments and utility classes for experimenting with `mustard`.
 - `mustard-ducktape-experiments` contains classes to perform experiments with `mustard` using `ducktape`, which is also located in de Data2Semantics github. This part of the library is hardly maintained at the moment.
+
+
+Contents
+--------
+
+1. Usage
+2. Kernel documentation
+3. LOD extension
+4. Dependencies
+5. JWS paper
+
+
+Usage
+-----
+
+The `mustard-kernels` and `mustard-learners` project can be used together to build classifiers for RDF datasets. Examples of how to do this can be found in `mustard-experiments`. Note that the library is currently mainly used for experimental comparisons between algorithms. 
+
+The general set up to build a classifier is as follows.
+
+First, we need a dataset, for which we use the `RDFDataSet` class. 
+```java
+RDFDataSet tripleStore = new RDFFileDataSet("some_filename.n3", RDFFormat.N3);
+```
+Note that other files than N3 are also supported.
+
+The instances that we want to build a classifier for are nodes/resources in this RDF graph. This list of instances can be supplied externally, or they could be extracted from the RDF, for example like this.
+```java
+List<Statement> stmts = tripleStore.getStatementsFromStrings(null, RDF.TYPE, some_class_uri);
+
+List<Resource> instances = new ArrayList<Resource>();
+
+for (Statement stmt : stmts) {
+	instances.add(stmt.getSubject());
+}
+```
+In this example we extract all the resources that are of the type `some_class_uri`.
+
 
 
 Kernel documentation
