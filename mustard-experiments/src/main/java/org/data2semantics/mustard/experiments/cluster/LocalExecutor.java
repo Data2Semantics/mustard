@@ -7,11 +7,11 @@ import java.util.List;
 
 public class LocalExecutor {
 	// parameter settings file 
-	private static final String parmsFile = "../src/main/java/org/data2semantics/mustard/experiments/JWS2015/parms.txt";
+	private static final String parmsFile = "../../src/main/java/org/data2semantics/mustard/experiments/JWS2015/parms.txt";
 	//private static final String parmsFile = "../src/main/java/org/data2semantics/mustard/experiments/JWS2015/parms_minfreq.txt";
 	
 	// regular affiliation prediction
-	private static final String prefix = "-dataset AIFB -file ../datasets/aifb-fixed_complete.n3";
+	private static final String prefix = "-dataset AIFB -file ../../datasets/aifb-fixed_complete.n3";
 	
 	// regular affiliation prediction with minfreq
 	//private static final String prefix = "-leaveRootLabel true -dataset AIFB -file ../datasets/aifb-fixed_complete.n3";

@@ -58,7 +58,7 @@ public class LibLINEAR {
 	}
 
 	private static LibLINEARModel trainLinearModel(Map<Kernel, Problem> probs, LibLINEARParameters params) {
-		if (!params.isVerbose()) {
+		if (params.getVerbosity() != LibLINEARParameters.VERBOSITY_FULL) {
 			Linear.disableDebugOutput();
 		}
 
@@ -133,7 +133,9 @@ public class LibLINEAR {
 			label = bestSetting.getLabel();
 		} 		
 
-		System.out.println("Trained Linear SVM for " + label + ", with C: " + bestC + " and P: " + bestP);
+		if (params.getVerbosity() == LibLINEARParameters.VERBOSITY_FULL || params.getVerbosity() == LibLINEARParameters.VERBOSITY_DEFAULT) {
+			System.out.println("Trained Linear SVM for " + label + ", with C: " + bestC + " and P: " + bestP);
+		}
 
 		double avg = 0;
 		for (Feature[] v : probs.get(bestSetting).x) {
@@ -141,7 +143,9 @@ public class LibLINEAR {
 		}
 		avg /= probs.get(bestSetting).x.length;
 
-		System.out.println("#instances:" + probs.get(bestSetting).l + ", #features: " + probs.get(bestSetting).n + ", #avg-non-zero: " + avg);
+		if (params.getVerbosity() == LibLINEARParameters.VERBOSITY_FULL || params.getVerbosity() == LibLINEARParameters.VERBOSITY_DEFAULT) {
+			System.out.println("#instances:" + probs.get(bestSetting).l + ", #features: " + probs.get(bestSetting).n + ", #avg-non-zero: " + avg);
+		}
 
 		return model;
 	}

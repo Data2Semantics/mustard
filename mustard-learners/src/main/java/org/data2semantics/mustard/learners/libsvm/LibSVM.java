@@ -111,7 +111,7 @@ public class LibSVM {
 	}
 
 	private static LibSVMModel trainSVMModel(Map<Kernel, svm_problem> svmProbs, double[] target, LibSVMParameters params) {	
-		if (!params.isVerbose()) {
+		if (params.getVerbosity() != LibSVMParameters.VERBOSITY_FULL) {
 			setNoOutput();
 		}
 
@@ -173,7 +173,9 @@ public class LibSVM {
 			label = bestSetting.getLabel();
 		} 
 
-		System.out.println("Trained SVM for " + label + ", with C: " + bestC + " and P: " + bestP);
+		if (params.getVerbosity() == LibSVMParameters.VERBOSITY_DEFAULT || params.getVerbosity() == LibSVMParameters.VERBOSITY_FULL) {
+			System.out.println("Trained SVM for " + label + ", with C: " + bestC + " and P: " + bestP);
+		}
 		return model;
 	}
 

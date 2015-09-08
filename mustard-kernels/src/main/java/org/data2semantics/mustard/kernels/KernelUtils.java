@@ -17,6 +17,48 @@ public class KernelUtils {
 	public static final String ROOTID = "ROOT1337"; // Special root label used in some kernels
 
 	/**
+	 * extract a subset train (square) kernel matrix from a larger (square) kernel matrix
+	 * 
+	 * @param kernel
+	 * @param startIdx, begin index inclusive
+	 * @param endIdx, end index exclusive
+	 * @return train kernel matrix of size: (endIdx-startIdx) x (endIdx-startIdx)
+	 */
+	public static double[][] trainSubset(double[][] kernel, int startIdx, int endIdx) {
+		double[][] ss = new double[endIdx - startIdx][endIdx - startIdx];
+		
+		for (int i = startIdx; i < endIdx; i++) {
+			for (int j = startIdx; j < endIdx; j++) {
+				ss[i][j] = kernel[i][j];
+			}
+		}	
+		return ss;
+	}
+
+	/**
+	 * extract a subset test (rectangle) kernel matrix from a larger (square) kernel matrix
+	 * Each row of this matrix represents of test instance, each column a train instance.
+	 * 
+	 * @param kernel
+	 * @param startIdx, begin index of the test instances, inclusive
+	 * @param endIdx, end index of the test instances, exclusive
+	 * @return, test kernel matrix of size: (endIdx - startIdx) x (kernel.length - (endIdx-startIdx))
+	 */
+	public static double[][] testSubset(double[][] kernel, int startIdx, int endIdx) {		
+		double[][] ss = new double[endIdx - startIdx][kernel.length - (endIdx-startIdx)];
+		
+		for (int i = startIdx; i < endIdx; i++) {
+			for (int j = 0; j < startIdx; j++) {
+				ss[i][j] = kernel[i][j];
+			}
+			for (int j = endIdx; j < kernel.length; j++) {
+				ss[i][j] = kernel[i][j];
+			}	
+		}
+		return ss;
+	}
+	
+	/**
 	 * returns a copy of the kernel matrix.
 	 * 
 	 * @param kernel, a kernel matrix
@@ -50,24 +92,6 @@ public class KernelUtils {
 		}
 		Collections.shuffle(Arrays.asList(kernelDouble), new Random(seed));
 		return convert2DoublePrimitives(kernelDouble);
-	}
-
-	/**
-	 * Convert an array of SparseVectors to a kernel matrix, by computing the dot product of all the SparseVectors
-	 * 
-	 * @param featureVectors, an array of SparseVectors
-	 * @return a 2d array of doubles, the kernel matrix
-	 */
-	public static double[][] featureVectors2Kernel(SparseVector[] featureVectors) {
-		double[][] kernel = initMatrix(featureVectors.length, featureVectors.length);
-
-		for (int i = 0; i < featureVectors.length; i++) {
-			for (int j = i; j < featureVectors.length; j++) {
-				kernel[i][j] = featureVectors[i].dot(featureVectors[j]);
-				kernel[j][i] = kernel[i][j];
-			}
-		}
-		return kernel;
 	}
 
 	/**

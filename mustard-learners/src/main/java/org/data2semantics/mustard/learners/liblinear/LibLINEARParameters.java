@@ -14,6 +14,10 @@ public class LibLINEARParameters {
 	public static final int SVR_PRIMAL = 4;
 	public static final int LR_DUAL = 5;
 	public static final int LR_PRIMAL = 6;	
+	
+	public static final int VERBOSITY_NONE = 0;
+	public static final int VERBOSITY_DEFAULT = 1;
+	public static final int VERBOSITY_FULL = 2;
 
 	private int[] weightLabels;
 	private double[] weights;
@@ -21,7 +25,7 @@ public class LibLINEARParameters {
 	private Parameter params;	
 	private double[] cs;
 	private double[] ps;
-	private boolean verbose;
+	private int verbose;
 	private double bias;
 	
 	private boolean doCrossValidation;
@@ -67,7 +71,7 @@ public class LibLINEARParameters {
 		break;
 		}
 
-		verbose = false;
+		verbose = VERBOSITY_DEFAULT;
 		bias = -1;
 		doCrossValidation = true;
 		doWeightLabels = false;
@@ -94,8 +98,8 @@ public class LibLINEARParameters {
 		this.cs = itParams;
 	}
 
-	public void setVerbose(boolean verbose) {
-		this.verbose = verbose;
+	public void setVerbosity(int verbosity) {
+		this.verbose = verbosity;
 	}
 
 	public void setBias(double bias) {
@@ -141,7 +145,7 @@ public class LibLINEARParameters {
 		return eps;
 	}
 
-	public boolean isVerbose() {
+	public int getVerbosity() {
 		return verbose;
 	}
 	

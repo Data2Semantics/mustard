@@ -22,11 +22,15 @@ public class LibSVMParameters implements Serializable {
 	public static final int EPSILON_SVR = svm_parameter.EPSILON_SVR;
 	public static final int NU_SVR = svm_parameter.NU_SVR;	
 
+	public static final int VERBOSITY_NONE = 0;
+	public static final int VERBOSITY_DEFAULT = 1;
+	public static final int VERBOSITY_FULL = 2;
+	
 
 	private svm_parameter params;
 	private double[] itParams;
 	private double[] ps;
-	private boolean verbose;
+	private int verbose;
 	private int numFolds;
 
 	private EvaluationFunction evalFunction;
@@ -62,7 +66,7 @@ public class LibSVMParameters implements Serializable {
 		// Weights, SVR epsilon, verbosity, evalFunction can be changed afterwards via setters
 		params.nr_weight = 0;
 		params.p = 0.1;
-		verbose = false;
+		verbose = VERBOSITY_DEFAULT;
 		ps = new double[1];
 		ps[0] = 0.1;
 
@@ -123,11 +127,11 @@ public class LibSVMParameters implements Serializable {
 		return itParams;
 	}
 
-	public void setVerbose(boolean verbose) {
-		this.verbose = verbose;
+	public void setVerbosity(int verbosity) {
+		this.verbose = verbosity;
 	}
 
-	public boolean isVerbose() {
+	public int getVerbosity() {
 		return verbose;
 	}
 	
