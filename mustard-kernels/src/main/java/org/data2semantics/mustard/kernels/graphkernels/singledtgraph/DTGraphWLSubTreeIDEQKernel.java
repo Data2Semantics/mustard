@@ -22,7 +22,7 @@ import org.nodes.DTNode;
 import org.nodes.LightDTGraph;
 
 /**
- * Like {@link org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphWLSubTreeKenel} this kernel implements the WL algorithm on a single graph. When noDuplicateSubtrees = true, this 
+ * Like {@link org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphWLSubTreeKernel} this kernel implements the WL algorithm on a single graph. When noDuplicateSubtrees = true, this 
  * implementation is faster and equal. When false the results differ slightly. 
  *
  * 
