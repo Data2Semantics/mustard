@@ -16,6 +16,12 @@ import org.data2semantics.mustard.rdf.RDFUtils;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 
+/**
+ * Wrapper for {@link org.data2semantics.mustard.kernels.graphkernels.graphlist.WalkCountKernelMkII}.
+ * 
+ * @author Gerben
+ *
+ */
 public class RDFGraphListWalkCountKernelMkII implements GraphKernel<RDFData>, FeatureVectorKernel<RDFData>, ComputationTimeTracker {
 	private int depth;
 	private boolean inference;

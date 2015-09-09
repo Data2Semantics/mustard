@@ -17,6 +17,12 @@ import org.data2semantics.mustard.rdf.RDFUtils;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 
+/**
+ * Wrapper for {@link org.data2semantics.mustard.kernels.graphkernels.graphlist.WLSubTreeKernel}.
+ * 
+ * @author Gerben
+ *
+ */
 public class RDFGraphListWLSubTreeKernel implements GraphKernel<RDFData>, FeatureVectorKernel<RDFData>, ComputationTimeTracker, FeatureInspector {
 	private int depth;
 	private boolean inference;

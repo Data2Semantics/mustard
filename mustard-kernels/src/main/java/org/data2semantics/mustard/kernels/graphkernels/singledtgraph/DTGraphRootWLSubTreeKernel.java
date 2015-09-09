@@ -21,10 +21,11 @@ import org.nodes.DTNode;
 import org.nodes.LightDTGraph;
 
 /**
- * This is a simple modified version of the WL sub tree kernel to compute only the trees with the root vertices. Not the fastest implementation, but it is
- * only for comparisons.
  * 
-
+ * Root version (i.e. only walks that start in the root node are counted) of {@link org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphWLSubTreeKernel}.
+ * 
+ * Simple implementation of this idea, not necessarily the fastest.
+ * 
  * @author Gerben
  *
  */

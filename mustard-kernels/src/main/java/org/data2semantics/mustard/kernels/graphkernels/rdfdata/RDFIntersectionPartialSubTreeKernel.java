@@ -14,6 +14,12 @@ import org.data2semantics.mustard.rdf.RDFUtils;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 
+
+/**
+ * Wrapper kernel for {@link org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphIntersectionPartialSubTreeKernel}. 
+ * 
+ * @author Gerben
+ */
 public class RDFIntersectionPartialSubTreeKernel implements GraphKernel<RDFData> {
 	private int depth;
 	private boolean inference;

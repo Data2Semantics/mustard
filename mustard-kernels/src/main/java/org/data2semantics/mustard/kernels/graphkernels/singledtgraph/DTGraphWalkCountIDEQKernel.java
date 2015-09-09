@@ -20,6 +20,10 @@ import org.nodes.LightDTGraph;
 
 /**
  * 
+ * Implementation of {@link org.data2semantics.mustard.kernels.graphkernels.graphlist.WalkCountKernel} directly on an RDF graph.
+ * Instances are represented by views (in terms of HashMaps) on the one large RDF graph. This implementation is faster than {@link org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphWalkCountKernel}
+ * and results in the same kernel/feature vectors.
+ * 
  * @author Gerben
  *
  */

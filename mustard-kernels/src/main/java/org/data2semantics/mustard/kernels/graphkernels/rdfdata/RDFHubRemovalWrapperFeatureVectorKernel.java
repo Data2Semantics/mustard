@@ -15,6 +15,13 @@ import org.data2semantics.mustard.rdf.RDFUtils;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 
+/**
+ * Wrapper kernel for {@link org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphHubRemovalWrapperFeatureVectorKernel}. 
+ * 
+ * @author Gerben
+ *
+ * @param <K>
+ */
 public class RDFHubRemovalWrapperFeatureVectorKernel<K extends FeatureVectorKernel<SingleDTGraph>> implements GraphKernel<RDFData>, FeatureVectorKernel<RDFData> {
 	private int depth;
 	private boolean inference;

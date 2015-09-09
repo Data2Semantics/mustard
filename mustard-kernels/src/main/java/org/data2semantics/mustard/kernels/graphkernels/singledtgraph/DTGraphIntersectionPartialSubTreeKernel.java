@@ -4,7 +4,7 @@ import org.data2semantics.mustard.kernels.KernelUtils;
 import org.nodes.DNode;
 
 /**
- * Implementation of the Intersection Partial SubTree kernel, directly on the RDF graph, as suggested in the original paper.
+ * Implementation of the Intersection Partial SubTree kernel, directly on the RDF graph, as suggested in the original paper by Loesch et al. ESWC 2012
  * 
  * @author Gerben
  *

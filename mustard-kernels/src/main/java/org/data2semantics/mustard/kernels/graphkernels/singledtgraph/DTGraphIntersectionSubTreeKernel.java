@@ -21,7 +21,7 @@ import org.nodes.LightDGraph;
 import org.nodes.LightDTGraph;
 
 /**
- * Implementation of the Intersection SubTree kernel directly on the RDF graph, as suggested in the original paper.
+ * Implementation of the Intersection SubTree kernel directly on the RDF graph, as suggested in the original paper by Loesch et al. ESWC 2012.
  * 
  * @author Gerben
  *

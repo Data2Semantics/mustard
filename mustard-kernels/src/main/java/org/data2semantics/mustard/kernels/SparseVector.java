@@ -6,7 +6,7 @@ import java.util.TreeMap;
 
 /**
  * <p>
- * Class implementing a Sparse Vector using an interal TreeMap, for long sparse vectors this significantly improves the computation of a dot-product over the naive approach
+ * Class implementing a Sparse Vector using an internal TreeMap, for long sparse vectors this significantly improves the computation time of a dot-product over the naive approach
  * </p>
  * <p>
  * Note that SparseVector's start at index 0. Therefore a newly created SparseVector has lastIndex == -1. 

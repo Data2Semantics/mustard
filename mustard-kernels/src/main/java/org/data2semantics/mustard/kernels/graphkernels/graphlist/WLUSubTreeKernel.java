@@ -19,6 +19,7 @@ import org.nodes.UNode;
 
 /**
  * Class implementing the Weisfeiler-Lehman graph kernel for general Undirected graphs.
+ * This is the general Weisfeiler-Lehman algorithm and this implementation is mainly used to compare 'regular' versions of graph data to RDF versions.
  * 
  * @author Gerben
  *

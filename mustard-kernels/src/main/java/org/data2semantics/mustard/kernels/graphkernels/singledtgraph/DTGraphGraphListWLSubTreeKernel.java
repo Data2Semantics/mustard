@@ -15,6 +15,12 @@ import org.data2semantics.mustard.kernels.graphkernels.graphlist.WLSubTreeKernel
 import org.data2semantics.mustard.rdf.RDFUtils;
 import org.nodes.DTGraph;
 
+/**
+ * Wrapper for {@link org.data2semantics.mustard.kernels.graphkernels.graphlist.WLSubTreeKernel}.
+ * 
+ * @author Gerben
+ *
+ */
 public class DTGraphGraphListWLSubTreeKernel implements GraphKernel<SingleDTGraph>, FeatureVectorKernel<SingleDTGraph>, ComputationTimeTracker, FeatureInspector {
 	private int depth;
 	private long compTime;

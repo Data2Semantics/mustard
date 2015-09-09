@@ -22,6 +22,12 @@ import org.nodes.DTNode;
 import org.nodes.LightDTGraph;
 
 /**
+ * Experimental implementation of the {@link org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphWLSubTreeIDEQApproxKernel} where the weight of a feature 
+ * is determined by the distance to the root node of an instance according to a geometric distribution.
+ * 
+ * <ul>
+ * <li> mean, this is the mean of the geometric distribution
+ * </ul>
  * 
  * @author Gerben
  *

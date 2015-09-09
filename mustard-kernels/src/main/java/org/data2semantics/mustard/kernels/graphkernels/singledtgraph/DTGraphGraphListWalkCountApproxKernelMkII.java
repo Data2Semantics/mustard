@@ -17,6 +17,7 @@ import org.data2semantics.mustard.rdf.RDFUtils;
 import org.nodes.DTGraph;
 
 /**
+ * Wrapper for {@link org.data2semantics.mustard.kernels.graphkernels.graphlist.WalkCountApproxKernelMkII}.
  * 
  * @author Gerben
  *

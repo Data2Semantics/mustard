@@ -15,6 +15,12 @@ import org.data2semantics.mustard.rdf.RDFUtils;
 import org.data2semantics.mustard.weisfeilerlehman.ApproxStringLabel;
 import org.nodes.DTGraph;
 
+/**
+ * Wrapper for {@link org.data2semantics.mustard.kernels.graphkernels.graphlist.WLSubTreeApproxKernel}.
+ * 
+ * @author Gerben
+ *
+ */
 public class DTGraphGraphListWLSubTreeApproxKernel implements GraphKernel<SingleDTGraph>, FeatureVectorKernel<SingleDTGraph>, ComputationTimeTracker, FeatureInspector {
 	private int depth;
 	private WLSubTreeApproxKernel kernel;

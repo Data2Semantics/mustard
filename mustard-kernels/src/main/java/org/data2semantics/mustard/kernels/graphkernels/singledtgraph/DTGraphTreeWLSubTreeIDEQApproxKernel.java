@@ -25,6 +25,9 @@ import org.nodes.DTNode;
 import org.nodes.LightDTGraph;
 
 /**
+ * 
+ * Tree version (i.e. walks are counted in the Tree representation of the neighborhood) of {@link org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphWLSubTreeIDEQApproxKernel}.
+ * 
  * @author Gerben
  *
  */

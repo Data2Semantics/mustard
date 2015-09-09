@@ -20,9 +20,16 @@ import org.nodes.LightDTGraph;
 
 
 /**
- * Implementation of the WalkCount kernel, which counts all the walks up to the given pathLength in the graphs.
+ * Implementation of the Walk Count kernel, which counts all the walks up to the given pathLength in the graphs.
+ * Note that both links and nodes count towards the path length. 
+ * <ul>
+ * <li> pathLength=0, is only 1 node or link,
+ * <li> pathLengh=1, is a path with 1 node and 1 link,
+ * <li> pathLength=2, is a path with 1 node and 2 links or 2 links and 1 node, 
+ * <li> etc...
+ * </ul>
  * 
- * @author Gerben *
+ * @author Gerben 
  */
 public class WalkCountKernel implements GraphKernel<GraphList<DTGraph<String,String>>>, FeatureVectorKernel<GraphList<DTGraph<String,String>>>, ComputationTimeTracker, FeatureInspector {
 	private int pathLength;

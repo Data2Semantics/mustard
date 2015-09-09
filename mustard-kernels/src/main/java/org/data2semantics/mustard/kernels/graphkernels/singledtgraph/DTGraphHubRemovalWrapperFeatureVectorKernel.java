@@ -13,6 +13,14 @@ import org.data2semantics.mustard.kernels.graphkernels.GraphKernel;
 import org.data2semantics.mustard.utils.HubUtils;
 import org.data2semantics.mustard.utils.LabelTagPair;
 
+
+/**
+ * Same as {@link org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphHubRemovalWrapperKernel}, but the supplied kernel is now a FeatureVectorKernel.
+ * 
+ * @author Gerben
+ *
+ * @param <K>
+ */
 public class DTGraphHubRemovalWrapperFeatureVectorKernel<K extends FeatureVectorKernel<SingleDTGraph>> implements GraphKernel<SingleDTGraph>, FeatureVectorKernel<SingleDTGraph> {
 	private boolean normalize;
 	private int[] minHubSizes;

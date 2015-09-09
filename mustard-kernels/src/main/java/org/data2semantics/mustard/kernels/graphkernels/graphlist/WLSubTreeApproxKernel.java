@@ -25,9 +25,19 @@ import org.nodes.LightDTGraph;
 
 
 /**
- * Class implementing the approximate version of the Weisfeiler-Lehman graph kernel for GraphList's
+ * Class implementing the approximate version of the Weisfeiler-Lehman graph kernel for GraphList's.
+ * The three parameters that control the 'approximateness' of this kernel are supplied as arrays of integers, for each parameter combination possible a kernel/feature vectors is/are computed and the results are combined into 1 kernel/set of feature vectors.
+ *
+ * <ul>
+ * <li> maxPrevNBH (>= 0), the number of times a neighboring label is allowed to be equal to the previous iteration during the WL rewriting process. A lower number means more 'approximateness'
+ * <li> maxLabelCard (>= 1). How many times the same label can occur in the neighborhood before it is considered the same. 
+ * 	    For example, if this set to 1, and one node has the label 'a' in his neighborhood and another node has the label 'a' in its neighborhood twice, 
+ * 		then these nodes would get different labels in the original WL algorithm, but they receive the same label under this setting. Lower settings lead to more 'approximateness'
+ * <li> minFreq (>= 0) The number of times a label should occur in the different instance graphs in order to be considered during the WL rewriting. Higher settings lead to more 'approximateness'
+ * </ul>
  * 
- * @author Gerben *
+ * 
+ * @author Gerben 
  */
 public class WLSubTreeApproxKernel implements GraphKernel<GraphList<DTGraph<ApproxStringLabel,ApproxStringLabel>>>, FeatureVectorKernel<GraphList<DTGraph<ApproxStringLabel,ApproxStringLabel>>>, ComputationTimeTracker, FeatureInspector {
 	private int iterations;

@@ -23,8 +23,10 @@ import org.nodes.LightDTGraph;
 
 /**
  * Implementation of the Walk Count kernel MkII that makes use of the minFreq parameter to ignore labels/walks that do not occur above the minimum frequency minFreq.
+ * See {@link org.data2semantics.mustard.kernels.graphkernels.graphlist.WalkCountKernel} for more details om the Walk Count kernel.
  * 
- * @author Gerben *
+ * 
+ * @author Gerben 
  */
 public class WalkCountApproxKernelMkII implements GraphKernel<GraphList<DTGraph<String,String>>>, FeatureVectorKernel<GraphList<DTGraph<String,String>>>, ComputationTimeTracker, FeatureInspector {
 	private int depth;

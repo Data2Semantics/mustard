@@ -30,7 +30,9 @@ import org.nodes.LightDTGraph;
  * - maxLabelCards, determines how often the same edge label is repeated when it occurs more than once in the neighborhood of a vertex during WL (i.e. when set to 1, we use sets instead of multisets)
  * - minFreqs, determines how often a label must occur among the instances in order to be used in the WL label rewriting
  * 
- * Note that the above three parameters can be provided as arrays. All possible combinations of the provided parameters will be computed and aggregated into one feature vector/kernel
+ * Note that the above three parameters are provided as arrays. All possible combinations of the provided parameters will be computed and aggregated into one feature vector/kernel
+ * 
+ * See also {@link org.data2semantics.mustard.kernels.graphkernels.graphlist.WLSubTreeApproxKernel}.
  * 
  * @author Gerben
  *

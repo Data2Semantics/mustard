@@ -25,6 +25,8 @@ import org.nodes.LightDTGraph;
 
 /**
  * 
+ * Root version (i.e. only walks that start in the root node are counted) of {@link org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphWLSubTreeIDEQApproxKernel}.
+ * 
  * @author Gerben
  *
  */

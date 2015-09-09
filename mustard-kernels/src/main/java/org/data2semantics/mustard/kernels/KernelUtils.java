@@ -37,7 +37,7 @@ public class KernelUtils {
 
 	/**
 	 * extract a subset test (rectangle) kernel matrix from a larger (square) kernel matrix
-	 * Each row of this matrix represents of test instance, each column a train instance.
+	 * Each row of this matrix represents a test instance, each column a train instance.
 	 * 
 	 * @param kernel
 	 * @param startIdx, begin index of the test instances, inclusive

@@ -23,7 +23,7 @@ import org.nodes.LightDTGraph;
 
 
 /**
- * Class implementing the Weisfeiler-Lehman graph kernel for Directed vertex and edge labelled graphs (i.e. DTGraphs)
+ * Class implementing the Weisfeiler-Lehman graph kernel for Directed vertex and edge labelled graphs (i.e. DTGraphs).
  * 
  * <ul>
  * <li> iterations, determines the number of iterations of the WL algorithm, note that it takes a label 2 iterations from vertex to vertex, since edges also have labels

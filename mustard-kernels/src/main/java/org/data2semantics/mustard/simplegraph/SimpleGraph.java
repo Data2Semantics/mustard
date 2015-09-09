@@ -3,6 +3,15 @@ package org.data2semantics.mustard.simplegraph;
 import java.util.ArrayList;
 import java.util.List;
 
+
+/**
+ * Simple graph implementation containing only the bare minimum functionality needed for the kernels in this library. Can replace the graphs currently in use from the nodes-library.
+ * 
+ * @author Steven de Rooij
+ *
+ * @param <V>
+ * @param <W>
+ */
 public class SimpleGraph<V,W> {
 
 	private List<Node> _nodes = new ArrayList<Node>();
@@ -17,7 +26,7 @@ public class SimpleGraph<V,W> {
 	}
 	
 	
-	public  class Node {
+	public class Node {
 	
 		private V _label;
 		private List<Link> _in_links  = new ArrayList<Link>();

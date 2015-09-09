@@ -11,6 +11,19 @@ import org.data2semantics.mustard.kernels.graphkernels.GraphKernel;
 import org.data2semantics.mustard.utils.HubUtils;
 import org.data2semantics.mustard.utils.LabelTagPair;
 
+
+/**
+ * Wrapper that performs hub removal before computing the provided GraphKernel<SingleDTGraph>.
+ * The minHubSize can be supplied as a single value or as an array. If an array is provided than a graph with hubs removed is computed for each setting and the provided kernel is computed on this graph.
+ * The kernel for each setting are summed together into one kernel.
+ * <ul>
+ * <li>minHubSize is the minimum hub size (in terms of links) that a hub has to be before it is removed.
+ * </ul>
+ * 
+ * @author Gerben
+ *
+ * @param <K> the kernel to compute on the graph with hub removed
+ */
 public class DTGraphHubRemovalWrapperKernel<K extends GraphKernel<SingleDTGraph>> implements GraphKernel<SingleDTGraph> {
 	private boolean normalize;
 	private int[] minHubSizes;

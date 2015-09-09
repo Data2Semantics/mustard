@@ -19,6 +19,8 @@ import org.nodes.LightDTGraph;
 
 /**
  * Another implementation of the WalkCountKernel (hence the MkII) using a different strategy to iterate over the walks. This strategy is similar to WL algorithm.
+ * The kernel computed using this algorithm is the same as using {@link org.data2semantics.mustard.kernels.graphkernels.graphlist.WalkCountKernel}. 
+ * Depending on the circumstances this kernel or the other kernel is faster.
  * 
  * @author Gerben *
  */

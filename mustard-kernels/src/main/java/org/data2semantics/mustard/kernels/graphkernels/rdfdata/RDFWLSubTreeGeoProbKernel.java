@@ -17,6 +17,11 @@ import org.data2semantics.mustard.rdf.RDFUtils;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 
+/**
+ * Wrapper kernel for {@link org.data2semantics.mustard.kernels.graphkernels.singledtgraph.DTGraphWLSubTreeGeoProbKernel}. 
+ * 
+ * @author Gerben
+ */
 public class RDFWLSubTreeGeoProbKernel implements GraphKernel<RDFData>, FeatureVectorKernel<RDFData>, ComputationTimeTracker, FeatureInspector {
 	private int depth;
 	private boolean inference;
@@ -50,8 +55,6 @@ public class RDFWLSubTreeGeoProbKernel implements GraphKernel<RDFData>, FeatureV
 	}
 
 	private void init(RDFDataSet dataset, List<Resource> instances, List<Statement> blackList) {
-		long tic = System.currentTimeMillis();
-		
 		Set<Statement> stmts = RDFUtils.getStatements4Depth(dataset, instances, depth, inference);
 		stmts.removeAll(blackList);
 		graph = RDFUtils.statements2Graph(stmts, RDFUtils.REGULAR_LITERALS, instances, true);
