@@ -10,7 +10,6 @@ This repository consists of 4 projects.
 - `mustard-experiments` contains experiments and utility classes for experimenting with `mustard`.
 - `mustard-ducktape-experiments` contains classes to perform experiments with `mustard` using `ducktape`, which is also located in de Data2Semantics github. This part of the library is hardly maintained at the moment.
 
-
 Contents
 --------
 1. Usage
@@ -83,9 +82,9 @@ Part of the kernels available in this library are also available in the Linked O
 ---------------
 Mustard depends on the `nodes` graph library which is part of the Data2Semantics github. Furtermore, it depends on the SESAME triplestore (<http://rdf4j.org/>) and `mustard-learners` depends on the Java version of LibLINEAR (<https://github.com/bwaldvogel/liblinear-java/>).
 
-All the 4 projects are congfigured using Maven, which takes care of the dependencies. The first 2 projects (`mustard` and `mustard-learners`) are submodules of one maven parent project (see the `pom.xml` in the root dir of this project). If you want to use them without Maven then you should make sure that the correct JAR's are on the classpath.
+All the 4 projects are Eclipse projects and congfigured using Maven, which takes care of the dependencies. The first 2 projects (`mustard-kernels` and `mustard-learners`) are submodules of one maven parent project (see the `pom.xml` in the root dir of this project). If you want to use them without Maven then you should make sure that the correct JAR's are on the classpath.
 
-If you want to use `mustard` and `mustard-learners` (or the `nodes` project) as Maven artifacts, then this can easily be achieved using the excellent JitPack service (<https://jitpack.io/>). Please see their documentation on multi module maven projects.
+If you want to use `mustard-kernels` and `mustard-learners` (or the `nodes` project) as Maven artifacts, then this can easily be achieved using the excellent JitPack service (<https://jitpack.io/>). Please see their documentation on multi module maven projects.
 
 
 5. JWS paper
