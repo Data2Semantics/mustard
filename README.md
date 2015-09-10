@@ -1,19 +1,18 @@
 mustard - Machine learning Using Svms To Analyse Rdf Data
 =========================================================
 
-Mustard is a machine learning library for learning from RDF data using kernel methods. Currently the library itself supports Support Vector Machines via the Java versions of the LibSVM and LibLINEAR libraries.
+Mustard is a machine learning library for learning from RDF data using kernel methods. Currently the library itself supports Support Vector Machines via the Java versions of the LibSVM and LibLINEAR libraries. Using mustard, classifiers can be learned for a set of nodes (i.e. resources, typically from the same rdfs:class) in an RDF graph/dataset. 
 
-This repository consists of 4 projects:
+This repository consists of 4 projects.
 
-- `mustard-kernels`, this is the heart of the library. It contains the graph kernels for RDF and the additional classes needed to handle RDF. This part of the library is the most well maintained and documented.
-- `mustard-learners` wraps LibSVM and LibLINEAR for use with the kernels defined in `mustard`. Together with `mustard-kernels` you can build SVM classifiers for RDF data.
+- `mustard-kernels` is the heart of the library. It contains the graph kernels for RDF and the additional classes needed to handle RDF. This part of the library is the most well maintained and documented.
+- `mustard-learners` wraps LibSVM and LibLINEAR for use with the kernels defined in `mustard-kernels`. Together with `mustard-kernels` you can build SVM classifiers for RDF data.
 - `mustard-experiments` contains experiments and utility classes for experimenting with `mustard`.
 - `mustard-ducktape-experiments` contains classes to perform experiments with `mustard` using `ducktape`, which is also located in de Data2Semantics github. This part of the library is hardly maintained at the moment.
 
 
 Contents
 --------
-
 1. Usage
 2. Kernel documentation
 3. LOD extension
@@ -22,16 +21,16 @@ Contents
 
 1. Usage
 --------
-The `mustard-kernels` and `mustard-learners` project can be used together to build classifiers for RDF datasets. Examples of how to do this can be found in `mustard-experiments`. Note that the library is currently mainly used for experimental comparisons between algorithms. 
+The `mustard-kernels` and `mustard-learners` project can be used together to build classifiers for RDF datasets. Examples of how this works in an experimental context can be found in `mustard-experiments`. Note that the library is currently mainly used for experimental comparisons between algorithms. 
 
-The general set up to build a classifier is as follows. Note that there are far more options and possibilities, the given example only contains the essentials.
+The general set up to build a classifier is as follows. Note that there are far more options and possibilities, the given example only contains the bare essentials.
 
 First, we need a dataset, for which we use the `RDFDataSet` class. Note that other files than N3 are also supported.
 ```java
 RDFDataSet tripleStore = new RDFFileDataSet("some_filename.n3", RDFFormat.N3);
 ```
 
-The instances that we want to build a classifier for are nodes/resources in this RDF graph. This list of instances can be supplied externally, or they can be extracted from the RDF, for example as shown below, where all resources that have `some_relation` are extracted. Note that the object of this relation is used as labels for these instances.
+The instances that we want to build a classifier for are nodes/resources in this RDF graph. This list of instances can be supplied externally, or they can be extracted from the RDF, for example as shown below, where all resources that are the subject of `some_relation` are extracted. Note that the object of this relation is used as a label.
 ```java
 List<Statement> stmts = tripleStore.getStatements(null, some_relation, null);
 
@@ -67,13 +66,13 @@ LibSVMParameters svmParms = new LibSVMParameters(LibSVMParameters.C_SVC, cs);
 LibSVMModel model = LibSVM.trainSVMModel(matrix, target, svmParms);
 ```
 
-This `model` can be used to make predictions using `LibSVM.testSVMModel()`. In a real-world scenario where not all the labels are known, the `KernelUtils` class contains utility functions to extract a test kernel matrix from a full square kernel matrix.
+This `model` can be used to make predictions using `LibSVM.testSVMModel()`. In a real-world scenario where not all the labels are known, the `KernelUtils` class contains utility functions to extract a train and test kernel matrix from a full  kernel matrix. This is needed because the kernel needs to be computed for both the training and test instances in one go.
 
 
 
 2. Kernel documentation
 -----------------------
-Please see `/src/main/java/org/data2semantics/mustard/kernels/graphkernels/package-info.java` for the main documentation on the different graph kernels defined.
+Please see `/src/main/java/org/data2semantics/mustard/kernels/graphkernels/package-info.java` for the main documentation on the different graph kernels defined. Furthermore, see the Journal of Web Semantics 2015 paper: [“Substructure Counting Graph Kernels for Machine Learning from RDF data”, GKD de Vries, S de Rooij](http://www.sciencedirect.com/science/article/pii/S1570826815000657), for a detailed explanation and analysis of a large number of the kernels in this library.
 
 
 3. LOD extension
@@ -104,3 +103,8 @@ We used the following datasets in our experiments:
 Most of the experiments were run on a computing cluster. Using the `org.data2semantics.mustard.experiments.cluster.LocalExecutor.java` class the experiments can be rerun on a single machine. For the small experiments different settings are given as String constants in the top of the class. To rerun the large experiments, parameter files and susbsets of the datasets have to be created with `ParamsCreator.java` and `SubSetCreator.java`. Both of these are configured with some parameter settings at the top of the main() methods.
 
 The computation time experiments can be found in `org.data2semantics.mustard.experiments.JWS2015`. In the top of the file a String constant sets the location of the dataset.
+
+
+Acknowledgements
+----------------
+This library was developed in the context of the Data2Semantics project, part of the Dutch national project COMMIT/.
