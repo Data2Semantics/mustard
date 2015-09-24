@@ -12,7 +12,7 @@
 		<dependency>
 			<groupId>data2semantics</groupId>
 			<artifactId>mustard-kernels</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>0.1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
@@ -22,7 +22,7 @@
 		<dependency>
 			<groupId>data2semantics</groupId>
 			<artifactId>mustard-learners</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>0.1.0</version>
 		</dependency>
 	</dependencies>
 
@@ -70,5 +70,5 @@
 
 	</build>
 	<groupId>data2semantics</groupId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.1.0</version>
 </project>

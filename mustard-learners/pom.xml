@@ -5,7 +5,7 @@
   	<dependency>
   		<groupId>data2semantics</groupId>
   		<artifactId>mustard-kernels</artifactId>
-  		<version>0.0.1-SNAPSHOT</version>
+  		<version>0.1.0</version>
   	</dependency>
   	<dependency>
   		<groupId>de.bwaldvogel</groupId>
@@ -15,7 +15,7 @@
   </dependencies>
   <parent>
   	<groupId>data2semantics</groupId>
-  	<version>0.0.1-SNAPSHOT</version>
+  	<version>0.1.0</version>
   	<artifactId>mustard</artifactId>
   </parent>
 </project>
