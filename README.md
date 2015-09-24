@@ -1,6 +1,8 @@
 mustard - Machine learning Using Svms To Analyse Rdf Data
 =========================================================
 
+Version 0.1.0
+
 Mustard is a machine learning library for learning from RDF data using kernel methods. Currently the library itself supports Support Vector Machines via the Java versions of the LibSVM and LibLINEAR libraries. Using mustard, classifiers can be learned for a set of nodes (i.e. resources, typically from the same rdfs:class) in an RDF graph/dataset. 
 
 This repository consists of 4 projects.
