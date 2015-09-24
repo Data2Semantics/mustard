@@ -26,7 +26,7 @@ The `mustard-kernels` and `mustard-learners` project can be used together to bui
 
 The general set up to build a classifier is as follows. Note that there are far more options and possibilities, the given example only contains the bare essentials.
 
-First, we need a dataset, for which we use the `RDFDataSet` class. Note that other files than N3 are also supported.
+First, we need a dataset, for which we use the `RDFDataSet` class. Obviously other filetypes than N3 are also supported.
 ```java
 RDFDataSet tripleStore = new RDFFileDataSet("some_filename.n3", RDFFormat.N3);
 ```
@@ -67,7 +67,7 @@ LibSVMParameters svmParms = new LibSVMParameters(LibSVMParameters.C_SVC, cs);
 LibSVMModel model = LibSVM.trainSVMModel(matrix, target, svmParms);
 ```
 
-This `model` can be used to make predictions using `LibSVM.testSVMModel()`. In a real-world scenario where not all the labels are known, the `KernelUtils` class contains utility functions to extract a train and test kernel matrix from a full  kernel matrix. This is needed because the kernel needs to be computed for both the training and test instances in one go.
+This `model` can be used to make predictions using `LibSVM.testSVMModel()`. In a real-world scenario where not all the labels are known, the `KernelUtils` class contains utility functions to extract a train and test kernel matrix from a full  kernel matrix. This is needed because the kernel needs to be computed for both the training and test instances in one go. However, afterwards we need to get the part of the matrix that belongs to the trainset and the part that belongs to the testset.
 
 
 
