@@ -46,6 +46,7 @@ for (Statement stmt : stmts) {
 In a real-world classification task, the labels are typically only known for a part of the instances, i.e. the trainset. For the instances for which this label is unknown (i.e. the testset) we want to predict it. In our running example we know the label for all the instances.
 
 After the instances we likely also need a blacklist, which is a list of statements that should be ignored. Typically, we need this because these statements include the actual labels of the instances, which we do not want in the training (RDF) graph. There is a simple utility method for this.
+*NOTE* 25/04/2017, this method can be very dangerous if labels are primitives (like a boolean, int, etc.), since it puts any relation between the instance and its label on the blacklist (and also inverse relations). 
 ```java
 List<Statement> blackList = DataSetUtils.createBlacklist(tripleStore, instances, labels);
 ```
