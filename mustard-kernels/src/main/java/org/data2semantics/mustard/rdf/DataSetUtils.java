@@ -15,6 +15,9 @@ public class DataSetUtils {
 	 * Create a blacklist for a dataset from a list of instances and their labels.
 	 * Every statement of the form <instance, _, value> and <value, _, instance> contained in the dataset is added to the blacklist.
 	 * 
+	 * NOTE - This method can be dangerous when the labels are primitives like boolean or int, since there might be a lot more
+	 * relations that you don't want to remove.
+	 *
 	 * @param dataset
 	 * @param instances
 	 * @param labels
@@ -37,7 +40,9 @@ public class DataSetUtils {
 	 * Create a blacklist for a dataset given a list of pairs of resources. For each pair (p1,p2), all the statements <p1, _, p2>
 	 * and <p2, _, p1> that are in the dataset are added to the blacklist.
 	 * 
-	 * 
+	 * NOTE - This method can be dangerous when the labels are primitives like boolean or int, since there might be a lot more
+	 * relations that you don't want to remove.  
+	 *
 	 * @param dataset
 	 * @param instances
 	 * @return
